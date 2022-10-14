@@ -5,17 +5,21 @@ import styles from '../styles/Home.module.css'
 
 import RegisterOrgForm from '../components/Accounts/RegisterOrgForm/RegisterOrgForm';
 import LoginForm from '../components/Accounts/LoginForm/LoginForm';
+import { useRouter } from 'next/router';
 
 const Home: NextPage = () => {
 
-  const [formType, setFormType] = useState('registerOrg')
+  const {asPath} = useRouter()
+  const currentPath = asPath.split('/')
+
+  const [formType, setFormType] = useState(currentPath[1])
 
   const showRegisterForm = () =>{
-    setFormType('registerOrg')
+    setFormType('#registerOrganisation')
   }
 
   const showLoginForm = () =>{
-    setFormType('login')
+    setFormType('#login')
   }
 
   return (
@@ -26,7 +30,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      { formType === 'registerOrg'?<RegisterOrgForm toLoginForm={showLoginForm}/>:<LoginForm toRegisterOrg={showRegisterForm}/>}
+      { formType === '#registerOrganisation'?<RegisterOrgForm toLoginForm={showLoginForm}/>:<LoginForm toRegisterOrg={showRegisterForm}/>}
 
     </div>
   )

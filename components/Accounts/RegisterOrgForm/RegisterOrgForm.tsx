@@ -77,7 +77,7 @@ export default function RegisterOrgForm({toLoginForm}:RegisterOrgFormProps){
                 <Button type="primary" htmlType="submit" className="login-form-button">
                 Register organisation
                 </Button>
-                Or <Button onClick={toLoginForm} href='#loginForm'  type='link'>Login to Organisation</Button>
+                Or <Button onClick={toLoginForm} href='#loginForm' type='link'>Login to Organisation</Button>
             </Form.Item>
 
                 </Form>
