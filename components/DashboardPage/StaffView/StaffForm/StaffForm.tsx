@@ -18,6 +18,7 @@ export default function StaffForm({onCreateStaff, onCancelFormCreation}:StoreFor
 
     const onFinish = (formData:FormData)=>{
         // call function to create store
+        console.log(formData)
         onCreateStaff(formData)
         showStoreCreationNotification()
     }
@@ -65,7 +66,7 @@ export default function StaffForm({onCreateStaff, onCancelFormCreation}:StoreFor
                     </Button>
 
                     <Button type="primary"  htmlType="submit" >
-                        Submit
+                        Add
                     </Button>
                 </Space>
                 

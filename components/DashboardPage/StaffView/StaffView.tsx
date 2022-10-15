@@ -2,6 +2,7 @@ import React,{useState} from 'react'
 import {Card,Button,Typography,Alert,Space,Modal} from 'antd'
 import router, { useRouter } from 'next/router';
 import StaffForm from './StaffForm/StaffForm';
+import { v4 as uuidv4 } from 'uuid';
 
 import StaffList from './StaffList/StaffList';
 const {Text} = Typography;
@@ -18,12 +19,23 @@ export default function StaffView({}:StaffViewProps){
 
     const [isModalOpen, setIsModalOpen] = useState(false)
 
-    const handleCreateStaff = (storeData:FormData)=>{
-        console.log(storeData)
+    const handleCreateStaff = (formData:FormData)=>{
+        console.log(formData)
+        const formObject = {
+            ...formData,
+            id: uuidv4()
+        }
         const clonedStaffs =  staffs.slice()
-        clonedStaffs.push(storeData)
+        clonedStaffs.push(formObject)
         setStaffs(clonedStaffs);
         setIsModalOpen(false);
+    }
+
+    const deleteStaff = (staffId:string)=>{
+        const clonedStaffs = staffs.slice();
+        const updatedStaff = clonedStaffs.filter(staff=>staff.id !== staffId)
+        setStaffs(updatedStaff)
+        
     }
 
     const cancelFormCreation = ()=>{
@@ -39,10 +51,10 @@ export default function StaffView({}:StaffViewProps){
     return(
         <div>
         { staffs.length > 0 ? 
-            <StaffList openFormModal={()=>setIsModalOpen(true)} staffs={staffs}/>:
+            <StaffList openFormModal={()=>setIsModalOpen(true)} onDeleteStaff={deleteStaff} staffs={staffs}/>:
             <EmptyStore openFormModal={()=>setIsModalOpen(true)}/> 
         }
-        <Modal title="Launch new store" open={isModalOpen} footer={null} onCancel={()=>setIsModalOpen(false)}>
+        <Modal title="Add new staff" open={isModalOpen} footer={null} onCancel={()=>setIsModalOpen(false)}>
             <StaffForm onCancelFormCreation={cancelFormCreation} onCreateStaff={handleCreateStaff}/>
         </Modal>
         </div>

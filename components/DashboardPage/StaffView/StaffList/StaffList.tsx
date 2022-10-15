@@ -1,14 +1,15 @@
 import React from 'react'
-import {Card,List,Typography,Button,Avatar} from 'antd'
+import {Card,List,Typography,Button,Avatar, Tag} from 'antd'
 import { useRouter } from 'next/router'
 
 const {Title,Text} = Typography
 
 interface StaffListProps{
     staffs: Array<any>,
-    openFormModal: ()=>void
+    openFormModal: ()=>void,
+    onDeleteStaff: (id:string)=>void
 }
-export default function StoreList({staffs, openFormModal}:StaffListProps){
+export default function StoreList({staffs, openFormModal,onDeleteStaff}:StaffListProps){
 
     const router = useRouter()
 
@@ -29,9 +30,12 @@ export default function StoreList({staffs, openFormModal}:StaffListProps){
             itemLayout="horizontal"
             dataSource={staffs}
             renderItem={(item, index) => (
-            <List.Item>
-                <List.Item.Meta
-                title={<Text onClick={()=>navigateToStorePage(String(index))} >{item.email}</Text>}
+            <List.Item
+                extra={<Button onClick={()=>onDeleteStaff(item.id)}>Delete </Button>}
+            >
+             <List.Item.Meta
+                title={<Text onClick={()=>navigateToStorePage(String(index))} >{item.email} {<Tag color={item.role==='admin'?'green':'blue'}>{item.role}</Tag>
+            }</Text>}
                 />
             </List.Item>
              )}
