@@ -9,10 +9,10 @@ import { useRouter } from 'next/router';
 
 
 interface ServiceFormProps{
-    onLaunchStore: (formData:any)=>void
+    onCreateService: (formData:any)=>void
     onCancelFormCreation: ()=>void
 }
-export default function ServiceForm({onLaunchStore, onCancelFormCreation}:ServiceFormProps){
+export default function ServiceForm({onCreateService, onCancelFormCreation}:ServiceFormProps){
 
 
     const router = useRouter()
@@ -21,9 +21,9 @@ export default function ServiceForm({onLaunchStore, onCancelFormCreation}:Servic
 
     const onFinish = (formData:FormData)=>{
         // call function to create store
-        onLaunchStore(formData)
+        onCreateService(formData)
         showStoreCreationNotification()
-        router.push('/dashboard#store')
+        // router.push('/dashboard#store')
         // router.push('/')
     }
 
@@ -37,16 +37,13 @@ export default function ServiceForm({onLaunchStore, onCancelFormCreation}:Servic
 
     const showStoreCreationNotification = () => {
         notification['success']({
-          message: 'Store created succesfully',
+          message: 'Service created succesfully',
           description:
-            'The next step is to create services inside store for user to be able to interact with.',
+            'Create more services',
         });
       };
       
 
-      if (typeof window === undefined){
-        return <></>
-    }
 
     return (
         <Card title='Add new service'>
@@ -69,12 +66,12 @@ export default function ServiceForm({onLaunchStore, onCancelFormCreation}:Servic
                 label='Price'
                 rules={[{ required: true, message: 'Please input a valid phone!' }]}
             >
-                <InputNumber prefix={'USD'} placeholder="54" />
+                <InputNumber width={300} prefix={'USD'} placeholder="54" />
             </Form.Item>
 
 
             <Form.Item name='description'  label="Service description">
-                <TextArea maxLength={150}  placeholder='Best coffee shop in the entire world with the most beautiful scenary' rows={3} />
+                <TextArea maxLength={150} showCount  placeholder='Best coffee shop in the entire world with the most beautiful scenary' rows={3} />
             </Form.Item>
 
             <Form.Item name='serviceDuration' label="Service duration">

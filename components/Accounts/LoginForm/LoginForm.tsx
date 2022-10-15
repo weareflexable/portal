@@ -34,19 +34,11 @@ export default function LoginForm({toRegisterOrg}:LoginFormProps){
             </Form.Item>
 
             <Form.Item
-                name="orgName"
-                label="Organisation name"
-                rules={[{ required: true, message: 'Please input your Username!' }]}
-             >
-                <Input placeholder="Microsoft Chambers" />
-            </Form.Item>
-
-            <Form.Item
                 name="orgId"
                 label='Organisation ID'
-                rules={[{ required: true, message: 'Please input a valid address!' }]}
+                rules={[{ required: true, message: 'Please input a valid org ID!' }]}
             >
-                <Input placeholder="Wiscontin, United states" />
+                <Input placeholder="ad7f8da7fd8adfdadfd7" />
             </Form.Item>
 
             <Form.Item>

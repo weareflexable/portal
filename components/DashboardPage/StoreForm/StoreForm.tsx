@@ -43,12 +43,7 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
       };
       
 
-      if (typeof window === undefined){
-        return <></>
-    }
-
     return (
-        <Card title='Launch new store'>
             <Form
             name="storeForm"
             initialValues={{ remember: true }}
@@ -71,26 +66,6 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
                 <Input placeholder="Wiscontin, United states" />
             </Form.Item>
 
-            <Form.Item
-                name="ticketsPerDay"
-                label='Tickets per day'
-                rules={[{ required: true, message: 'Please input a valid phone!' }]}
-            >
-                <InputNumber placeholder="543" />
-            </Form.Item>
-
-            <Form.Item
-                name="noOfServices"
-                label='Number of services'
-                rules={[{ required: true, message: 'Please input a valid number!' }]}
-            >
-                <InputNumber placeholder="12" />
-            </Form.Item>
-
-            <Form.Item name='description' label="Store description">
-                <TextArea maxLength={150} rows={3} />
-            </Form.Item>
-
 
             <Form.Item
                 name="storeLogo"
@@ -101,6 +76,18 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
             >
                 <Upload name="logo" action="" listType="picture">
                 <Button icon={<UploadOutlined />}>Click to upload</Button>
+                </Upload>
+            </Form.Item>
+
+            <Form.Item
+                name="storeCoverImage"
+                label="Store cover image"
+                valuePropName="fileList"
+                getValueFromEvent={normFile}
+                extra="Upload file upto 2MB"
+            >
+                <Upload name="logo" action="" listType="picture">
+                <Button icon={<UploadOutlined />}>Upload store cover image</Button>
                 </Upload>
             </Form.Item>
 
@@ -119,6 +106,5 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
             </Form.Item>
 
             </Form>
-        </Card>
     )
 }

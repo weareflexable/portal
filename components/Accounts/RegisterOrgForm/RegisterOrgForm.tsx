@@ -50,8 +50,8 @@ export default function RegisterOrgForm({toLoginForm}:RegisterOrgFormProps){
             </Form.Item>
 
             <Form.Item
-                name="orgEmail"
-                label='Organisation email'
+                name="managerEmail"
+                label='Manager email'
                 rules={[{ required: true, message: 'Please input a valid email!' }]}
             >
                 <Input type='email' placeholder="example@yahoo.com" />

@@ -1,5 +1,5 @@
 import React,{useState} from 'react'
-import {Card,Button,Typography,Alert,Space} from 'antd'
+import {Card,Button,Typography,Alert,Space,Modal} from 'antd'
 import router, { useRouter } from 'next/router';
 import StoreForm from '../StoreForm/StoreForm';
 
@@ -18,8 +18,10 @@ export default function StoreView({}:StoreViewProps){
     // TODO: fetch all stores from db
     const [stores, setStores] = useState<Array<FormData>>([]);
     const [storePath, setStorePath] = useState(currentPath[1])
+    const [isModalOpen, setIsModalOpen] = useState(false)
 
     const handleRegisterStore = ()=>{
+        setIsModalOpen(true)
         setStorePath('launchNewStore')
     }
     const handleLaunchStore = (storeData:FormData)=>{
@@ -28,6 +30,7 @@ export default function StoreView({}:StoreViewProps){
         clonedStore.push(storeData)
         setStores(clonedStore);
         setStorePath('store')
+        setIsModalOpen(false);
     }
 
     const cancelFormCreation = ()=>{
@@ -37,9 +40,9 @@ export default function StoreView({}:StoreViewProps){
 
     
 
-    if (storePath === 'launchNewStore'){ 
-        return <StoreForm onCancelFormCreation={cancelFormCreation} onLaunchStore={handleLaunchStore}/>
-    }
+    // if (storePath === 'launchNewStore'){ 
+    //     return <StoreForm onCancelFormCreation={cancelFormCreation} onLaunchStore={handleLaunchStore}/>
+    // }
 
     return(
         <div>
@@ -47,6 +50,9 @@ export default function StoreView({}:StoreViewProps){
             <StoreList onRegisterNewStore={handleRegisterStore} stores={stores}/>:
             <EmptyStore onRegisterStore={handleRegisterStore}/>
         }
+        <Modal title="Launch new store" open={isModalOpen} footer={null} onCancel={()=>setIsModalOpen(false)}>
+            <StoreForm onCancelFormCreation={cancelFormCreation} onLaunchStore={handleLaunchStore}/>
+        </Modal>
         </div>
     )
 }

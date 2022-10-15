@@ -1,9 +1,10 @@
 import React,{useState} from 'react'
-import {Card,Button,Typography,Alert,Space} from 'antd'
+import {Card,Button,Typography,Alert,Space,Modal} from 'antd'
 import router, { useRouter } from 'next/router';
 import ServiceForm from './ServiceForm/ServiceForm';
 
 import StoreList from '../StoreList/StoreList';
+import ServiceList from './ServiceList/ServiceList';
 const {Text} = Typography;
 
 
@@ -16,37 +17,44 @@ export default function UserStoreView({}:UserStoreViewProps){
     const currentPath = asPath.split('#')
 
     // TODO: fetch all stores from db
-    const [stores, setStores] = useState<Array<FormData>>([]);
-    const [storePath, setStorePath] = useState(currentPath[1])
+    const [services, setServices] = useState<Array<FormData>>([]);
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    // const [storePath, setStorePath] = useState(currentPath[1])
 
-    const handleRegisterStore = ()=>{
-        setStorePath('launchNewStore')
+    const handleRegisterService = ()=>{
+        setIsModalOpen(true)
+        // setStorePath('launchNewStore')
     }
-    const handleLaunchStore = (storeData:FormData)=>{
-        console.log(storeData)
-        const clonedStore =  stores.slice()
-        clonedStore.push(storeData)
-        setStores(clonedStore);
-        setStorePath('store')
+    const handleCreateService = (serviceData:FormData)=>{
+        const clonedServices =  services.slice()
+        clonedServices.push(serviceData)
+        setServices(clonedServices);
+        setIsModalOpen(false)
+        // setStorePath('store')
     }
 
-    const cancelFormCreation = ()=>{
-        setStorePath('store')
-        push('/dashboard#store')
+    const cancelServiceCreation = ()=>{
+        setIsModalOpen(false)
+        // setStorePath('services')
+        // push('/dashboard#store')
     }
 
     
 
-    if (storePath === 'launchNewStore'){ 
-        return <ServiceForm onCancelFormCreation={cancelFormCreation} onLaunchStore={handleLaunchStore}/>
-    }
+    // if (servicePath === 'newServices'){ 
+        // return <ServiceForm onCancelFormCreation={cancelServiceCreation} onLaunchStore={handleCreateService}/>
+    // }
 
     return(
         <div>
-        { stores.length > 0 ? 
-            <StoreList onRegisterNewStore={handleRegisterStore} stores={stores}/>:
-            <EmptyStore onRegisterStore={handleRegisterStore}/>
+        { services.length > 0 ? 
+            <ServiceList onCreateService={handleRegisterService} services={services}/>:
+            <EmptyServices onRegisterService={handleRegisterService}/>
         }
+        <Modal title="Basic Modal" open={isModalOpen} footer={null} onCancel={()=>setIsModalOpen(false)}>
+            <ServiceForm onCreateService={handleCreateService} onCancelFormCreation={cancelServiceCreation}/>
+        </Modal>
+
         </div>
     )
 }
@@ -58,13 +66,13 @@ export default function UserStoreView({}:UserStoreViewProps){
 
 
 interface EmptyStoreProps{
-    onRegisterStore: ()=>void
+    onRegisterService: ()=>void
 }
-const EmptyStore = ({onRegisterStore}:EmptyStoreProps)=>{
+const EmptyServices = ({onRegisterService}:EmptyStoreProps)=>{
     return(
         <Card className='flex-col flex justify-center items-center'>
             <Text type='secondary'>No services in your store yet</Text>
-            <Button onClick={onRegisterStore} href='#launchNewStore'>Create new service</Button>
+            <Button onClick={onRegisterService} href='#launchNewStore'>Create new service</Button>
         </Card>
     )
 }

@@ -5,17 +5,30 @@ import {
     UserOutlined,
     VideoCameraOutlined,
   } from '@ant-design/icons';
-  import { Layout, Menu } from 'antd';
+  import { Layout, Menu, Typography ,Button} from 'antd';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
+import StaffView from '../../components/DashboardPage/StaffView/StaffView';
 import StoreForm from '../../components/DashboardPage/StoreForm/StoreForm';
-  import StoreView from '../../components/DashboardPage/StoreView/StoreView'
-  
-  const { Header, Sider, Content } = Layout;
+import StoreView from '../../components/DashboardPage/StoreView/StoreView'
+
+const {Text} = Typography;
+const { Header, Sider, Content } = Layout;
   
   const Dashboard: React.FC = () => {
     
     const [collapsed, setCollapsed] = useState(false); 
+    const [path, setPath] = useState('store')
+
+    const router = useRouter()
+    const currentPath = router.asPath.split("/")
+    console.log(currentPath)
+
+    let contentRender = <StoreView/>
+    if(path === 'staff'){
+      contentRender = <StaffView/>
+    }
+    
   
     return (
       <Layout style={{minHeight:'100vh'}} className=' h-full'>
@@ -29,17 +42,17 @@ import StoreForm from '../../components/DashboardPage/StoreForm/StoreForm';
               {
                 key: 'store',
                 icon: <UserOutlined />,
-                label: 'Store',
+                label: <Button type='link' onClick={()=>setPath('store')} href='#store'>Store</Button> ,
               },
               {
                 key: 'staff',
                 icon: <VideoCameraOutlined />,
-                label: 'Organisation staff',
+                label: <Button type='link' onClick={()=>setPath('staff')} href='#staff'>Staff</Button>,
               },
               {
                 key: 'profile',
                 icon: <UploadOutlined />,
-                label: 'Profile',
+                label: <Button type='link' href='#profile'>Profile</Button>,
               },
             ]}
           />
@@ -56,7 +69,7 @@ import StoreForm from '../../components/DashboardPage/StoreForm/StoreForm';
             }}
           >
             
-            <StoreView/>
+            {contentRender}
           </Content>
         </Layout>
       </Layout>
