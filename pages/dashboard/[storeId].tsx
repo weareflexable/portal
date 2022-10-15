@@ -1,6 +1,5 @@
 import {
     MenuFoldOutlined,
-    MenuUnfoldOutlined,
     UploadOutlined,
     UserOutlined,
     VideoCameraOutlined,
@@ -8,19 +7,13 @@ import {
   import { Layout, Menu } from 'antd';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
-import StoreForm from '../components/DashboardPage/StoreForm/StoreForm';
-  import StoreView from '../components/DashboardPage/StoreView/StoreView'
+import UserStoreView from '../../components/DashboardPage/UserStoreView/UserStoreView';
   
   const { Header, Sider, Content } = Layout;
   
-  const Dashboard: React.FC = () => {
-
+  const UserStore: React.FC = () => {
     
-    
-    const [collapsed, setCollapsed] = useState(false);
-  
-
-   
+    const [collapsed, setCollapsed] = useState(false); 
   
     return (
       <Layout style={{minHeight:'100vh'}} className=' h-full'>
@@ -61,11 +54,11 @@ import StoreForm from '../components/DashboardPage/StoreForm/StoreForm';
             }}
           >
             
-            <StoreView/>
+            <UserStoreView/>
           </Content>
         </Layout>
       </Layout>
     );
   };
 
-export default Dashboard
+export default UserStore

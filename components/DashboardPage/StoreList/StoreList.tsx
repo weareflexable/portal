@@ -1,13 +1,16 @@
 import React from 'react'
-import {Card,List,Typography,Button} from 'antd'
-const {Title} = Typography
+import {Card,List,Typography,Button,Avatar} from 'antd'
+import { useRouter } from 'next/router'
+
+const {Title,Text} = Typography
 
 interface StoreListProps{
     stores: Array<any>,
     onRegisterNewStore: ()=>void
 }
 export default function StoreList({stores, onRegisterNewStore}:StoreListProps){
-    console.log(stores)
+
+    const router = useRouter()
 
     const titleNode = (
         <div style={{display:'flex',justifyContent:'space-between'}} >
@@ -16,16 +19,20 @@ export default function StoreList({stores, onRegisterNewStore}:StoreListProps){
         </div>
     )
 
+    const navigateToStorePage = (index:string)=>{
+        router.push(`/dashboard/${index}`)
+    }
+
     return(
         <Card title={titleNode}>
             <List
             itemLayout="horizontal"
             dataSource={stores}
-            renderItem={item => (
+            renderItem={(item, index) => (
             <List.Item>
                 <List.Item.Meta
-                // avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
-                title={<a href="https://ant.design">{item.storeName}</a>}
+                // avatar={<Avatar src={window.URL.createObjectURL(item.storeLogo[0])} />}
+                title={<Text onClick={()=>navigateToStorePage(String(index))} >{item.storeName}</Text>}
                 description={item.description}
                 />
             </List.Item>

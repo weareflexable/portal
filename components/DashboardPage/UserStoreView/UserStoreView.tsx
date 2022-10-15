@@ -1,16 +1,16 @@
 import React,{useState} from 'react'
 import {Card,Button,Typography,Alert,Space} from 'antd'
 import router, { useRouter } from 'next/router';
-import StoreForm from '../StoreForm/StoreForm';
+import ServiceForm from './ServiceForm/ServiceForm';
 
 import StoreList from '../StoreList/StoreList';
 const {Text} = Typography;
 
 
-interface StoreViewProps{
+interface UserStoreViewProps{
 
 }
-export default function StoreView({}:StoreViewProps){
+export default function UserStoreView({}:UserStoreViewProps){
 
     const {asPath, push} = useRouter()
     const currentPath = asPath.split('#')
@@ -38,7 +38,7 @@ export default function StoreView({}:StoreViewProps){
     
 
     if (storePath === 'launchNewStore'){ 
-        return <StoreForm onCancelFormCreation={cancelFormCreation} onLaunchStore={handleLaunchStore}/>
+        return <ServiceForm onCancelFormCreation={cancelFormCreation} onLaunchStore={handleLaunchStore}/>
     }
 
     return(
@@ -63,8 +63,8 @@ interface EmptyStoreProps{
 const EmptyStore = ({onRegisterStore}:EmptyStoreProps)=>{
     return(
         <Card className='flex-col flex justify-center items-center'>
-            <Text type='secondary'>No stores have been detected yet</Text>
-            <Button onClick={onRegisterStore} href='#launchNewStore'>Create new store</Button>
+            <Text type='secondary'>No services in your store yet</Text>
+            <Button onClick={onRegisterStore} href='#launchNewStore'>Create new service</Button>
         </Card>
     )
 }
