@@ -6,34 +6,43 @@ import {
     VideoCameraOutlined,
   } from '@ant-design/icons';
   import { Layout, Menu } from 'antd';
-  import React, { useState } from 'react';
+import { useRouter } from 'next/router';
+import React, { useState } from 'react';
+import StoreForm from '../components/DashboardPage/StoreForm/StoreForm';
+  import StoreView from '../components/DashboardPage/StoreView/StoreView'
   
   const { Header, Sider, Content } = Layout;
   
   const Dashboard: React.FC = () => {
+
+    
+    
     const [collapsed, setCollapsed] = useState(false);
   
+
+   
+  
     return (
-      <Layout className='h-screen'>
+      <Layout style={{minHeight:'100vh'}} className=' h-full'>
         <Sider collapsible collapsed={collapsed}>
-          <div className="logo" />
+          <div className="h-6 m-5" />
           <Menu
             theme="dark"
             mode="inline"
-            defaultSelectedKeys={['1']}
+            defaultSelectedKeys={['store']}
             items={[
               {
-                key: '1',
+                key: 'store',
                 icon: <UserOutlined />,
                 label: 'Store',
               },
               {
-                key: '2',
+                key: 'staff',
                 icon: <VideoCameraOutlined />,
                 label: 'Organisation staff',
               },
               {
-                key: '3',
+                key: 'profile',
                 icon: <UploadOutlined />,
                 label: 'Profile',
               },
@@ -41,19 +50,18 @@ import {
           />
         </Sider>
         <Layout className="site-layout">
-          <Header className="bg-white" style={{ padding: 0 }}>
-            {React.createElement(collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
-              className: 'trigger',
-              onClick: () => setCollapsed(!collapsed),
-            })}
+          <Header style={{background:'white'}}>
+            <MenuFoldOutlined className='lg:text-2xl' onClick={() => setCollapsed(!collapsed)}/>
           </Header>
           <Content
-            className="bg-white p-6 my-7"
+            className="bg-white p-6 my-7 mx-7 "
             style={{
               minHeight: 280,
+              width: 800 
             }}
           >
-            Content
+            
+            <StoreView/>
           </Content>
         </Layout>
       </Layout>
