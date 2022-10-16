@@ -56,7 +56,10 @@ export default function StoreList({stores=data, onRegisterNewStore}:StoreListPro
     }
 
     return(
+      <div>
+        <Button onClick={onRegisterNewStore}>Create new store</Button>
         <Table columns={columns} dataSource={stores} />
+      </div>
     )
 }
 

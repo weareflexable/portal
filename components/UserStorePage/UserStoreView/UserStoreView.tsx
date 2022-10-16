@@ -3,7 +3,7 @@ import {Card,Button,Typography,Alert,Space,Modal, PageHeader} from 'antd'
 import router, { useRouter } from 'next/router';
 import ServiceForm from '../ServiceForm/ServiceForm';
 
-import StoreList from '../../StoresPage/StoreList/StoreList';
+import StoreList from '../../StoresPage/StoreList/StoreTable';
 import ServiceList from '../ServiceList/ServiceList';
 import EditForm from '../EditForm/EditForm';
 const {Text} = Typography;
@@ -42,20 +42,21 @@ export default function UserStoreView({}:UserStoreViewProps){
     }
 
     const handleEditService = (updatedService: Service)=>{
-        console.log(updatedService)
+
+        // copy state to avoid mutation
         const clonedServices = services.slice()
+        // find index of updated service in old services
         const serviceIndex = clonedServices.findIndex(service=>service.key === updatedService.key)
-        console.log(serviceIndex)
-        clonedServices[serviceIndex]= updatedService
+        // update edited service
+        clonedServices[serviceIndex]= updatedService;
+        // update service in state
         setServices(clonedServices)
         setIsEditModalOpen(false)
     }
 
-    const cancelServiceCreation = ()=>{
-        setIsModalOpen(false)
-    }
 
     const selectServiceForEdit = (service:Service)=>{
+        console.log('selectedService', service)
         setIsEditModalOpen(true)
         setServiceToEdit(service)
     }
@@ -75,20 +76,21 @@ export default function UserStoreView({}:UserStoreViewProps){
             subTitle="Illinois, United states"
             />
             { services.length > 0 ? 
-                <ServiceList onDeleteService = {deleteService} onSelectService={selectServiceForEdit} onCreateService={handleRegisterService} services={services}/>:
-                <EmptyServices onRegisterService={handleRegisterService}/>
+                <ServiceList onDeleteService = {deleteService} onSelectService={selectServiceForEdit} onCreateService={()=>setIsModalOpen(true)} services={services}/>:
+                <EmptyServices onRegisterService={()=>setIsModalOpen(true)}/>
             }
+
             <Modal title={serviceToEdit?'Edit Service': 'Create service'} open={isModalOpen} footer={null} onCancel={()=>setIsModalOpen(false)}>
                 <ServiceForm 
                 onTriggerFormAction={handleCreateService} 
-                onCancelFormCreation={cancelServiceCreation}/>
+                onCancelFormCreation={()=>setIsModalOpen(false)}/>
             </Modal>
 
-            <Modal title={serviceToEdit?'Edit Service': 'Create service'} open={isEditModalOpen} footer={null} onCancel={()=>setIsModalOpen(false)}>
+            <Modal title={'Edit Service'} open={isEditModalOpen} footer={null} onCancel={()=>setIsEditModalOpen(false)}>
                 <EditForm 
                 initValues={serviceToEdit} 
                 onTriggerFormAction={handleEditService} 
-                onCancelFormCreation={cancelServiceCreation}/>
+                onCancelFormCreation={()=>setIsEditModalOpen(false)}/>
             </Modal>
 
         </div>

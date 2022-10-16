@@ -3,7 +3,7 @@ import {Card,Button,Typography,Alert,Space,Modal} from 'antd'
 import router, { useRouter } from 'next/router';
 import StoreForm from '../StoreForm/StoreForm';
 
-import StoreList from '../StoreList/StoreList';
+import StoreList from '../StoreList/StoreTable';
 const {Text} = Typography;
 
 

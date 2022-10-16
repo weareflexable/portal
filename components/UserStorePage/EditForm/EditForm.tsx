@@ -22,25 +22,31 @@ export default function EditForm({initValues, onTriggerFormAction, onCancelFormC
     const router = useRouter()
     const [form] = Form.useForm()
 
+    const prevValues = initValues
+
     const onFinish = (formData:Service)=>{
+        console.log('prevValues',prevValues)
 
-        onTriggerFormAction(formData)
+        const formObject = {
+            ...prevValues,
+            ...formData
+        }
+        onTriggerFormAction(formObject)
         showStoreCreationNotification()
-
     }
 
-    if(initValues){
-        form.setFieldsValue({
-            name: initValues.name,
-            description: initValues.description,
-            price: initValues.price,
-            serviceDuration: initValues.serviceDuration
-        })
-    }
+    // if(initValues){
+    //     form.setFieldsValue({
+    //         name: initValues.name,
+    //         description: initValues.description,
+    //         price: initValues.price,
+    //         serviceDuration: initValues.serviceDuration
+    //     })
+    // }
 
     const showStoreCreationNotification = () => {
         notification['success']({
-          message: 'Service created succesfully',
+          message: 'Service updated succesfully',
         });
       };
       

@@ -58,7 +58,7 @@ const { Header, Sider, Content } = Layout;
           </Header> 
           <Breadcrumb style={{ margin: '16px 2em' }}>
             <Breadcrumb.Item>Stores</Breadcrumb.Item>
-            <Breadcrumb.Item>Bills restaurant</Breadcrumb.Item>
+            {/* <Breadcrumb.Item>Bills restaurant</Breadcrumb.Item> */}
           </Breadcrumb>
 
           <Content
