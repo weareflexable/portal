@@ -1,28 +1,33 @@
 import React,{useState} from 'react';
 import {Form, Input,Radio,Button,notification, Space, Typography} from 'antd';
-
+import {Staff} from '../StaffView/StaffView'
 
 import { useRouter } from 'next/router';
 
 
-interface StoreFormProps{
-    onCreateStaff: (formData:any)=>void
+interface StaffEditFormProps{
+    initValues: Staff | undefined
+    onChangeStaffRole: (staff:Staff)=>void
     onCancelFormCreation: ()=>void
 }
-export default function StaffForm({onCreateStaff, onCancelFormCreation}:StoreFormProps){
+export default function StaffEditForm({initValues, onChangeStaffRole, onCancelFormCreation}:StaffEditFormProps){
 
 
+    const prevValues = initValues;
 
-    const onFinish = (formData:FormData)=>{
+    const onFinish = (formData:Staff)=>{
         // call function to create store
-        console.log(formData)
-        onCreateStaff(formData)
+        const formObject = {
+            ...prevValues,
+            ...formData
+        }
+        onChangeStaffRole(formObject)
         showStoreCreationNotification()
     }
 
     const showStoreCreationNotification = () => {
         notification['success']({
-          message: 'Staff created succesfully',
+          message: 'Role updated succesfully',
         });
       };
       
@@ -30,7 +35,7 @@ export default function StaffForm({onCreateStaff, onCancelFormCreation}:StoreFor
     return (
             <Form
             name="staffForm"
-            initialValues={{ remember: true }}
+            initialValues={initValues}
             layout='vertical'
             onFinish={onFinish}
             >
@@ -39,7 +44,7 @@ export default function StaffForm({onCreateStaff, onCancelFormCreation}:StoreFor
                 label="Email"
                 rules={[{ required: true, message: 'Please input a valid email' }]}
              >
-                <Input placeholder="eg. billcage@yahoo.com" />
+                <Input disabled placeholder="eg. billcage@yahoo.com" />
             </Form.Item>
 
             <Form.Item
