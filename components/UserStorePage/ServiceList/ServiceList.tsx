@@ -4,11 +4,22 @@ import { useRouter } from 'next/router'
 
 const {Title,Text} = Typography
 
+type Service = {
+    key:string,
+    name: string,
+    price: number,
+    description: string,
+    serviceDuration: string
+}
+
 interface ServiceListProps{
     services: Array<any>,
-    onCreateService: ()=>void
+    onCreateService: ()=>void,
+    onSelectService: (service:Service)=>void,
+    onDeleteService: (itemKey: string)=>void
 }
-export default function ServiceListProps({services, onCreateService}:ServiceListProps){
+
+export default function ServiceListProps({onDeleteService, onSelectService, services, onCreateService}:ServiceListProps){
 
     const router = useRouter()
 
@@ -19,21 +30,20 @@ export default function ServiceListProps({services, onCreateService}:ServiceList
         </div>
     )
 
-    
-
     return(
         <Card title={titleNode}>
             <List
             itemLayout="horizontal"
             dataSource={services}
             renderItem={(item, index) => (
-            <List.Item>
+            <List.Item
+                actions={[<Button onClick={()=>onSelectService(item)} key={index}>Edit</Button>, <Button onClick={()=>onDeleteService(item.key)} key={index}>Delete</Button>    ]}
+            >
                 <List.Item.Meta
                 key={index}
-                // avatar={<Avatar src={window.URL.createObjectURL(item.storeLogo[0])} />}
-                title={<Text>{item.serviceName}</Text>}
-                description={item.description}
-                />
+                title={<> <Text>{item.name}</Text> <Text type='secondary'>— ${item.price}</Text></>}
+                description={ item.description }
+                />  
             </List.Item>
              )}
              />           

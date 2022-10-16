@@ -3,7 +3,7 @@ import {
     UserOutlined,
     VideoCameraOutlined,
   } from '@ant-design/icons';
-  import {  Menu, Typography ,Button, Layout} from 'antd';
+  import {  Menu, Breadcrumb, Typography ,Button, Layout} from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { ReactNode, useState } from 'react';
@@ -56,6 +56,11 @@ const { Header, Sider, Content } = Layout;
               <CurrentUser user={{email:'mbappai@yahoo.com',role:'admin'}}/>
             {/* </div> */}
           </Header> 
+          <Breadcrumb style={{ margin: '16px 2em' }}>
+            <Breadcrumb.Item>Stores</Breadcrumb.Item>
+            <Breadcrumb.Item>Bills restaurant</Breadcrumb.Item>
+          </Breadcrumb>
+
           <Content
             className="bg-white p-6 my-7 mx-7 "
             style={{

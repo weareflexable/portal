@@ -4,6 +4,8 @@ const { TextArea } = Input;
 const {Text} = Typography;
 import {UploadOutlined} from '@ant-design/icons'
 
+import {v4 as uuidv4} from 'uuid'
+
 import { useRouter } from 'next/router';
 
 
@@ -19,7 +21,11 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
 
     const onFinish = (formData:FormData)=>{
         // call function to create store
-        onLaunchStore(formData)
+        const formObject = {
+            ...formData,
+            key:uuidv4()
+        }
+        onLaunchStore(formObject)
         showStoreCreationNotification()
     }
 
@@ -48,7 +54,7 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
             onFinish={onFinish}
             >
             <Form.Item
-                name="storeName"
+                name="name"
                 label="Store name"
                 rules={[{ required: true, message: 'Please input a valid store name' }]}
              >
@@ -56,11 +62,19 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
             </Form.Item>
 
             <Form.Item
-                name="location"
-                label='Location'
+                name="address"
+                label='Address'
                 rules={[{ required: true, message: 'Please input a valid address!' }]}
             >
                 <Input placeholder="Wiscontin, United states" />
+            </Form.Item>
+
+            <Form.Item
+                name="type"
+                label='Business type'
+                rules={[{ required: true, message: 'Please input a valid address!' }]}
+            >
+                <Input placeholder="eg Gym, Bar, Restaurant" />
             </Form.Item>
 
 

@@ -10,10 +10,11 @@ import { useRouter } from 'next/router';
 import {Service} from '../UserStoreView/UserStoreView'
 
 interface ServiceFormProps{
-    onTriggerFormAction: (formData:any)=>void
+    initValues: Service | undefined
+    onTriggerFormAction: (formData:Service)=>void
     onCancelFormCreation: ()=>void
 }
-export default function ServiceForm({ onTriggerFormAction, onCancelFormCreation}:ServiceFormProps){
+export default function EditForm({initValues, onTriggerFormAction, onCancelFormCreation}:ServiceFormProps){
 
 
     // TODO: set field for editing
@@ -21,18 +22,21 @@ export default function ServiceForm({ onTriggerFormAction, onCancelFormCreation}
     const router = useRouter()
     const [form] = Form.useForm()
 
-    const onFinish = (formData:FormData)=>{
-        // call function to create stor
-        // only generate key if it's a new service
-            const formObject= {
-                ...formData,
-                key: uuidv4()
-            }
-            onTriggerFormAction(formObject)
+    const onFinish = (formData:Service)=>{
+
+        onTriggerFormAction(formData)
         showStoreCreationNotification()
 
     }
 
+    if(initValues){
+        form.setFieldsValue({
+            name: initValues.name,
+            description: initValues.description,
+            price: initValues.price,
+            serviceDuration: initValues.serviceDuration
+        })
+    }
 
     const showStoreCreationNotification = () => {
         notification['success']({
@@ -46,7 +50,7 @@ export default function ServiceForm({ onTriggerFormAction, onCancelFormCreation}
         <Card title='Add new service'>
             <Form
             name="serviceForm"
-            initialValues={{ remember: false }}
+            initialValues={initValues}
             layout='vertical'
             form={form}
             onFinish={onFinish}
@@ -84,7 +88,7 @@ export default function ServiceForm({ onTriggerFormAction, onCancelFormCreation}
                     </Button>
 
                     <Button type="primary"  htmlType="submit" >
-                     Create service 
+                     Apply changes
                     </Button>
                 </Space>
                 
