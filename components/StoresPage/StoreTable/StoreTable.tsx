@@ -3,6 +3,7 @@ import {Card,List,Typography,Button,Avatar, Tag, Space} from 'antd'
 import { useRouter } from 'next/router'
 import Table, { ColumnsType } from 'antd/lib/table';
 import Link from 'next/link';
+import {Store} from '../StoreView/StoreView'
 
 const {Title,Text} = Typography
 
@@ -37,34 +38,17 @@ const data: DataType[] = [
 
 
 interface StoreListProps{
-    stores: Array<DataType>,
-    onRegisterNewStore: ()=>void
+    stores: Store[],
+    onRegisterNewStore: ()=>void,
+    onDeleteStore: (storeId:string)=>void,
+    onSelectStoreToEdit: (store: Store)=>void
 }
-export default function StoreList({stores=data, onRegisterNewStore}:StoreListProps){
+export default function StoreList({onSelectStoreToEdit, onDeleteStore, stores, onRegisterNewStore}:StoreListProps){
 
-    const router = useRouter()
-
-    const titleNode = (
-        <div style={{display:'flex',justifyContent:'space-between'}} >
-            <Title level={5}>Stores</Title>
-            <Button onClick={onRegisterNewStore}>Launch new store</Button>
-        </div>
-    )
-
-    const navigateToStorePage = (index:string)=>{
-        router.push(`/stores/${index}`)
-    }
-
-    return(
-      <div>
-        <Button onClick={onRegisterNewStore}>Create new store</Button>
-        <Table columns={columns} dataSource={stores} />
-      </div>
-    )
-}
+  const router = useRouter()
 
 
-const columns: ColumnsType<DataType> = [
+  const columns: ColumnsType<Store> = [
     {
       title: 'Name',
       dataIndex: 'name',
@@ -91,9 +75,20 @@ const columns: ColumnsType<DataType> = [
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <a>Edit</a>
-          <a>Delete</a>
+          <Button type='link' onClick={()=>onSelectStoreToEdit(record)}>Edit</Button>
+          <Button onClick={()=>onDeleteStore(record.key)}>Delete</Button>
         </Space>
       ),
     },
   ];
+
+
+    return(
+      <div>
+        <Button style={{marginBottom:'1em'}} onClick={onRegisterNewStore}>Create new store</Button>
+        <Table columns={columns} dataSource={stores} />
+      </div>
+    )
+}
+
+
