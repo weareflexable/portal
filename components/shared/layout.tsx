@@ -20,7 +20,10 @@ const { Header, Sider, Content } = Layout;
     
     const [collapsed, setCollapsed] = useState(false); 
     const {asPath} = useRouter()  
-    const currentRouterString = asPath.split('/')[1]
+  
+    
+    const splittedRoutes = asPath.split('/')
+    console.log(splittedRoutes)
   
     return (
       <Layout style={{minHeight:'100vh'}} className=' h-full'>
@@ -29,7 +32,7 @@ const { Header, Sider, Content } = Layout;
           <Menu
             theme="dark"
             mode="inline"
-            defaultSelectedKeys={[currentRouterString]}
+            defaultSelectedKeys={[splittedRoutes[1]]}
             items={[
               {
                 key: 'dashboard',
@@ -45,6 +48,11 @@ const { Header, Sider, Content } = Layout;
                 key: 'staffs',
                 icon: <VideoCameraOutlined />,
                 label: <Link type='link' href='/staffs'>Staffs</Link> ,
+              },
+              {
+                key: 'organisation',
+                icon: <VideoCameraOutlined />,
+                label: <Link type='link' href='/organisation'>Organisation</Link> ,
               }
             ]}
           />
