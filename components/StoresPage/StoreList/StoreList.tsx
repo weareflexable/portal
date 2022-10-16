@@ -20,7 +20,7 @@ export default function StoreList({stores, onRegisterNewStore}:StoreListProps){
     )
 
     const navigateToStorePage = (index:string)=>{
-        router.push(`/dashboard/${index}`)
+        router.push(`/stores/${index}`)
     }
 
     return(
@@ -32,8 +32,8 @@ export default function StoreList({stores, onRegisterNewStore}:StoreListProps){
             <List.Item>
                 <List.Item.Meta
                 // avatar={<Avatar src={window.URL.createObjectURL(item.storeLogo[0])} />}
-                title={<Text onClick={()=>navigateToStorePage(String(index))} >{item.storeName}</Text>}
-                description={item.description}
+                title={<Text style={{cursor:'pointer'}} onClick={()=>navigateToStorePage(String(index))} >{item.storeName}</Text>}
+                description={item.location}
                 />
             </List.Item>
              )}

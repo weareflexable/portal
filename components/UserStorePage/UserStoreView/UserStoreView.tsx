@@ -1,10 +1,10 @@
 import React,{useState} from 'react'
 import {Card,Button,Typography,Alert,Space,Modal} from 'antd'
 import router, { useRouter } from 'next/router';
-import ServiceForm from './ServiceForm/ServiceForm';
+import ServiceForm from '../ServiceForm/ServiceForm';
 
-import StoreList from '../StoreList/StoreList';
-import ServiceList from './ServiceList/ServiceList';
+import StoreList from '../../StoresPage/StoreList/StoreList';
+import ServiceList from '../ServiceList/ServiceList';
 const {Text} = Typography;
 
 

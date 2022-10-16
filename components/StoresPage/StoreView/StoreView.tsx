@@ -12,37 +12,27 @@ interface StoreViewProps{
 }
 export default function StoreView({}:StoreViewProps){
 
-    const {asPath, push} = useRouter()
-    const currentPath = asPath.split('#')
 
     // TODO: fetch all stores from db
     const [stores, setStores] = useState<Array<FormData>>([]);
-    const [storePath, setStorePath] = useState(currentPath[1])
     const [isModalOpen, setIsModalOpen] = useState(false)
 
     const handleRegisterStore = ()=>{
         setIsModalOpen(true)
-        setStorePath('launchNewStore')
     }
     const handleLaunchStore = (storeData:FormData)=>{
         console.log(storeData)
         const clonedStore =  stores.slice()
         clonedStore.push(storeData)
         setStores(clonedStore);
-        setStorePath('store')
         setIsModalOpen(false);
     }
 
     const cancelFormCreation = ()=>{
-        setStorePath('store')
-        push('/dashboard#store')
+        setIsModalOpen(false)
     }
 
     
-
-    // if (storePath === 'launchNewStore'){ 
-    //     return <StoreForm onCancelFormCreation={cancelFormCreation} onLaunchStore={handleLaunchStore}/>
-    // }
 
     return(
         <div>
@@ -70,7 +60,7 @@ const EmptyStore = ({onRegisterStore}:EmptyStoreProps)=>{
     return(
         <Card className='flex-col flex justify-center items-center'>
             <Text type='secondary'>No stores have been detected yet</Text>
-            <Button onClick={onRegisterStore} href='#launchNewStore'>Create new store</Button>
+            <Button onClick={onRegisterStore}>Create new store</Button>
         </Card>
     )
 }

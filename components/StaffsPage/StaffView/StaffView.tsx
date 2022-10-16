@@ -1,10 +1,10 @@
 import React,{useState} from 'react'
 import {Card,Button,Typography,Alert,Space,Modal} from 'antd'
 import router, { useRouter } from 'next/router';
-import StaffForm from './StaffForm/StaffForm';
+import StaffForm from '../StaffForm/StaffForm';
 import { v4 as uuidv4 } from 'uuid';
 
-import StaffList from './StaffList/StaffList';
+import StaffList from '../StaffList/StaffList';
 const {Text} = Typography;
 
 

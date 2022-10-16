@@ -16,14 +16,11 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
 
     const router = useRouter()
 
-    const [submitted,setSubmitted] = useState(false)
 
     const onFinish = (formData:FormData)=>{
         // call function to create store
         onLaunchStore(formData)
         showStoreCreationNotification()
-        router.push('/dashboard#store')
-        // router.push('/')
     }
 
     const normFile = (e: any) => {
