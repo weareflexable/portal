@@ -9,6 +9,10 @@ import {v4 as uuidv4} from 'uuid'
 import { useRouter } from 'next/router';
 import {Service} from '../UserStoreView/UserStoreView'
 
+
+
+
+
 interface ServiceFormProps{
     onTriggerFormAction: (formData:any)=>void
     onCancelFormCreation: ()=>void
@@ -29,7 +33,7 @@ export default function ServiceForm({ onTriggerFormAction, onCancelFormCreation}
                 key: uuidv4()
             }
             onTriggerFormAction(formObject)
-        showStoreCreationNotification()
+            showStoreCreationNotification()
 
     }
 
@@ -66,7 +70,6 @@ export default function ServiceForm({ onTriggerFormAction, onCancelFormCreation}
             >
                 <InputNumber width={'30%'} prefix="$"  placeholder="0.00" />
             </Form.Item>
-
 
             <Form.Item name='description'  label="Service description">
                 <TextArea maxLength={150} showCount  placeholder='Best coffee shop in the entire world with the most beautiful scenary' rows={3} />

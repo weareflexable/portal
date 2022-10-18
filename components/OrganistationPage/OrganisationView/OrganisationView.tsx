@@ -29,7 +29,7 @@ export default function OrganisationView({}:OrganisationViewProps){
             >
             <Form.Item
                 name="name"
-                label="Name"
+                label="Organisation name"
                 rules={[{ required: true, message: 'Please enter a valid organisation name' }]}
              >
                 <Input placeholder="eg. Avery labs" />
@@ -44,8 +44,16 @@ export default function OrganisationView({}:OrganisationViewProps){
             </Form.Item>
 
             <Form.Item
+                name="email"
+                label='Organisation email'
+                rules={[{ required: true, message: 'Please input a valid email!' }]}
+            >
+                <Input type='email' placeholder="billcage@yahoo.com" />
+            </Form.Item>
+
+            <Form.Item
                 name="phone"
-                label='Phone'
+                label='Organisation phone'
                 rules={[{ required: true, message: 'Please input a valid phone!' }]}
             >
                 <Input placeholder="08023234763" />
@@ -53,33 +61,9 @@ export default function OrganisationView({}:OrganisationViewProps){
 
             <Divider orientation="left"></Divider>
 
-            <Form.Item
-                name="managerName"
-                label='Manager name'
-                rules={[{ required: true, message: 'Please input a valid name!' }]}
-            >
-                <Input placeholder="Bill Cage" />
-            </Form.Item>
-
-            <Form.Item
-                name="managerEmail"
-                label='Manager email'
-                rules={[{ required: true, message: 'Please input a valid email!' }]}
-            >
-                <Input type='email' placeholder="billcage@yahoo.com" />
-            </Form.Item>
-
-            <Form.Item
-                name="managerPhone"
-                label='Manager phone'
-                rules={[{ required: true, message: 'Please input a valid number!' }]}
-            >
-                <Input placeholder="080235435432" />
-            </Form.Item>
-
             <Form.Item>
                 <Button type="primary" htmlType="submit" >
-                Register organisation
+                Request for organisation account
                 </Button>
             </Form.Item>
 

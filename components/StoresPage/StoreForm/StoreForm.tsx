@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React, { createRef, FC, RefObject, useRef, useState } from "react";
 import {Card,Form, Input,InputNumber,Upload,Button,notification, Space, Alert, Typography} from 'antd';
 const { TextArea } = Input;
 const {Text} = Typography;
@@ -7,7 +7,7 @@ import {UploadOutlined} from '@ant-design/icons'
 import {v4 as uuidv4} from 'uuid'
 
 import { useRouter } from 'next/router';
-
+import {usePlacesWidget} from 'react-google-autocomplete'
 
 interface StoreFormProps{
     onLaunchStore: (formData:any)=>void
@@ -15,8 +15,23 @@ interface StoreFormProps{
 }
 export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFormProps){
 
+    const [form]=Form.useForm()
 
     const router = useRouter()
+    const antInputRef = useRef();
+
+      const { ref: antRef } = usePlacesWidget({
+        apiKey: 'AIzaSyB7ZUkMcIXpOKYU4r4iBMM9BFjCL5OpeeE',
+        onPlaceSelected: (place) => {
+            // console.log(antInputRef.current.input) 
+            console.log(place)
+            //   antInputRef.current.setValue(place?.formatted_address);
+            //@ts-ignore
+        //   antInputRef.current.input.value = place?.formatted_address
+          form.setFieldValue('address',place?.formatted_address)
+        },
+      });
+    
 
 
     const onFinish = (formData:FormData)=>{
@@ -25,6 +40,7 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
             ...formData,
             key:uuidv4()
         }
+        console.log(formObject)
         onLaunchStore(formObject)
         showStoreCreationNotification()
     }
@@ -52,6 +68,7 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
             initialValues={{ remember: true }}
             layout='vertical'
             onFinish={onFinish}
+            form={form}
             >
             <Form.Item
                 name="name"
@@ -62,12 +79,19 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
             </Form.Item>
 
             <Form.Item
+                
                 name="address"
                 label='Address'
                 rules={[{ required: true, message: 'Please input a valid address!' }]}
             >
-                <Input placeholder="Wiscontin, United states" />
+                <Input ref={(c) => {
+                    antInputRef.current = c;
+                    if (c) antRef.current = c.input;
+                    }} 
+                    placeholder="Wiscontin, United states" 
+                    />
             </Form.Item>
+
 
             <Form.Item
                 name="type"
@@ -76,6 +100,7 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
             >
                 <Input placeholder="eg Gym, Bar, Restaurant" />
             </Form.Item>
+
 
 
             <Form.Item
