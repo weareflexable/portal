@@ -24,11 +24,12 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
         apiKey: 'AIzaSyB7ZUkMcIXpOKYU4r4iBMM9BFjCL5OpeeE',
         onPlaceSelected: (place) => {
             // console.log(antInputRef.current.input) 
-            console.log(place)
+            console.log(place.geometry.location.lat())
             //   antInputRef.current.setValue(place?.formatted_address);
             //@ts-ignore
         //   antInputRef.current.input.value = place?.formatted_address
           form.setFieldValue('address',place?.formatted_address)
+          console.log(place)
         },
       });
     

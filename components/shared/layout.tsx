@@ -73,7 +73,10 @@ const { Header, Sider, Content } = Layout;
             className="bg-white p-6 my-7 mx-7 "
             style={{
               minHeight: 280,
-              width: 800 
+              width: 800,
+              margin: '0 1em 0',
+              height: '100%',
+              minHeight:'100vh'
             }}
           >
             {children}
