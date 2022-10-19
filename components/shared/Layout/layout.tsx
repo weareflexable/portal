@@ -55,6 +55,11 @@ const { Header, Sider, Content } = Layout;
                 key: 'organisation',
                 icon: <VideoCameraOutlined />,
                 label: <Link type='link' href='/organisation'>Organisation</Link> ,
+              },
+              {
+                key: 'billing',
+                icon: <VideoCameraOutlined />,
+                label: <Link type='link' href='/billings'>Billings</Link> ,
               }
             ]}
           />
@@ -65,7 +70,7 @@ const { Header, Sider, Content } = Layout;
               !isAuthenticated ? <Button onClick={()=>setIsAuthenticated(true)}>Login</Button>
               :(
                 <>
-                  <OrgSwitcher org='Avery Juice Bar'/>
+                  <OrgSwitcher orgId='#645372ab3' org='Avery Juice Bar'/>
                   <CurrentUser user={{email:'mbappai@yahoo.com',role:'admin'}}/>
                 </>
                 )
@@ -80,8 +85,10 @@ const { Header, Sider, Content } = Layout;
           <Content
             className="bg-white p-6 my-7 mx-7 "
             style={{
+              padding: '1em',
+              margin:'1em',
+              background:'white' ,
               width: 800,
-              margin: '0 1em 0',
               height: '100%',
               minHeight:'100vh'
             }}
