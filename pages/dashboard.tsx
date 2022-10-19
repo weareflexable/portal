@@ -1,14 +1,14 @@
 import React from 'react'
-import StaffView from '../components/StaffsPage/StaffView/StaffView'
 import AppLayout from '../components/shared/layout'
+import { useAuthContext } from '../context/AuthContext'
 
 export default function Dashboard(){
+
+    const {isAuthenticated} = useAuthContext() 
+
     return(
         <AppLayout>
-            {/* <Dashboard/> */}
-            <div>
-                Dasboard will soon be here
-            </div>
+            {isAuthenticated? <div>Dashboard will be here</div>: <div>You gotta authenticate bro</div>  }
         </AppLayout>
     )
 }

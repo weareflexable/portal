@@ -50,7 +50,7 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
         console.log('Upload event:', e);
         if (Array.isArray(e)) {
           return e;
-        }
+        } 
         return e?.fileList;
       };
 

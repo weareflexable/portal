@@ -7,8 +7,10 @@ import {
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { ReactNode, useState } from 'react';
+import { useAuthContext } from '../../context/AuthContext';
 import CurrentUser from '../Header/CurrentUser/CurrentUser';
 import OrgSwitcher from '../Header/OrgSwitcher/OrgSwitcher';
+import UnAuthenticatedView from './UnAuthenticated/UnAuthenticatedView';
 
 
 const { Header, Sider, Content } = Layout;
@@ -20,10 +22,10 @@ const { Header, Sider, Content } = Layout;
     
     const [collapsed, setCollapsed] = useState(false); 
     const {asPath} = useRouter()  
-  
+    const {isAuthenticated} = useAuthContext()
     
     const splittedRoutes = asPath.split('/')
-    console.log(splittedRoutes)
+
   
     return (
       <Layout style={{minHeight:'100vh'}} className=' h-full'>
@@ -72,14 +74,13 @@ const { Header, Sider, Content } = Layout;
           <Content
             className="bg-white p-6 my-7 mx-7 "
             style={{
-              minHeight: 280,
               width: 800,
               margin: '0 1em 0',
               height: '100%',
               minHeight:'100vh'
             }}
           >
-            {children}
+            {isAuthenticated? children : <UnAuthenticatedView/>}
           </Content>
         </Layout>
       </Layout>
