@@ -7,10 +7,10 @@ import {
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { ReactNode, useState } from 'react';
-import { useAuthContext } from '../../context/AuthContext';
-import CurrentUser from '../Header/CurrentUser/CurrentUser';
-import OrgSwitcher from '../Header/OrgSwitcher/OrgSwitcher';
-import UnAuthenticatedView from './UnAuthenticated/UnAuthenticatedView';
+import { useAuthContext } from '../../../context/AuthContext';
+import CurrentUser from '../../Header/CurrentUser/CurrentUser';
+import OrgSwitcher from '../../Header/OrgSwitcher/OrgSwitcher';
+import UnAuthenticatedView from '../UnAuthenticated/UnAuthenticatedView';
 
 
 const { Header, Sider, Content } = Layout;
@@ -22,7 +22,7 @@ const { Header, Sider, Content } = Layout;
     
     const [collapsed, setCollapsed] = useState(false); 
     const {asPath} = useRouter()  
-    const {isAuthenticated} = useAuthContext()
+    const {isAuthenticated,setIsAuthenticated} = useAuthContext()
     
     const splittedRoutes = asPath.split('/')
 
@@ -61,15 +61,21 @@ const { Header, Sider, Content } = Layout;
         </Sider>
         <Layout className="site-layout">
           <Header style={{lineHeight:'1.4',background:'white', width:'100%', display:'flex', justifyContent:'flex-end', alignItems:'center'}}>
-            {/* <div style={{ display:'flex', alignSelf:'flex-end'}}> */}
-              <OrgSwitcher org='Avery Juice Bar'/>
-              <CurrentUser user={{email:'mbappai@yahoo.com',role:'admin'}}/>
-            {/* </div> */}
+            {
+              !isAuthenticated ? <Button onClick={()=>setIsAuthenticated(true)}>Login</Button>
+              :(
+                <>
+                  <OrgSwitcher org='Avery Juice Bar'/>
+                  <CurrentUser user={{email:'mbappai@yahoo.com',role:'admin'}}/>
+                </>
+                )
+            }
+
           </Header> 
-          <Breadcrumb style={{ margin: '16px 2em' }}>
+
+          {/* <Breadcrumb style={{ margin: '16px 2em' }}>
             <Breadcrumb.Item>Stores</Breadcrumb.Item>
-            {/* <Breadcrumb.Item>Bills restaurant</Breadcrumb.Item> */}
-          </Breadcrumb>
+          </Breadcrumb> */}
 
           <Content
             className="bg-white p-6 my-7 mx-7 "

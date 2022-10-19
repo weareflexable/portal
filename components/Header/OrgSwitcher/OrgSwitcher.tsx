@@ -1,10 +1,12 @@
 import React,{useState} from 'react';
 import {Typography,Space,Dropdown, MenuProps,Menu} from 'antd'
-const {Text,Title} = Typography;
+import {DownOutlined} from '@ant-design/icons'
+const {Text,Title,Paragraph} = Typography;
 
 
 interface OrgSwitcherProps{
-    org: string
+    org: string,
+    orgId: string
 }
 
 const menuArray = [
@@ -18,9 +20,9 @@ const menuArray = [
     },
   ];
 
-export default function OrgSwitcher({org='Avery Juice'}:OrgSwitcherProps){
+export default function OrgSwitcher({org='Avery Juice',orgId='#3243257543'}:OrgSwitcherProps){
 
-    const [currentOrg,setCurrentOrg] = useState(org)
+    // const [currentOrg,setCurrentOrg] = useState(org)
 
     const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
 
@@ -41,10 +43,14 @@ const menu = (
 
     
     return (
-            <Dropdown.Button onClick={handleButtonClick} overlay={menu}>
-              <Space direction='vertical' className='flex-col'>
-                <Text>{currentOrg}</Text>
+            <Dropdown trigger={['click']} overlay={menu}>
+              <Space>
+                <div style={{display:'flex',flexDirection:'column'}}>
+                  <Text style={{marginBottom:0}}>{org}</Text>
+                  <Paragraph type='secondary'>{orgId}</Paragraph>
+                </div>
+                <DownOutlined/>
               </Space>
-            </Dropdown.Button>
+            </Dropdown>
           )
 }
