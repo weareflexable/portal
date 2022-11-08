@@ -6,6 +6,7 @@ import ServiceForm from '../ServiceForm/ServiceForm';
 import StoreList from '../../StoresPage/StoreTable/StoreTable';
 import ServiceList from '../ServiceList/ServiceList';
 import EditForm from '../EditForm/EditForm';
+import StoreBookings from '../StoreBookings/StoreBookings';
 const {Text} = Typography;
 
 
@@ -72,9 +73,10 @@ export default function UserStoreView({}:UserStoreViewProps){
         <div>
             <PageHeader
             onBack={() => router.push('/stores')}
-            title="Bill Cage Coffe shop"
+            title="Benjamins On Franklin"
             subTitle="Illinois, United states"
             />
+            <StoreBookings/>
             { services.length > 0 ? 
                 <ServiceList onDeleteService = {deleteService} onSelectService={selectServiceForEdit} onCreateService={()=>setIsModalOpen(true)} services={services}/>:
                 <EmptyServices onRegisterService={()=>setIsModalOpen(true)}/>

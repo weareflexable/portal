@@ -1,7 +1,7 @@
 import * as React from 'react';
-import {Card,Form,Input,Button,InputNumber,Divider} from 'antd';
+import {Card,Form,Input,Button,InputNumber,Divider, Upload} from 'antd';
 import { useRouter } from 'next/router';
-
+import {UploadOutlined} from '@ant-design/icons'
 
 interface OrganisationViewProps{
 }
@@ -10,10 +10,23 @@ export default function OrganisationView({}:OrganisationViewProps){
 
     const router = useRouter()
 
-    const onFinish= (formData:FormData)=>{
-        console.log(formData)
-        router.push('/dashboard')
+    const hashAsset = async()=>{
+        // hash image and sent back has to caller as promise
     }
+
+    const onFinish= (formData:FormData)=>{
+        // hash image before uploading
+        console.log(formData)
+        // router.push('/dashboard')
+    }
+
+    const normFile = (e: any) => {
+        console.log('Upload event:', e);
+        if (Array.isArray(e)) {
+          return e;
+        } 
+        return e?.fileList;
+      };
 
     const showRequestNotification = ()=>{
 
@@ -57,6 +70,18 @@ export default function OrganisationView({}:OrganisationViewProps){
                 rules={[{ required: true, message: 'Please input a valid phone!' }]}
             >
                 <Input placeholder="08023234763" />
+            </Form.Item>
+
+            <Form.Item
+                name="orgLogo"
+                label="Logo"
+                valuePropName="fileList"
+                getValueFromEvent={normFile}
+                extra="Upload file upto 2MB"
+            >
+                <Upload name="logo" action="" listType="picture">
+                <Button icon={<UploadOutlined />}>Click to upload</Button>
+                </Upload>
             </Form.Item>
 
             <Divider orientation="left"></Divider>

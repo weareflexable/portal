@@ -21,7 +21,7 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
     const antInputRef = useRef();
 
       const { ref: antRef } = usePlacesWidget({
-        apiKey: 'AIzaSyB7ZUkMcIXpOKYU4r4iBMM9BFjCL5OpeeE',
+        apiKey: 'AIzaSyB7ZUkMcIXpOKYU4r4iBMM9BFjCL5OpeeE', // move this key to env
         onPlaceSelected: (place) => {
             // console.log(antInputRef.current.input) 
             console.log(place.geometry.location.lat())
@@ -86,7 +86,9 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
                 rules={[{ required: true, message: 'Please input a valid address!' }]}
             >
                 <Input ref={(c) => {
+                    // @ts-ignore
                     antInputRef.current = c;
+                    // @ts-ignore
                     if (c) antRef.current = c.input;
                     }} 
                     placeholder="Wiscontin, United states" 
