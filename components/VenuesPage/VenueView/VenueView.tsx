@@ -1,10 +1,10 @@
 import React,{useState} from 'react'
 import {Card,Button,Typography,Alert,Space,Modal} from 'antd'
 import router, { useRouter } from 'next/router';
-import StoreForm from '../StoreForm/StoreForm';
-import StoreEditForm from '../StoreEditForm/StoreEditForm'
+import CreateVenueForm from '../CreateVenueForm/CreateVenueForm';
+import EditVenueForm from '../EditVenueForm/EditVenueForm'
+import VenueTable from '../VenueTable/VenueTable';
 
-import StoreTable from '../StoreTable/StoreTable';
 const {Text} = Typography;
 
 
@@ -73,7 +73,7 @@ export default function StoreView({}:StoreViewProps){
     return(
         <div>
         { stores.length > 0 ? 
-            <StoreTable
+            <VenueTable
              onRegisterNewStore={handleRegisterStore}
              stores={stores}
              onDeleteStore={deleteStore}
@@ -82,16 +82,18 @@ export default function StoreView({}:StoreViewProps){
             <EmptyStore onRegisterStore={()=>setIsModalOpen(true)}/>
         }
         <Modal title="Launch new store" open={isModalOpen} footer={null} onCancel={()=>setIsModalOpen(false)}>
-            <StoreForm 
-             onCancelFormCreation={cancelFormCreation} 
-             onLaunchStore={handleLaunchStore}/>
+            <CreateVenueForm 
+                onCancelFormCreation={cancelFormCreation} 
+                onLaunchStore={handleLaunchStore}
+             />
         </Modal>
 
         <Modal title="Edit store" open={isEditModalOpen} footer={null} onCancel={()=>setIsEditModalOpen(false)}>
-            <StoreEditForm 
-            initValues={storeToEdit} 
-            onCancelFormCreation={()=>setIsEditModalOpen(false)} 
-            onEditStore={editStore}/>
+            <EditVenueForm 
+                initValues={storeToEdit} 
+                onCancelFormCreation={()=>setIsEditModalOpen(false)} 
+                onEditStore={editStore}
+            />
         </Modal>
 
         </div>

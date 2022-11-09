@@ -7,7 +7,7 @@ import {UploadOutlined} from '@ant-design/icons'
 import {v4 as uuidv4} from 'uuid'
 
 import { useRouter } from 'next/router';
-import {Store} from '../StoreView/StoreView'
+import {Store} from '../VenueView/VenueView'
 
 interface StoreEditFormProps{
     initValues: Store | undefined
