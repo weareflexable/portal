@@ -21,11 +21,13 @@ const { Header, Sider, Content } = Layout;
   const AppLayout: React.FC<LayoutProps> = ({children}) => {
     
     const [collapsed, setCollapsed] = useState(false); 
-    const {asPath} = useRouter()  
+    const {asPath,basePath} = useRouter()  
     const {isAuthenticated,setIsAuthenticated} = useAuthContext()
     
+    console.log(asPath)
     const splittedRoutes = asPath.split('/')
-
+    const orgId = splittedRoutes[2]
+ 
   
     return (
       <Layout style={{minHeight:'100vh'}} className=' h-full'>
@@ -34,32 +36,32 @@ const { Header, Sider, Content } = Layout;
           <Menu
             theme="dark"
             mode="inline"
-            defaultSelectedKeys={[splittedRoutes[1]]}
+            defaultSelectedKeys={[splittedRoutes[3]]}
             items={[
               {
                 key: 'dashboard',
                 icon: <UserOutlined />,
-                label: <Link type='link' href='/dashboard'>Dashboard</Link> ,
+                label: <Link type='link' href={`/organisation/${orgId}/dashboard`}>Dashboard</Link> ,
               },
               {
-                key: 'stores',
+                key: 'venues',
                 icon: <UserOutlined />,
-                label: <Link type='link' href='/stores'>Stores</Link> ,
+                label: <Link type='link' href={`/organisation/${orgId}/venues`}>Venues</Link> ,
               },
               {
                 key: 'staffs',
                 icon: <VideoCameraOutlined />,
-                label: <Link type='link' href='/staffs'>Staffs</Link> ,
+                label: <Link type='link' href={`/organisation/${splittedRoutes[2]}/staffs`}>Staffs</Link> ,
               },
               {
                 key: 'organisation',
                 icon: <VideoCameraOutlined />,
-                label: <Link type='link' href='/organisation'>Organisation</Link> ,
+                label: <Link type='link' href={`/organisation/${orgId}/organisation`}>Organisation</Link> ,
               },
               {
                 key: 'billing',
                 icon: <VideoCameraOutlined />,
-                label: <Link type='link' href='/billings'>Billings</Link> ,
+                label: <Link type='link' href={`/organisation/${orgId}/billings`}>Billings</Link> ,
               }
             ]}
           />

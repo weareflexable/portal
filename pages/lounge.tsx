@@ -46,7 +46,7 @@ export default function Lounge(){
         setIsNavigatingToOrg(true)
         setTimeout(() => {
             setIsNavigatingToOrg(false)
-            router.push(`/organisation/${orgId}`)
+            router.push(`/organisation/${orgId}/dashboard`)
         }, 3000);
     }
 
