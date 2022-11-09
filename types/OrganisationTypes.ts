@@ -13,3 +13,9 @@ export type orgFormData = {
     phoneNumber: string,
     imageFile: Array<any>
 }
+
+export type Org = {
+    name: string,
+    id: string,
+    logoUrl: string
+}

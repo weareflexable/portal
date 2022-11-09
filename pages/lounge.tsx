@@ -5,13 +5,14 @@ import { useRouter } from 'next/router'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
 import RegisterOrgForm from '../components/LoungePage/RegisterOrgForm/RegisterOrgForm'
-import {OrganistationReq, orgFormData} from '../types/OrganisationTypes'
+import {Org, OrganistationReq, orgFormData} from '../types/OrganisationTypes'
 import {nftStorageClient} from '../utils/nftStorage'
+import { useOrgContext } from '../context/OrgContext'
 
 export default function Lounge(){
 
-    const [userOrgs,setUserOrgs] = useState([{name:'Avery Juice Bar',id:'3743hfebcda'},{name:'Benjamins Labs',id:'3fdae43febcda'}]);
-    const [unApprovedOrgs, setUnApprovedOrgs] = useState([{name: 'Mujeex Labs', id:'4345faf434'},{name:'Schelling labs', id:'fdadf4r34rdf'}])
+    const [userOrgs,setUserOrgs] = useState([{name:'Avery Juice Bar',id:'3743hfebcda',logoUrl:'https://joeschmoe.io/api/v1/random'},{name:'Benjamins Labs',id:'3fdae43febcda',logoUrl:'https://joeschmoe.io/api/v1/random'}]);
+    const [unApprovedOrgs, setUnApprovedOrgs] = useState([{name: 'Mujeex Labs', id:'4345faf434',logoUrl:'https://joeschmoe.io/api/v1/random'},{name:'Schelling labs', id:'fdadf4r34rdf',logoUrl:'https://joeschmoe.io/api/v1/random'}])
     const [isFetchingOrgs, setIsFetchingOrgs] = useState(false)
     const [isRegisteringOrg, setIsRegisteringOrg] = useState(false)
     const [showOrgForm, setShowOrgForm] = useState(false)
@@ -19,6 +20,7 @@ export default function Lounge(){
     const [isNavigatingToOrgs, setIsNavigatingToOrg] = useState(false)
     const {isAuthenticated} = useAuthContext()
     const router = useRouter()
+    const {setCurrentOrg} = useOrgContext()
     // const mutation = useMutation()
 
     const createNewOrg = useMutation({
@@ -45,12 +47,14 @@ export default function Lounge(){
     }, [])
 
 
-    const navigateToApp = (orgId:string)=>{
-        setSelectedOrg(orgId)
+    const navigateToApp = (org:Org)=>{
+
+        setSelectedOrg(org.id)
         setIsNavigatingToOrg(true)
         setTimeout(() => {
             setIsNavigatingToOrg(false)
-            router.push(`/organisation/${orgId}/dashboard`)
+            setCurrentOrg(org)
+            router.push(`/organisation/${org.id}/dashboard`)
         }, 3000);
     }
 
@@ -122,8 +126,8 @@ export default function Lounge(){
                     renderItem={item => 
                         <List.Item style={{border:'none'}} key={item.id}>
                              <List.Item.Meta
-                                avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
-                                title={ <Button loading={item.id===selectedOrg?isNavigatingToOrgs:false} onClick={()=>navigateToApp(item.id)} type='link'>{item.name}</Button>}
+                                avatar={<Avatar src={item.logoUrl} />}
+                                title={ <Button loading={item.id===selectedOrg?isNavigatingToOrgs:false} onClick={()=>navigateToApp(item)} type='link'>{item.name}</Button>}
                                 // description="Ant Design, a design language for background applications, is refined by Ant UED Team"
                                 />
                            
@@ -144,7 +148,7 @@ export default function Lounge(){
                     renderItem={item => 
                         <List.Item style={{border:'none'}} key={item.id}>
                              <List.Item.Meta
-                                avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
+                                avatar={<Avatar src={item.logoUrl} />}
                                 title={ 
                                     <div style={{display:'flex'}}>
                                         <Typography.Text style={{marginRight: '1em'}}>{item.name}</Typography.Text>
