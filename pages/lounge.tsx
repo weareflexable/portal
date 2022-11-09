@@ -1,5 +1,5 @@
 import {useState,useEffect} from 'react'
-import {Card,List,Button, Divider,Typography, Modal, Avatar} from 'antd'
+import {Card,List,Button, Divider,Typography, Modal, Avatar, Tag} from 'antd'
 import { useAuthContext } from '../context/AuthContext'
 import { useRouter } from 'next/router'
 import { useMutation } from '@tanstack/react-query'
@@ -11,6 +11,7 @@ import {nftStorageClient} from '../utils/nftStorage'
 export default function Lounge(){
 
     const [userOrgs,setUserOrgs] = useState([{name:'Avery Juice Bar',id:'3743hfebcda'},{name:'Benjamins Labs',id:'3fdae43febcda'}]);
+    const [unApprovedOrgs, setUnApprovedOrgs] = useState([{name: 'Mujeex Labs', id:'4345faf434'},{name:'Schelling labs', id:'fdadf4r34rdf'}])
     const [isFetchingOrgs, setIsFetchingOrgs] = useState(false)
     const [isRegisteringOrg, setIsRegisteringOrg] = useState(false)
     const [showOrgForm, setShowOrgForm] = useState(false)
@@ -71,6 +72,10 @@ export default function Lounge(){
                 phoneNumber: formData.phoneNumber,
                 imageHash: cid
             })
+
+            // add new org to state
+            // const unApprovedOrgsCopy = unApprovedOrgs.slice()
+            // unApprovedOrgsCopy.push(formData)
             setIsRegisteringOrg(false)
 
         }).catch(err=>{
@@ -100,6 +105,11 @@ export default function Lounge(){
             paddingLeft:'4rem',
             paddingTop:'2rem'
         }}>
+
+            <Card style={{width:'60%', marginTop:'2em'}}>
+                <Button type='ghost' onClick={()=>setShowOrgForm(true)}>Register new organisation</Button>
+            </Card>
+
             {userOrgs.length>0
             ?
             <Card style={{width:'60%', marginTop:'2em'}}>
@@ -110,7 +120,7 @@ export default function Lounge(){
                     bordered
                     dataSource={userOrgs}
                     renderItem={item => 
-                        <List.Item key={item.id}>
+                        <List.Item style={{border:'none'}} key={item.id}>
                              <List.Item.Meta
                                 avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
                                 title={ <Button loading={item.id===selectedOrg?isNavigatingToOrgs:false} onClick={()=>navigateToApp(item.id)} type='link'>{item.name}</Button>}
@@ -123,9 +133,32 @@ export default function Lounge(){
             </Card>
             : null
         }
+
             <Card style={{width:'60%', marginTop:'2em'}}>
-                <Button type='ghost' onClick={()=>setShowOrgForm(true)}>Register new organisation</Button>
+                <List
+                    size="small"
+                    style={{border:'none'}}
+                    header={<Typography.Title level={5}>Awaiting approval</Typography.Title>}
+                    bordered
+                    dataSource={unApprovedOrgs}
+                    renderItem={item => 
+                        <List.Item style={{border:'none'}} key={item.id}>
+                             <List.Item.Meta
+                                avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
+                                title={ 
+                                    <div style={{display:'flex'}}>
+                                        <Typography.Text style={{marginRight: '1em'}}>{item.name}</Typography.Text>
+                                        <Tag color='magenta'>Pending approval</Tag>
+                                    </div>
+                                     }
+                                />
+                           
+                        </List.Item>
+                            }
+                />
             </Card>
+
+
 
             <Modal  title="Edit store" open={showOrgForm} footer={null} onCancel={()=>setShowOrgForm(false)}>
                 <RegisterOrgForm
