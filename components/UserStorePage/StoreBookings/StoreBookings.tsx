@@ -9,42 +9,58 @@ const {Title,Text} = Typography
 
 
 interface DataType {
-    key: string;
-    customer: string,
-    service: string;
-    date: string;
+    id: string;
+    userId: string,
+    name: string;
+    ticketDate: string;
     quantity: number,
-    status: string,
-    price:number
+    orderStatus: string,
+    price:number,
+    total: number,
+    uniqueCode: string,
+    paymentIntentStatus: string,
+    orgServiceItemId: string,
   }
 
 const data: DataType[] = [
     {
-      key: '1',
-      customer:'mbappai',
-      date:'Jan 22, 2022',
-      service: 'Avery pro line skip',
+      id: '1',
+      userId:'mbappai',
+      ticketDate:'Jan 22, 2022',
+      name: 'Avery pro line skip',
       quantity: 4,
-      status: 'Redeemed',
-      price: 25
+      orderStatus: 'Redeemed',
+      price: 2500,
+      total:230,
+      uniqueCode: '34u12y',
+      paymentIntentStatus: 'PAYMENT_PAID',
+      orgServiceItemId:'bc6aaa35-e50e-40d5-a0ff-5e7fd20fe4b5',
     },
     {
-      key: '2',
-      service: 'Jim Green Bar',
-      customer:'ommore',
-      date:'Jan 12, 2022',
+      id: '2',
+      name: 'Jim Green Bar',
+      userId:'ommore',
+      ticketDate:'Jan 12, 2022',
       quantity: 1,
-      status: 'Expired',
-      price: 25
+      orderStatus: 'Expired',
+      price: 2500,
+      total:438,
+      uniqueCode: '34u12y',
+      paymentIntentStatus: 'PAYMENT_PAID',
+      orgServiceItemId:'bc6aaa35-e50e-40d5-a0ff-5e7fd20fe4b5'
     },
     {
-      key: '3',
-      service: 'Joe Black Gym line skip',
-      customer:'schachindra',
-      date:'Apr 22, 2022',
+      id: '3',
+      name: 'Joe Black Gym line skip',
+      userId:'schachindra',
+      ticketDate:'Apr 22, 2022',
       quantity: 2,
-      status: 'Valid',
-      price: 25
+      orderStatus: 'Valid',
+      price: 2500,
+      total:438,
+      uniqueCode: '34u12y',
+      paymentIntentStatus: 'PAYMENT_PAID',
+      orgServiceItemId:'bc6aaa35-e50e-40d5-a0ff-5e7fd20fe4b5'
     },
   ];
 
@@ -60,20 +76,30 @@ export default function StoreBookings({ bookings=data }:StoreBookingsProps){
 
   const columns: ColumnsType<any> = [
     {
-      title: 'Customer',
-      dataIndex: 'customer',
-      key: 'customer',
+      title: 'UserId',
+      dataIndex: 'userId',
+      key: 'userId',
     //   render: (text,record) => <Link href={`/stores/${record.key}`}><a>{text}</a></Link>,
     },
     {
+      title: 'Unique Code',
+      dataIndex: 'uniqueCode',
+      key: 'uniqueCode',
+    },
+    {
       title: 'Service',
-      dataIndex: 'service',
-      key: 'service',
+      dataIndex: 'name',
+      key: 'name',
     },
     {
       title: 'Unit Price',
       dataIndex: 'price',
       key: 'price',
+      render: (price)=>{
+        return(
+          <Text>${price/100}</Text>
+        )
+    }
     },
     {
       title: 'Quantity',
@@ -81,22 +107,33 @@ export default function StoreBookings({ bookings=data }:StoreBookingsProps){
       key: 'quantity',
     },
     {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-      render: status=>{
-        let color = 'blue'
-        if(status==='Redeemed') color='green'
-        if(status==='Expired') color='red'
+      title: 'Total',
+      dataIndex: 'total',
+      key: 'total',
+      render: (_,record)=>{
+        const total = record.quantity * (record.price/100)
         return(
-          <Tag color={color}>{status}</Tag>
+          <Text>${total}</Text>
         )
     }
     },
     {
-      title: 'Date',
-      dataIndex: 'date',
-      key: 'date',
+      title: 'Order Status',
+      dataIndex: 'orderStatus',
+      key: 'orderStatus',
+      render: orderStatus=>{
+        let color = 'blue'
+        if(orderStatus==='Redeemed') color='green'
+        if(orderStatus==='Expired') color='red'
+        return(
+          <Tag color={color}>{orderStatus}</Tag>
+        )
+    }
+    },
+    {
+      title: 'TicketDate',
+      dataIndex: 'ticketDate',
+      key: 'ticketDate',
     },
   ];
 
