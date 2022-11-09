@@ -17,10 +17,9 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
     const values: Values = {
-        isAuthenticated,
+        isAuthenticated:true,
         setIsAuthenticated
     }
-
 
     return(
         <AuthContext.Provider value={values}>
