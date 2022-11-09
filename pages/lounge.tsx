@@ -5,18 +5,14 @@ import { useRouter } from 'next/router'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
 import RegisterOrgForm from '../components/LoungePage/RegisterOrgForm/RegisterOrgForm'
-import {OrganistationReq} from '../types/OrganisationTypes'
-
-type Organisation={
-
-}
-
-
+import {OrganistationReq, orgFormData} from '../types/OrganisationTypes'
+import {nftStorageClient} from '../utils/nftStorage'
 
 export default function Lounge(){
 
     const [userOrgs,setUserOrgs] = useState([{name:'Avery Juice Bar',id:'3743hfebcda'},{name:'Benjamins Labs',id:'3fdae43febcda'}]);
     const [isFetchingOrgs, setIsFetchingOrgs] = useState(false)
+    const [isRegisteringOrg, setIsRegisteringOrg] = useState(false)
     const [showOrgForm, setShowOrgForm] = useState(false)
     const [selectedOrg, setSelectedOrg] = useState('')
     const [isNavigatingToOrgs, setIsNavigatingToOrg] = useState(false)
@@ -32,6 +28,12 @@ export default function Lounge(){
             },
             body: JSON.stringify(newOrgReq)
           })
+        },
+        onSuccess:async()=>{
+            console.log('Show positive notification')
+        },
+        onError:()=>{
+            console.log('show negative notification')
         }
       })
 
@@ -54,15 +56,29 @@ export default function Lounge(){
     
 
     // Function to request for organisations
-    const registerOrg = (formData:OrganistationReq)=>{
+    const registerOrg = (formData:orgFormData)=>{
         // call image hashing function here
-        createNewOrg.mutate({
-            name:formData.name,
-            emailId: formData.emailId,
-            address: formData.address,
-            phoneNumber: formData.phoneNumber,
-            imageHash: formData.imageHash
+        console.log(formData)
+        setIsRegisteringOrg(true)
+        const imageBlob = formData.imageFile
+        // TODO: fix this this type issue later
+        nftStorageClient.storeBlob(imageBlob as unknown as Blob).then(cid=>{
+            console.log(cid)
+            createNewOrg.mutate({  
+                name:formData.name,
+                emailId: formData.emailId,
+                address: formData.address,
+                phoneNumber: formData.phoneNumber,
+                imageHash: cid
+            })
+            setIsRegisteringOrg(false)
+
+        }).catch(err=>{
+            setIsRegisteringOrg(false)
+            console.log('something went wrong',err) 
         })
+
+       
     }
 
     if(!isAuthenticated){
@@ -114,6 +130,7 @@ export default function Lounge(){
             <Modal  title="Edit store" open={showOrgForm} footer={null} onCancel={()=>setShowOrgForm(false)}>
                 <RegisterOrgForm
                     onRegisterNewOrg={registerOrg}
+                    isRegisteringOrg={isRegisteringOrg}
                 />
             </Modal>
         </div>

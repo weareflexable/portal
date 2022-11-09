@@ -1,20 +1,22 @@
 import { Form, Input, Upload, Button, Divider } from "antd";
 import {UploadOutlined} from '@ant-design/icons'
-import {OrganistationReq} from '../../../types/OrganisationTypes'
+import {orgFormData} from '../../../types/OrganisationTypes'
 
 interface RegisterNewOrgProps{
-    onRegisterNewOrg: (org:OrganistationReq)=>void
+    onRegisterNewOrg: (org:orgFormData)=>void
+    isRegisteringOrg: boolean
 }
-export default function RegisterOrgForm({onRegisterNewOrg}:RegisterNewOrgProps){
+export default function RegisterOrgForm({onRegisterNewOrg,isRegisteringOrg}:RegisterNewOrgProps){
 
-
-    const hashAsset = async()=>{
-        // hash image and sent back has to caller as promise
-    }
-
-    const onFinish= (formData:OrganistationReq)=>{
-        
-        onRegisterNewOrg(formData)
+    const onFinish= (formData:orgFormData)=>{
+        const payload={
+                name:formData.name,
+                emailId: formData.emailId,
+                address: formData.address,
+                phoneNumber: formData.phoneNumber,
+                imageFile: formData.imageFile[0].originFileObj
+        }
+        onRegisterNewOrg(payload)
         // router.push('/dashboard')
     }
 
@@ -54,7 +56,7 @@ export default function RegisterOrgForm({onRegisterNewOrg}:RegisterNewOrgProps){
             </Form.Item>
 
             <Form.Item
-                name="email"
+                name="emailId"
                 label='Organisation email'
                 rules={[{ required: true, message: 'Please input a valid email!' }]}
             >
@@ -62,7 +64,7 @@ export default function RegisterOrgForm({onRegisterNewOrg}:RegisterNewOrgProps){
             </Form.Item>
 
             <Form.Item
-                name="phone"
+                name="phoneNumber"
                 label='Organisation phone'
                 rules={[{ required: true, message: 'Please input a valid phone!' }]}
             >
@@ -70,7 +72,7 @@ export default function RegisterOrgForm({onRegisterNewOrg}:RegisterNewOrgProps){
             </Form.Item>
 
             <Form.Item
-                name="imageHash"
+                name="imageFile"
                 label="Logo"
                 valuePropName="fileList"
                 getValueFromEvent={normFile}
@@ -84,11 +86,11 @@ export default function RegisterOrgForm({onRegisterNewOrg}:RegisterNewOrgProps){
             <Divider orientation="left"></Divider>
 
             <Form.Item>
-                <Button type="primary" htmlType="submit" >
+                <Button loading={isRegisteringOrg} type="primary" htmlType="submit" >
                      Register organisation
                 </Button>
             </Form.Item>
 
                 </Form>
     )
-}
+} 
