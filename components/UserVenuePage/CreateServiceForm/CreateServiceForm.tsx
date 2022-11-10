@@ -7,7 +7,7 @@ const {Text} = Typography;
 import {v4 as uuidv4} from 'uuid'
 
 import { useRouter } from 'next/router';
-import {Service} from '../UserStoreView/UserStoreView'
+import {Service} from '..'
 
 
 

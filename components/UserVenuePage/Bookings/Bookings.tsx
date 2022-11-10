@@ -22,7 +22,7 @@ interface DataType {
     orgServiceItemId: string,
   }
 
-const data: DataType[] = [
+const bookings: DataType[] = [
     {
       id: '1',
       userId:'mbappai',
@@ -65,11 +65,8 @@ const data: DataType[] = [
   ];
 
 
-interface StoreBookingsProps{
-    bookings: any[],
-    onDeleteStore: (storeId:string)=>void,
-}
-export default function StoreBookings({ bookings=data }:StoreBookingsProps){
+
+export default function Bookings(){
 
   const router = useRouter()
 

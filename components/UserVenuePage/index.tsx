@@ -1,12 +1,12 @@
 import React,{useState} from 'react'
 import {Card,Button,Typography,Alert,Space,Modal, PageHeader} from 'antd'
 import router, { useRouter } from 'next/router';
-import ServiceForm from '../ServiceForm/ServiceForm';
+import ServiceForm from './CreateServiceForm/CreateServiceForm';
 
-import StoreList from '../../VenuesPage/VenueTable/VenueTable';
-import ServiceList from '../ServiceList/ServiceList';
-import EditForm from '../EditForm/EditForm';
-import StoreBookings from '../StoreBookings/StoreBookings';
+import StoreList from '../VenuesPage/VenueTable/VenueTable';
+import ServiceList from './ServiceList/ServiceList';
+import EditForm from './EditServiceForm/EditServiceForm';
+import Bookings from './Bookings/Bookings';
 const {Text} = Typography;
 
 
@@ -76,7 +76,7 @@ export default function UserStoreView({}:UserStoreViewProps){
             title="Benjamins On Franklin"
             subTitle="Illinois, United states"
             />
-            <StoreBookings/>
+            <Bookings />
             { services.length > 0 ? 
                 <ServiceList onDeleteService = {deleteService} onSelectService={selectServiceForEdit} onCreateService={()=>setIsModalOpen(true)} services={services}/>:
                 <EmptyServices onRegisterService={()=>setIsModalOpen(true)}/>
