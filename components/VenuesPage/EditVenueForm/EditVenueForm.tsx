@@ -8,6 +8,7 @@ import {v4 as uuidv4} from 'uuid'
 
 import { useRouter } from 'next/router';
 import { Venue } from '../../../types/Venue';
+import { nftStorageClient } from '../../../utils/nftStorage';
 
 
 interface VenueEditFormProps{
@@ -23,14 +24,25 @@ export default function VenueEditForm({initValues, onEditVenue, onCloseEditForm}
 
     const prevValues = initValues
 
-    const onFinish = (formData:Venue)=>{
-        // call function to create store
+    const hashAssets = async(...assets:any)=>{
+        const res = await nftStorageClient.storeDirectory(assets)
+        console.log(res)
+        return res
+    }
+
+    const onFinish = async(formData:Venue)=>{
+
+        // const logoImage = formData.storeLogo[0].originFileObj
+        // const coverImage = formData.storeCoverImage[0].originFileObj
+        // // const {logoHash, coverImageHash} = await hashAssets(logoImage,coverImage)
+        // const hashes = await hashAssets(logoImage,coverImage)
+        // console.log(hashes)
         const formObject = {
             ...prevValues,
             ...formData,
         }
         onEditVenue(formObject)
-        showStoreCreationNotification()
+        showStoreCreationNotification() // call notification inside hook
     }
 
     const normFile = (e: any) => {

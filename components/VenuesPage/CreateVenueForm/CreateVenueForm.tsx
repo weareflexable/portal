@@ -8,6 +8,8 @@ import {v4 as uuidv4} from 'uuid'
 
 import { useRouter } from 'next/router';
 import {usePlacesWidget} from 'react-google-autocomplete'
+import { nftStorageClient } from "../../../utils/nftStorage";
+import { Venue } from "../../../types/Venue";
 
 interface StoreFormProps{
     onLaunchStore: (formData:any)=>void
@@ -34,14 +36,23 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
       });
     
 
+      const hashAssets = async(...assets:any)=>{
+        const res = await nftStorageClient.storeDirectory(assets)
+        console.log(res)
+        // return res
+    }
 
-    const onFinish = (formData:FormData)=>{
-        // call function to create store
+    const onFinish = async(formData:Venue)=>{
+
+        // const logoImage = formData.storeLogo[0].originFileObj
+        // const coverImage = formData.storeCoverImage[0].originFileObj
+
+        // await hashAssets(logoImage,coverImage)
+
         const formObject = {
             ...formData,
-            key:uuidv4()
+            id:uuidv4()
         }
-        console.log(formObject)
         onLaunchStore(formObject)
         showStoreCreationNotification()
     }
