@@ -7,14 +7,15 @@ import {UploadOutlined} from '@ant-design/icons'
 import {v4 as uuidv4} from 'uuid'
 
 import { useRouter } from 'next/router';
-import {Store} from '../VenueView/VenueView'
+import { Venue } from '../../../types/Venue';
 
-interface StoreEditFormProps{
-    initValues: Store | undefined
-    onEditStore: (store:Store)=>void
-    onCancelFormCreation: ()=>void
+
+interface VenueEditFormProps{
+    initValues: Venue | undefined
+    onEditVenue: (store:Venue)=>void
+    onCloseEditForm: ()=>void
 }
-export default function StoreEditForm({initValues, onEditStore, onCancelFormCreation}:StoreEditFormProps){
+export default function VenueEditForm({initValues, onEditVenue, onCloseEditForm}:VenueEditFormProps){
 
 
     const router = useRouter()
@@ -22,13 +23,13 @@ export default function StoreEditForm({initValues, onEditStore, onCancelFormCrea
 
     const prevValues = initValues
 
-    const onFinish = (formData:Store)=>{
+    const onFinish = (formData:Venue)=>{
         // call function to create store
         const formObject = {
             ...prevValues,
             ...formData,
         }
-        onEditStore(formObject)
+        onEditVenue(formObject)
         showStoreCreationNotification()
     }
 
@@ -106,7 +107,7 @@ export default function StoreEditForm({initValues, onEditStore, onCancelFormCrea
 
             <Form.Item>
                 <Space>
-                    <Button onClick={onCancelFormCreation} type='ghost'>
+                    <Button onClick={onCloseEditForm} type='ghost'>
                         Cancel
                     </Button>
 

@@ -4,6 +4,7 @@ import router, { useRouter } from 'next/router';
 import CreateVenueForm from '../CreateVenueForm/CreateVenueForm';
 import EditVenueForm from '../EditVenueForm/EditVenueForm'
 import VenueTable from '../VenueTable/VenueTable';
+import useCrud from '../../../hooks/useCrud';
 
 const {Text} = Typography;
 
@@ -24,75 +25,47 @@ interface StoreViewProps{
 }
 export default function StoreView({}:StoreViewProps){
 
+    const {
+         state,
+         showCreateForm, 
+         openCreateForm,
+         showEditForm,
+         itemToEdit,
+         selectItemToEdit,
+         createItem,
+         editItem,
+         deleteItem,
+         closeCreateForm,
+         closeEditForm
+        } = useCrud()
 
-    // TODO: fetch all stores from db
-    const [stores, setStores] = useState<Store[]>([]);
-    const [isModalOpen, setIsModalOpen] = useState(false)
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-    const [storeToEdit, setStoreToEdit] = useState<Store>()
 
-    const handleRegisterStore = ()=>{
-        setIsModalOpen(true)
-    }
-    const handleLaunchStore = (storeData:Store)=>{
-        const clonedStore =  stores.slice()
-        clonedStore.push(storeData)
-        setStores(clonedStore);
-        setIsModalOpen(false);
-    }
 
-    const cancelFormCreation = ()=>{
-        setIsModalOpen(false)
-    }
-
-    const deleteStore = (storeId: string)=>{
-        const clonedStores = stores.slice();
-        const updatedStores = clonedStores.filter(store=>store.key !== storeId)
-        setStores(updatedStores)
-    }
-
-    const editStore = (updatedStore:Store)=>{
-
-        // copy state to avoid mutation
-        const clonedStores = stores.slice()
-        // find index of updated service in old services
-        const serviceIndex = clonedStores.findIndex(store=>store.key === store.key)
-        // update edited service
-        clonedStores[serviceIndex]= updatedStore;
-        // update service in state
-        setStores(clonedStores)
-        setIsEditModalOpen(false)
-    }
-
-    const selectStoreToEdit=(store:Store)=>{
-        setIsEditModalOpen(true)
-        setStoreToEdit(store)
-    }
     
 
     return(
         <div>
-        { stores.length > 0 ? 
+        { state.length > 0 ? 
             <VenueTable
-             onRegisterNewStore={handleRegisterStore}
-             stores={stores}
-             onDeleteStore={deleteStore}
-             onSelectStoreToEdit={selectStoreToEdit}
+             showCreateForm={openCreateForm}
+             venues={state}
+             onDeleteStore={deleteItem}
+             onSelectStoreToEdit={selectItemToEdit}
             />:
-            <EmptyStore onRegisterStore={()=>setIsModalOpen(true)}/>
+            <EmptyStore onRegisterStore={openCreateForm}/>
         }
-        <Modal title="Launch new store" open={isModalOpen} footer={null} onCancel={()=>setIsModalOpen(false)}>
+        <Modal title="Launch new store" open={showCreateForm} footer={null} onCancel={closeCreateForm}>
             <CreateVenueForm 
-                onCancelFormCreation={cancelFormCreation} 
-                onLaunchStore={handleLaunchStore}
+                onCancelFormCreation={closeCreateForm} 
+                onLaunchStore={createItem}
              />
         </Modal>
 
-        <Modal title="Edit store" open={isEditModalOpen} footer={null} onCancel={()=>setIsEditModalOpen(false)}>
+        <Modal title="Edit store" open={showEditForm} footer={null} onCancel={closeEditForm}>
             <EditVenueForm 
-                initValues={storeToEdit} 
-                onCancelFormCreation={()=>setIsEditModalOpen(false)} 
-                onEditStore={editStore}
+                initValues={itemToEdit} 
+                onCloseEditForm={closeEditForm} 
+                onEditVenue={editItem}
             />
         </Modal>
 
