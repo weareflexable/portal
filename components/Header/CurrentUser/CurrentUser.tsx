@@ -1,5 +1,5 @@
 import React from 'react'
-import {Typography,Tag,Dropdown,Space,Menu,Button} from 'antd'
+import {Typography,Avatar,Space,Menu,Button} from 'antd'
 import {DownOutlined,LogoutOutlined} from '@ant-design/icons'
 import { useAuthContext } from '../../../context/AuthContext'
 const {Text} = Typography
@@ -12,35 +12,23 @@ export default function CurrentUser({user={email:'mbappai@yahoo.com',role:'admin
     const {setIsAuthenticated} = useAuthContext()
 
 
-    const menu = (
-    <Menu
-      items={[
-        {
-          key: '1',
-          label: (
-            <Button onClick={()=>setIsAuthenticated(false)} icon={<LogoutOutlined />} type='link' >
-              Logout
-            </Button>
-          ),
-        },
-      ]}
-    />
-    );
-
     return(
 
-        <Dropdown  trigger={['click']} overlay={menu}>
-            <Space style={{cursor:'pointer'}}>
-                <div style={{display:'flex',flexDirection:'column'}}>
-                    <Text ellipsis>{user.email}</Text>
-                    <Tag>{user.role}</Tag>
-                </div>
-                <DownOutlined />
-            </Space>
-        </Dropdown>
-        // <div style={{display:'flex', width:'200px', flexDirection:'column', marginLeft:'1rem'}}>
-        //     <Text>{user.email}</Text>
-        //     <Tag style={{width:'60px'}} color={user.role === 'admin'?'green':'blue'}>{user.role}</Tag>
-        // </div>
+      <div
+      onClick={()=>console.log('show modal to switch')} 
+      style={
+         {
+          display:'flex', 
+          marginLeft:'1em',
+         cursor:'pointer', 
+         background:'#f4f4f4' , 
+         borderRadius:'50px', 
+         padding:'.5em', 
+         justifyContent:'center', 
+         alignItems:'center',
+         }}>
+       <Avatar src={''}/>
+       <Text  ellipsis style={{marginBottom:0, width:'150px', marginRight:'.5em', marginLeft:'1em'}}>mujahidbappai@gmail.com</Text>
+     </div>
     )
 }

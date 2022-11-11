@@ -1,56 +1,28 @@
 import React,{useState} from 'react';
-import {Typography,Space,Dropdown, MenuProps,Menu} from 'antd'
+import {Typography,Space,Dropdown, MenuProps,Menu,Avatar} from 'antd'
 import {DownOutlined} from '@ant-design/icons'
+import { useOrgContext } from '../../../context/OrgContext';
 const {Text,Title,Paragraph} = Typography;
 
 
-interface OrgSwitcherProps{
-    org: string,
-    orgId: string
-}
+export default function OrgSwitcher(){
 
-const menuArray = [
-    {
-      label: 'Conura org',
-      key: '1',
-    },
-    {
-      label: 'Mike banas inc',
-      key: '2',
-    },
-  ];
-
-export default function OrgSwitcher({org='Avery Juice',orgId='#3243257543'}:OrgSwitcherProps){
-
-    // const [currentOrg,setCurrentOrg] = useState(org)
-
-    const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-
-        const key=  e.target
-        console.log(e.target)
-      };
-      
-      const handleMenuClick: MenuProps['onClick'] = e => {
-        console.log('click', e);
-      };
-
-const menu = (
-    <Menu
-      onClick={handleMenuClick}
-      items={menuArray}
-    />
-  );
-
+  const {currentOrg} =  useOrgContext()
     
     return (
-            <Dropdown trigger={['click']} overlay={menu}>
-              <Space>
-                <div style={{display:'flex',flexDirection:'column'}}>
-                  <Text style={{marginBottom:0}}>{org}</Text>
-                  <Paragraph type='secondary'>{orgId}</Paragraph>
+                <div
+                 onClick={()=>console.log('show modal to switch')} 
+                 style={
+                    {display:'flex', 
+                    cursor:'pointer', 
+                    background:'#f4f4f4' , 
+                    borderRadius:'50px', 
+                    padding:'.5em', 
+                    justifyContent:'center', 
+                    alignItems:'center'
+                    }}>
+                  <Avatar src={''}/>
+                  <Text style={{marginBottom:0, marginRight:'.5em', marginLeft:'1em'}}>Mujeex Labs</Text>
                 </div>
-                <DownOutlined/>
-              </Space>
-            </Dropdown>
           )
 }

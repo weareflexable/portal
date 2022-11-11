@@ -73,7 +73,7 @@ const { Header, Sider, Content } = Layout;
               !isAuthenticated ? <Button onClick={()=>setIsAuthenticated(true)}>Login</Button>
               :(
                 <>
-                  <OrgSwitcher orgId='#645372ab3' org='Avery Juice Bar'/>
+                  <OrgSwitcher/>
                   <CurrentUser user={{email:'mbappai@yahoo.com',role:'admin'}}/>
                 </>
                 )

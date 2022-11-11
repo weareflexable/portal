@@ -1,4 +1,5 @@
 import React,{useState,useContext,createContext, ReactNode} from 'react';
+import useOrgs from '../hooks/useOrgs';
 import {Org} from '../types/OrganisationTypes'
 
 const OrgContext = createContext<Values|undefined>(undefined);
@@ -7,7 +8,7 @@ const OrgContext = createContext<Values|undefined>(undefined);
 
 type Values = {
     currentOrg: Org,
-    setCurrentOrg: (org:Org)=>void
+    switchOrg: (org:Org)=>void
 }
 
 interface OrgContextProviderProps{
@@ -16,15 +17,12 @@ interface OrgContextProviderProps{
 
 const OrgContextProvider = ({children}:OrgContextProviderProps)=>{
 
-    const [currentOrg, setCurrentOrg] = useState<Org>({
-        name:'',
-        id:'',
-        logoUrl:''
-    });
+
+    const {switchOrg,currentOrg} = useOrgs()
 
     const values: Values = {
         currentOrg,
-        setCurrentOrg
+        switchOrg
     }
 
     return(
