@@ -139,7 +139,7 @@ export default function Bookings(){
     return(
       <div>
         <Title level={4}>Store bookings</Title>
-        <Table columns={columns} dataSource={bookings} />
+        <Table style={{width:'100%'}} columns={columns} dataSource={bookings} />
       </div>
     )
 }

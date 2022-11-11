@@ -4,7 +4,7 @@ import AppLayout from '../../../components/shared/Layout/layout'
 
 export default function Billings(){
     return(
-        <AppLayout>
+        <AppLayout width={98}>
             <BookingsView/>
         </AppLayout> 
     )

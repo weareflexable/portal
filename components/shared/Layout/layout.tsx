@@ -16,9 +16,10 @@ import UnAuthenticatedView from '../UnAuthenticated/UnAuthenticatedView';
 const { Header, Sider, Content } = Layout;
 
   interface LayoutProps{
-    children: ReactNode
+    children: ReactNode,
+    width?: number
   }
-  const AppLayout: React.FC<LayoutProps> = ({children}) => {
+  const AppLayout: React.FC<LayoutProps> = ({children,width=80}) => {
     
     const [collapsed, setCollapsed] = useState(false); 
     const {asPath,basePath} = useRouter()  
@@ -66,7 +67,7 @@ const { Header, Sider, Content } = Layout;
             ]}
           />
         </Sider>
-        <Layout className="site-layout">
+        <Layout style={{width:'50%'}} className="site-layout">
           <Header style={{lineHeight:'1.4',background:'white', width:'100%', display:'flex', justifyContent:'flex-end', alignItems:'center'}}>
             {
               !isAuthenticated ? <Button onClick={()=>setIsAuthenticated(true)}>Login</Button>
@@ -85,14 +86,14 @@ const { Header, Sider, Content } = Layout;
           </Breadcrumb> */}
 
           <Content
-            className="bg-white p-6 my-7 mx-7 "
             style={{
               padding: '1em',
               margin:'1em',
               background:'white' ,
-              width: 800,
+              width:`${`${width}%`}`,
+              maxWidth:'100%',
               height: '100%',
-              minHeight:'100vh'
+              minHeight:'100vh',
             }}
           >
             {isAuthenticated? children : <UnAuthenticatedView/>}
