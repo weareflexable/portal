@@ -9,7 +9,8 @@ import { useRouter } from 'next/router';
 import React, { ReactNode, useState } from 'react';
 import { useAuthContext } from '../../../context/AuthContext';
 import CurrentUser from '../../Header/CurrentUser/CurrentUser';
-import OrgSwitcher from '../../Header/OrgSwitcher/OrgSwitcher';
+import OrgSwitcher from '../../Header/OrgSwitcherButton/OrgSwitcherButton';
+import OrgSwitcherModal from '../OrgSwitcherModal/OrgSwitcherModal';
 import UnAuthenticatedView from '../UnAuthenticated/UnAuthenticatedView';
 
 
@@ -24,14 +25,19 @@ const { Header, Sider, Content } = Layout;
     const [collapsed, setCollapsed] = useState(false); 
     const {asPath,basePath} = useRouter()  
     const {isAuthenticated,setIsAuthenticated} = useAuthContext()
+    const [showSwitcherModal, setSwitcherModal] = useState(false) 
     
     console.log(asPath)
     const splittedRoutes = asPath.split('/')
     const orgId = splittedRoutes[2]
- 
+
   
     return (
       <Layout style={{minHeight:'100vh'}} className=' h-full'>
+        <OrgSwitcherModal
+          isModalOpen={showSwitcherModal}
+          onCloseModal={()=>setSwitcherModal(!showSwitcherModal)}
+        />
         <Sider collapsible onCollapse={() => setCollapsed(!collapsed)} collapsed={collapsed} >
           <div className="h-6 m-5" />
           <Menu
@@ -73,7 +79,7 @@ const { Header, Sider, Content } = Layout;
               !isAuthenticated ? <Button onClick={()=>setIsAuthenticated(true)}>Login</Button>
               :(
                 <>
-                  <OrgSwitcher/>
+                  <OrgSwitcher onOpenSwitcher={()=>setSwitcherModal(!showSwitcherModal)}/>
                   <CurrentUser user={{email:'mbappai@yahoo.com',role:'admin'}}/>
                 </>
                 )

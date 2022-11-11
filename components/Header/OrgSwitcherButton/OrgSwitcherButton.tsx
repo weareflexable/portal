@@ -4,14 +4,17 @@ import {DownOutlined} from '@ant-design/icons'
 import { useOrgContext } from '../../../context/OrgContext';
 const {Text,Title,Paragraph} = Typography;
 
+interface OrgSwitcherProps{
+  onOpenSwitcher: ()=> void
+}
 
-export default function OrgSwitcher(){
+export default function OrgSwitcher({onOpenSwitcher}:OrgSwitcherProps){
 
   const {currentOrg} =  useOrgContext()
     
     return (
                 <div
-                 onClick={()=>console.log('show modal to switch')} 
+                 onClick={onOpenSwitcher} 
                  style={
                     {display:'flex', 
                     cursor:'pointer', 
@@ -22,7 +25,7 @@ export default function OrgSwitcher(){
                     alignItems:'center'
                     }}>
                   <Avatar src={''}/>
-                  <Text style={{marginBottom:0, marginRight:'.5em', marginLeft:'1em'}}>Mujeex Labs</Text>
+                  <Text style={{marginBottom:0, marginRight:'.5em', marginLeft:'1em'}}>{currentOrg.name}</Text>
                 </div>
           )
 }

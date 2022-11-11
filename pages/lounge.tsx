@@ -9,9 +9,11 @@ import {Org, OrganistationReq, orgFormData} from '../types/OrganisationTypes'
 import {nftStorageClient} from '../utils/nftStorage'
 import { useOrgContext } from '../context/OrgContext'
 import useOrgs from '../hooks/useOrgs'
+import useFetchUserOrgs from '../hooks/useFetchUserOrgs'
 
 export default function Lounge(){
 
+    const {orgs} = useFetchUserOrgs()
     const [userOrgs,setUserOrgs] = useState([{name:'Avery Juice Bar',id:'3743hfebcda',logoUrl:'https://joeschmoe.io/api/v1/random'},{name:'Benjamins Labs',id:'3fdae43febcda',logoUrl:'https://joeschmoe.io/api/v1/random'}]);
     const [unApprovedOrgs, setUnApprovedOrgs] = useState([{name: 'Mujeex Labs', id:'4345faf434',logoUrl:'https://joeschmoe.io/api/v1/random'},{name:'Schelling labs', id:'fdadf4r34rdf',logoUrl:'https://joeschmoe.io/api/v1/random'}])
     const [isFetchingOrgs, setIsFetchingOrgs] = useState(false)
@@ -118,7 +120,7 @@ export default function Lounge(){
                 <Button type='ghost' onClick={()=>setShowOrgForm(true)}>Register new organisation</Button>
             </Card>
 
-            {userOrgs.length>0
+            {orgs.length>0
             ?
             <Card style={{width:'60%', marginTop:'2em'}}>
                 <List
@@ -126,7 +128,7 @@ export default function Lounge(){
                     style={{border:'none'}}
                     header={<Typography.Title level={5}>My Organisations</Typography.Title>}
                     bordered
-                    dataSource={userOrgs}
+                    dataSource={orgs}
                     renderItem={item => 
                         <List.Item style={{border:'none'}} key={item.id}>
                              <List.Item.Meta
