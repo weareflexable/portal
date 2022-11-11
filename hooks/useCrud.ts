@@ -16,9 +16,8 @@ export default function useCrud<T>(){
         setShowCreateForm(false)
     }
 
-
     function closeEditForm(){
-        setShowCreateForm(false)
+        setShowEditForm(false)
     }
 
     const createItem = (newItem:T)=>{

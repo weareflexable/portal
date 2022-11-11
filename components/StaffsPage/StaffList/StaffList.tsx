@@ -11,9 +11,6 @@ interface StaffListProps{
     onSelectStaffToEdit: (staff: Staff)=>void
 }
 export default function StaffLis({onSelectStaffToEdit, staff, onDeleteStaff}:StaffListProps){
-
-    const router = useRouter()
-
     
 
     return(
