@@ -1,7 +1,7 @@
 import {useEffect,useState} from 'react'
 import { getStorage } from '../utils/storage';
 
-export const useLocalStorage = (storageKey:string, fallbackState:string) => {
+export const useLocalStorage = <T>(storageKey:string, fallbackState:T) => {
   const [value, setValue] = useState(
     getStorage(storageKey) ?? fallbackState
   );

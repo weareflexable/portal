@@ -1,7 +1,7 @@
 import {useState, useEffect}  from 'react'
 import { useAuthContext } from '../context/AuthContext'
 import { Org } from '../types/OrganisationTypes';
-import useActiveOrgs from './useActiveOrgs';
+import useActiveOrgs from './useOrgs';
 
 const initOrgs: Org[] = [
     {id:'faefe3r3', name: 'Mujeex Labs', logoUrl:'https://joeschmoe.io/api/v1/random'},
