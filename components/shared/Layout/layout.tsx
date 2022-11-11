@@ -44,6 +44,11 @@ const { Header, Sider, Content } = Layout;
                 label: <Link type='link' href={`/organisation/${orgId}/dashboard`}>Dashboard</Link> ,
               },
               {
+                key: 'bookings',
+                icon: <VideoCameraOutlined />,
+                label: <Link type='link' href={`/organisation/${orgId}/bookings`}>Bookings</Link> ,
+              },
+              {
                 key: 'venues',
                 icon: <UserOutlined />,
                 label: <Link type='link' href={`/organisation/${orgId}/venues`}>Services</Link> ,
@@ -52,11 +57,6 @@ const { Header, Sider, Content } = Layout;
                 key: 'staffs',
                 icon: <VideoCameraOutlined />,
                 label: <Link type='link' href={`/organisation/${splittedRoutes[2]}/staffs`}>Staff</Link> ,
-              },
-              {
-                key: 'organisation',
-                icon: <VideoCameraOutlined />,
-                label: <Link type='link' href={`/organisation/${orgId}/organisation`}>Organization</Link> ,
               },
               {
                 key: 'billing',

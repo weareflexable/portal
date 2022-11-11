@@ -30,6 +30,7 @@ export default function useCrud<T>(){
 
     function deleteItem (itemId: string){
         const stateCopy = state.slice();
+        //@ts-ignore
         const updatedState = stateCopy.filter(state=>state.id !== itemId)
         setState(updatedState)
     }

@@ -76,7 +76,6 @@ export default function UserStoreView({}:UserStoreViewProps){
             title="Benjamins On Franklin"
             subTitle="Illinois, United states"
             />
-            <Bookings />
             { services.length > 0 ? 
                 <ServiceList onDeleteService = {deleteService} onSelectService={selectServiceForEdit} onCreateService={()=>setIsModalOpen(true)} services={services}/>:
                 <EmptyServices onRegisterService={()=>setIsModalOpen(true)}/>
