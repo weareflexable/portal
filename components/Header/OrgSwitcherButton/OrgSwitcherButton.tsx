@@ -10,7 +10,6 @@ interface OrgSwitcherProps{
 export default function OrgSwitcher({onOpenSwitcher}:OrgSwitcherProps){
 
   const {currentOrg} =  useOrgContext()
-  console.log(currentOrg)
     
     return (
                 <div
