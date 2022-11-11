@@ -9,7 +9,6 @@ interface OrgSwitcherModalProps{
 export default function OrgSwitcherModal({isModalOpen, onCloseModal}:OrgSwitcherModalProps){
 
     const {orgs} =  useFetchUserOrgs()
-    console.log(orgs)
 
     return(
         <Modal open={isModalOpen} footer={null} onCancel={onCloseModal}>
@@ -20,8 +19,7 @@ export default function OrgSwitcherModal({isModalOpen, onCloseModal}:OrgSwitcher
                     <List.Item style={{border: 'none'}}>
                         <div style={{width:'100%', borderRadius:'4px', background:'#f8f8f8', display:'flex', justifyContent: 'space-between', alignItems:'center', padding: '.5em'}}>
                              <Typography.Text>{item.name}</Typography.Text>
-                             {/* {item.status==='active'? null: <Button>Swith Org</Button>} */}
-                             {item.status?null:<Button size='small'>Switch to Org</Button>}
+                             {item.isActive?null:<Button size='small'>Switch to Org</Button>}
                         </div>
                     </List.Item>
                 )}

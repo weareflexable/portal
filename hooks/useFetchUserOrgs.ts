@@ -23,7 +23,7 @@ export default function useFetchUserOrgs(){
         return orgsCopy.map(org=>(
              {
                 ...org,
-                status: org.id == currentOrg.id? true:false
+                isActive: org.id == currentOrg.id? true:false
             }
         ))
 

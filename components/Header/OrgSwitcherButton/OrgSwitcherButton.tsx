@@ -1,6 +1,5 @@
 import React,{useState} from 'react';
-import {Typography,Space,Dropdown, MenuProps,Menu,Avatar} from 'antd'
-import {DownOutlined} from '@ant-design/icons'
+import {Typography,Avatar} from 'antd'
 import { useOrgContext } from '../../../context/OrgContext';
 const {Text,Title,Paragraph} = Typography;
 
@@ -11,6 +10,7 @@ interface OrgSwitcherProps{
 export default function OrgSwitcher({onOpenSwitcher}:OrgSwitcherProps){
 
   const {currentOrg} =  useOrgContext()
+  console.log(currentOrg)
     
     return (
                 <div
@@ -24,7 +24,7 @@ export default function OrgSwitcher({onOpenSwitcher}:OrgSwitcherProps){
                     justifyContent:'center', 
                     alignItems:'center'
                     }}>
-                  <Avatar src={''}/>
+                  <Avatar src={currentOrg.logoUrl}/>
                   <Text style={{marginBottom:0, marginRight:'.5em', marginLeft:'1em'}}>{currentOrg.name}</Text>
                 </div>
           )

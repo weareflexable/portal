@@ -26,7 +26,7 @@ export default function Lounge(){
     // const {setCurrentOrg} = useOrgContext()
     // const mutation = useMutation()
 
-    const {switchOrg} =  useOrgs()
+    const {switchOrg} =  useOrgContext()
 
     const createNewOrg = useMutation({
         mutationFn: (newOrgReq:OrganistationReq) => {
