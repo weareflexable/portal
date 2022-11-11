@@ -8,6 +8,7 @@ import RegisterOrgForm from '../components/LoungePage/RegisterOrgForm/RegisterOr
 import {Org, OrganistationReq, orgFormData} from '../types/OrganisationTypes'
 import {nftStorageClient} from '../utils/nftStorage'
 import { useOrgContext } from '../context/OrgContext'
+import useOrgs from '../hooks/useOrgs'
 
 export default function Lounge(){
 
@@ -20,8 +21,10 @@ export default function Lounge(){
     const [isNavigatingToOrgs, setIsNavigatingToOrg] = useState(false)
     const {isAuthenticated} = useAuthContext()
     const router = useRouter()
-    const {setCurrentOrg} = useOrgContext()
+    // const {setCurrentOrg} = useOrgContext()
     // const mutation = useMutation()
+
+    const {switchOrg} =  useOrgs()
 
     const createNewOrg = useMutation({
         mutationFn: (newOrgReq:OrganistationReq) => {
@@ -48,12 +51,13 @@ export default function Lounge(){
 
 
     const navigateToApp = (org:Org)=>{
-
+        // save selected org to local storage
+        
         setSelectedOrg(org.id)
         setIsNavigatingToOrg(true)
         setTimeout(() => {
             setIsNavigatingToOrg(false)
-            setCurrentOrg(org)
+            switchOrg(org)
             router.push(`/organisation/${org.id}/dashboard`)
         }, 3000);
     }
