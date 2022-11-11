@@ -7,15 +7,14 @@ import { useRouter } from 'next/router';
 
 interface StoreFormProps{
     onCreateStaff: (formData:any)=>void
-    onCancelFormCreation: ()=>void
+    onCloseForm: ()=>void
 }
-export default function StaffForm({onCreateStaff, onCancelFormCreation}:StoreFormProps){
+export default function CreateStaffForm({onCreateStaff, onCloseForm}:StoreFormProps){
 
 
 
     const onFinish = (formData:FormData)=>{
         // call function to create store
-        console.log(formData)
         onCreateStaff(formData)
         showStoreCreationNotification()
     }
@@ -49,8 +48,8 @@ export default function StaffForm({onCreateStaff, onCancelFormCreation}:StoreFor
              >
                 <Radio.Group>
                     <Space direction="vertical">
-                        <Radio value={'admin'}>Admin</Radio>
                         <Radio value={'manager'}>Manager</Radio>
+                        <Radio value={'employee'}>Employee</Radio>
                     </Space>
                 </Radio.Group>
 
@@ -58,7 +57,7 @@ export default function StaffForm({onCreateStaff, onCancelFormCreation}:StoreFor
 
             <Form.Item>
                 <Space>
-                    <Button onClick={onCancelFormCreation} type='ghost'>
+                    <Button onClick={onCloseForm} type='ghost'>
                         Cancel
                     </Button>
 

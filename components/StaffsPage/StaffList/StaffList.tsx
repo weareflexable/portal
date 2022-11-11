@@ -1,35 +1,29 @@
 import React from 'react'
 import {Card,List,Typography,Button,Avatar, Tag} from 'antd'
 import { useRouter } from 'next/router'
-import {Staff} from '../StaffView/StaffView'
+import {Staff} from '../../../types/Staff'
 
 const {Title,Text} = Typography
 
 interface StaffListProps{
-    staffs: Array<any>,
-    openFormModal: ()=>void,
+    staff: Staff[],
     onDeleteStaff: (id:string)=>void,
     onSelectStaffToEdit: (staff: Staff)=>void
 }
-export default function StoreList({onSelectStaffToEdit, staffs, openFormModal,onDeleteStaff}:StaffListProps){
+export default function StaffLis({onSelectStaffToEdit, staff, onDeleteStaff}:StaffListProps){
 
     const router = useRouter()
 
-    const titleNode = (
-        <div style={{display:'flex',justifyContent:'space-between'}} >
-            <Title level={5}>Staffs</Title>
-            <Button onClick={openFormModal}>Register new staff</Button>
-        </div>
-    )
+    
 
     return(
-        <Card title={titleNode}>
+        <Card>
             <List
             itemLayout="horizontal"
-            dataSource={staffs}
+            dataSource={staff}
             renderItem={(item, index) => (
             <List.Item
-                actions={[<Button key={item.key} onClick={()=>onSelectStaffToEdit(item)}>Change role</Button>,<Button key={item.key} onClick={()=>onDeleteStaff(item.id)}>Delete </Button>]}
+                actions={[<Button key={item.id} onClick={()=>onSelectStaffToEdit(item)}>Change role</Button>,<Button key={item.id} onClick={()=>onDeleteStaff(item.id)}>Delete </Button>]}
             >
              <List.Item.Meta
                 title={<Text >{item.email} {<Tag color={item.role==='admin'?'green':'blue'}>{item.role}</Tag>

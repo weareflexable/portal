@@ -46,17 +46,17 @@ const { Header, Sider, Content } = Layout;
               {
                 key: 'venues',
                 icon: <UserOutlined />,
-                label: <Link type='link' href={`/organisation/${orgId}/venues`}>Venues</Link> ,
+                label: <Link type='link' href={`/organisation/${orgId}/venues`}>Services</Link> ,
               },
               {
                 key: 'staffs',
                 icon: <VideoCameraOutlined />,
-                label: <Link type='link' href={`/organisation/${splittedRoutes[2]}/staffs`}>Staffs</Link> ,
+                label: <Link type='link' href={`/organisation/${splittedRoutes[2]}/staffs`}>Staff</Link> ,
               },
               {
                 key: 'organisation',
                 icon: <VideoCameraOutlined />,
-                label: <Link type='link' href={`/organisation/${orgId}/organisation`}>Organisation</Link> ,
+                label: <Link type='link' href={`/organisation/${orgId}/organisation`}>Organization</Link> ,
               },
               {
                 key: 'billing',

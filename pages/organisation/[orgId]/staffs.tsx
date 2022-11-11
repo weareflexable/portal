@@ -1,5 +1,5 @@
 import React from 'react'
-import StaffView from '../../../components/StaffsPage/StaffView/StaffView'
+import StaffView from '../../../components/StaffsPage'
 import AppLayout from '../../../components/shared/Layout/layout'
 import { useAuthContext } from '../../../context/AuthContext'
 

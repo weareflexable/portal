@@ -1,16 +1,17 @@
 import React,{useState} from 'react';
 import {Form, Input,Radio,Button,notification, Space, Typography} from 'antd';
-import {Staff} from '../StaffView/StaffView'
+
 
 import { useRouter } from 'next/router';
+import { Staff } from '../../../types/Staff';
 
 
 interface StaffEditFormProps{
     initValues: Staff | undefined
     onChangeStaffRole: (staff:Staff)=>void
-    onCancelFormCreation: ()=>void
+    onCloseForm: ()=>void
 }
-export default function StaffEditForm({initValues, onChangeStaffRole, onCancelFormCreation}:StaffEditFormProps){
+export default function StaffEditForm({initValues, onChangeStaffRole, onCloseForm}:StaffEditFormProps){
 
 
     const prevValues = initValues;
@@ -63,7 +64,7 @@ export default function StaffEditForm({initValues, onChangeStaffRole, onCancelFo
 
             <Form.Item>
                 <Space>
-                    <Button onClick={onCancelFormCreation} type='ghost'>
+                    <Button onClick={onCloseForm} type='ghost'>
                         Cancel
                     </Button>
 

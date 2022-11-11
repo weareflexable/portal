@@ -1,15 +1,16 @@
 import {useState} from 'react'
 import { Org } from '../types/OrganisationTypes';
+import { Staff } from '../types/Staff';
 import { Venue } from '../types/Venue';
 
 
-type Item = Venue
+// type Item<T> 
 
-export default function useCrud(){
-    const [state, setState] = useState<Item[]>([])
+export default function useCrud<T>(){
+    const [state, setState] = useState<T[]>([])
     const [showCreateForm, setShowCreateForm] = useState(false)
     const [showEditForm, setShowEditForm] = useState(false)
-    const [itemToEdit, setItemToEdit] = useState<Item>()
+    const [itemToEdit, setItemToEdit] = useState<T>()
 
     function closeCreateForm(){
         setShowCreateForm(false)
@@ -20,8 +21,9 @@ export default function useCrud(){
         setShowCreateForm(false)
     }
 
-    const createItem = (newItem:Item)=>{
-        const stateCopy =  state.slice()
+    const createItem = (newItem:T)=>{
+        // const stateCopy =  state.slice()
+        const stateCopy =  [...state]
         stateCopy.push(newItem)
         setState(stateCopy);
         setShowCreateForm(false);
@@ -33,12 +35,13 @@ export default function useCrud(){
         setState(updatedState)
     }
 
-    const editItem = (updatedItem:Item)=>{
+    function editItem(updatedItem:T){
 
         // copy state to avoid mutation
         const stateCopy = state.slice()
         // find index of updated service in old services
-        const itemIndex = stateCopy.findIndex(item=>item.id === updatedItem.id)
+        //@ts-ignore
+        const itemIndex: number = stateCopy.findIndex(item=>item.id === updatedItem.id)
         // update edited service
         stateCopy[itemIndex]= updatedItem;
         // update service in state
@@ -47,7 +50,7 @@ export default function useCrud(){
     }
 
 
-    const selectItemToEdit=(item:Item)=>{
+    const selectItemToEdit=(item:T)=>{
         setShowEditForm(true)
         setItemToEdit(item)
     }
