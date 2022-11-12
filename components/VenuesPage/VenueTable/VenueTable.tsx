@@ -46,15 +46,14 @@ interface VenueTableProps{
 }
 export default function VenueTable({onSelectStoreToEdit, onDeleteStore, venues, showCreateForm}:VenueTableProps){
 
-  const router = useRouter()
-
+  const {asPath} = useRouter()
 
   const columns: ColumnsType<Venue> = [
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: (text,record) => <Link href={`/stores/${record.id}`}><a>{text}</a></Link>,
+      render: (text,record) => <Link href={`${asPath}/${record.id}`}><a>{text}</a></Link>,
     },
     {
       title: 'Address',

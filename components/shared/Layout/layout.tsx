@@ -64,11 +64,11 @@ const { Header, Sider, Content } = Layout;
                     },
                     {
                       key: 'services',
-                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link type='link' href={`/organisation/${orgId}/venues`}>Services</Link> </div> ,
+                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link type='link' href={`/organisation/${orgId}/services`}>Services</Link> </div> ,
                     },
                     {
-                      key: 'staffs',
-                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link type='link' href={`/organisation/${splittedRoutes[2]}/staffs`}>Staff</Link> </div> ,
+                      key: 'staff',
+                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link type='link' href={`/organisation/${splittedRoutes[2]}/staff`}>Staff</Link> </div> ,
                     },
                   ]}
                 />
@@ -83,33 +83,22 @@ const { Header, Sider, Content } = Layout;
                 }
     
               </Header> 
-        <Layout style={{width:'50%'}} className="site-layout">
+        <Layout style={{width:'100%'}} className="site-layout">
         {/* <Sider collapsible onCollapse={() => setCollapsed(!collapsed)} collapsed={collapsed} >
-          <div className="h-6 m-5" />
           <Menu
             theme="dark"
             mode="inline"
             defaultSelectedKeys={[splittedRoutes[3]]}
             items={[
               {
-                key: 'dashboard',
-                icon: <UserOutlined />,
-                label: <Link type='link' href={`/organisation/${orgId}/dashboard`}>Dashboard</Link> ,
-              },
-              {
-                key: 'bookings',
-                icon: <VideoCameraOutlined />,
-                label: <Link type='link' href={`/organisation/${orgId}/bookings`}>Bookings</Link> ,
-              },
-              {
                 key: 'venues',
                 icon: <UserOutlined />,
                 label: <Link type='link' href={`/organisation/${orgId}/venues`}>Services</Link> ,
               },
               {
-                key: 'staffs',
+                key: 'staff',
                 icon: <VideoCameraOutlined />,
-                label: <Link type='link' href={`/organisation/${splittedRoutes[2]}/staffs`}>Staff</Link> ,
+                label: <Link type='link' href={`/organisation/${splittedRoutes[2]}/staff`}>Staff</Link> ,
               },
               {
                 key: 'billing',
@@ -120,21 +109,7 @@ const { Header, Sider, Content } = Layout;
           />
         </Sider> */}
 
-
-{/* 
-          <Content
-            style={{
-              padding: '1em',
-              margin:'1em',
-              background:'white' ,
-              width:`${`${width}%`}`,
-              maxWidth:'100%',
-              height: '100%',
-              minHeight:'100vh',
-            }}
-          >
             {isAuthenticated? children : <UnAuthenticatedView/>}
-          </Content> */}
         </Layout>
       </Layout>
     );

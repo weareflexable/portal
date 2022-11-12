@@ -72,7 +72,7 @@ export default function UserStoreView({}:UserStoreViewProps){
     return(
         <div>
             <PageHeader
-            onBack={() => router.push('/stores')}
+            onBack={() => router.back()}
             title="Benjamins On Franklin"
             subTitle="Illinois, United states"
             />

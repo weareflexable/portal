@@ -5,6 +5,7 @@ import CreateVenueForm from '../CreateVenueForm/CreateVenueForm';
 import EditVenueForm from '../EditVenueForm/EditVenueForm'
 import VenueTable from '../VenueTable/VenueTable';
 import useCrud from '../../../hooks/useCrud';
+import { Venue } from '../../../types/Venue';
 
 const {Text} = Typography;
 
@@ -23,7 +24,7 @@ export type Store ={
 interface StoreViewProps{
 
 }
-export default function StoreView({}:StoreViewProps){
+export default function ServiceView({}:StoreViewProps){
 
     const {
          state,
@@ -37,7 +38,7 @@ export default function StoreView({}:StoreViewProps){
          deleteItem,
          closeCreateForm,
          closeEditForm
-        } = useCrud()
+        } = useCrud<Venue>()
 
 
 

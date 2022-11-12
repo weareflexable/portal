@@ -1,11 +1,14 @@
-import { Content } from 'antd/lib/layout/layout'
 import React from 'react'
-import BookingsView from '../../../components/BookingsPage/index'
+import StaffView from '../../../components/StaffsPage'
 import AppLayout from '../../../components/shared/Layout/layout'
+import { useAuthContext } from '../../../context/AuthContext'
+import { Content } from 'antd/lib/layout/layout'
 
-export default function Bookings(){
+export default function Staffs(){
+
+
     return(
-
+        
         <AppLayout>
             <Content
                 style={{
@@ -18,9 +21,8 @@ export default function Bookings(){
                 minHeight:'100vh',
                 }}
             >
-                <BookingsView/>
+                <StaffView/>
             </Content>
         </AppLayout>
-
     )
 }
