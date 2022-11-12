@@ -3,8 +3,9 @@ import {Card,List,Typography,Button,Avatar, Tag, Space} from 'antd'
 import { useRouter } from 'next/router'
 import Table, { ColumnsType } from 'antd/lib/table';
 import Link from 'next/link';
-import {Store} from '../ServicesView/ServicesView'
-import { Venue } from '../../../types/Services';
+// import {Store} from '../ServicesView/ServicesView'
+import { Service } from '../../../types/Services';
+import { useOrgContext } from '../../../context/OrgContext';
 
 const {Title,Text} = Typography
 
@@ -38,17 +39,18 @@ const data: DataType[] = [
   ];
 
 
-interface VenueTableProps{
-    venues: Venue[],
+interface ServiceTableProps{
+    services: Service[],
     showCreateForm: ()=>void,
     onDeleteStore: (storeId:string)=>void,
-    onSelectStoreToEdit: (store: Venue)=>void
+    onSelectStoreToEdit: (store: Service)=>void
 }
-export default function VenueTable({onSelectStoreToEdit, onDeleteStore, venues, showCreateForm}:VenueTableProps){
+export default function ServiceTable({onSelectStoreToEdit, onDeleteStore, services, showCreateForm}:ServiceTableProps){
 
   const {asPath} = useRouter()
+  const {isAdmin} = useOrgContext()
 
-  const columns: ColumnsType<Venue> = [
+  const columns: ColumnsType<Service> = [
     {
       title: 'Name',
       dataIndex: 'name',
@@ -75,8 +77,8 @@ export default function VenueTable({onSelectStoreToEdit, onDeleteStore, venues, 
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
+          <Button size='small' disabled={!isAdmin} type='text' danger onClick={()=>onDeleteStore(record.id)}>Delete</Button>
           <Button type='link' onClick={()=>onSelectStoreToEdit(record)}>Edit</Button>
-          <Button onClick={()=>onDeleteStore(record.id)}>Delete</Button>
         </Space>
       ),
     },
@@ -84,9 +86,9 @@ export default function VenueTable({onSelectStoreToEdit, onDeleteStore, venues, 
 
 
     return(
-      <div>
-        <Button style={{marginBottom:'1em'}} onClick={showCreateForm}>Create new store</Button>
-        <Table columns={columns} dataSource={venues} />
+      <div style={{display:'flex',flexDirection:'column'}}> 
+        <Button type='primary' disabled={!isAdmin} shape='round' style={{marginBottom:'1em', alignSelf:'flex-end'}} onClick={showCreateForm}>Create new store</Button>
+        <Table columns={columns} dataSource={services} />
       </div>
     )
 }

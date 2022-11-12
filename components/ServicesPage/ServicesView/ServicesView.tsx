@@ -1,9 +1,9 @@
 import React,{useState} from 'react'
 import {Card,Button,Typography,Alert,Space,Modal} from 'antd'
 import router, { useRouter } from 'next/router';
-import CreateVenueForm from '../CreateServiceForm/CreateServiceForm';
-import EditVenueForm from '../EditServiceForm/EditServiceForm'
-import VenueTable from '../ServicesTable/ServicesTable';
+import CreateServiceForm from '../CreateServiceForm/CreateServiceForm';
+import EditServiceForm from '../EditServiceForm/EditServiceForm'
+import ServicesTable from '../ServicesTable/ServicesTable';
 import useCrud from '../../../hooks/useCrud';
 import { Service } from '../../../types/Services';
 
@@ -54,23 +54,23 @@ export default function ServiceView({}:ServicesViewProps){
     return(
         <div>
         { state.length > 0 ? 
-            <VenueTable
+            <ServicesTable
              showCreateForm={openCreateForm}
-             venues={state}
+             services={state}
              onDeleteStore={deleteItem}
              onSelectStoreToEdit={selectItemToEdit}
             />:
             <EmptyStore onRegisterStore={openCreateForm}/>
         }
         <Modal title="Launch new store" open={showCreateForm} footer={null} onCancel={closeCreateForm}>
-            <CreateVenueForm 
+            <CreateServiceForm 
                 onCancelFormCreation={closeCreateForm} 
                 onLaunchStore={createItem}
              />
         </Modal>
 
         <Modal title="Edit store" open={showEditForm} footer={null} onCancel={closeEditForm}>
-            <EditVenueForm 
+            <EditServiceForm 
                 initValues={itemToEdit} 
                 onCloseEditForm={closeEditForm} 
                 onEditVenue={editItem}

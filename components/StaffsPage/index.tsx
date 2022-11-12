@@ -9,6 +9,7 @@ import useCrud from '../../hooks/useCrud';
 import { Staff } from '../../types/Staff';
 import CreateStaffForm from './CreateStaffForm/CreateStaffForm';
 import EditStaffForm from './EditStaffForm/EditStaffForm';
+import { useOrgContext } from '../../context/OrgContext';
 const {Text} = Typography;
 
 
@@ -33,17 +34,18 @@ export default function StaffView({}:StaffViewProps){
         selectItemToEdit
     } = useCrud<Staff>()
 
-    
+    const {isAdmin} = useOrgContext()
 
     return(
         <div>
-            <EmptyStore openFormModal={openCreateForm}/>
+           
         { state.length > 0 ? 
             <StaffList 
+                showCreateForm={openCreateForm}
                 onSelectStaffToEdit={selectItemToEdit} 
                 onDeleteStaff={deleteItem} 
                 staff={state}
-            />: null
+            />: <EmptyStore isAdmin={isAdmin} openFormModal={openCreateForm}/>
             
         }
         <Modal title="Add new staff" open={showCreateForm} footer={null} onCancel={closeCreateForm}>
@@ -76,13 +78,14 @@ export default function StaffView({}:StaffViewProps){
 
 
 interface EmptyStaffProps{
-    openFormModal: ()=>void
+    openFormModal: ()=>void,
+    isAdmin: boolean
 }
-const EmptyStore = ({openFormModal}:EmptyStaffProps)=>{
+const EmptyStore = ({isAdmin,openFormModal}:EmptyStaffProps)=>{
     return(
         <Card className='flex-col flex justify-center items-center'>
-            <Text type='secondary'>No staff in your organisation detected yet</Text>
-            <Button onClick={openFormModal} >Create new staff</Button>
+            {/* <Text type='secondary'>No staff in your organisation detected yet</Text> */}
+            <Button type='link' size='small' disabled={!isAdmin} onClick={openFormModal} >Create new staff</Button>
         </Card>
     )
 }

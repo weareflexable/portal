@@ -9,7 +9,9 @@ const OrgContext = createContext<Values|undefined>(undefined);
 type Values = {
     currentOrg: Org,
     switchOrg: (org:Org)=>void,
-    orgUserRole: string
+    orgUserRole: string,
+    isAdmin: boolean,
+    isStaff: boolean
 }
 
 interface OrgContextProviderProps{
@@ -19,12 +21,14 @@ interface OrgContextProviderProps{
 const OrgContextProvider = ({children}:OrgContextProviderProps)=>{
 
 
-    const {switchOrg,currentOrg,orgUserRole} = useOrgs()
+    const {switchOrg,currentOrg,orgUserRole,isAdmin, isStaff} = useOrgs()
 
     const values: Values = {
         currentOrg,
         switchOrg,
-        orgUserRole
+        orgUserRole,
+        isAdmin,
+        isStaff
     }
 
     return(

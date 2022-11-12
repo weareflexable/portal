@@ -14,6 +14,8 @@ export default function useOrgs(){
     }
 
     const orgUserRole = currentOrg.role
+    const isAdmin = orgUserRole === 'Admin'
+    const isStaff = orgUserRole === 'Staff'
 
     // This function removes the active org from site.
     // Should be called when user logsOut.
@@ -23,5 +25,5 @@ export default function useOrgs(){
     // get active org from local storage
     // switch org in 
 
-    return {currentOrg, orgUserRole, switchOrg, exitOrg}
+    return {currentOrg, isAdmin, isStaff, orgUserRole, switchOrg, exitOrg}
 }
