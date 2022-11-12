@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import Table, { ColumnsType } from 'antd/lib/table';
 import Link from 'next/link';
 import {Store} from '../ServicesView/ServicesView'
-import { Venue } from '../../../types/Venue';
+import { Venue } from '../../../types/Services';
 
 const {Title,Text} = Typography
 

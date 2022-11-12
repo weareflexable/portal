@@ -6,12 +6,14 @@ import useLocalStorage from './useLocalStorage'
 
 export default function useOrgs(){
     // const [activeOrg, setActiveOrg] = useState<Org>({id:'weea434',logoUrl:'dfaerefadf',name:'Mujeex labs'})
-    const [currentOrg, setCurrentOrg] = useLocalStorage<Org>('currentOrg',{id:'weea434',logoUrl:'dfaerefadf',name:'Mujeex labs'})
+    const [currentOrg, setCurrentOrg] = useLocalStorage<Org>('currentOrg',{id:'weea434',logoUrl:'dfaerefadf',name:'Mujeex labs',role:'Admin'})
 
     const switchOrg = (org:Org)=>{
         // setInLocal storage
         setCurrentOrg(org)
     }
+
+    const orgUserRole = currentOrg.role
 
     // This function removes the active org from site.
     // Should be called when user logsOut.
@@ -21,5 +23,5 @@ export default function useOrgs(){
     // get active org from local storage
     // switch org in 
 
-    return {currentOrg, switchOrg, exitOrg}
+    return {currentOrg, orgUserRole, switchOrg, exitOrg}
 }

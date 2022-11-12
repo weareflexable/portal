@@ -5,7 +5,7 @@ import { useRouter } from 'next/router'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
 import RegisterOrgForm from '../components/LoungePage/RegisterOrgForm/RegisterOrgForm'
-import {Org, OrganistationReq, orgFormData} from '../types/OrganisationTypes'
+import {Org, OrganistationReq, OrgFormData} from '../types/OrganisationTypes'
 import {nftStorageClient} from '../utils/nftStorage'
 import { useOrgContext } from '../context/OrgContext'
 import useOrgs from '../hooks/useOrgs'
@@ -67,7 +67,7 @@ export default function Lounge(){
     
 
     // Function to request for organisations
-    const registerOrg = (formData:orgFormData)=>{
+    const registerOrg = (formData:OrgFormData)=>{
         // call image hashing function here
         console.log(formData)
         setIsRegisteringOrg(true)
@@ -130,11 +130,19 @@ export default function Lounge(){
                     bordered
                     dataSource={orgs}
                     renderItem={item => 
-                        <List.Item style={{border:'none'}} key={item.id}>
+                        <List.Item 
+                            actions={[<Button key={item.id} size='small' type='link' loading={item.id===selectedOrg?isNavigatingToOrgs:false} onClick={()=>navigateToApp(item)}>Go to organisation</Button>]} 
+                            style={{border:'none'}} 
+                            key={item.id}
+                            >
                              <List.Item.Meta
                                 avatar={<Avatar src={item.logoUrl} />}
-                                title={ <Button loading={item.id===selectedOrg?isNavigatingToOrgs:false} onClick={()=>navigateToApp(item)} type='link'>{item.name}</Button>}
-                                // description="Ant Design, a design language for background applications, is refined by Ant UED Team"
+                                title={
+                                    <div style={{display:'flex'}}>
+                                       <Typography.Text style={{marginRight: '1em'}}>{item.name}</Typography.Text>
+                                        <Tag>{item.role}</Tag>
+                                    </div>
+                                    }
                                 />
                            
                         </List.Item>

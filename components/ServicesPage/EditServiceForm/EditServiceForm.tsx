@@ -7,7 +7,7 @@ import {UploadOutlined} from '@ant-design/icons'
 import {v4 as uuidv4} from 'uuid'
 
 import { useRouter } from 'next/router';
-import { Venue } from '../../../types/Venue';
+import { Venue } from '../../../types/Services';
 import { nftStorageClient } from '../../../utils/nftStorage';
 
 

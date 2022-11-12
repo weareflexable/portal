@@ -1,7 +1,8 @@
 import React from 'react'
-import {Typography,Avatar,Space,Menu,Button} from 'antd'
+import {Typography,Avatar,Space,Menu,Button, Tag} from 'antd'
 import {DownOutlined,LogoutOutlined} from '@ant-design/icons'
 import { useAuthContext } from '../../../context/AuthContext'
+import { useOrgContext } from '../../../context/OrgContext'
 const {Text} = Typography
 
 interface CurrentUserProps{
@@ -10,7 +11,7 @@ interface CurrentUserProps{
 export default function CurrentUser({user={email:'mbappai@yahoo.com',role:'admin'}}:CurrentUserProps){
 
     const {setIsAuthenticated} = useAuthContext()
-
+    const {orgUserRole} = useOrgContext()
 
     return(
 
@@ -28,7 +29,10 @@ export default function CurrentUser({user={email:'mbappai@yahoo.com',role:'admin
          alignItems:'center',
          }}>
        <Avatar src={''}/>
-       <Text  ellipsis style={{marginBottom:0, width:'150px', marginRight:'.5em', marginLeft:'1em'}}>mujahidbappai@gmail.com</Text>
+       <div style={{display:'flex', flexDirection:'column'}}>
+       <Text ellipsis style={{marginBottom:'.1em', width:'150px', marginRight:'.5em', marginLeft:'1em'}}>mujahidbappai@gmail.com</Text>
+       <Tag color='magenta'>{orgUserRole}</Tag>
+       </div>
      </div>
     )
 }

@@ -1,18 +1,17 @@
 import {useState, useEffect}  from 'react'
 import { useAuthContext } from '../context/AuthContext'
 import { Org } from '../types/OrganisationTypes';
-import useActiveOrgs from './useOrgs';
+import useOrgs from './useOrgs';
 
 const initOrgs: Org[] = [
-    {id:'faefe3fdafdr3', name: 'Mujeex Labs', logoUrl:'https://joeschmoe.io/api/v1/random'},
-    {id:'faefedavav33263r3', name: 'Schelling overs', logoUrl:'https://joeschmoe.io/api/v1/random'},
-    {id:'faeffa6ndje3r3', name: 'Magic Mike Exclusive Club', logoUrl:'https://joeschmoe.io/api/v1/random'}
+    {id:'faefe3fdafdr3', name: 'Mujeex Labs', logoUrl:'https://joeschmoe.io/api/v1/random',role:'Admin'},
+    {id:'faefedavav33263r3', name: 'Schelling overs', logoUrl:'https://joeschmoe.io/api/v1/random',role: 'Staff'},
+    {id:'faeffa6ndje3r3', name: 'Magic Mike Exclusive Club', logoUrl:'https://joeschmoe.io/api/v1/random',role:'Admin'}
 ]
 
 export default function useFetchUserOrgs(){
-    const {isAuthenticated} = useAuthContext();
     // get currentOrg from hook
-    const {currentOrg} = useActiveOrgs()
+    const {currentOrg} = useOrgs()
 
     const [orgs, setOrgs] = useState<Org[]>(initOrgs)
 
@@ -29,6 +28,7 @@ export default function useFetchUserOrgs(){
 
     }
 
+    // indicates the org user is currently in
     const activeOrgs = determineCurrentOrg()
 
 

@@ -5,11 +5,11 @@ import CreateVenueForm from '../CreateServiceForm/CreateServiceForm';
 import EditVenueForm from '../EditServiceForm/EditServiceForm'
 import VenueTable from '../ServicesTable/ServicesTable';
 import useCrud from '../../../hooks/useCrud';
-import { Venue } from '../../../types/Venue';
+import { Service } from '../../../types/Services';
 
 const {Text} = Typography;
 
-const mockServices: Venue[] =[
+const mockServices: Service[] =[
     {
     name: 'Benjamins On Franklin',
     address: 'Newyork syracuse, 2234',
@@ -47,9 +47,7 @@ export default function ServiceView({}:ServicesViewProps){
          deleteItem,
          closeCreateForm,
          closeEditForm
-        } = useCrud<Venue>(mockServices)
-
-
+        } = useCrud<Service>(mockServices)
 
     
 

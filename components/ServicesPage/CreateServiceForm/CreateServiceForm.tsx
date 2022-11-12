@@ -9,7 +9,7 @@ import {v4 as uuidv4} from 'uuid'
 import { useRouter } from 'next/router';
 import {usePlacesWidget} from 'react-google-autocomplete'
 import { nftStorageClient } from "../../../utils/nftStorage";
-import { Venue } from "../../../types/Venue";
+import { Venue } from "../../../types/Services";
 
 interface StoreFormProps{
     onLaunchStore: (formData:any)=>void

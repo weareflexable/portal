@@ -6,7 +6,7 @@ export type OrganistationReq = {
     phoneNumber: string,
     imageHash: string
 }
-export type orgFormData = {
+export type OrgFormData = {
     name: string,
     emailId: string,
     address: string,
@@ -17,5 +17,6 @@ export type orgFormData = {
 export type Org = {
     name: string,
     id: string,
-    logoUrl: string
+    logoUrl: string,
+    role: string
 }

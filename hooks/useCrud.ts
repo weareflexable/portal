@@ -1,12 +1,10 @@
 import {useState} from 'react'
-import { Org } from '../types/OrganisationTypes';
-import { Staff } from '../types/Staff';
-import { Venue } from '../types/Venue';
+
 
 
 // type Item<T> 
 
-export default function useCrud<T>(initState:T[]){
+export default function useCrud<T>(initState?:T[]){
     const [state, setState] = useState<T[]>(()=>initState? initState:[])
     const [showCreateForm, setShowCreateForm] = useState(false)
     const [showEditForm, setShowEditForm] = useState(false)

@@ -1,73 +1,59 @@
 import React,{useState} from 'react'
 import {Card,Button,Typography,Alert,Space,Modal, PageHeader} from 'antd'
 import router, { useRouter } from 'next/router';
-import ServiceForm from './CreateServiceForm/CreateServiceForm';
+import ServiceItemForm from './CreateServiceForm/CreateServiceForm';
 
-import StoreList from '../ServicesPage/ServicesTable/ServicesTable';
-import ServiceList from './ServiceList/ServiceList';
+// import ServiceItemTable from '../ServicesPage/ServicesTable/ServicesTable';
+import ServiceList from './ServiceItemList/ServiceItemList';
 import EditForm from './EditServiceForm/EditServiceForm';
-import Bookings from './Bookings/Bookings';
+import useCrud from '../../hooks/useCrud';
+import { ServiceItem } from '../../types/Services';
 const {Text} = Typography;
 
 
 
-export type Service = {
-    key: string,
-    name: string,
-    price: number,
-    description: string,
-    serviceDuration: string
-}
 
-interface UserStoreViewProps{
+interface UserServicesViewProps{
 
 }
-export default function UserStoreView({}:UserStoreViewProps){
 
-    const router = useRouter()
+const mockServiceItems: ServiceItem[] = [
+    {
+    id:'fdafda3873nv',
+    name: 'Line skip pro + cover',
+    price: 2500,
+    description: 'Best service in town ready to take over the place',
+    serviceDuration: '22 Feburary'
+    },
+    {
+    id:'fdafda3873nv',
+    name: 'Bottle service pro + cover',
+    price: 5500,
+    description: 'Skip the line and lets get you in',
+    serviceDuration: '26 Feburary'
+    },
+]
 
-    // TODO: fetch all stores from db
-    const [services, setServices] = useState<Array<Service>>([]);
-    const [isModalOpen, setIsModalOpen] = useState(false)
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-    const [serviceToEdit, setServiceToEdit] = useState<Service|undefined>(undefined)
+export default function UserServicesView({}:UserServicesViewProps){
 
-    const handleRegisterService = ()=>{
-        setIsModalOpen(true)
-    }
-    const handleCreateService = (serviceData:Service)=>{
-        const clonedServices =  services.slice()
-        clonedServices.push(serviceData)
-        setServices(clonedServices);
-        setIsModalOpen(false)
-    }
+    const {asPath} = useRouter()
+    const serviceId = asPath.split('/')[4]
 
-    const handleEditService = (updatedService: Service)=>{
-
-        // copy state to avoid mutation
-        const clonedServices = services.slice()
-        // find index of updated service in old services
-        const serviceIndex = clonedServices.findIndex(service=>service.key === updatedService.key)
-        // update edited service
-        clonedServices[serviceIndex]= updatedService;
-        // update service in state
-        setServices(clonedServices)
-        setIsEditModalOpen(false)
-    }
+    const {
+        state,
+        showCreateForm, 
+        openCreateForm,
+        showEditForm,
+        itemToEdit,
+        selectItemToEdit,
+        createItem,
+        editItem,
+        deleteItem,
+        closeCreateForm,
+        closeEditForm
+       } = useCrud<ServiceItem>(mockServiceItems)
 
 
-    const selectServiceForEdit = (service:Service)=>{
-        console.log('selectedService', service)
-        setIsEditModalOpen(true)
-        setServiceToEdit(service)
-    }
-
-    const deleteService = (itemKey:string)=>{
-        const clonedServices = services.slice()
-        const updatedServices = clonedServices.filter(service=>service.key !== itemKey );
-        setServices(updatedServices);
-    }
-    
 
     return(
         <div>
@@ -76,22 +62,22 @@ export default function UserStoreView({}:UserStoreViewProps){
             title="Benjamins On Franklin"
             subTitle="Illinois, United states"
             />
-            { services.length > 0 ? 
-                <ServiceList onDeleteService = {deleteService} onSelectService={selectServiceForEdit} onCreateService={()=>setIsModalOpen(true)} services={services}/>:
-                <EmptyServices onRegisterService={()=>setIsModalOpen(true)}/>
+            { state.length > 0 ? 
+                <ServiceList onDeleteService = {deleteItem} onSelectService={selectItemToEdit} onCreateService={openCreateForm} services={state}/>:
+                <EmptyServices onRegisterService={openCreateForm}/>
             }
 
-            <Modal title={serviceToEdit?'Edit Service': 'Create service'} open={isModalOpen} footer={null} onCancel={()=>setIsModalOpen(false)}>
-                <ServiceForm 
-                onTriggerFormAction={handleCreateService} 
-                onCancelFormCreation={()=>setIsModalOpen(false)}/>
+            <Modal title={'Create service'} open={showCreateForm} footer={null} onCancel={closeCreateForm}>
+                <ServiceItemForm 
+                onTriggerFormAction={createItem} 
+                onCancelFormCreation={closeCreateForm}/>
             </Modal>
 
-            <Modal title={'Edit Service'} open={isEditModalOpen} footer={null} onCancel={()=>setIsEditModalOpen(false)}>
+            <Modal title={'Edit Service'} open={showEditForm} footer={null} onCancel={closeEditForm}>
                 <EditForm 
-                initValues={serviceToEdit} 
-                onTriggerFormAction={handleEditService} 
-                onCancelFormCreation={()=>setIsEditModalOpen(false)}/>
+                initValues={itemToEdit} 
+                onTriggerFormAction={editItem} 
+                onCancelFormCreation={closeEditForm}/>
             </Modal>
 
         </div>
