@@ -1,30 +1,39 @@
 import React,{useState} from 'react'
 import {Card,Button,Typography,Alert,Space,Modal} from 'antd'
 import router, { useRouter } from 'next/router';
-import CreateVenueForm from '../CreateVenueForm/CreateVenueForm';
-import EditVenueForm from '../EditVenueForm/EditVenueForm'
-import VenueTable from '../VenueTable/VenueTable';
+import CreateVenueForm from '../CreateServiceForm/CreateServiceForm';
+import EditVenueForm from '../EditServiceForm/EditServiceForm'
+import VenueTable from '../ServicesTable/ServicesTable';
 import useCrud from '../../../hooks/useCrud';
 import { Venue } from '../../../types/Venue';
 
 const {Text} = Typography;
 
+const mockServices: Venue[] =[
+    {
+    name: 'Benjamins On Franklin',
+    address: 'Newyork syracuse, 2234',
+    type: 'Bar',
+    storeLogo: ['https://joeschmoe.io/api/v1/random'],
+    storeCoverImage: ['https://joeschmoe.io/api/v1/random'],
+    id: 'dadvaereafd'
+},
+    {
+    name: 'Schelling Restaurant',
+    address: 'Barcelona, Estonia 2234',
+    type: 'Restaurant',
+    storeLogo: ['https://joeschmoe.io/api/v1/random'],
+    storeCoverImage: ['https://joeschmoe.io/api/v1/random'],
+    id: 'dadvaer8379343fedfa'
+},
+]
 
 
-// TODO: add google picker for grabbing location coordinates
-export type Store ={
-    name: string,
-    address: string,
-    type: string,
-    storeLogo: Array<object>,
-    storeCoverImage: Array<object>,
-    key: string
+
+interface ServicesViewProps{
+
 }
-
-interface StoreViewProps{
-
-}
-export default function ServiceView({}:StoreViewProps){
+export default function ServiceView({}:ServicesViewProps){
 
     const {
          state,
@@ -38,7 +47,7 @@ export default function ServiceView({}:StoreViewProps){
          deleteItem,
          closeCreateForm,
          closeEditForm
-        } = useCrud<Venue>()
+        } = useCrud<Venue>(mockServices)
 
 
 

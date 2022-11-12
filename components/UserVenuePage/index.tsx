@@ -3,7 +3,7 @@ import {Card,Button,Typography,Alert,Space,Modal, PageHeader} from 'antd'
 import router, { useRouter } from 'next/router';
 import ServiceForm from './CreateServiceForm/CreateServiceForm';
 
-import StoreList from '../VenuesPage/VenueTable/VenueTable';
+import StoreList from '../ServicesPage/ServicesTable/ServicesTable';
 import ServiceList from './ServiceList/ServiceList';
 import EditForm from './EditServiceForm/EditServiceForm';
 import Bookings from './Bookings/Bookings';

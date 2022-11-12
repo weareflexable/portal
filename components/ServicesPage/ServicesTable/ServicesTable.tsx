@@ -3,7 +3,7 @@ import {Card,List,Typography,Button,Avatar, Tag, Space} from 'antd'
 import { useRouter } from 'next/router'
 import Table, { ColumnsType } from 'antd/lib/table';
 import Link from 'next/link';
-import {Store} from '../VenueView/VenueView'
+import {Store} from '../ServicesView/ServicesView'
 import { Venue } from '../../../types/Venue';
 
 const {Title,Text} = Typography
