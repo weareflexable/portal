@@ -13,7 +13,6 @@ export default function OrgSwitcher({onOpenSwitcher}:OrgSwitcherProps){
     
     return (
                 <div
-                 onClick={onOpenSwitcher} 
                  style={
                     {display:'flex', 
                     cursor:'pointer', 
