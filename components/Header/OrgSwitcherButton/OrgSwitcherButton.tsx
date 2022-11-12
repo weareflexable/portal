@@ -1,5 +1,5 @@
 import React,{useState} from 'react';
-import {Typography,Avatar} from 'antd'
+import {Typography,Avatar,Button} from 'antd'
 import { useOrgContext } from '../../../context/OrgContext';
 const {Text,Title,Paragraph} = Typography;
 
@@ -17,14 +17,16 @@ export default function OrgSwitcher({onOpenSwitcher}:OrgSwitcherProps){
                  style={
                     {display:'flex', 
                     cursor:'pointer', 
-                    background:'#f4f4f4' , 
                     borderRadius:'50px', 
                     padding:'.5em', 
                     justifyContent:'center', 
                     alignItems:'center'
                     }}>
                   <Avatar src={currentOrg.logoUrl}/>
-                  <Text style={{marginBottom:0, marginRight:'.5em', marginLeft:'1em'}}>{currentOrg.name}</Text>
+                  <div style={{display:'flex', flexDirection:'column'}}>
+                    <Title  ellipsis level={5} style={{marginBottom:'.001em', width:'150px', marginRight:'.5em', marginLeft:'.5em'}}>{currentOrg.name}</Title>
+                    <Button onClick={onOpenSwitcher} type='link' size='small' style={{padding:'0', textAlign:'start', margin:'0', marginLeft:'.5em'}}>Switch organistation</Button>
+                  </div>
                 </div>
           )
 }
