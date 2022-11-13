@@ -1,5 +1,6 @@
 import React from 'react'
 import {Card,List,Typography,Button,Avatar, Tag, Space} from 'antd'
+import {PlusCircleOutlined} from '@ant-design/icons'
 import { useRouter } from 'next/router'
 import Table, { ColumnsType } from 'antd/lib/table';
 import Link from 'next/link';
@@ -87,7 +88,7 @@ export default function ServiceTable({onSelectStoreToEdit, onDeleteStore, servic
 
     return(
       <div style={{display:'flex',flexDirection:'column'}}> 
-        <Button type='primary' disabled={!isAdmin} shape='round' style={{marginBottom:'1em', alignSelf:'flex-end'}} onClick={showCreateForm}>Create new store</Button>
+        <Button type='primary' disabled={!isAdmin} shape='round' style={{marginBottom:'1em', alignSelf:'flex-end',display:'flex',alignItems:'center'}} icon={<PlusCircleOutlined />} onClick={showCreateForm}>Add new service</Button>
         <Table columns={columns} dataSource={services} />
       </div>
     )

@@ -1,14 +1,14 @@
 import { Form, Input, Upload, Button, Divider } from "antd";
 import {UploadOutlined} from '@ant-design/icons'
-import {orgFormData} from '../../../types/OrganisationTypes'
+import {OrgFormData} from '../../../types/OrganisationTypes'
 
 interface RegisterNewOrgProps{
-    onRegisterNewOrg: (org:orgFormData)=>void
+    onRegisterNewOrg: (org:OrgFormData)=>void
     isRegisteringOrg: boolean
 }
 export default function RegisterOrgForm({onRegisterNewOrg,isRegisteringOrg}:RegisterNewOrgProps){
 
-    const onFinish= (formData:orgFormData)=>{
+    const onFinish= (formData:OrgFormData)=>{
         const payload={
                 name:formData.name,
                 emailId: formData.emailId,
