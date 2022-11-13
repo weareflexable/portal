@@ -26,5 +26,6 @@ export type ServiceItem = {
     name: string,
     price: number,
     description: string,
-    serviceDuration: string
+    startDate: moment.Moment,
+    endDate: moment.Moment
 }

@@ -7,14 +7,15 @@ const {Text} = Typography;
 import {v4 as uuidv4} from 'uuid'
 
 import { useRouter } from 'next/router';
-import {Service} from '..'
+import { ServiceItem } from '../../../types/Services';
 
-interface ServiceFormProps{
-    initValues: Service | undefined
-    onTriggerFormAction: (formData:Service)=>void
+
+interface ServiceItemFormProps{
+    initValues: ServiceItem | undefined
+    onTriggerFormAction: (formData:ServiceItem)=>void
     onCancelFormCreation: ()=>void
 }
-export default function EditForm({initValues, onTriggerFormAction, onCancelFormCreation}:ServiceFormProps){
+export default function EditForm({initValues, onTriggerFormAction, onCancelFormCreation}:ServiceItemFormProps){
 
 
     // TODO: set field for editing
@@ -24,8 +25,9 @@ export default function EditForm({initValues, onTriggerFormAction, onCancelFormC
 
     const prevValues = initValues
 
-    const onFinish = (formData:Service)=>{
+    const onFinish = (formData:ServiceItem)=>{
         console.log('prevValues',prevValues)
+        console.log(formData)
 
         const formObject = {
             ...prevValues,
@@ -46,7 +48,7 @@ export default function EditForm({initValues, onTriggerFormAction, onCancelFormC
 
     const showStoreCreationNotification = () => {
         notification['success']({
-          message: 'Service updated succesfully',
+          message: 'ServiceItem updated succesfully',
         });
       };
       
@@ -78,12 +80,16 @@ export default function EditForm({initValues, onTriggerFormAction, onCancelFormC
             </Form.Item>
 
 
-            <Form.Item name='description'  label="Service description">
+            <Form.Item name='description'  label="ServiceItem description">
                 <TextArea maxLength={150} showCount  placeholder='Best coffee shop in the entire world with the most beautiful scenary' rows={3} />
             </Form.Item>
 
-            <Form.Item name='serviceDuration' label="Service duration">
-                <RangePicker />
+            <Form.Item name='startDate' label="Start date">
+                <DatePicker />
+            </Form.Item>
+
+            <Form.Item name='endDate' label="End date">
+                <DatePicker />
             </Form.Item>
 
 
