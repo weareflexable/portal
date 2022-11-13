@@ -61,11 +61,7 @@ export default function UserServicesView({}:UserServicesViewProps){
 
     return(
         <div>
-            <PageHeader
-            onBack={() => router.back()}
-            title="Benjamins On Franklin"
-            subTitle="Illinois, United states"
-            />
+           
             { state.length > 0 
                 ? <ServiceList onDeleteService = {deleteItem} onSelectService={selectItemToEdit} onCreateService={openCreateForm} services={state}/>
                 :<EmptyServices onRegisterService={openCreateForm}/>

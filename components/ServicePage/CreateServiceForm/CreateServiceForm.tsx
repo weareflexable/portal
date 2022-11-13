@@ -7,14 +7,15 @@ const {Text} = Typography;
 import {v4 as uuidv4} from 'uuid'
 
 import { useRouter } from 'next/router';
-import {Service} from '..'
+import { ServiceItem } from '../../../types/Services';
+
 
 
 
 
 
 interface ServiceFormProps{
-    onTriggerFormAction: (formData:any)=>void
+    onTriggerFormAction: (formData:ServiceItem)=>void
     onCancelFormCreation: ()=>void
 }
 export default function ServiceForm({ onTriggerFormAction, onCancelFormCreation}:ServiceFormProps){
@@ -25,7 +26,7 @@ export default function ServiceForm({ onTriggerFormAction, onCancelFormCreation}
     const router = useRouter()
     const [form] = Form.useForm()
 
-    const onFinish = (formData:FormData)=>{
+    const onFinish = (formData:ServiceItem)=>{
         // call function to create stor
         // only generate key if it's a new service
             const formObject= {
