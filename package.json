@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ant-design/plots": "^1.2.2",
     "@tanstack/react-query": "^4.10.3",
     "@tanstack/react-query-devtools": "^4.11.0",
     "antd": "^4.23.5",
@@ -25,6 +26,7 @@
     "@types/node": "18.8.5",
     "@types/react": "18.0.21",
     "@types/react-dom": "18.0.6",
+    "@types/react-highlight-words": "^0.16.4",
     "@types/uuid": "^8.3.4",
     "autoprefixer": "^10.4.12",
     "eslint": "8.25.0",
