@@ -5,6 +5,9 @@ import {Typography,Button,Avatar, Tag, InputRef, Input, Space} from 'antd'
 import { useRouter } from 'next/router'
 import Table, { ColumnsType, ColumnType } from 'antd/lib/table';
 import Highlighter from 'react-highlight-words'
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import { FilterDropdownProps } from 'antd/lib/table/interface';
 
 
 
@@ -75,6 +78,19 @@ export default function Bookings(){
 
   const router = useRouter()
 
+  // const { isLoading, data } = useQuery(
+  //   ['bookings'],
+  //   async () => {
+  //     const { data } = await axios.get(
+  //       'https://random-data-api.com/api/vehicle/random_vehicle'
+  //     );
+  //     return data;
+  //   },
+  //   {
+  //     refetchInterval: 1000,
+  //   }
+  // );
+
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
   const searchInput = useRef<InputRef>(null);
@@ -95,7 +111,7 @@ export default function Bookings(){
   };
 
   const getColumnSearchProps = (dataIndex: DataIndex): ColumnType<DataType> => ({
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters}) => (
       <div style={{ padding: 8 }} onKeyDown={e => e.stopPropagation()}>
         <Input
           ref={searchInput}
@@ -137,7 +153,7 @@ export default function Bookings(){
             type="link"
             size="small"
             onClick={() => {
-              close();
+              confirm({closeDropdown:true})
             }}
           >
             close
