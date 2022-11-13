@@ -75,8 +75,12 @@ export default function ServiceForm({ onTriggerFormAction, onCancelFormCreation}
                 <TextArea maxLength={150} showCount  placeholder='Best coffee shop in the entire world with the most beautiful scenary' rows={3} />
             </Form.Item>
 
-            <Form.Item name='serviceDuration' label="Service duration">
-                <RangePicker />
+            <Form.Item name='startDate' label="Start date">
+                <DatePicker />
+            </Form.Item>
+
+            <Form.Item name='endDate' label="End date">
+                <DatePicker />
             </Form.Item>
 
 

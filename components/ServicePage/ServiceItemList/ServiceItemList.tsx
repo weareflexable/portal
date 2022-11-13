@@ -1,8 +1,9 @@
 import React from 'react'
-import {Card,List,Typography,Button,Avatar} from 'antd'
+import {Card,List,Typography,Button,Avatar, Descriptions} from 'antd'
 import { useRouter } from 'next/router'
 import { ServiceItem } from '../../../types/Services'
 import { useOrgContext } from '../../../context/OrgContext'
+import moment from 'moment'
 
 const {Title,Text} = Typography
 
@@ -37,9 +38,28 @@ export default function ServiceListProps({onDeleteService, onSelectService, serv
             >
                 <List.Item.Meta
                 key={item.id}
-                title={<> <Text>{item.name}</Text> <Text type='secondary'>— ${item.price}</Text></>}
-                description={ item.description }
-                />  
+                title={<Title level={5}>{item.name}</Title>}
+                description={
+                    <div style={{display:'flex', width:'100%', flexDirection:'column'}}>
+                        <div style={{display:'flex'}}>
+                            <Text type='secondary' style={{marginRight:'.3em'}}>Price:</Text>
+                            <Text>${item.price/100}</Text>
+                        </div>
+                        <div style={{display:'flex'}}>
+                            <Text type='secondary' style={{marginRight:'.3em'}}>Description:</Text>
+                            <Text>{item.description}</Text>
+                        </div>
+                        <div style={{display:'flex'}}>
+                            <Text type='secondary' style={{marginRight:'.3em'}}>Start date:</Text>
+                            <Text>{moment(item.startDate).format('MMM DD, YYYY')}</Text>
+                        </div>
+                        <div style={{display:'flex'}}>
+                            <Text type='secondary' style={{marginRight:'.3em'}}>End date:</Text>
+                            <Text>{moment(item.endDate).format('MMM DD, YYYY')}</Text>
+                        </div>
+                    </div> 
+                 }
+                /> 
             </List.Item>
              )}
              />           
