@@ -1,11 +1,11 @@
 import { Content } from 'antd/lib/layout/layout'
 import React from 'react'
-import AppLayout from '../../../components/shared/Layout/layout'
-import { useAuthContext } from '../../../context/AuthContext'
+import AppLayout from '../../../../../components/shared/Layout/layout'
+import { useAuthContext } from '../../../../../context/AuthContext'
 import { Col, Row,Card,Statistic } from 'antd';
-import Earnings from '../../../components/DashboardPage/Earnings';
-import StaffStats from '../../../components/DashboardPage/StaffStats/StaffStats';
-import ServiceStats from '../../../components/DashboardPage/ServiceStats/ServiceStats';
+import Earnings from '../../../../../components/DashboardPage/Earnings';
+import StaffStats from '../../../../../components/DashboardPage/StaffStats/StaffStats';
+import ServiceStats from '../../../../../components/DashboardPage/ServiceStats/ServiceStats';
 
 export default function Dashboard(){
 

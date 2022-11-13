@@ -2,6 +2,7 @@ import React,{useState} from 'react'
 import {Card,Form,Input, Typography,Modal, InputNumber,Space,Button,Row,Col,Statistic} from 'antd'
 const {Text} = Typography
 import BillingsForm from '../BillingsForm/BillingsForm'
+import {PlusCircleOutlined} from '@ant-design/icons'
 
 export default function AccountsView(){
 
@@ -25,19 +26,20 @@ export default function AccountsView(){
 
     return(
         <Space direction='vertical'>
-            <Row gutter={16}>
+            {/* <Row gutter={16}>
                 <Col span={12}>
                 <Statistic title="Account Balance (USD)" value={112893} precision={2} />
                 <Button disabled={bankDetails?false:true} style={{ marginTop: 16 }} type="primary">
                     Withdraw
                 </Button>
                 </Col>
-            </Row>
+            </Row> */}
 
-            {bankDetails.length<1?<div style={{width:'100%',display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center'}}>
-                <Text type='secondary'>You have to register add a bank account before you can withdraw</Text>
-                <Button onClick={()=>setIsModalOpen(true)}>Add new bank account</Button>
-            </div>: <Accounts openModal={()=>setIsModalOpen(true)}/> }
+            {bankDetails.length<1
+            ?<div style={{width:'100%',display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center'}}>
+                <Button type='link' icon={<PlusCircleOutlined />} onClick={()=>setIsModalOpen(true)}>Add new bank account</Button>
+            </div>
+            : <Accounts openModal={()=>setIsModalOpen(true)}/> }
 
             <Modal title="Add a bank acount" open={isModalOpen} footer={null} onCancel={()=>setIsModalOpen(false)}>
                 <BillingsForm/>        

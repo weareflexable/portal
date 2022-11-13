@@ -70,6 +70,10 @@ const { Header, Sider, Content } = Layout;
                       key: 'staff',
                       label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link type='link' href={`/organisation/${splittedRoutes[2]}/staff`}>Staff</Link> </div> ,
                     },
+                    {
+                      key: 'billings',
+                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link type='link' href={`/organisation/${splittedRoutes[2]}/billings`}>Billings</Link> </div> ,
+                    },
                   ]}
                 />
                 {

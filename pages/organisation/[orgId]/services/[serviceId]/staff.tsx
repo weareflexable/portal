@@ -1,7 +1,7 @@
 import React from 'react'
-import StaffView from '../../../components/StaffsPage'
-import AppLayout from '../../../components/shared/Layout/layout'
-import { useAuthContext } from '../../../context/AuthContext'
+import StaffView from '../../../../../components/StaffsPage'
+import AppLayout from '../../../../../components/shared/Layout/layout'
+import { useAuthContext } from '../../../../../context/AuthContext'
 import { Content } from 'antd/lib/layout/layout'
 
 export default function Staffs(){

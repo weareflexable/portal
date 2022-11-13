@@ -1,6 +1,6 @@
 import React from 'react'
-import ServicePageView from '../../../../components/ServicePage'
-import AppLayout from '../../../../components/shared/Layout/layout' 
+import ServicePageView from '../../../../../components/ServicePage'
+import AppLayout from '../../../../../components/shared/Layout/layout' 
 import { Content } from 'antd/lib/layout/layout'
 import { PageHeader } from 'antd'
 import { useRouter } from 'next/router'

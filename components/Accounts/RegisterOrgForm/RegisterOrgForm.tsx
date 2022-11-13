@@ -1,19 +1,21 @@
 import * as React from 'react';
 import {Card,Form,Input,Button} from 'antd';
 import { useRouter } from 'next/router';
+import { OrgFormData } from '../../../types/OrganisationTypes';
 
 
 interface RegisterOrgFormProps{
-    toLoginForm: ()=>void
+    onRegisterNewOrg : (formData: OrgFormData)=>void,
+    isRegisteringOrg: boolean
 }
-export default function RegisterOrgForm({toLoginForm}:RegisterOrgFormProps){
+export default function RegisterOrgForm({onRegisterNewOrg,isRegisteringOrg}:RegisterOrgFormProps){
 
 
     const router = useRouter()
 
-    const onFinish= (formData:FormData)=>{
+    const onFinish= (formData:OrgFormData)=>{
         console.log(formData)
-        router.push('/dashboard')
+        onRegisterNewOrg(formData)
     }
 
     return(
@@ -75,9 +77,8 @@ export default function RegisterOrgForm({toLoginForm}:RegisterOrgFormProps){
 
             <Form.Item>
                 <Button type="primary" htmlType="submit" className="login-form-button">
-                Register organisation
+                    Register organisation
                 </Button>
-                Or <Button onClick={toLoginForm} href='#loginForm' type='link'>Login to Organisation</Button>
             </Form.Item>
 
                 </Form>

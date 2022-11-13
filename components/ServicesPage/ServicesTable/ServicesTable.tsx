@@ -56,7 +56,7 @@ export default function ServiceTable({onSelectStoreToEdit, onDeleteStore, servic
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: (text,record) => <Link href={`${asPath}/${record.id}`}><a>{text}</a></Link>,
+      render: (text,record) => <Link href={`${asPath}/services/${record.id}/dashboard`}><a>{text}</a></Link>,
     },
     {
       title: 'Address',
