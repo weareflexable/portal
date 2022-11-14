@@ -10,6 +10,7 @@ import React, { ReactNode, useState } from 'react';
 import { useAuthContext } from '../../../context/AuthContext';
 import CurrentUser from '../../Header/CurrentUser/CurrentUser';
 import OrgSwitcher from '../../Header/OrgSwitcherButton/OrgSwitcherButton';
+import ServiceSwitcherButton from '../../Header/ServicesSwitcherButton/ServicesSwitcherButton';
 import OrgSwitcherModal from '../OrgSwitcherModal/OrgSwitcherModal';
 import ServicesSwitcherModal from '../ServicesSwitcherModal/ServicesSwitcherModal';
 import UnAuthenticatedView from '../UnAuthenticated/UnAuthenticatedView';
@@ -86,7 +87,7 @@ const { Header, Sider, Content } = Layout;
                   !isAuthenticated ? <Button onClick={()=>setIsAuthenticated(true)}>Login</Button>
                   :(
                     <div style={{display:'flex',flex:'2'}}>
-                      <OrgSwitcher onOpenSwitcher={()=>setSwitcherModal(!showSwitcherModal)}/>
+                      <ServiceSwitcherButton onOpenSwitcher={()=>setSwitcherModal(!showSwitcherModal)}/>
                       <CurrentUser user={{email:'mbappai@yahoo.com',role:'admin'}}/>
                     </div>
                     )

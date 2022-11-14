@@ -8,9 +8,9 @@ export default function useServices(){
     // const [activeService, setActiveService] = useState<Service>({id:'weea434',logoUrl:'dfaerefadf',name:'Mujeex labs'})
     const [currentService, setCurrentService] = useLocalStorage<Service>('currentService',{id:'weea434',address:'Syracuse NY, Bacon Hill',name:'Mujeex Gym',type:'Gym',storeCoverImage:[''],storeLogo:['']})
 
-    const switchService = (org:Service)=>{
+    const switchService = (service:Service)=>{
         // setInLocal storage
-        setCurrentService(org)
+        setCurrentService(service)
     }
 
 
