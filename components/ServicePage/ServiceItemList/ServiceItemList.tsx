@@ -1,5 +1,6 @@
 import React from 'react'
 import {Card,List,Typography,Button,Avatar, Descriptions} from 'antd'
+import {PlusCircleOutlined} from '@ant-design/icons'
 import { useRouter } from 'next/router'
 import { ServiceItem } from '../../../types/Services'
 import { useOrgContext } from '../../../context/OrgContext'
@@ -19,22 +20,26 @@ export default function ServiceListProps({onDeleteService, onSelectService, serv
 
     const router = useRouter()
     const {isAdmin} = useOrgContext()
-
-    const titleNode = (
-        <div style={{display:'flex',justifyContent:'space-between'}} >
-            <Title level={5}>Service Items</Title>
-            <Button type='primary' shape='round' onClick={onCreateService}>Add new service item</Button>
-        </div>
-    )
+ 
 
     return(
-        <Card title={titleNode}>
+        <div style={{display:'flex',flexDirection:'column', width:'70%',padding:'1em'}}>
+            <Button type='link' icon={<PlusCircleOutlined />} shape='round' style={{alignSelf:'flex-start',marginBottom:'1em', display:'flex',alignItems:'center'}} onClick={onCreateService}>Add new service item</Button>
             <List
             itemLayout="horizontal"
             dataSource={services}
+            bordered={false}
             renderItem={(item:ServiceItem) => (
             <List.Item 
-                actions={[<Button danger size='small' disabled={!isAdmin}  type='text' onClick={()=>onDeleteService(item.id)} key={item.id}>Delete</Button> , <Button size='small' type='link'  onClick={()=>onSelectService(item)} key={item.id}>Edit</Button>   ]}
+                style={{border:'none', background:'#f9f9f9',marginBottom:'.5em',padding:'1em', borderRadius:'4px'}}
+                actions={[
+                <Button 
+                    danger 
+                    size='small' 
+                    disabled={!isAdmin} 
+                    type='text' onClick={()=>onDeleteService(item.id)} 
+                    key={item.id}>Delete</Button> , <Button size='small' type='link'  onClick={()=>onSelectService(item)} key={item.id}>Edit</Button>  
+                 ]}
             >
                 <List.Item.Meta
                 key={item.id}
@@ -67,6 +72,6 @@ export default function ServiceListProps({onDeleteService, onSelectService, serv
             </List.Item>
              )}
              />           
-        </Card>
+        </div>
     )
 }

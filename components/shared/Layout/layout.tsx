@@ -64,7 +64,7 @@ const { Header, Sider, Content } = Layout;
                       label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link type='link' href={`${basePath}/bookings`}>Bookings</Link> </div> ,
                     },
                     {
-                      key: 'services',
+                      key: 'serviceItems',
                       label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link type='link' href={`${basePath}/serviceItems`}>Service Items</Link> </div> ,
                     },
                     {

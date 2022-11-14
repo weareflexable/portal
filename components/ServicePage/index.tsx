@@ -98,6 +98,6 @@ interface EmptyStoreProps{
 }
 const EmptyServices = ({onRegisterService}:EmptyStoreProps)=>{
     return(
-        <Button type='link' style={{display:'flex', alignItems:'center'}} icon={<PlusCircleOutlined />} onClick={onRegisterService}>Add new service item</Button>
+        <Button type='link' style={{display:'flex', alignItems:'center'}} icon={<PlusCircleOutlined />} onClick={onRegisterService}>Create service item</Button>
     )
 }
