@@ -4,7 +4,7 @@ const {Text} = Typography
 import BillingsForm from '../BillingsForm/BillingsForm'
 import {PlusCircleOutlined} from '@ant-design/icons'
 
-export default function AccountsView(){
+export default function BillingsView(){
 
     const [bankDetails, setBankDetails] =  useState<FormData[]>([])
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -37,7 +37,7 @@ export default function AccountsView(){
 
             {bankDetails.length<1
             ?<div style={{width:'100%',display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center'}}>
-                <Button type='link' icon={<PlusCircleOutlined />} onClick={()=>setIsModalOpen(true)}>Add new bank account</Button>
+                <Button type='link' style={{display:'flex', alignItems:'center'}} icon={<PlusCircleOutlined />} onClick={()=>setIsModalOpen(true)}>Add new bank account</Button>
             </div>
             : <Accounts openModal={()=>setIsModalOpen(true)}/> }
 

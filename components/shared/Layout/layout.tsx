@@ -36,6 +36,7 @@ const { Header, Sider, Content } = Layout;
     
     console.log(asPath)
     const splittedRoutes = asPath.split('/')
+    const selectedRoute = splittedRoutes[5]
     splittedRoutes.pop()
     const basePath = splittedRoutes.join('/')
   
@@ -52,7 +53,7 @@ const { Header, Sider, Content } = Layout;
                 style={{height:'100%',display:'flex', flex:'3'}}
                   theme="light"
                   mode="horizontal"
-                  defaultSelectedKeys={[splittedRoutes[3]]}
+                  defaultSelectedKeys={[selectedRoute]}
                   items={[
                     {
                       key: 'dashboard',

@@ -8,7 +8,7 @@ import AppLayout from '../../../../../components/shared/Layout/layout'
 export default function Billings(){
     return(
         <AppLayout>
-        <Title style={{marginLeft: '1em', marginTop:'1em'}} level={3}>Bookings</Title>
+        <Title style={{marginLeft: '1em', marginTop:'1em'}} level={3}>Billings</Title>
         <Content
             style={{
             padding: '1em',
