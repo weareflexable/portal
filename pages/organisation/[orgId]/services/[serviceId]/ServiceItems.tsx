@@ -12,11 +12,6 @@ export default function Staffs(){
     return(
     <>
         <AppLayout>
-        <PageHeader
-            onBack={() => router.back()}
-            title="Benjamins On Franklin"
-            subTitle="Illinois, United states"
-            />
             <Content
                 style={{
                     padding: '1em',

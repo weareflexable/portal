@@ -55,7 +55,6 @@ export default function EditForm({initValues, onTriggerFormAction, onCancelFormC
 
 
     return (
-        <Card title='Add new service'>
             <Form
             name="serviceForm"
             initialValues={initValues}
@@ -77,6 +76,15 @@ export default function EditForm({initValues, onTriggerFormAction, onCancelFormC
                 rules={[{ required: true, message: 'Please input a valid price!' }]}
             >
                 <InputNumber width={'30%'} prefix="$"  placeholder="0.00" />
+            </Form.Item>
+
+
+            <Form.Item
+                name="ticketsPerDay"
+                label='Tickets per day'
+                rules={[{ required: true, message: 'Please input a valid number!' }]}
+            >
+                <InputNumber width={'30%'}   placeholder="20" />
             </Form.Item>
 
 
@@ -107,6 +115,5 @@ export default function EditForm({initValues, onTriggerFormAction, onCancelFormC
             </Form.Item>
 
             </Form>
-        </Card>
     )
 }

@@ -25,6 +25,7 @@ export type ServiceItem = {
     id:string,
     name: string,
     price: number,
+    ticketsPerDay: number,
     description: string,
     startDate: moment.Moment,
     endDate: moment.Moment

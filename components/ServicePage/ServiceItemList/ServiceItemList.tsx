@@ -46,6 +46,10 @@ export default function ServiceListProps({onDeleteService, onSelectService, serv
                             <Text>${item.price/100}</Text>
                         </div>
                         <div style={{display:'flex'}}>
+                            <Text type='secondary' style={{marginRight:'.3em'}}>Tickets per day:</Text>
+                            <Text>{item.ticketsPerDay} tickets</Text>
+                        </div>
+                        <div style={{display:'flex'}}>
                             <Text type='secondary' style={{marginRight:'.3em'}}>Description:</Text>
                             <Text>{item.description}</Text>
                         </div>
