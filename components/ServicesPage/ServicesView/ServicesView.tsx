@@ -4,10 +4,11 @@ import {PlusCircleOutlined,ArrowLeftOutlined} from '@ant-design/icons'
 import router, { useRouter } from 'next/router';
 import CreateServiceForm from '../CreateServiceForm/CreateServiceForm';
 import EditServiceForm from '../EditServiceForm/EditServiceForm'
-import ServicesTable from '../ServicesTable/ServicesTable';
+
 import useCrud from '../../../hooks/useCrud';
 import { Service } from '../../../types/Services';
 import CurrentUser from '../../Header/CurrentUser/CurrentUser';
+import ServicesList from '../ServicesList/ServicesList';
 
 const {Text,Title} = Typography;
 
@@ -56,10 +57,10 @@ export default function ServiceView({}:ServicesViewProps){
     
 
     return(
-        <div>
+        <div style={{background:'#f7f7f7', minHeight:'100vh'}}>
            
             <Row style={{marginTop:'.5em'}} gutter={[16,46]}>
-                <header style={{width:'100%', boxShadow:'.5px 3px 3px 0px rgba(5,5,5,0.08)'}}>
+                <header style={{width:'100%', background:'#ffffff'}}>
                     <Col style={{display:'flex', justifyContent:'space-between'}} offset={2} span={20}>
                         <div style={{display:'flex', flexDirection:'column'}}> 
                             <Button style={{display:'flex', padding: '0', margin:'0', alignItems:'center', textAlign:'left'}} onClick={()=>back()} icon={<ArrowLeftOutlined />} type='link'>Back to organizations</Button>
@@ -68,13 +69,15 @@ export default function ServiceView({}:ServicesViewProps){
                         <CurrentUser/>
                     </Col>
                 </header>
+
                 <Col offset={2} span={20}>
+                    <Title style={{marginBottom:'1em'}} level={4}>Services</Title>
                     { state.length > 0 ?  
-                        <ServicesTable
-                        showCreateForm={openCreateForm}
+                        <ServicesList
+                        onCreateService={openCreateForm}
                         services={state}
-                        onDeleteStore={deleteItem}
-                        onSelectStoreToEdit={selectItemToEdit}
+                        onDeleteService={deleteItem}
+                        onSelectService={selectItemToEdit}
                         />:
                         <EmptyStore onRegisterStore={openCreateForm}/>
                     }

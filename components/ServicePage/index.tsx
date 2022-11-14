@@ -70,13 +70,13 @@ export default function UserServicesView({}:UserServicesViewProps){
                 :<EmptyServices onRegisterService={openCreateForm}/>
             }
 
-            <Modal title={'Create service'} open={showCreateForm} footer={null} onCancel={closeCreateForm}>
+            <Modal title={'Create service item'} open={showCreateForm} footer={null} onCancel={closeCreateForm}>
                 <ServiceItemForm 
                 onTriggerFormAction={createItem} 
                 onCancelFormCreation={closeCreateForm}/>
             </Modal>
 
-            <Modal title={'Edit Service'} open={showEditForm} footer={null} onCancel={closeEditForm}>
+            <Modal title={'Edit Service item'} open={showEditForm} footer={null} onCancel={closeEditForm}>
                 <EditForm 
                 initValues={itemToEdit} 
                 onTriggerFormAction={editItem} 

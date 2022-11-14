@@ -7,6 +7,6 @@ export default function Services(){
 
     return(
         
-                <ServiceView/>
+         <ServiceView/>
     )
 }
