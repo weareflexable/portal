@@ -13,16 +13,19 @@ export default function ServiceSwitcherModal({isModalOpen, onCloseModal}:Service
 
     const {services} =  useFetchUserServices()
     const {switchService} = useServicesContext()
-    const router = useRouter()
+    const {asPath,replace} = useRouter()
+    const splittedRoutes = asPath.split('/')
+    const basePath = splittedRoutes.slice(0,4).join('/')
 
     const [targetService, setTargeService] = useState<Service>()
 
     const switchServiceHandler = (selectedService:Service)=>{
+        setTargeService(selectedService)
         setTimeout(()=>{
-            router.replace(`/serviceanisation/${selectedService.id}/dashboard`)
+            replace(`${basePath}/${selectedService.id}/dashboard`)
             switchService(selectedService)
             onCloseModal()
-            setTargeService(selectedService)
+            // setTargeService(selectedService)
         },3000)
     }
 
