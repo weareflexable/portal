@@ -3,7 +3,7 @@ import React from 'react'
 import AppLayout from '../../../../../components/shared/Layout/layout'
 import { useAuthContext } from '../../../../../context/AuthContext'
 import { Col, Row,Card,Statistic } from 'antd';
-import Earnings from '../../../../../components/DashboardPage/Earnings';
+import Earnings from '../../../../../components/DashboardPage/Earnings/Earnings';
 import StaffStats from '../../../../../components/DashboardPage/StaffStats/StaffStats';
 import ServiceStats from '../../../../../components/DashboardPage/ServiceStats/ServiceStats';
 

@@ -6,7 +6,7 @@ import { useOrgContext } from '../../../context/OrgContext'
 const {Text,Title} = Typography
 
 interface CurrentUserProps{
-    user: {email:string, role:string}
+    user?: {email:string, role:string}
 }
 export default function CurrentUser({user={email:'mbappai@yahoo.com',role:'admin'}}:CurrentUserProps){
 
