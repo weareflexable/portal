@@ -28,5 +28,7 @@ export type ServiceItem = {
     ticketsPerDay: number,
     description: string,
     startDate: moment.Moment,
-    endDate: moment.Moment
+    endDate: moment.Moment,
+    startTime: moment.Moment,
+    rangeTime: number
 }

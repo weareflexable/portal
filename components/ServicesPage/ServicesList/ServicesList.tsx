@@ -29,7 +29,7 @@ export default function ServiceListProps({onDeleteService, onSelectService, serv
 
     return(
         <div style={{display:'flex',flexDirection:'column', height:'100%',  background:'#ffffff', width:'70%',padding:'1em'}}>
-            <Button type='link' icon={<PlusCircleOutlined />} shape='round' style={{alignSelf:'flex-start',marginBottom:'1em', display:'flex',alignItems:'center'}} onClick={onCreateService}>Add new service</Button>
+            <Button type='link' icon={<PlusCircleOutlined />} shape='round' style={{alignSelf:'flex-start',marginBottom:'1em', display:'flex',alignItems:'center'}} onClick={onCreateService}>Launch new service</Button>
             <List
             itemLayout="horizontal"
             dataSource={services}

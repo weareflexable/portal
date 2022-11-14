@@ -1,5 +1,5 @@
 import React from 'react'
-import ServicePageView from '../../../../../components/ServicePage'
+import ServicePageView from '../../../../../components/ServiceItemsPage'
 import AppLayout from '../../../../../components/shared/Layout/layout' 
 import { Content } from 'antd/lib/layout/layout'
 import { Typography, Row, Col } from 'antd'

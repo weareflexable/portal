@@ -58,14 +58,31 @@ export default function ServiceListProps({onDeleteService, onSelectService, serv
                             <Text type='secondary' style={{marginRight:'.3em'}}>Description:</Text>
                             <Text>{item.description}</Text>
                         </div>
-                        <div style={{display:'flex'}}>
-                            <Text type='secondary' style={{marginRight:'.3em'}}>Start date:</Text>
-                            <Text>{moment(item.startDate).format('MMM DD, YYYY')}</Text>
+
+                        <div style={{display:'flex',alignItems:'center'}}>
+                            <div style={{display:'flex'}}>
+                                <Text type='secondary' style={{marginRight:'.3em'}}>Start date:</Text>
+                                <Text>{moment(item.startDate).format('MMM DD, YYYY')}  </Text>
+                            </div>
+                            ----
+                            <div style={{display:'flex'}}>
+                                <Text type='secondary' style={{marginRight:'.3em'}}>End date:</Text>
+                                <Text>{moment(item.endDate).format('MMM DD, YYYY')}</Text>
+                            </div>
                         </div>
-                        <div style={{display:'flex'}}>
-                            <Text type='secondary' style={{marginRight:'.3em'}}>End date:</Text>
-                            <Text>{moment(item.endDate).format('MMM DD, YYYY')}</Text>
+
+                        <div style={{display:'flex',alignItems:'center'}}>
+                            <div style={{display:'flex'}}>
+                                <Text type='secondary' style={{marginRight:'.3em'}}>Start time:</Text>
+                                <Text>{moment(item.startTime).format('MMM DD, YYYY')}  </Text>
+                            </div>
+                            ----
+                            <div style={{display:'flex'}}>
+                                <Text type='secondary' style={{marginRight:'.3em'}}>Range time:</Text>
+                                <Text>{moment(item.endDate).format('MMM DD, YYYY')}</Text>
+                            </div>
                         </div>
+
                     </div> 
                  }
                 /> 

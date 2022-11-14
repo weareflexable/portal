@@ -10,6 +10,7 @@ import EditForm from './EditServiceForm/EditServiceForm';
 import useCrud from '../../hooks/useCrud';
 import { ServiceItem } from '../../types/Services';
 import moment from 'moment';
+import ServiceItemList from './ServiceItemList/ServiceItemList';
 const {Text} = Typography;
  
 
@@ -27,7 +28,9 @@ const mockServiceItems: ServiceItem[] = [
     ticketsPerDay:21,
     description: 'Best service in town ready to take over the place',
     startDate: moment(),
-    endDate: moment()
+    endDate: moment(),
+    startTime:moment('00:00:00', 'HH:mm:ss'),
+    rangeTime:4
     },
     {
     id:'fdafda3873nv',
@@ -36,7 +39,9 @@ const mockServiceItems: ServiceItem[] = [
     ticketsPerDay:21,
     description: 'Skip the line and lets get you in',
     startDate: moment(),
-    endDate: moment()
+    endDate: moment(),
+    startTime:moment('00:00:00', 'HH:mm:ss'),
+    rangeTime:5
     },
 ]
 
@@ -66,7 +71,7 @@ export default function UserServicesView({}:UserServicesViewProps){
         <div>
            
             { state.length > 0 
-                ? <ServiceList onDeleteService = {deleteItem} onSelectService={selectItemToEdit} onCreateService={openCreateForm} services={state}/>
+                ? <ServiceItemList onDeleteService = {deleteItem} onSelectService={selectItemToEdit} onCreateService={openCreateForm} services={state}/>
                 :<EmptyServices onRegisterService={openCreateForm}/>
             }
 

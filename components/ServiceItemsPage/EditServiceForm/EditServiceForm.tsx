@@ -1,5 +1,5 @@
 import React,{useState} from 'react';
-import {Card,Form, Input,InputNumber, DatePicker,Upload,Button,notification, Space, Alert, Typography} from 'antd';
+import {Card,Form, Input,InputNumber, DatePicker,Upload,Button,notification, Space, Alert, Typography, TimePicker} from 'antd';
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
 const {Text} = Typography;
@@ -92,22 +92,38 @@ export default function EditForm({initValues, onTriggerFormAction, onCancelFormC
                 <TextArea maxLength={150} showCount  placeholder='Best coffee shop in the entire world with the most beautiful scenary' rows={3} />
             </Form.Item>
 
-            <Form.Item name='startDate' label="Start date">
-                <DatePicker />
-            </Form.Item>
+            <div style={{display:'flex', alignItems:'center'}}>
 
-            <Form.Item name='endDate' label="End date">
-                <DatePicker />
-            </Form.Item>
+                <Form.Item name='startDate'  label="Start date">
+                    <DatePicker />
+                </Form.Item>
+
+                <Form.Item name='endDate' style={{marginLeft:'2em'}} label="End date">
+                    <DatePicker />
+                </Form.Item>
+
+            </div>
+
+            <div style={{display:'flex', marginBottom:'1em', alignItems:'center'}}>
+
+                <Form.Item name='startTime'   label="Start time">
+                    <TimePicker  format="h:mm:ss"  />
+                </Form.Item>
+
+                <Form.Item name='rangeTime' style={{marginLeft:'2em'}}  label="Duration">
+                    <InputNumber />
+                </Form.Item>
+
+            </div>
 
 
             <Form.Item>
                 <Space>
-                    <Button onClick={onCancelFormCreation} type='ghost'>
+                    <Button shape='round' onClick={onCancelFormCreation} type='ghost'>
                         Cancel
                     </Button>
 
-                    <Button type="primary"  htmlType="submit" >
+                    <Button shape='round' type="primary"  htmlType="submit" >
                      Apply changes
                     </Button>
                 </Space>
