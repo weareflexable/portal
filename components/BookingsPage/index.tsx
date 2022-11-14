@@ -7,6 +7,7 @@ import Table, { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import Highlighter from 'react-highlight-words'
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import {ClearOutlined} from '@ant-design/icons'
 import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
 
 
@@ -103,6 +104,8 @@ export default function Bookings(){
   const [filteredInfo, setFilteredInfo] = useState<Record<string, FilterValue | null>>({});
   const [searchedColumn, setSearchedColumn] = useState('');
   const searchInput = useRef<InputRef>(null);
+
+  const isFilterEmpty = Object.keys(filteredInfo).length === 0;
 
   const handleSearch = (
     selectedKeys: string[],
@@ -276,7 +279,7 @@ export default function Bookings(){
 
     return(
       <div>
-        <Button type='link' style={{marginBottom:'.5em'}} onClick={clearFilters}>Clear filters</Button>
+        {!isFilterEmpty? <Button type='link' icon={<ClearOutlined />} style={{marginBottom:'.5em', display:'flex',alignItems:'center'}} onClick={clearFilters}>Clear filters</Button>:null}
         <Table style={{width:'100%'}} columns={columns} onChange={handleChange} dataSource={bookings} />
       </div>
     )
