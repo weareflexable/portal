@@ -5,6 +5,7 @@ import { AuthContextProvider } from '../context/AuthContext';
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { OrgContextProvider } from '../context/OrgContext';
+import { ServicesContextProvider } from '../context/ServicesContext';
 
 const queryClient = new QueryClient()
 
@@ -14,7 +15,9 @@ function MyApp({ Component, pageProps }: AppProps) {
     <QueryClientProvider client={queryClient}>
       <AuthContextProvider>
         <OrgContextProvider>
-          <Component {...pageProps} />
+            <ServicesContextProvider>
+                <Component {...pageProps} />
+            </ServicesContextProvider>
         </OrgContextProvider>
       </AuthContextProvider>
       <ReactQueryDevtools initialIsOpen={false} />

@@ -15,7 +15,7 @@ interface ServiceContextProviderProps{
     children: ReactNode
 }
 
-const ServiceContextProvider = ({children}:ServiceContextProviderProps)=>{
+const ServicesContextProvider = ({children}:ServiceContextProviderProps)=>{
 
 
     const {switchService,currentService} = useServices()
@@ -43,4 +43,4 @@ const useServiceContext = ()=>{
     return context
 }
 
-export {useServiceContext, ServiceContextProvider }
+export {useServiceContext, ServicesContextProvider }
