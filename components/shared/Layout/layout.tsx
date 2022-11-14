@@ -30,14 +30,14 @@ const { Header, Sider, Content } = Layout;
   const AppLayout: React.FC<LayoutProps> = ({children,width=80}) => {
     
     const [collapsed, setCollapsed] = useState(false); 
-    const {asPath,basePath} = useRouter()  
+    const {asPath} = useRouter()  
     const {isAuthenticated,setIsAuthenticated} = useAuthContext()
     const [showSwitcherModal, setSwitcherModal] = useState(false) 
     
     console.log(asPath)
     const splittedRoutes = asPath.split('/')
-    const orgId = splittedRoutes[2]
-
+    splittedRoutes.pop()
+    const basePath = splittedRoutes.join('/')
   
     return (
 
@@ -56,23 +56,23 @@ const { Header, Sider, Content } = Layout;
                   items={[
                     {
                       key: 'dashboard',
-                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link style={{border: '1px solid'}} type='link' href={`/organisation/${orgId}/dashboard`}>Dashboard</Link> </div> ,
+                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link style={{border: '1px solid'}} type='link' href={`${basePath}/dashboard`}>Dashboard</Link> </div> ,
                     },
                     {
                       key: 'bookings',
-                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link type='link' href={`/organisation/${orgId}/bookings`}>Bookings</Link> </div> ,
+                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link type='link' href={`${basePath}/bookings`}>Bookings</Link> </div> ,
                     },
                     {
                       key: 'services',
-                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link type='link' href={`/organisation/${orgId}/services`}>Services</Link> </div> ,
+                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link type='link' href={`${basePath}/services`}>Service Items</Link> </div> ,
                     },
                     {
                       key: 'staff',
-                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link type='link' href={`/organisation/${splittedRoutes[2]}/staff`}>Staff</Link> </div> ,
+                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link type='link' href={`${basePath}/staff`}>Staff</Link> </div> ,
                     },
                     {
                       key: 'billings',
-                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link type='link' href={`/organisation/${splittedRoutes[2]}/billings`}>Billings</Link> </div> ,
+                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link type='link' href={`${basePath}/billings`}>Billings</Link> </div> ,
                     },
                   ]}
                 />

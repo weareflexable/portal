@@ -63,7 +63,7 @@ export default function ServiceView({}:ServicesViewProps){
                     <Col style={{display:'flex', justifyContent:'space-between'}} offset={2} span={20}>
                         <div style={{display:'flex', flexDirection:'column'}}> 
                             <Button style={{display:'flex', padding: '0', margin:'0', alignItems:'center', textAlign:'left'}} onClick={()=>back()} icon={<ArrowLeftOutlined />} type='link'>Back to organizations</Button>
-                            <Title level={4}>Benjamins on franklin</Title> 
+                            <Title level={4}>Magic Mike Exclusive club</Title> 
                         </div>
                         <CurrentUser/>
                     </Col>
