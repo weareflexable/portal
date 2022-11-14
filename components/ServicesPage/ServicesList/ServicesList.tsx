@@ -5,6 +5,7 @@ import { useRouter } from 'next/router'
 import { Service } from '../../../types/Services'
 import { useOrgContext } from '../../../context/OrgContext'
 import moment from 'moment'
+import Link from 'next/link'
 
 const {Title,Text} = Typography
 
@@ -18,9 +19,13 @@ interface ServiceListProps{
 
 export default function ServiceListProps({onDeleteService, onSelectService, services, onCreateService}:ServiceListProps){
 
-    const router = useRouter()
+    const {asPath,push} = useRouter()
     const {isAdmin} = useOrgContext()
  
+
+    const navigateToDashboard = (serviceId:string)=>{
+        push(`${asPath}/services/${serviceId}/dashboard`)
+    }
 
     return(
         <div style={{display:'flex',flexDirection:'column', height:'100%',  background:'#ffffff', width:'70%',padding:'1em'}}>
@@ -43,7 +48,7 @@ export default function ServiceListProps({onDeleteService, onSelectService, serv
             >
                 <List.Item.Meta
                 key={item.id}
-                title={<Title level={5}>{item.name}</Title>}
+                title={<Title level={5}><Link href={`${asPath}/services/${item.id}/dashboard`}>{item.name}</Link></Title>}
                 description={
                     <div style={{display:'flex', width:'100%', flexDirection:'column'}}>
                         <div style={{display:'flex'}}>
