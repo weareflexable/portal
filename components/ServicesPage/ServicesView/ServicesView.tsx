@@ -1,5 +1,6 @@
 import React,{useState} from 'react'
 import {Card,Button,Typography,Alert,Space,Modal} from 'antd'
+import {PlusCircleOutlined} from '@ant-design/icons'
 import router, { useRouter } from 'next/router';
 import CreateServiceForm from '../CreateServiceForm/CreateServiceForm';
 import EditServiceForm from '../EditServiceForm/EditServiceForm'
@@ -92,9 +93,6 @@ interface EmptyStoreProps{
 }
 const EmptyStore = ({onRegisterStore}:EmptyStoreProps)=>{
     return(
-        <Card className='flex-col flex justify-center items-center'>
-            <Text type='secondary'>No stores have been detected yet</Text>
-            <Button onClick={onRegisterStore}>Create new store</Button>
-        </Card>
+            <Button style={{display:'flex',alignItems:'center'}} type='link' icon={<PlusCircleOutlined />} onClick={onRegisterStore}>Create new service</Button>
     )
 }

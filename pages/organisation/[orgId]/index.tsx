@@ -3,10 +3,11 @@ import ServiceView from '../../../components/ServicesPage/ServicesView/ServicesV
 import AppLayout from '../../../components/shared/Layout/layout'
 import { Content } from 'antd/lib/layout/layout'
 
-export default function Stores(){
+export default function Services(){
+
     return(
         
-        <AppLayout>
+        // <AppLayout>
             <Content
                 style={{
                 padding: '1em',
@@ -20,6 +21,6 @@ export default function Stores(){
             >
                 <ServiceView/>
             </Content>
-        </AppLayout>
+        // </AppLayout>
     )
 }
