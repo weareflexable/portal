@@ -1,6 +1,6 @@
 import React,{useState} from 'react'
 import {Card,Button,Typography,Alert,Space,Modal, Row,Col} from 'antd'
-import {PlusCircleOutlined,ArrowLeftOutlined} from '@ant-design/icons'
+import {PlusCircleOutlined,ArrowLeftOutlined,SettingOutlined} from '@ant-design/icons'
 import router, { useRouter } from 'next/router';
 import CreateServiceForm from '../CreateServiceForm/CreateServiceForm';
 import EditServiceForm from '../EditServiceForm/EditServiceForm'
@@ -62,11 +62,17 @@ export default function ServiceView({}:ServicesViewProps){
             <Row style={{marginTop:'.5em'}} gutter={[16,46]}>
                 <header style={{width:'100%', background:'#ffffff'}}>
                     <Col style={{display:'flex', justifyContent:'space-between'}} offset={2} span={20}>
-                        <div style={{display:'flex', flexDirection:'column'}}> 
+                        <div style={{display:'flex', flex:'7', flexDirection:'column'}}> 
                             <Button style={{display:'flex', padding: '0', margin:'0', alignItems:'center', textAlign:'left'}} onClick={()=>back()} icon={<ArrowLeftOutlined />} type='link'>Back to organizations</Button>
                             <Title level={4}>Magic Mike Exclusive club</Title> 
                         </div>
-                        <CurrentUser/>
+
+                        <div style={{display:'flex', flex:'3', justifyContent:'space-between', alignItems:'center'}}>
+                            <CurrentUser/>
+                            <div style={{padding:'.7em', cursor:'pointer', display:'flex', justifyContent:'center', alignItems:'center', borderRadius:'50px', background:'#f4f4f4'}}>
+                                <SettingOutlined style={{fontSize:'1.4em'}}/>
+                            </div>
+                        </div>
                     </Col>
                 </header>
 
