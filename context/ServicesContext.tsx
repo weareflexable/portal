@@ -33,7 +33,7 @@ const ServicesContextProvider = ({children}:ServiceContextProviderProps)=>{
 }
 
 
-const useServiceContext = ()=>{
+const useServicesContext = ()=>{
     const context = useContext(ServiceContext);
 
     if(context === undefined){
@@ -43,4 +43,4 @@ const useServiceContext = ()=>{
     return context
 }
 
-export {useServiceContext, ServicesContextProvider }
+export {useServicesContext, ServicesContextProvider }

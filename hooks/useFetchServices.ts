@@ -4,7 +4,7 @@ import { Service } from '../types/Services';
 import useServices from './useServices';
 
 const initServices: Service[] = [
-    {id:'weea434',address:'Syracuse NY, Bacon Hill',name:'Benjamins On Franklin',type:'Bar',storeCoverImage:[''],storeLogo:['']},
+    {id:'weea4feq56534',address:'Syracuse NY, Bacon Hill',name:'Benjamins On Franklin',type:'Bar',storeCoverImage:[''],storeLogo:['']},
     {id:'weeafda4fa434',address:'Canada, Tukur road',name:'Turing restaurant',type:'Restaurant',storeCoverImage:[''],storeLogo:['']},
     {id:'weegjyriya434',address:'Pablo main, Mountain Hill',name:'Mujeex Gyms',type:'Gym',storeCoverImage:[''],storeLogo:['']},
    ]
