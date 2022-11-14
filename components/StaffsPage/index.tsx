@@ -1,9 +1,6 @@
 import React,{useState} from 'react'
 import {Card,Button,Typography,Alert,Space,Modal} from 'antd'
-import StaffForm from './CreateStaffForm/CreateStaffForm';
-import StaffEditForm from './EditStaffForm/EditStaffForm'
-import { v4 as uuidv4 } from 'uuid';
-
+import {PlusCircleOutlined} from '@ant-design/icons'
 import StaffList from './StaffList/StaffList';
 import useCrud from '../../hooks/useCrud';
 import { Staff } from '../../types/Staff';
@@ -83,9 +80,6 @@ interface EmptyStaffProps{
 }
 const EmptyStore = ({isAdmin,openFormModal}:EmptyStaffProps)=>{
     return(
-        <Card className='flex-col flex justify-center items-center'>
-            {/* <Text type='secondary'>No staff in your organisation detected yet</Text> */}
-            <Button type='link' size='small' disabled={!isAdmin} onClick={openFormModal} >Create new staff</Button>
-        </Card>
+            <Button type='link' disabled={!isAdmin} style={{display:'flex', alignItems:'center'}} icon={<PlusCircleOutlined />}  onClick={openFormModal}>Create new staff</Button>
     )
 }

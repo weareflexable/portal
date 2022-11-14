@@ -42,7 +42,7 @@ const { Header, Sider, Content } = Layout;
   
     return (
 
-      <Layout style={{minHeight:'100vh'}} className=' h-full'>
+      <Layout style={{minHeight:'100vh',height:'100%'}}>
         <OrgSwitcherModal
           isModalOpen={showSwitcherModal}
           onCloseModal={()=>setSwitcherModal(!showSwitcherModal)}
@@ -88,34 +88,9 @@ const { Header, Sider, Content } = Layout;
                 }
     
               </Header> 
-        <Layout style={{width:'100%'}} className="site-layout">
-        {/* <Sider collapsible onCollapse={() => setCollapsed(!collapsed)} collapsed={collapsed} >
-          <Menu
-            theme="dark"
-            mode="inline"
-            defaultSelectedKeys={[splittedRoutes[3]]}
-            items={[
-              {
-                key: 'venues',
-                icon: <UserOutlined />,
-                label: <Link type='link' href={`/organisation/${orgId}/venues`}>Services</Link> ,
-              },
-              {
-                key: 'staff',
-                icon: <VideoCameraOutlined />,
-                label: <Link type='link' href={`/organisation/${splittedRoutes[2]}/staff`}>Staff</Link> ,
-              },
-              {
-                key: 'billing',
-                icon: <VideoCameraOutlined />,
-                label: <Link type='link' href={`/organisation/${orgId}/billings`}>Billings</Link> ,
-              }
-            ]}
-          />
-        </Sider> */}
-
-            {isAuthenticated? children : <UnAuthenticatedView/>}
-        </Layout>
+              <Layout style={{width:'100%',height:'100%'}}>
+                  {isAuthenticated? children : <UnAuthenticatedView/>}
+              </Layout>
       </Layout>
     );
   };
