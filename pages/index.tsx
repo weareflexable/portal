@@ -98,6 +98,8 @@ const Home: NextPage = () => {
        
     }
 
+   
+
     if(!isAuthenticated){
         return(
             <div>
@@ -120,38 +122,39 @@ const Home: NextPage = () => {
         }}>
 
 
-                <Button type='link' style={{marginBottom:'1em',display:'flex',alignItems:'center'}} icon={<PlusCircleOutlined />} onClick={()=>setShowOrgForm(true)}>Register new organisation</Button>
+            
+             <Button type='link' style={{marginBottom:'1em',display:'flex',alignItems:'center'}} icon={<PlusCircleOutlined />} onClick={()=>setShowOrgForm(true)}>Register new organisation</Button>
 
             {orgs.length>0 
-            ?
-            <Card style={{width:'60%', marginTop:'2em'}}>
-                <List
-                    size="small"
-                    style={{border:'none'}}
-                    header={<Typography.Title level={5}>My Organisations</Typography.Title>}
-                    bordered
-                    dataSource={orgs}
-                    renderItem={item => 
-                        <List.Item 
-                            actions={[<Button key={item.id} size='small' type='link' loading={item.id===selectedOrg?isNavigatingToOrgs:false} onClick={()=>navigateToApp(item)}>Go to organisation</Button>]} 
-                            style={{border:'none'}} 
-                            key={item.id}
-                            >
-                             <List.Item.Meta
-                                avatar={<Avatar src={item.logoUrl} />}
-                                title={
-                                    <div style={{display:'flex'}}>
-                                       <Typography.Text style={{marginRight: '1em'}}>{item.name}</Typography.Text>
-                                        <Tag>{item.role}</Tag>
-                                    </div>
-                                    }
-                                />
-                           
-                        </List.Item>
-                            }
-                />
-            </Card>
-            : null
+                ?
+                <Card style={{width:'60%', marginTop:'2em'}}>
+                    <List
+                        size="small"
+                        style={{border:'none'}}
+                        header={<Typography.Title level={5}>My Organisations</Typography.Title>}
+                        bordered
+                        dataSource={orgs}
+                        renderItem={item => 
+                            <List.Item 
+                                actions={[<Button key={item.id} size='small' type='link' loading={item.id===selectedOrg?isNavigatingToOrgs:false} onClick={()=>navigateToApp(item)}>Go to organisation</Button>]} 
+                                style={{border:'none'}} 
+                                key={item.id}
+                                >
+                                <List.Item.Meta
+                                    avatar={<Avatar src={item.logoUrl} />}
+                                    title={
+                                        <div style={{display:'flex'}}>
+                                        <Typography.Text style={{marginRight: '1em'}}>{item.name}</Typography.Text>
+                                            <Tag>{item.role}</Tag>
+                                        </div>
+                                        }
+                                    />
+                            
+                            </List.Item>
+                                }
+                    />
+                </Card>
+                : null
             }
 
             <Card style={{width:'60%', marginTop:'2em'}}>
