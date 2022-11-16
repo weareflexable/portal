@@ -1,19 +1,42 @@
 import React,{useState} from 'react'
-import {Card,Form,Input, InputNumber,Button} from 'antd'
+import {Card,Form,Input, InputNumber,Button, notification} from 'antd'
+import { BankAccount } from '../../../types/BankAccount'
 
-export default function BillingsForm(){
 
-    const [bankDetails, setBankDetails] =  useState({})
+interface EditBankAccountFormProps{
+    initValues: BankAccount | undefined
+    onEditBankAccount: (store:BankAccount)=>void
+    onCloseEditForm: ()=>void
+}
 
-    const onFinish = (formData:FormData)=>{
-        console.log(formData)
+export default function EditBankAccountForm({initValues,onEditBankAccount, onCloseEditForm}:EditBankAccountFormProps){
+
+
+    const prevValues = initValues;
+    console.log(initValues)
+
+    const onFinish = (formData:BankAccount)=>{
+        // call function to create store
+        const formObject = {
+            ...prevValues,
+            ...formData
+        }
+        onEditBankAccount(formObject)
+        showStoreCreationNotification()
+        onCloseEditForm()
+
     }
 
+    const showStoreCreationNotification = () => {
+        notification['success']({
+          message: 'Bank account updated succesfully',
+        });
+      };
+
     return(
-        <Card>
              <Form
-            name="billingsForm"
-            initialValues={{ remember: true }}
+            name="editBankAccountForm"
+            initialValues={initValues}
             layout='vertical'
             onFinish={onFinish}
             >
@@ -26,7 +49,7 @@ export default function BillingsForm(){
             </Form.Item>
 
             <Form.Item
-                name="beneficiaryName"
+                name="accountName"
                 label='Beneficiary name'
                 rules={[{ required: true, message: 'Please input name used on card' }]}
             >
@@ -34,11 +57,11 @@ export default function BillingsForm(){
             </Form.Item>
 
             <Form.Item
-                name="accountNo"
+                name="accountNumber"
                 label='Beneficiary account number'
                 rules={[{ required: true, message: 'Please input a valid account number' }]}
             >
-                <Input placeholder="Wiscontin, United states" />
+                <Input type='number' placeholder="0127467382" />
             </Form.Item>
 
             <Form.Item
@@ -58,7 +81,7 @@ export default function BillingsForm(){
             </Form.Item>
 
             <Form.Item
-                name="routingNo"
+                name="routingNumber"
                 label='Routing number'
                 rules={[{ required: true, message: 'Please input a valid routing number' }]}
             >
@@ -68,9 +91,9 @@ export default function BillingsForm(){
             <Form.Item
                 name="swiftCode"
                 label='Swift/Bic code'
-                rules={[{ required: true, message: 'Please input a valid email!' }]}
+                rules={[{ required: true, message: 'Please input a valid routing number!' }]}
             >
-                <Input type='email' placeholder="example@yahoo.com" />
+                <Input type='number' placeholder="37567489374" />
             </Form.Item>
 
 
@@ -80,7 +103,6 @@ export default function BillingsForm(){
                 </Button>
             </Form.Item>
 
-                </Form>
-        </Card>        
+                </Form> 
     )
 }

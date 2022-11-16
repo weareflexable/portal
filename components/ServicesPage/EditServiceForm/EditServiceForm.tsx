@@ -7,16 +7,16 @@ import {UploadOutlined} from '@ant-design/icons'
 import {v4 as uuidv4} from 'uuid'
 
 import { useRouter } from 'next/router';
-import { Venue } from '../../../types/Services';
+import { Service } from '../../../types/Services';
 import { nftStorageClient } from '../../../utils/nftStorage';
 
 
-interface VenueEditFormProps{
-    initValues: Venue | undefined
-    onEditVenue: (store:Venue)=>void
+interface ServiceEditFormProps{
+    initValues: Service | undefined
+    onEditService: (store:Service)=>void
     onCloseEditForm: ()=>void
 }
-export default function VenueEditForm({initValues, onEditVenue, onCloseEditForm}:VenueEditFormProps){
+export default function ServiceEditForm({initValues, onEditService, onCloseEditForm}:ServiceEditFormProps){
 
 
     const router = useRouter()
@@ -30,7 +30,7 @@ export default function VenueEditForm({initValues, onEditVenue, onCloseEditForm}
         return res
     }
 
-    const onFinish = async(formData:Venue)=>{
+    const onFinish = async(formData:Service)=>{
 
         // const logoImage = formData.storeLogo[0].originFileObj
         // const coverImage = formData.storeCoverImage[0].originFileObj
@@ -41,7 +41,7 @@ export default function VenueEditForm({initValues, onEditVenue, onCloseEditForm}
             ...prevValues,
             ...formData,
         }
-        onEditVenue(formObject)
+        onEditService(formObject)
         showStoreCreationNotification() // call notification inside hook
     }
 

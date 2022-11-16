@@ -2,7 +2,7 @@ import { Content } from 'antd/lib/layout/layout'
 import { Typography, Row, Col } from 'antd'
 const {Title} = Typography
 import React from 'react'
-import BillingsView from '../../../../../components/BillingsPage/BillingsView/BillingsView'
+import BillingsView from '../../../../../components/BillingsPage'
 import AppLayout from '../../../../../components/shared/Layout/layout'
 
 export default function Billings(){
