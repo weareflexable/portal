@@ -20,7 +20,7 @@ const {Title,Text} = Typography
 
   type DataIndex = keyof Order;
 
-const bookings: Order[] = [
+const bookings: any[] = [
     {
       id: '1',
       userId:'mbappai',
@@ -30,7 +30,7 @@ const bookings: Order[] = [
       ticketStatus: 'Redeemed',
       orderStatus: 'Paid',
       userTicketId:'dfadre364ikji',
-      price: 2500,
+      uni: 2500,
       total:230,
       uniqueCode: '34u12y',
       paymentIntentStatus: 'PAYMENT_PAID',
@@ -44,9 +44,8 @@ const bookings: Order[] = [
       quantity: 1,
       ticketStatus: 'Expired',
       orderStatus: 'Initiated',
-      price: 2500,
+      unitPrice: 2500,
       userTicketId:'dfadre364ikji',
-      total:438,
       uniqueCode: '34u12y',
       paymentIntentStatus: 'PAYMENT_PAID',
       orgServiceItemId:'bc6aaa35-e50e-40d5-a0ff-5e7fd20fe4b5'
@@ -218,32 +217,32 @@ export default function Bookings(){
     },
     
     {
-      title: 'Order Status',
-      dataIndex: 'orderStatus',
-      key: 'orderStatus',
-      render: orderStatus=>{
+      title: 'Payment Status',
+      dataIndex: 'paymentIntentStatus',
+      key: 'paymentIntentStatus',
+      render: paymentIntentStatus=>{
         let color = 'blue'
-        if(orderStatus==='Paid') color='green'
-        if(orderStatus==='Initiated') color='blue'
+        if(paymentIntentStatus==='PAYMENT_PAID') color='green'
+        if(paymentIntentStatus==='PAYMENT_INITIATED') color='blue'
         return(
-          <Tag color={color}>{orderStatus}</Tag>
+          <Tag color={color}>{paymentIntentStatus}</Tag>
         )
       },
       filters: [
-        { text: 'Paid', value: 'Paid' },
-        { text: 'Initiated', value: 'Initiated' },
+        { text: 'Paid', value: 'PAYMENT_PAID' },
+        { text: 'Initiated', value: 'PAYMENT_INITIATED' },
       ], 
       filteredValue: filteredInfo.orderStatus || null,
       //@ts-ignore
-      onFilter: (value: string, record) => record.orderStatus.includes(value),
+      onFilter: (value: string, record) => record.paymentIntentStatus.includes(value),
     },
     {
       title: 'Unit Price',
-      dataIndex: 'price',
-      key: 'price',
-      render: (price)=>{
+      dataIndex: 'unitPrice',
+      key: 'unitPrice',
+      render: (unitPrice)=>{
         return(
-          <Text>${price/100}</Text>
+          <Text>${unitPrice/100}</Text>
         )
     }
     },
@@ -257,7 +256,7 @@ export default function Bookings(){
       dataIndex: 'total',
       key: 'total',
       render: (_,record)=>{
-        const total = record.quantity * (record.price/100)
+        const total = record.quantity * (record.unitPrice/100)
         return(
           <Text>${total}</Text>
         )
@@ -267,21 +266,27 @@ export default function Bookings(){
       title: 'TicketDate',
       dataIndex: 'ticketDate',
       key: 'ticketDate',
+      render: (_,record)=>{
+        const date = moment(record.ticketDate).format('MMM DD, YYYY')
+        return(
+          <Text>{date}</Text>
+        )
     },
+  }
   ];
 
 
 
     return(
       <div>
-        {!isFilterEmpty? <Button type='link' icon={<ClearOutlined />} style={{marginBottom:'.5em', display:'flex',alignItems:'center'}} onClick={clearFilters}>Clear filters</Button>:null}
         <div style={{marginBottom:'.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
           <div>
             <Text type='secondary'>Updated {lastUpdate} </Text>
           </div>
           <Button style={{display:'flex', alignItems:'center'}} icon={<ReloadOutlined/>} type='link' onClick={()=>refetch()}>Refetch</Button>
         </div>
-        <Table style={{width:'100%'}} columns={columns} onChange={handleChange} dataSource={bookings} />
+        {!isFilterEmpty? <Button type='link' icon={<ClearOutlined />} style={{marginBottom:'.5em', display:'flex',alignItems:'center'}} onClick={clearFilters}>Clear filters</Button>:null}
+        <Table style={{width:'100%'}} loading={isLoading} columns={columns} onChange={handleChange} dataSource={data && data.payload} />
       </div>
     )
 }

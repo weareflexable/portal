@@ -1,15 +1,20 @@
 export interface Order {
     id: string;
     userId: string,
+    serviceName: string;
     name: string;
     ticketDate: string;
     quantity: number,
     orderStatus: string,
     ticketStatus: string,
-    price:number,
-    total: number,
+    unitPrice:number,
     uniqueCode: string,
     userTicketId: string,
     paymentIntentStatus: string,
+    paymentIntentId: string,
     orgServiceItemId: string,
+    hash: string,
+    currency: string,
+    endTime: string,
   }
+
