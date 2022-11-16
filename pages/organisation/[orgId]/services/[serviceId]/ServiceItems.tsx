@@ -13,7 +13,7 @@ export default function Staffs(){
     return(
         <AppLayout>
             <Row>
-                <Col offset={1} span={21}>
+                <Col offset={1} span={15}>
                     <Title style={{marginLeft: '1em', marginTop:'1em'}} level={3}>Service Item</Title>
                     <Content
                         style={{
