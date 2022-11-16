@@ -19,7 +19,6 @@ export default function useCrud<T>(initState?:T[]){
     }
 
     const createItem = (newItem:T)=>{
-        // const stateCopy =  state.slice()
         const stateCopy =  [...state]
         stateCopy.push(newItem)
         setState(stateCopy);

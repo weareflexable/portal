@@ -3,17 +3,18 @@ import {Form, Input,Radio,Button,notification, Space, Typography} from 'antd';
 
 
 import { useRouter } from 'next/router';
+import { Staff } from '../../../types/Staff';
 
 
 interface StoreFormProps{
-    onCreateStaff: (formData:any)=>void
+    onCreateStaff: (formData:Staff)=>void
     onCloseForm: ()=>void
 }
 export default function CreateStaffForm({onCreateStaff, onCloseForm}:StoreFormProps){
 
 
 
-    const onFinish = (formData:FormData)=>{
+    const onFinish = (formData:Staff)=>{
         // call function to create store
         onCreateStaff(formData)
         showStoreCreationNotification()
