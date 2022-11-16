@@ -4,7 +4,7 @@ import type { NextPage } from 'next'
 import {PlusCircleOutlined} from '@ant-design/icons'
 
 import { useRouter } from 'next/router';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { Card, Button, List, Typography, Avatar, Tag, Modal } from 'antd';
 const {Title} = Typography; 
 import axios from 'axios';
@@ -14,10 +14,22 @@ import useFetchUserOrgs from '../hooks/useFetchUserOrgs';
 import { OrganistationReq, Org, OrgFormData } from '../types/OrganisationTypes';
 import { nftStorageClient } from '../utils/nftStorage';
 import RegisterOrgForm from '../components/LoungePage/RegisterOrgForm/RegisterOrgForm';
+import { Order } from '../types/Booking';
+import dynamic from 'next/dynamic';
 
 const Home: NextPage = () => {
 
-    const {orgs} = useFetchUserOrgs()
+    const {data,isLoading} = useQuery(['orgs'],async()=>{
+        const {data} = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/org/user/get-org`,{
+            headers:{
+                "Authorization": 'v4.local.URC2UcW0k5Xpn7PFhsjfjOu1z8sIOCWFbBOJnPxzfVOWWOusxpmBSCT1oNJ5edT4vTntsRNifEviLBk4KYrVCB5whgYpqFCSdQJ9-hACAvZ7FDtx9jgUe3aXHj_EszDQQ9WU7MLXDQTq07oK8s-v1HiMbjdW-jkMbtdVPpQ2qEXckX92BQD-uWX4dwy5gTmJfdEVpa_fi4IK_rjwVXo8i01bZ6c'
+            }
+        })
+        return data;
+    })
+
+
+    // const {orgs} = useFetchUserOrgs()
 
     const [isRegisteringOrg, setIsRegisteringOrg] = useState(false)
     const [showOrgForm, setShowOrgForm] = useState(false)
@@ -25,6 +37,8 @@ const Home: NextPage = () => {
     const [isNavigatingToOrgs, setIsNavigatingToOrg] = useState(false)
     const {isAuthenticated} = useAuthContext()
     const router = useRouter()
+
+    const orgs: Org[] = data && data.payload;
 
     const {switchOrg} =  useOrgContext()
 
@@ -44,6 +58,7 @@ const Home: NextPage = () => {
             console.log('show negative notification')
         }
       })
+
 
     useEffect(() => {
         // setIsFetchingOrgs(true)
@@ -122,7 +137,7 @@ const Home: NextPage = () => {
             <Title level={1}>Welcome to the lounge</Title>
             
 
-            {orgs.length>0 
+            {data&&data.payload.length>0 
                 ?
                 <div style={{display:'flex', marginTop:'4em', flexDirection:'column', width:'60%'}} > 
                         <Title style={{marginBottom:'0'}} level={4}>My organizations</Title>
@@ -131,6 +146,7 @@ const Home: NextPage = () => {
                             <List
                                 size="small"
                                 bordered={false}
+                                loading={isLoading} 
                                 dataSource={orgs}
                                 renderItem={item => 
                                     <List.Item 

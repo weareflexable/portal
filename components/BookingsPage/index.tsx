@@ -20,9 +20,12 @@ const {Title,Text} = Typography
 
   type DataIndex = keyof Order;
 
-const bookings: any[] = [
+const bookings: Order[] = [
     {
       id: '1',
+      currency: 'USD',
+      serviceName:'Benhamins',
+      endTime: 'dfadfad',
       userId:'mbappai',
       ticketDate:'Jan 22, 2022',
       name: 'Avery pro line skip',
@@ -30,41 +33,14 @@ const bookings: any[] = [
       ticketStatus: 'Redeemed',
       orderStatus: 'Paid',
       userTicketId:'dfadre364ikji',
-      uni: 2500,
-      total:230,
-      uniqueCode: '34u12y',
-      paymentIntentStatus: 'PAYMENT_PAID',
-      orgServiceItemId:'bc6aaa35-e50e-40d5-a0ff-5e7fd20fe4b5',
-    },
-    {
-      id: '2',
-      name: 'Jim Green Bar',
-      userId:'ommore',
-      ticketDate:'Jan 12, 2022',
-      quantity: 1,
-      ticketStatus: 'Expired',
-      orderStatus: 'Initiated',
       unitPrice: 2500,
-      userTicketId:'dfadre364ikji',
       uniqueCode: '34u12y',
       paymentIntentStatus: 'PAYMENT_PAID',
-      orgServiceItemId:'bc6aaa35-e50e-40d5-a0ff-5e7fd20fe4b5'
+      paymentIntentId: 'fakdfa93343',
+      orgServiceItemId:'bc6aaa35-e50e-40d5-a0ff-5e7fd20fe4b5',
+      hash: ''
     },
-    {
-      id: '3',
-      name: 'Joe Black Gym line skip',
-      userId:'schachindra',
-      ticketDate:'Apr 22, 2022',
-      quantity: 2,
-      ticketStatus: 'Valid',
-      orderStatus: 'Paid',
-      userTicketId:'dfadre364ikji',
-      price: 2500,
-      total:438,
-      uniqueCode: '34u12y',
-      paymentIntentStatus: 'PAYMENT_PAID',
-      orgServiceItemId:'bc6aaa35-e50e-40d5-a0ff-5e7fd20fe4b5'
-    },
+    
   ];
 
 
@@ -283,7 +259,7 @@ export default function Bookings(){
           <div>
             <Text type='secondary'>Updated {lastUpdate} </Text>
           </div>
-          <Button style={{display:'flex', alignItems:'center'}} icon={<ReloadOutlined/>} type='link' onClick={()=>refetch()}>Refetch</Button>
+          <Button style={{display:'flex', alignItems:'center'}} icon={<ReloadOutlined/>} type='link' onClick={()=>refetch()}>Refresh</Button>
         </div>
         {!isFilterEmpty? <Button type='link' icon={<ClearOutlined />} style={{marginBottom:'.5em', display:'flex',alignItems:'center'}} onClick={clearFilters}>Clear filters</Button>:null}
         <Table style={{width:'100%'}} loading={isLoading} columns={columns} onChange={handleChange} dataSource={data && data.payload} />
