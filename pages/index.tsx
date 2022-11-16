@@ -2,31 +2,29 @@ import {useEffect, useState} from 'react'
 import type { NextPage } from 'next'
 
 import {PlusCircleOutlined} from '@ant-design/icons'
-import RegisterOrgForm from '../components/Accounts/RegisterOrgForm/RegisterOrgForm';
+
 import { useRouter } from 'next/router';
 import { useMutation } from '@tanstack/react-query';
 import { Card, Button, List, Typography, Avatar, Tag, Modal } from 'antd';
+const {Title} = Typography; 
 import axios from 'axios';
 import { useAuthContext } from '../context/AuthContext';
 import { useOrgContext } from '../context/OrgContext';
 import useFetchUserOrgs from '../hooks/useFetchUserOrgs';
 import { OrganistationReq, Org, OrgFormData } from '../types/OrganisationTypes';
 import { nftStorageClient } from '../utils/nftStorage';
+import RegisterOrgForm from '../components/LoungePage/RegisterOrgForm/RegisterOrgForm';
 
 const Home: NextPage = () => {
 
-  const {orgs} = useFetchUserOrgs()
-    const [userOrgs,setUserOrgs] = useState([{name:'Avery Juice Bar',id:'3743hfebcda',logoUrl:'https://joeschmoe.io/api/v1/random'},{name:'Benjamins Labs',id:'3fdae43febcda',logoUrl:'https://joeschmoe.io/api/v1/random'}]);
-    const [unApprovedOrgs, setUnApprovedOrgs] = useState([{name: 'Mujeex Labs', id:'4345faf434',logoUrl:'https://joeschmoe.io/api/v1/random'},{name:'Schelling labs', id:'fdadf4r34rdf',logoUrl:'https://joeschmoe.io/api/v1/random'}])
-    const [isFetchingOrgs, setIsFetchingOrgs] = useState(false)
+    const {orgs} = useFetchUserOrgs()
+
     const [isRegisteringOrg, setIsRegisteringOrg] = useState(false)
     const [showOrgForm, setShowOrgForm] = useState(false)
     const [selectedOrg, setSelectedOrg] = useState('')
     const [isNavigatingToOrgs, setIsNavigatingToOrg] = useState(false)
     const {isAuthenticated} = useAuthContext()
     const router = useRouter()
-    // const {setCurrentOrg} = useOrgContext()
-    // const mutation = useMutation()
 
     const {switchOrg} =  useOrgContext()
 
@@ -121,43 +119,45 @@ const Home: NextPage = () => {
             paddingTop:'2rem'
         }}>
 
-
+            <Title level={1}>Welcome to the lounge</Title>
             
-             <Button type='link' style={{marginBottom:'1em',display:'flex',alignItems:'center'}} icon={<PlusCircleOutlined />} onClick={()=>setShowOrgForm(true)}>Register new organisation</Button>
 
             {orgs.length>0 
                 ?
-                <Card style={{width:'60%', marginTop:'2em'}}>
-                    <List
-                        size="small"
-                        style={{border:'none'}}
-                        header={<Typography.Title level={5}>My Organisations</Typography.Title>}
-                        bordered
-                        dataSource={orgs}
-                        renderItem={item => 
-                            <List.Item 
-                                actions={[<Button key={item.id} size='small' type='link' loading={item.id===selectedOrg?isNavigatingToOrgs:false} onClick={()=>navigateToApp(item)}>Go to organisation</Button>]} 
-                                style={{border:'none'}} 
-                                key={item.id}
-                                >
-                                <List.Item.Meta
-                                    avatar={<Avatar src={item.logoUrl} />}
-                                    title={
-                                        <div style={{display:'flex'}}>
-                                        <Typography.Text style={{marginRight: '1em'}}>{item.name}</Typography.Text>
-                                            <Tag>{item.role}</Tag>
-                                        </div>
+                <div style={{display:'flex', marginTop:'4em', flexDirection:'column', width:'60%'}} > 
+                        <Title style={{marginBottom:'0'}} level={4}>My organizations</Title>
+                        <Card  style={{width:'100%', marginTop:'1em'}}>
+                            <Button type='link' style={{marginBottom:'1em',display:'flex',alignItems:'center'}} icon={<PlusCircleOutlined />} onClick={()=>setShowOrgForm(true)}>Register new organisation</Button>
+                            <List
+                                size="small"
+                                bordered={false}
+                                dataSource={orgs}
+                                renderItem={item => 
+                                    <List.Item 
+                                    actions={[<Button key={item.id} size='middle' type='primary' shape='round' loading={item.id===selectedOrg?isNavigatingToOrgs:false} onClick={()=>navigateToApp(item)}>Go to organisation</Button>]} 
+                                        style={{border:'none', background:'#f9f9f9',marginBottom:'.5em',padding:'1em', borderRadius:'4px'}}
+                                        key={item.id}
+                                        >
+                                        <List.Item.Meta
+                                            avatar={<Avatar src={item.logoUrl} />}
+                                            title={
+                                                <div style={{display:'flex'}}>
+                                                <Typography.Text style={{marginRight: '1em'}}>{item.name}</Typography.Text>
+                                                    <Tag>{item.role}</Tag>
+                                                </div>
+                                                }
+                                            />
+                                    
+                                    </List.Item>
                                         }
-                                    />
-                            
-                            </List.Item>
-                                }
-                    />
-                </Card>
-                : null
+                            />
+                        </Card>
+                    </div>
+                : <Button type='link' style={{marginBottom:'1em',display:'flex',alignItems:'center'}} icon={<PlusCircleOutlined />} onClick={()=>setShowOrgForm(true)}>Register new organisation</Button>
+                
             }
 
-            <Card style={{width:'60%', marginTop:'2em'}}>
+            {/* <Card style={{width:'60%', marginTop:'2em'}}>
                 <List
                     size="small"
                     style={{border:'none'}}
@@ -179,10 +179,10 @@ const Home: NextPage = () => {
                         </List.Item>
                             }
                 />
-            </Card>
+            </Card> */}
 
 
-            <Modal  title="Edit store" open={showOrgForm} footer={null} onCancel={()=>setShowOrgForm(false)}>
+            <Modal  title="Create organization" open={showOrgForm} footer={null} onCancel={()=>setShowOrgForm(false)}>
                 <RegisterOrgForm
                     onRegisterNewOrg={registerOrg}
                     isRegisteringOrg={isRegisteringOrg}

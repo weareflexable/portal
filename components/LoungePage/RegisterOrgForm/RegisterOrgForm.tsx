@@ -83,14 +83,13 @@ export default function RegisterOrgForm({onRegisterNewOrg,isRegisteringOrg}:Regi
                 </Upload>
             </Form.Item>
 
-            <Divider orientation="left"></Divider>
 
             <Form.Item>
-                <Button loading={isRegisteringOrg} type="primary" htmlType="submit" >
+                <Button size='middle' shape="round" style={{display:'flex', alignItems:'center'}} loading={isRegisteringOrg} type="primary" htmlType="submit" >
                      Register organisation
                 </Button>
             </Form.Item>
 
-                </Form>
+         </Form>
     )
 } 

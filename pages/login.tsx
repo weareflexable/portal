@@ -18,7 +18,7 @@ export default function Login(){
             setLoggedIn(true)
             setStorage('PLATFORM_PASETO',JSON.stringify(paseto))
             // redirect to lounge
-            // save in local storage
+            router.push('/')
         }
     }, [paseto, router])
 
