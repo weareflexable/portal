@@ -24,7 +24,7 @@ export default function Login(){
 
     const handleLogin = ()=>{ 
         if(window !== undefined){
-            location.href = 'https://auth.flexabledats.com/login?redirect_to=portal'
+            location.href = 'https://auth.dev.flexabledats.com/login?redirect_to=portal'
         }
     }
 

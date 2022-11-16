@@ -9,27 +9,14 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import {ClearOutlined} from '@ant-design/icons'
 import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
+import { Order } from '../../types/Booking';
+import moment from 'moment';
+import {ReloadOutlined} from '@ant-design/icons'
 
 
 
 const {Title,Text} = Typography
 
-
-interface Order {
-    id: string;
-    userId: string,
-    name: string;
-    ticketDate: string;
-    quantity: number,
-    orderStatus: string,
-    ticketStatus: string,
-    price:number,
-    total: number,
-    uniqueCode: string,
-    userTicketId: string,
-    paymentIntentStatus: string,
-    orgServiceItemId: string,
-  }
 
   type DataIndex = keyof Order;
 
@@ -87,18 +74,25 @@ export default function Bookings(){
 
   const router = useRouter()
 
-  // const { isLoading, data } = useQuery(
-  //   ['bookings'],
-  //   async () => {
-  //     const { data } = await axios.get(
-  //       'https://random-data-api.com/api/vehicle/random_vehicle'
-  //     );
-  //     return data;
-  //   },
-  //   {
-  //     refetchInterval: 1000,
-  //   }
-  // );
+  const { isLoading, data, isError, dataUpdatedAt, refetch } = useQuery(
+    ['bookings'],
+    async () => {
+      const { data } = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/org-admin-get-orders`,
+        {
+          headers:{"Authorization":'v4.local.URC2UcW0k5Xpn7PFhsjfjOu1z8sIOCWFbBOJnPxzfVOWWOusxpmBSCT1oNJ5edT4vTntsRNifEviLBk4KYrVCB5whgYpqFCSdQJ9-hACAvZ7FDtx9jgUe3aXHj_EszDQQ9WU7MLXDQTq07oK8s-v1HiMbjdW-jkMbtdVPpQ2qEXckX92BQD-uWX4dwy5gTmJfdEVpa_fi4IK_rjwVXo8i01bZ6c'}
+        }
+      );
+      return data;
+    },
+    {
+      refetchInterval: 100000,
+    }
+  ); 
+
+  console.log(data && data.payload, isError) 
+  const lastUpdate = moment(dataUpdatedAt).format('HH:mm:ss')
+
 
   const [searchText, setSearchText] = useState('');
   const [filteredInfo, setFilteredInfo] = useState<Record<string, FilterValue | null>>({});
@@ -277,9 +271,16 @@ export default function Bookings(){
   ];
 
 
+
     return(
       <div>
         {!isFilterEmpty? <Button type='link' icon={<ClearOutlined />} style={{marginBottom:'.5em', display:'flex',alignItems:'center'}} onClick={clearFilters}>Clear filters</Button>:null}
+        <div style={{marginBottom:'.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+          <div>
+            <Text type='secondary'>Updated {lastUpdate} </Text>
+          </div>
+          <Button style={{display:'flex', alignItems:'center'}} icon={<ReloadOutlined/>} type='link' onClick={()=>refetch()}>Refetch</Button>
+        </div>
         <Table style={{width:'100%'}} columns={columns} onChange={handleChange} dataSource={bookings} />
       </div>
     )
