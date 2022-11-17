@@ -4,8 +4,8 @@ import {PlusCircleOutlined} from '@ant-design/icons'
 import { useRouter } from 'next/router'
 import { Service } from '../../../types/Services'
 import { useOrgContext } from '../../../context/OrgContext'
-import moment from 'moment'
 import Link from 'next/link'
+import { useServicesContext } from '../../../context/ServicesContext'
 
 const {Title,Text} = Typography
 
@@ -14,15 +14,17 @@ interface ServiceListProps{
     services: Array<any>,
     onCreateService: ()=>void,
     onSelectService: (service:Service)=>void,
-    onDeleteService: (itemKey: string)=>void
+    onDeleteService: (itemKey: string)=>void,
+    isLoadingServices: boolean
 }
 
-export default function ServiceListProps({onDeleteService, onSelectService, services, onCreateService}:ServiceListProps){
+export default function ServiceListProps({onDeleteService, onSelectService, isLoadingServices, services, onCreateService}:ServiceListProps){
 
     const {asPath,push} = useRouter()
     const {isAdmin} = useOrgContext()
+    const {switchService}= useServicesContext()
  
-
+ 
     const navigateToDashboard = (serviceId:string)=>{
         push(`${asPath}/services/${serviceId}/dashboard`)
     }
@@ -31,11 +33,13 @@ export default function ServiceListProps({onDeleteService, onSelectService, serv
         <div style={{display:'flex',flexDirection:'column', height:'100%',  background:'#ffffff', width:'70%',padding:'1em'}}>
             <Button type='link' icon={<PlusCircleOutlined />} shape='round' style={{alignSelf:'flex-start',marginBottom:'1em', display:'flex',alignItems:'center'}} onClick={onCreateService}>Launch new service</Button>
             <List
+            loading={isLoadingServices || !services}
             itemLayout="horizontal"
             dataSource={services}
             bordered={false}
             renderItem={(item:Service) => (
             <List.Item 
+                // extra={<Button>Goto service</Button>}
                 style={{border:'none', background:'#f9f9f9',marginBottom:'.5em',padding:'1em', borderRadius:'4px'}}
                 actions={[
                 <Button 
@@ -48,7 +52,7 @@ export default function ServiceListProps({onDeleteService, onSelectService, serv
             >
                 <List.Item.Meta
                 key={item.id}
-                title={<Title level={5}><Link href={`${asPath}/services/${item.id}/dashboard`}>{item.name}</Link></Title>}
+                title={<Title  level={5}> <Link href={`${asPath}/services/${item.id}/dashboard`}>{item.name}</Link>  </Title>}
                 description={
                     <div style={{display:'flex', width:'100%', flexDirection:'column'}}>
                         <div style={{display:'flex'}}>

@@ -14,6 +14,7 @@ import { Org } from '../../../types/OrganisationTypes';
 import { useOrgContext } from '../../../context/OrgContext';
 import { useQuery } from '@tanstack/react-query';
 import { useAuthContext } from '../../../context/AuthContext';
+import useCrudDB from '../../../hooks/useCrudDB';
 
 const {Text,Title} = Typography;
 
@@ -48,34 +49,35 @@ export default function ServiceView({}:ServicesViewProps){
     const {paseto} = useAuthContext()
     const orgId = currentOrg.id 
     
-    const fetchServices = async()=>{
-        console.log('runc',paseto)
-        const {data} =  await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/services/user/get-services?orgId=${orgId}`,{
-            headers:{
-                "Authorization": paseto
-            }
-        })
-        return data;
-    }
-    const {data, isLoading} = useQuery(['services',orgId],fetchServices,{refetchInterval:300000})
+    // const fetchServices = async()=>{
+    //     console.log('runc',paseto)
+    //     const {data} =  await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/services/user/get-services?orgId=${orgId}`,{
+    //         headers:{
+    //             "Authorization": paseto
+    //         }
+    //     })
+    //     return data;
+    // }
+    // const {data, isLoading , isFetched} = useQuery(['services',orgId],fetchServices,{refetchInterval:300000})
 
-    const services: Service[] = data && data.payload;
-    console.log(data)
-
+    // const services: Service[] = data && data.payload;
+    
     const {
-         state,
-         showCreateForm, 
-         openCreateForm,
-         showEditForm,
-         itemToEdit,
-         selectItemToEdit,
-         createItem,
-         editItem,
-         deleteItem,
-         closeCreateForm,
-         closeEditForm
-        } = useCrud<Service>(services)
-
+        state,
+        showCreateForm, 
+        isLoading,
+        openCreateForm,
+        showEditForm,
+        itemToEdit,
+        selectItemToEdit,
+        createItem,
+        editItem,
+        deleteItem,
+        closeCreateForm,
+        closeEditForm
+    } = useCrudDB<Service>(`services/user/get-services?orgId=${orgId}`,'services')
+     
+    console.log(state)
 
 
     
@@ -102,15 +104,17 @@ export default function ServiceView({}:ServicesViewProps){
 
                 <Col offset={2} span={20}>
                     <Title style={{marginBottom:'1em'}} level={4}>Services</Title>
-                    { state.length > 0 ?  
+                    {/* { isFetched && state.length > 0 ?   */}
                         <ServicesList
+                        isLoadingServices={isLoading}
                         onCreateService={openCreateForm}
                         services={state}
                         onDeleteService={deleteItem}
                         onSelectService={selectItemToEdit}
-                        />:
-                        <EmptyStore onRegisterStore={openCreateForm}/>
-                    }
+                        />
+                        {/* : */}
+                        {/* <EmptyStore onRegisterStore={openCreateForm}/> */}
+                    {/* } */}
                 </Col>
             </Row>
         <Modal title="Launch new store" open={showCreateForm} footer={null} onCancel={closeCreateForm}>

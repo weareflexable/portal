@@ -6,7 +6,7 @@ import useLocalStorage from './useLocalStorage'
 
 export default function useServices(){
     // const [activeService, setActiveService] = useState<Service>({id:'weea434',logoUrl:'dfaerefadf',name:'Mujeex labs'})
-    const [currentService, setCurrentService] = useLocalStorage<Service>('currentService',{id:'weea434',address:'Syracuse NY, Bacon Hill',name:'Mujeex Gym',type:'Gym',storeCoverImage:[''],storeLogo:['']})
+    const [currentService, setCurrentService] = useLocalStorage<Service>('currentService',{id:'weea434',city:'NY',name:'Mujeex Gym',serviceTypeName:'Gym',imageHash:[''],country:'US',state:'Syracuse'})
 
     const switchService = (service:Service)=>{
         // setInLocal storage

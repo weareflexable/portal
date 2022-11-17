@@ -1,16 +1,33 @@
+import { useQuery } from '@tanstack/react-query'
+import axios from 'axios'
 import {useState} from 'react'
+import { useAuthContext } from '../context/AuthContext'
 
 
 
 // type Item<T> 
 
-export default function useCrud<T>(initState?:T[]){
-    const [state, setState] = useState<T[]>(initState? initState:[])
+
+export default function useCrudDB<T>(url:string,queryId:string){
+    
+    const {paseto} = useAuthContext()
+    
+    // const [state, setState] = useState<T[]>(initState? initState:[])
     const [showCreateForm, setShowCreateForm] = useState(false)
     const [showEditForm, setShowEditForm] = useState(false)
     const [itemToEdit, setItemToEdit] = useState<T>()
+    
 
-    console.log('coming from crud',state)
+    const fetchData = async(url:string)=>{
+        const {data} = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/${url}`,{
+            headers:{
+                "Authorization": paseto
+            }
+        })
+        return data?.payload;
+    }
+
+    const {data:state, isLoading} = useQuery([queryId],()=>fetchData(url))
 
     function closeCreateForm(){
         setShowCreateForm(false)
@@ -23,7 +40,7 @@ export default function useCrud<T>(initState?:T[]){
     const createItem = (newItem:T)=>{
         const stateCopy =  [...state]
         stateCopy.push(newItem)
-        setState(stateCopy);
+        // setState(stateCopy);
         setShowCreateForm(false);
     }
 
@@ -31,7 +48,7 @@ export default function useCrud<T>(initState?:T[]){
         const stateCopy = state.slice();
         //@ts-ignore
         const updatedState = stateCopy.filter(state=>state.id !== itemId)
-        setState(updatedState)
+        // setState(updatedState)
     }
 
     function editItem(updatedItem:T){
@@ -44,7 +61,7 @@ export default function useCrud<T>(initState?:T[]){
         // update edited service
         stateCopy[itemIndex]= updatedItem;
         // update service in state
-        setState(stateCopy)
+        // setState(stateCopy)
         setShowEditForm(false)
     }
 
@@ -57,6 +74,7 @@ export default function useCrud<T>(initState?:T[]){
     return {
         state, 
         deleteItem, 
+        isLoading,
         editItem, 
         createItem, 
         closeCreateForm, 
