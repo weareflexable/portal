@@ -52,11 +52,11 @@ export default function ServiceListProps({onDeleteService, onSelectService, serv
                 description={
                     <div style={{display:'flex', width:'100%', flexDirection:'column'}}>
                         <div style={{display:'flex'}}>
-                            <Text>{item.address}</Text>
+                            <Text>{item.city},{item.state} · {item.country} </Text>
                         </div>  
                         <div style={{display:'flex'}}>
                             <Text type='secondary' style={{marginRight:'.3em'}}>Service type:</Text>
-                            <Text>{item.type}</Text>
+                            <Text>{item.serviceTypeName}</Text>
                         </div>
                     </div> 
                  }

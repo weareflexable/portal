@@ -9,26 +9,31 @@ import useCrud from '../../../hooks/useCrud';
 import { Service } from '../../../types/Services';
 import CurrentUser from '../../Header/CurrentUser/CurrentUser';
 import ServicesList from '../ServicesList/ServicesList';
+import axios from 'axios';
+import { Org } from '../../../types/OrganisationTypes';
+import { useOrgContext } from '../../../context/OrgContext';
+import { useQuery } from '@tanstack/react-query';
+import { useAuthContext } from '../../../context/AuthContext';
 
 const {Text,Title} = Typography;
 
 const mockServices: Service[] =[
-    {
-    name: 'Benjamins On Franklin',
-    address: 'Newyork syracuse, 2234',
-    type: 'Bar',
-    storeLogo: ['https://joeschmoe.io/api/v1/random'],
-    storeCoverImage: ['https://joeschmoe.io/api/v1/random'],
-    id: 'dadvaereafd'
-},
-    {
-    name: 'Schelling Restaurant',
-    address: 'Barcelona, Estonia 2234',
-    type: 'Restaurant',
-    storeLogo: ['https://joeschmoe.io/api/v1/random'],
-    storeCoverImage: ['https://joeschmoe.io/api/v1/random'],
-    id: 'dadvaer8379343fedfa'
-},
+//     {
+//     name: 'Benjamins On Franklin',
+//     address: 'Newyork syracuse, 2234',
+//     type: 'Bar',
+//     storeLogo: ['https://joeschmoe.io/api/v1/random'],
+//     storeCoverImage: ['https://joeschmoe.io/api/v1/random'],
+//     id: 'dadvaereafd'
+// },
+//     {
+//     name: 'Schelling Restaurant',
+//     address: 'Barcelona, Estonia 2234',
+//     type: 'Restaurant',
+//     storeLogo: ['https://joeschmoe.io/api/v1/random'],
+//     storeCoverImage: ['https://joeschmoe.io/api/v1/random'],
+//     id: 'dadvaer8379343fedfa'
+// },
 ]
 
 
@@ -39,6 +44,23 @@ interface ServicesViewProps{
 export default function ServiceView({}:ServicesViewProps){
 
     const {back} = useRouter()
+    const {currentOrg} = useOrgContext()
+    const {paseto} = useAuthContext()
+    const orgId = currentOrg.id 
+    
+    const fetchServices = async()=>{
+        console.log('runc',paseto)
+        const {data} =  await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/services/user/get-services?orgId=${orgId}`,{
+            headers:{
+                "Authorization": paseto
+            }
+        })
+        return data;
+    }
+    const {data, isLoading} = useQuery(['services',orgId],fetchServices,{refetchInterval:300000})
+
+    const services: Service[] = data && data.payload;
+    console.log(data)
 
     const {
          state,
@@ -52,7 +74,9 @@ export default function ServiceView({}:ServicesViewProps){
          deleteItem,
          closeCreateForm,
          closeEditForm
-        } = useCrud<Service>(mockServices)
+        } = useCrud<Service>(services)
+
+
 
     
 
@@ -64,7 +88,7 @@ export default function ServiceView({}:ServicesViewProps){
                     <Col style={{display:'flex', justifyContent:'space-between'}} offset={2} span={20}>
                         <div style={{display:'flex', flex:'7', flexDirection:'column'}}> 
                             <Button style={{display:'flex', padding: '0', margin:'0', alignItems:'center', textAlign:'left'}} onClick={()=>back()} icon={<ArrowLeftOutlined />} type='link'>Back to organizations</Button>
-                            <Title level={4}>Magic Mike Exclusive club</Title> 
+                            <Title level={4}>{currentOrg.name}</Title> 
                         </div>
 
                         <div style={{display:'flex', flex:'3', justifyContent:'space-between', alignItems:'center'}}>
@@ -100,7 +124,7 @@ export default function ServiceView({}:ServicesViewProps){
             <EditServiceForm 
                 initValues={itemToEdit} 
                 onCloseEditForm={closeEditForm} 
-                onEditVenue={editItem}
+                onEditService={editItem}
             />
         </Modal>
 

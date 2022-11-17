@@ -2,15 +2,16 @@
 
 export type Service ={
     name: string,
-    address: string,
-    type: string,
-    storeLogo: Array<any>,
-    storeCoverImage: Array<any>,
+    city:string,
+    country: string,
+    state: string,
+    serviceTypeName: string,
+    imageHash: Array<any>,
     id: string
 }
 
 // This is the structure required by request body API for 
-// creating venues
+// creating services
 export type ServicePayload ={
     name: string,
     address: string,
