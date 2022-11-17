@@ -12,6 +12,8 @@ import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/i
 import { Order } from '../../types/Booking';
 import moment from 'moment';
 import {ReloadOutlined} from '@ant-design/icons'
+import { useAuthContext } from '../../context/AuthContext';
+import { useServicesContext } from '../../context/ServicesContext';
 
 
 
@@ -48,21 +50,22 @@ const bookings: Order[] = [
 export default function Bookings(){
 
   const router = useRouter()
+  const {paseto} =  useAuthContext()
+  const {currentService} = useServicesContext()
+
+  const fetchServiceBookings = async()=>{
+    const serviceId = currentService.id
+    const { data } = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/orgservmanager/get-serv-orders?orgServiceId=${serviceId}`,
+      {
+        headers:{"Authorization":paseto}
+      }
+    );
+    return data;
+  }
 
   const { isLoading, data, isError, dataUpdatedAt, refetch } = useQuery(
-    ['bookings'],
-    async () => {
-      const { data } = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/org-admin-get-orders`,
-        {
-          headers:{"Authorization":'v4.local.URC2UcW0k5Xpn7PFhsjfjOu1z8sIOCWFbBOJnPxzfVOWWOusxpmBSCT1oNJ5edT4vTntsRNifEviLBk4KYrVCB5whgYpqFCSdQJ9-hACAvZ7FDtx9jgUe3aXHj_EszDQQ9WU7MLXDQTq07oK8s-v1HiMbjdW-jkMbtdVPpQ2qEXckX92BQD-uWX4dwy5gTmJfdEVpa_fi4IK_rjwVXo8i01bZ6c'}
-        }
-      );
-      return data;
-    },
-    {
-      refetchInterval: 100000,
-    }
+    ['bookings'], fetchServiceBookings,{refetchInterval: 100000}
   ); 
 
   console.log(data && data.payload, isError) 
@@ -75,6 +78,7 @@ export default function Bookings(){
   const searchInput = useRef<InputRef>(null);
 
   const isFilterEmpty = Object.keys(filteredInfo).length === 0;
+  const serviceBookings = data && data.payload
 
   const handleSearch = (
     selectedKeys: string[],
@@ -262,7 +266,7 @@ export default function Bookings(){
           <Button style={{display:'flex', alignItems:'center'}} icon={<ReloadOutlined/>} type='link' onClick={()=>refetch()}>Refresh</Button>
         </div>
         {!isFilterEmpty? <Button type='link' icon={<ClearOutlined />} style={{marginBottom:'.5em', display:'flex',alignItems:'center'}} onClick={clearFilters}>Clear filters</Button>:null}
-        <Table style={{width:'100%'}} loading={isLoading} columns={columns} onChange={handleChange} dataSource={data && data.payload} />
+        <Table style={{width:'100%'}} loading={isLoading} columns={columns} onChange={handleChange} dataSource={serviceBookings} />
       </div>
     )
 }

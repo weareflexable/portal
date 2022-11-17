@@ -19,7 +19,6 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [paseto, setPaseto] = useState(()=>{
         const localPaseto = getStorage('PLATFORM_PASETO')
-        console.log('context',localPaseto)
           if(localPaseto === undefined) return
         return localPaseto
     })
