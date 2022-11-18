@@ -1,7 +1,8 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation } from '@tanstack/react-query'
 import axios from 'axios'
 import {useState} from 'react'
 import { useAuthContext } from '../context/AuthContext'
+import { ServiceItem, ServicePayload } from '../types/Services'
 
 
  
@@ -11,9 +12,23 @@ type Config={
     mutateUrl: string
 }
 
-export default function useCrudDB<T>(config:Config,queryId:string){
+export default function useCrudDB<T>(config:Config,queryId:string):{
+    state:T[],
+    deleteItem: (id:string)=>void
+    isLoading: boolean,
+    editItem: (id:T)=>void,
+    createItem: (newItem:T)=>void,
+    closeCreateForm: ()=>void,
+    openCreateForm: ()=>void,
+    closeEditForm: ()=>void,
+    openEditForm: ()=>void,
+    showCreateForm: boolean,
+    showEditForm: boolean,
+    itemToEdit: T | undefined,
+    selectItemToEdit: (item:T)=>void
+
+}{
     const {fetchUrl, mutateUrl} = config
-    
     const {paseto} = useAuthContext()
     
     // const [state, setState] = useState<T[]>(initState? initState:[])
@@ -30,12 +45,18 @@ export default function useCrudDB<T>(config:Config,queryId:string){
         })
         return data?.payload;
     }
+    const createDataHandler = async(url:string)=>{
+        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/${url}`)
+    }
+
+    const createData = useMutation(()=>createDataHandler(mutateUrl))
+    const {isError, isLoading:isCreatingData, isSuccess:isDataCreated, data:createdData} = createData
 
     const {data, isLoading, isSuccess} = useQuery([queryId],()=>fetchData(fetchUrl))
 
     // return empty array if req successful and no payload
-    const state = data && data
-    console.log('from hook',state)
+    const state: T[] = data && data?.payload
+
 
     function closeCreateForm(){
         setShowCreateForm(false)
@@ -45,11 +66,11 @@ export default function useCrudDB<T>(config:Config,queryId:string){
         setShowEditForm(false)
     }
 
-    const createItem = (newItem:T)=>{
-        const stateCopy =  [...state]
-        stateCopy.push(newItem)
+    const createItem = (newItem:T) =>{
+
+        console.log(newItem)
         // setState(stateCopy);
-        setShowCreateForm(false);
+        // setShowCreateForm(false);
     }
 
     function deleteItem (itemId: string){

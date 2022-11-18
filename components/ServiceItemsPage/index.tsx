@@ -82,7 +82,7 @@ export default function UserServicesView({}:UserServicesViewProps){
         <div> 
            
             { state 
-                ? <ServiceItemList serviceItemsIsLoading={isLoading} onDeleteService = {deleteItem} onSelectService={selectItemToEdit} onCreateService={openCreateForm} services={state}/>
+                ? <ServiceItemList serviceItemsIsLoading={isLoading} onDeleteService = {deleteItem} onSelectService={selectItemToEdit} onCreateService={openCreateForm} serviceItems={state}/>
                 :<EmptyServices onRegisterService={openCreateForm}/>
             }
 

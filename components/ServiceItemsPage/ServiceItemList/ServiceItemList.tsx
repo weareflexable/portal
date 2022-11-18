@@ -10,14 +10,14 @@ const {Title,Text} = Typography
 
 
 interface ServiceListProps{
-    services: Array<any>,
+    serviceItems: ServiceItem[],
     onCreateService: ()=>void,
     onSelectService: (service:ServiceItem)=>void,
     onDeleteService: (itemKey: string)=>void,
     serviceItemsIsLoading: boolean
 }
 
-export default function ServiceListProps({onDeleteService,serviceItemsIsLoading, onSelectService, services, onCreateService}:ServiceListProps){
+export default function ServiceListProps({onDeleteService,serviceItemsIsLoading, onSelectService, serviceItems, onCreateService}:ServiceListProps){
 
     const router = useRouter()
     const {isAdmin} = useOrgContext()
@@ -29,7 +29,7 @@ export default function ServiceListProps({onDeleteService,serviceItemsIsLoading,
             <List
             itemLayout="horizontal"
             loading={serviceItemsIsLoading}
-            dataSource={services}
+            dataSource={serviceItems}
             bordered={false}
             renderItem={(item:ServiceItem) => (
             <List.Item 

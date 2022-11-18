@@ -18,7 +18,7 @@ interface ServiceFormProps{
     onTriggerFormAction: (formData:ServiceItem)=>void
     onCancelFormCreation: ()=>void
 }
-export default function ServiceForm({ onTriggerFormAction, onCancelFormCreation}:ServiceFormProps){
+export default function ServiceItemForm({ onTriggerFormAction, onCancelFormCreation}:ServiceFormProps){
 
 
     // TODO: set field for editing
@@ -31,9 +31,9 @@ export default function ServiceForm({ onTriggerFormAction, onCancelFormCreation}
         // only generate key if it's a new service
             const formObject= {
                 ...formData,
-                key: uuidv4()
+                id: uuidv4()
             }
-            onTriggerFormAction(formObject)
+            onTriggerFormAction(formObject) 
             showStoreCreationNotification()
 
     }

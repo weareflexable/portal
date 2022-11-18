@@ -11,9 +11,11 @@ interface ServiceSwitcherModalProps{
 }
 export default function ServiceSwitcherModal({isModalOpen, onCloseModal}:ServiceSwitcherModalProps){
 
-    const {services} =  useFetchUserServices()
+    const {services, isFetchingServices} =  useFetchUserServices()
     const {switchService} = useServicesContext()
-    const {asPath,replace} = useRouter()
+
+    const {asPath,replace} = useRouter() 
+
     const splittedRoutes = asPath.split('/')
     const basePath = splittedRoutes.slice(0,4).join('/')
 
@@ -33,14 +35,16 @@ export default function ServiceSwitcherModal({isModalOpen, onCloseModal}:Service
         <Modal open={isModalOpen} footer={null} onCancel={onCloseModal}>
             <List
                 size='small'
+                loading={isFetchingServices}
                 dataSource={services && services}
                 renderItem={(item) => (
                     <List.Item style={{border: 'none', marginBottom:'0'}}>
                         <div style={{width:'100%', borderRadius:'4px', background:'#f8f8f8', display:'flex', justifyContent: 'space-between', alignItems:'center', padding: '1.3em'}}>
-                            <div>
+                            <div style={{display:'flex', flexDirection:'column'}}>
                              <Typography.Text>{item.name}</Typography.Text>
+                             <Typography.Text type='secondary'>{item.state},{item.city} · {item.country}</Typography.Text>
                             </div>
-                             {item.isActive?<Typography.Text type='secondary'>Logged in</Typography.Text>:<Button type='link' loading={targetService?.id===item.id} onClick={()=>switchServiceHandler(item)} shape='round'  size='small'>Switch to Service</Button>}
+                             {/* {item.isActive?<Typography.Text type='secondary'>Logged in</Typography.Text>:<Button type='link' loading={targetService?.id===item.id} onClick={()=>switchServiceHandler(item)} shape='round'  size='small'>Switch to Service</Button>} */}
                         </div>
                     </List.Item>
                 )}

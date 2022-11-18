@@ -61,6 +61,11 @@ export default function ServiceView({}:ServicesViewProps){
     // const {data, isLoading , isFetched} = useQuery(['services',orgId],fetchServices,{refetchInterval:300000})
 
     // const services: Service[] = data && data.payload;
+
+    const hookConfig = {
+        fetchUrl: `services/user/get-services?orgId=${orgId}`,
+        mutateUrl: ''
+    }
     
     const {
         state,
@@ -75,7 +80,7 @@ export default function ServiceView({}:ServicesViewProps){
         deleteItem,
         closeCreateForm,
         closeEditForm
-    } = useCrudDB<Service>(`services/user/get-services?orgId=${orgId}`,'services')
+    } = useCrudDB<Service>(hookConfig,'services')
      
     console.log(state)
 
