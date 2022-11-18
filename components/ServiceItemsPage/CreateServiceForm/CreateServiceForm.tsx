@@ -8,6 +8,8 @@ import {v4 as uuidv4} from 'uuid'
 
 import { useRouter } from 'next/router';
 import { ServiceItem } from '../../../types/Services';
+import moment from 'moment';
+import { useServicesContext } from '../../../context/ServicesContext';
 
 
 
@@ -25,13 +27,19 @@ export default function ServiceItemForm({ onTriggerFormAction, onCancelFormCreat
 
     const router = useRouter()
     const [form] = Form.useForm()
+    const {currentService} = useServicesContext()
 
     const onFinish = (formData:ServiceItem)=>{
         // call function to create stor
         // only generate key if it's a new service
             const formObject= {
                 ...formData,
-                id: uuidv4()
+                orgServiceId: currentService.id,
+                startDate: moment(formData.startDate).format('YYYY-MMM-DD'),
+                startTime: moment(formData.startTime).format('HH:mm:ss'),
+                rangeTime: `${formData.rangeTime}:0:0`,
+                imageHash: '',
+                serviceItemId: uuidv4()
             }
             console.log(formObject)
             // onTriggerFormAction(formObject) 
