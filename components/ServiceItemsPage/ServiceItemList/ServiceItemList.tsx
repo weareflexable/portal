@@ -13,10 +13,11 @@ interface ServiceListProps{
     services: Array<any>,
     onCreateService: ()=>void,
     onSelectService: (service:ServiceItem)=>void,
-    onDeleteService: (itemKey: string)=>void
+    onDeleteService: (itemKey: string)=>void,
+    serviceItemsIsLoading: boolean
 }
 
-export default function ServiceListProps({onDeleteService, onSelectService, services, onCreateService}:ServiceListProps){
+export default function ServiceListProps({onDeleteService,serviceItemsIsLoading, onSelectService, services, onCreateService}:ServiceListProps){
 
     const router = useRouter()
     const {isAdmin} = useOrgContext()
@@ -27,6 +28,7 @@ export default function ServiceListProps({onDeleteService, onSelectService, serv
             <Button type='link' icon={<PlusCircleOutlined />} shape='round' style={{alignSelf:'flex-start',marginBottom:'1em', display:'flex',alignItems:'center'}} onClick={onCreateService}>Add new service item</Button>
             <List
             itemLayout="horizontal"
+            loading={serviceItemsIsLoading}
             dataSource={services}
             bordered={false}
             renderItem={(item:ServiceItem) => (
@@ -43,7 +45,7 @@ export default function ServiceListProps({onDeleteService, onSelectService, serv
             >
                 <List.Item.Meta
                 key={item.id}
-                title={<Title level={5}>{item.name}</Title>}
+                title={item.name} 
                 description={
                     <div style={{display:'flex', width:'100%', flexDirection:'column'}}>
                         <div style={{display:'flex'}}>

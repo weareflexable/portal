@@ -9,7 +9,7 @@ import {v4 as uuidv4} from 'uuid'
 import { useRouter } from 'next/router';
 import {usePlacesWidget} from 'react-google-autocomplete'
 import { nftStorageClient } from "../../../utils/nftStorage";
-import { Venue } from "../../../types/Services";
+import { Service } from "../../../types/Services";
 
 interface StoreFormProps{
     onLaunchStore: (formData:any)=>void
@@ -42,7 +42,7 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
         // return res
     }
 
-    const onFinish = async(formData:Venue)=>{
+    const onFinish = async(formData:Service)=>{
 
         // const logoImage = formData.storeLogo[0].originFileObj
         // const coverImage = formData.storeCoverImage[0].originFileObj

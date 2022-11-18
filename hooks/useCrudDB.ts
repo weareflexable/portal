@@ -27,7 +27,11 @@ export default function useCrudDB<T>(url:string,queryId:string){
         return data?.payload;
     }
 
-    const {data:state, isLoading} = useQuery([queryId],()=>fetchData(url))
+    const {data, isLoading, isSuccess} = useQuery([queryId],()=>fetchData(url))
+
+    // return empty array if req successful and no payload
+    const state = data && data
+    console.log('from hook',state)
 
     function closeCreateForm(){
         setShowCreateForm(false)

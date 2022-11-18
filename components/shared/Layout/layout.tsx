@@ -36,7 +36,6 @@ const { Header, Sider, Content } = Layout;
     const {isAuthenticated,setIsAuthenticated} = useAuthContext()
     const [showSwitcherModal, setSwitcherModal] = useState(false) 
     
-    console.log(asPath)
     const splittedRoutes = asPath.split('/')
     const selectedRoute = splittedRoutes[5]
     splittedRoutes.pop()
@@ -50,7 +49,7 @@ const { Header, Sider, Content } = Layout;
           onCloseModal={()=>setSwitcherModal(!showSwitcherModal)}
         /> */}
         <ServicesSwitcherModal
-          isModalOpen={showSwitcherModal}
+          isModalOpen={showSwitcherModal} 
           onCloseModal={()=>setSwitcherModal(!showSwitcherModal)}
         />
 

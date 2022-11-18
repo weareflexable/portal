@@ -11,6 +11,8 @@ import useCrud from '../../hooks/useCrud';
 import { ServiceItem } from '../../types/Services';
 import moment from 'moment';
 import ServiceItemList from './ServiceItemList/ServiceItemList';
+import useCrudDB from '../../hooks/useCrudDB';
+import { useServicesContext } from '../../context/ServicesContext';
 const {Text} = Typography;
  
 
@@ -48,13 +50,17 @@ const mockServiceItems: ServiceItem[] = [
 export default function UserServicesView({}:UserServicesViewProps){
 
     const {asPath} = useRouter()
-    const serviceId = asPath.split('/')[5]
+    const {currentService} = useServicesContext();
+    // const serviceId = asPath.split('/')[5]
+    const serviceId = currentService.id
 
+    const serviceItemsUrl = `services/user/get-service-items?orgServiceId=${serviceId}`
 
     const {
         state,
         showCreateForm, 
         openCreateForm,
+        isLoading,
         showEditForm,
         itemToEdit,
         selectItemToEdit,
@@ -63,15 +69,16 @@ export default function UserServicesView({}:UserServicesViewProps){
         deleteItem,
         closeCreateForm,
         closeEditForm
-       } = useCrud<ServiceItem>(mockServiceItems)
+       } = useCrudDB<ServiceItem>(serviceItemsUrl,'serviceItems')
 
+       console.log(state)
 
 
     return(
-        <div>
+        <div> 
            
-            { state.length > 0 
-                ? <ServiceItemList onDeleteService = {deleteItem} onSelectService={selectItemToEdit} onCreateService={openCreateForm} services={state}/>
+            { state 
+                ? <ServiceItemList serviceItemsIsLoading={isLoading} onDeleteService = {deleteItem} onSelectService={selectItemToEdit} onCreateService={openCreateForm} services={state}/>
                 :<EmptyServices onRegisterService={openCreateForm}/>
             }
 
