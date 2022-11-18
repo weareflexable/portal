@@ -54,7 +54,11 @@ export default function UserServicesView({}:UserServicesViewProps){
     // const serviceId = asPath.split('/')[5]
     const serviceId = currentService.id
 
-    const serviceItemsUrl = `services/user/get-service-items?orgServiceId=${serviceId}`
+
+    const hookConfig = {
+        fetchUrl: `services/user/get-service-items?orgServiceId=${serviceId}`,
+        mutateUrl: `services/orgadmin/org-service-item`
+    }
 
     const {
         state,
@@ -69,7 +73,7 @@ export default function UserServicesView({}:UserServicesViewProps){
         deleteItem,
         closeCreateForm,
         closeEditForm
-       } = useCrudDB<ServiceItem>(serviceItemsUrl,'serviceItems')
+       } = useCrudDB<ServiceItem>(hookConfig,'serviceItems')
 
        console.log(state)
 

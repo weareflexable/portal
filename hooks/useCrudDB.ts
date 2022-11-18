@@ -4,11 +4,15 @@ import {useState} from 'react'
 import { useAuthContext } from '../context/AuthContext'
 
 
-
+ 
 // type Item<T> 
+type Config={
+    fetchUrl: string,
+    mutateUrl: string
+}
 
-
-export default function useCrudDB<T>(url:string,queryId:string){
+export default function useCrudDB<T>(config:Config,queryId:string){
+    const {fetchUrl, mutateUrl} = config
     
     const {paseto} = useAuthContext()
     
@@ -27,7 +31,7 @@ export default function useCrudDB<T>(url:string,queryId:string){
         return data?.payload;
     }
 
-    const {data, isLoading, isSuccess} = useQuery([queryId],()=>fetchData(url))
+    const {data, isLoading, isSuccess} = useQuery([queryId],()=>fetchData(fetchUrl))
 
     // return empty array if req successful and no payload
     const state = data && data

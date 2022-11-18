@@ -26,7 +26,7 @@ export default function useFetchUserServices(){
             }
         ))
 
-    }
+    } 
 
     // indicates the service user is currently in
     const activeServices = determineCurrentService()
