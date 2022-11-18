@@ -33,8 +33,9 @@ export default function ServiceItemForm({ onTriggerFormAction, onCancelFormCreat
                 ...formData,
                 id: uuidv4()
             }
-            onTriggerFormAction(formObject) 
-            showStoreCreationNotification()
+            console.log(formObject)
+            // onTriggerFormAction(formObject) 
+            // showStoreCreationNotification()
 
     }
 

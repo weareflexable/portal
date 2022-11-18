@@ -55,8 +55,7 @@ export default function useCrudDB<T>(config:Config,queryId:string):{
     const {data, isLoading, isSuccess} = useQuery([queryId],()=>fetchData(fetchUrl))
 
     // return empty array if req successful and no payload
-    const state: T[] = data && data?.payload
-
+    const state: T[] = data && data
 
     function closeCreateForm(){
         setShowCreateForm(false)
