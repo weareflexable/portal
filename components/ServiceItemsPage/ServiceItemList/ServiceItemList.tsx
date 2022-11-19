@@ -14,10 +14,11 @@ interface ServiceListProps{
     onCreateService: ()=>void,
     onSelectService: (service:ServiceItem)=>void,
     onDeleteService: (itemKey: string)=>void,
-    serviceItemsIsLoading: boolean
+    serviceItemsIsLoading: boolean,
+    isFetching: boolean
 }
 
-export default function ServiceListProps({onDeleteService,serviceItemsIsLoading, onSelectService, serviceItems, onCreateService}:ServiceListProps){
+export default function ServiceListProps({onDeleteService,serviceItemsIsLoading, isFetching, onSelectService, serviceItems, onCreateService}:ServiceListProps){
 
     const router = useRouter()
     const {isAdmin} = useOrgContext()
@@ -25,7 +26,7 @@ export default function ServiceListProps({onDeleteService,serviceItemsIsLoading,
 
     return(
         <div style={{display:'flex',flexDirection:'column', width:'100%',padding:'1em'}}>
-            <Button type='link' icon={<PlusCircleOutlined />} shape='round' style={{alignSelf:'flex-start',marginBottom:'1em', display:'flex',alignItems:'center'}} onClick={onCreateService}>Add new service item</Button>
+            <Button type='link' disabled={isFetching} icon={<PlusCircleOutlined />} shape='round' style={{alignSelf:'flex-start',marginBottom:'1em', display:'flex',alignItems:'center'}} onClick={onCreateService}>Add new service item</Button>
             <List
             itemLayout="horizontal"
             loading={serviceItemsIsLoading}
@@ -40,7 +41,7 @@ export default function ServiceListProps({onDeleteService,serviceItemsIsLoading,
                     size='small' 
                     disabled={!isAdmin} 
                     type='text' onClick={()=>onDeleteService(item.id)} 
-                    key={item.id}>Delete</Button> , <Button size='small' type='link'  onClick={()=>onSelectService(item)} key={item.id}>Edit</Button>  
+                    key={item.id}>Delete</Button> , <Button size='small' type='link' disabled  onClick={()=>onSelectService(item)} key={item.id}>Edit</Button>  
                  ]}
             >
                 <List.Item.Meta

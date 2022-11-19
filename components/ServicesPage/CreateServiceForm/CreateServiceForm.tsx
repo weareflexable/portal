@@ -1,5 +1,5 @@
 import React, { createRef, FC, RefObject, useRef, useState } from "react";
-import {Card,Form, Input,InputNumber,Upload,Button,notification, Space, Alert, Typography} from 'antd';
+import {Card,Form, Input,InputNumber,Upload,Button,notification, Space, Alert, Typography, Select} from 'antd';
 const { TextArea } = Input;
 const {Text} = Typography;
 import {UploadOutlined} from '@ant-design/icons'
@@ -12,12 +12,28 @@ import { asyncStore, nftStorageClient } from "../../../utils/nftStorage";
 import { Service, ServicePayload } from "../../../types/Services";
 import { useOrgContext } from "../../../context/OrgContext";
 import moment from "moment-timezone";
+import axios from "axios";
+import { useAuthContext } from "../../../context/AuthContext";
+import { useQuery } from "@tanstack/react-query";
 
 interface StoreFormProps{
     onLaunchStore: (formData:any)=>void
     onCancelFormCreation: ()=>void
 }
 export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFormProps){
+    const {paseto} = useAuthContext()
+
+    const fetchServiceTypes = async()=>{
+        const {data} = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/services/public/generic-services`,{headers:{"Authorization":paseto}})
+        return data?.payload
+    }
+
+    const {data:serviceTypes,isLoading:isLoadingServiceType} = useQuery(['serviceTypes'],fetchServiceTypes)
+
+    const menuItems = serviceTypes && serviceTypes.map((service:any)=>({
+            label: service.name,
+            value: service.id
+    }))
 
     const {currentOrg} = useOrgContext()
     const [form]=Form.useForm()
@@ -108,6 +124,9 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
         });
       };
       
+      const handleSelect=(e: any)=>{
+        console.log(e)
+      }
 
     return (
             <Form
@@ -119,7 +138,7 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
             >
             <Form.Item
                 name="name"
-                label="Store name"
+                label="Service name"
                 rules={[{ required: true, message: 'Please input a valid store name' }]}
              >
                 <Input placeholder="Bill Cage coffee" />
@@ -147,7 +166,13 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
                 label='Business type'
                 rules={[{ required: true, message: 'Please input a valid address!' }]}
             >
-                <Input placeholder="eg Gym, Bar, Restaurant" />
+                {/* <Input placeholder="eg Gym, Bar, Restaurant" /> */}
+                <Select
+                    defaultValue="Bar"
+                    style={{ width: 120 }}
+                    onChange={handleSelect}
+                    options={menuItems}
+                    />
             </Form.Item>
 
             <Form.Item
@@ -194,7 +219,7 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
                     </Button>
 
                     <Button type="primary"  htmlType="submit" >
-                    Launch store
+                    Launch service
                     </Button>
                 </Space>
                 

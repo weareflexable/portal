@@ -64,6 +64,7 @@ export default function UserServicesView({}:UserServicesViewProps){
         state,
         showCreateForm, 
         openCreateForm,
+        isCreatingData,
         isLoading,
         showEditForm,
         itemToEdit,
@@ -82,12 +83,13 @@ export default function UserServicesView({}:UserServicesViewProps){
         <div> 
            
             {/* { state  */}
-                <ServiceItemList serviceItemsIsLoading={isLoading} onDeleteService = {deleteItem} onSelectService={selectItemToEdit} onCreateService={openCreateForm} serviceItems={state}/>
+                <ServiceItemList serviceItemsIsLoading={isLoading} onDeleteService = {deleteItem} isFetching={isLoading} onSelectService={selectItemToEdit} onCreateService={openCreateForm} serviceItems={state}/>
                 {/* // :<EmptyServices onRegisterService={openCreateForm}/> */}
             {/* } */}
 
             <Modal title={'Create service item'} open={showCreateForm} footer={null} onCancel={closeCreateForm}>
                 <ServiceItemForm 
+                isCreatingServiceItem={isCreatingData}
                 onTriggerFormAction={createItem} 
                 onCloseForm={closeCreateForm}/>
             </Modal>

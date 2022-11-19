@@ -135,7 +135,7 @@ const Home: NextPage = () => {
                 <div style={{display:'flex', marginTop:'4em', flexDirection:'column', width:'60%'}} > 
                         <Title style={{marginBottom:'0'}} level={4}>My organizations</Title>
                         <Card  style={{width:'100%', marginTop:'1em'}}>
-                            <Button type='link' style={{marginBottom:'1em',display:'flex',alignItems:'center'}} icon={<PlusCircleOutlined />} onClick={()=>setShowOrgForm(true)}>Register new organisation</Button>
+                            <Button disabled={isLoading} type='link' style={{marginBottom:'1em',display:'flex',alignItems:'center'}} icon={<PlusCircleOutlined />} onClick={()=>setShowOrgForm(true)}>Register new organisation</Button>
                             <List
                                 size="small"
                                 bordered={false}

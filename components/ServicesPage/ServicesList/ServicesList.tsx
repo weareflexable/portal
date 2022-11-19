@@ -33,7 +33,7 @@ export default function ServiceListProps({onDeleteService, onSelectService, isLo
 
     return(
         <div style={{display:'flex',flexDirection:'column', height:'100%',  background:'#ffffff', width:'70%',padding:'1em'}}>
-            <Button type='link' icon={<PlusCircleOutlined />} shape='round' style={{alignSelf:'flex-start',marginBottom:'1em', display:'flex',alignItems:'center'}} onClick={onCreateService}>Launch new service</Button>
+            <Button type='link' disabled={isLoadingServices} icon={<PlusCircleOutlined />} shape='round' style={{alignSelf:'flex-start',marginBottom:'1em', display:'flex',alignItems:'center'}} onClick={onCreateService}>Launch new service</Button>
             <List
             loading={isLoadingServices || !services}
             itemLayout="horizontal"
@@ -49,7 +49,7 @@ export default function ServiceListProps({onDeleteService, onSelectService, isLo
                     size='small' 
                     disabled={!isAdmin} 
                     type='text' onClick={()=>onDeleteService(item.id)} 
-                    key={item.id}>Delete</Button> , <Button size='small' type='link'  onClick={()=>onSelectService(item)} key={item.id}>Edit</Button>  
+                    key={item.id}>Delete</Button> , <Button size='small' type='link' disabled  onClick={()=>onSelectService(item)} key={item.id}>Edit</Button>  
                  ]}
             >
                 <List.Item.Meta

@@ -22,6 +22,7 @@ export default function useCrudDB<T>(config:Config,queryId:string):{
     openCreateForm: ()=>void,
     closeEditForm: ()=>void,
     openEditForm: ()=>void,
+    isCreatingData: boolean,
     showCreateForm: boolean,
     showEditForm: boolean,
     itemToEdit: T | undefined,
@@ -56,10 +57,13 @@ export default function useCrudDB<T>(config:Config,queryId:string):{
         return data
     }
 
-    const createData = useMutation(createDataHandler)
+    const createData = useMutation(createDataHandler,
+        {onSuccess:()=>{
+            closeCreateForm()
+        }
+        })
     const {isError, isLoading:isCreatingData, isSuccess:isDataCreated, data:createdData} = createData
 
-    console.log(isCreatingData, createdData)
     const {data, isLoading, isSuccess} = useQuery([queryId],()=>fetchData(fetchUrl))
 
 
@@ -113,6 +117,7 @@ export default function useCrudDB<T>(config:Config,queryId:string):{
         state, 
         deleteItem, 
         isLoading,
+        isCreatingData,
         editItem, 
         createItem, 
         closeCreateForm, 

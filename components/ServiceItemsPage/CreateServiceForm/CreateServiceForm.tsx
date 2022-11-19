@@ -18,10 +18,11 @@ import { useServicesContext } from '../../../context/ServicesContext';
 
 interface ServiceFormProps{
     onTriggerFormAction: (formData:ServiceItemReqPaylod)=>void
-    onCloseForm: ()=>void
+    onCloseForm: ()=>void,
+    isCreatingServiceItem:boolean
 }
 
-export default function ServiceItemForm({ onTriggerFormAction, onCloseForm}:ServiceFormProps){
+export default function ServiceItemForm({ onTriggerFormAction,isCreatingServiceItem, onCloseForm}:ServiceFormProps){
 
 
     // TODO: set field for editing
@@ -47,7 +48,6 @@ export default function ServiceItemForm({ onTriggerFormAction, onCloseForm}:Serv
             }
             // console.log(formObject)
             onTriggerFormAction(formObject) 
-            onCloseForm()
             // showStoreCreationNotification()
 
     }
@@ -138,7 +138,7 @@ export default function ServiceItemForm({ onTriggerFormAction, onCloseForm}:Serv
                         Cancel
                     </Button>
 
-                    <Button shape='round' type="primary"  htmlType="submit" >
+                    <Button shape='round' loading={isCreatingServiceItem} type="primary"  htmlType="submit" >
                      Create service 
                     </Button>
                 </Space>
