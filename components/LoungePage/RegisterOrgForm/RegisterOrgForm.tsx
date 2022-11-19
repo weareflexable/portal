@@ -41,7 +41,7 @@ export default function RegisterOrgForm({onRegisterNewOrg,isRegisteringOrg}:Regi
             >
             <Form.Item
                 name="name"
-                label="Organisation name"
+                label="Name"
                 rules={[{ required: true, message: 'Please enter a valid organisation name' }]}
              >
                 <Input placeholder="eg. Avery labs" />
@@ -49,7 +49,7 @@ export default function RegisterOrgForm({onRegisterNewOrg,isRegisteringOrg}:Regi
 
             <Form.Item
                 name="address"
-                label='Organisation address'
+                label='Address'
                 rules={[{ required: true, message: 'Please enter a valid address' }]}
             >
                 <Input placeholder="No 6, West bridge miller" />
@@ -57,15 +57,15 @@ export default function RegisterOrgForm({onRegisterNewOrg,isRegisteringOrg}:Regi
 
             <Form.Item
                 name="emailId"
-                label='Organisation email'
+                label='Email'
                 rules={[{ required: true, message: 'Please input a valid email!' }]}
             >
-                <Input type='email' placeholder="billcage@yahoo.com" />
+                <Input type='email' placeholder="billcage@lazarus.com" />
             </Form.Item>
 
             <Form.Item
                 name="phoneNumber"
-                label='Organisation phone'
+                label='Manager phone number'
                 rules={[{ required: true, message: 'Please input a valid phone!' }]}
             >
                 <Input placeholder="08023234763" />

@@ -16,6 +16,7 @@ import { nftStorageClient } from '../utils/nftStorage';
 import RegisterOrgForm from '../components/LoungePage/RegisterOrgForm/RegisterOrgForm';
 import { Order } from '../types/Booking';
 import dynamic from 'next/dynamic';
+import useMutateData from '../hooks/useMutateData';
 
 const Home: NextPage = () => {
 
@@ -38,6 +39,8 @@ const Home: NextPage = () => {
     const {isAuthenticated} = useAuthContext()
     const router = useRouter()
 
+    const {createItem} = useMutateData('org/user/create')
+
     const orgs: Org[] = data && data.payload;
 
     const {switchOrg} =  useOrgContext()
@@ -59,12 +62,6 @@ const Home: NextPage = () => {
         }
       })
 
-
-    useEffect(() => {
-        // setIsFetchingOrgs(true)
-        // fetch user roles here
-        // setUserOrgs here
-    }, [])
 
 
     const navigateToApp = (org:Org)=>{
@@ -89,18 +86,17 @@ const Home: NextPage = () => {
         const imageBlob = formData.imageFile
         // TODO: fix this this type issue later
         nftStorageClient.storeBlob(imageBlob as unknown as Blob).then(cid=>{
-            console.log(cid)
-            createNewOrg.mutate({  
+            
+            const reqPayload = {  
                 name:formData.name,
                 emailId: formData.emailId,
                 address: formData.address,
                 phoneNumber: formData.phoneNumber,
                 imageHash: cid
-            })
+            }
+            // createNewOrg.mutate()
+            createItem(reqPayload)
 
-            // add new org to state
-            // const unApprovedOrgsCopy = unApprovedOrgs.slice()
-            // unApprovedOrgsCopy.push(formData)
             setIsRegisteringOrg(false)
 
         }).catch(err=>{
@@ -204,6 +200,7 @@ const Home: NextPage = () => {
                     isRegisteringOrg={isRegisteringOrg}
                 />
             </Modal>
+            
         </div>
     )
 }
