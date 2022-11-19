@@ -8,7 +8,7 @@ import ServiceItemForm from './CreateServiceForm/CreateServiceForm';
 import ServiceList from './ServiceItemList/ServiceItemList';
 import EditForm from './EditServiceForm/EditServiceForm';
 import useCrud from '../../hooks/useCrud';
-import { ServiceItem } from '../../types/Services';
+import { ServiceItem, ServiceItemReqPaylod } from '../../types/Services';
 import moment from 'moment';
 import ServiceItemList from './ServiceItemList/ServiceItemList';
 import useCrudDB from '../../hooks/useCrudDB';
@@ -89,7 +89,7 @@ export default function UserServicesView({}:UserServicesViewProps){
             <Modal title={'Create service item'} open={showCreateForm} footer={null} onCancel={closeCreateForm}>
                 <ServiceItemForm 
                 onTriggerFormAction={createItem} 
-                onCancelFormCreation={closeCreateForm}/>
+                onCloseForm={closeCreateForm}/>
             </Modal>
 
             <Modal title={'Edit Service item'} open={showEditForm} footer={null} onCancel={closeEditForm}>

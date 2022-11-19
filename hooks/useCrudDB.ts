@@ -17,7 +17,7 @@ export default function useCrudDB<T>(config:Config,queryId:string):{
     deleteItem: (id:string)=>void
     isLoading: boolean,
     editItem: (id:T)=>void,
-    createItem: (newItem:T)=>void,
+    createItem: (newItem:any)=>void,
     closeCreateForm: ()=>void,
     openCreateForm: ()=>void,
     closeEditForm: ()=>void,
@@ -45,14 +45,24 @@ export default function useCrudDB<T>(config:Config,queryId:string):{
         })
         return data?.payload;
     }
-    const createDataHandler = async(url:string)=>{
-        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/${url}`)
+
+    const createDataHandler = async(newItem:any)=>{
+        console.log('paseto',paseto)
+        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/${mutateUrl}`,{
+            headers:{
+                "Authorization": paseto
+            },
+            body:JSON.stringify(newItem)
+        })
+        return data
     }
 
-    const createData = useMutation(()=>createDataHandler(mutateUrl))
+    const createData = useMutation(createDataHandler)
     const {isError, isLoading:isCreatingData, isSuccess:isDataCreated, data:createdData} = createData
 
+    console.log(isCreatingData, createdData)
     const {data, isLoading, isSuccess} = useQuery([queryId],()=>fetchData(fetchUrl))
+
 
     // return empty array if req successful and no payload
     const state: T[] = data && data
@@ -67,7 +77,8 @@ export default function useCrudDB<T>(config:Config,queryId:string):{
 
     const createItem = (newItem:T) =>{
 
-        console.log(newItem)
+        console.log('new item',newItem)
+        createData.mutate(newItem)
         // setState(stateCopy);
         // setShowCreateForm(false);
     }

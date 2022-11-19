@@ -7,7 +7,7 @@ const {Text} = Typography;
 import {v4 as uuidv4} from 'uuid'
 
 import { useRouter } from 'next/router';
-import { ServiceItem } from '../../../types/Services';
+import { ServiceItem, ServiceItemReqPaylod } from '../../../types/Services';
 import moment from 'moment';
 import { useServicesContext } from '../../../context/ServicesContext';
 
@@ -17,10 +17,11 @@ import { useServicesContext } from '../../../context/ServicesContext';
 
 
 interface ServiceFormProps{
-    onTriggerFormAction: (formData:ServiceItem)=>void
-    onCancelFormCreation: ()=>void
+    onTriggerFormAction: (formData:ServiceItemReqPaylod)=>void
+    onCloseForm: ()=>void
 }
-export default function ServiceItemForm({ onTriggerFormAction, onCancelFormCreation}:ServiceFormProps){
+
+export default function ServiceItemForm({ onTriggerFormAction, onCloseForm}:ServiceFormProps){
 
 
     // TODO: set field for editing
@@ -32,17 +33,22 @@ export default function ServiceItemForm({ onTriggerFormAction, onCancelFormCreat
     const onFinish = (formData:ServiceItem)=>{
         // call function to create stor
         // only generate key if it's a new service
-            const formObject= {
-                ...formData,
+            const formObject: ServiceItemReqPaylod = {
+                name: formData.name,
+                price: formData.price,
+                ticketMaxPerDay: formData.ticketsPerDay,
+                description:formData.description,
                 orgServiceId: currentService.id,
                 startDate: moment(formData.startDate).format('YYYY-MMM-DD'),
+                endDate: moment(formData.endDate).format('YYYY-MMM-DD'),
                 startTime: moment(formData.startTime).format('HH:mm:ss'),
                 rangeTime: `${formData.rangeTime}:0:0`,
                 imageHash: '',
                 serviceItemId: uuidv4()
             }
-            console.log(formObject)
-            // onTriggerFormAction(formObject) 
+            // console.log(formObject)
+            onTriggerFormAction(formObject) 
+            onCloseForm()
             // showStoreCreationNotification()
 
     }
@@ -120,7 +126,7 @@ export default function ServiceItemForm({ onTriggerFormAction, onCancelFormCreat
 
             <Form.Item>
                 <Space>
-                    <Button shape='round' onClick={onCancelFormCreation} type='ghost'>
+                    <Button shape='round' onClick={onCloseForm} type='ghost'>
                         Cancel
                     </Button>
 
