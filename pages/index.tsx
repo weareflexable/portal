@@ -45,22 +45,22 @@ const Home: NextPage = () => {
 
     const {switchOrg} =  useOrgContext()
 
-    const createNewOrg = useMutation({
-        mutationFn: (newOrgReq:OrganistationReq) => {
-          return axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/`,{
-            Headers:{
-                'Authorization':''
-            },
-            body: JSON.stringify(newOrgReq)
-          })
-        },
-        onSuccess:async()=>{
-            console.log('Show positive notification')
-        },
-        onError:()=>{
-            console.log('show negative notification')
-        }
-      })
+    // const createNewOrg = useMutation({
+    //     mutationFn: (newOrgReq:OrganistationReq) => {
+    //       return axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/`,{
+    //         Headers:{
+    //             'Authorization':''
+    //         },
+    //         body: JSON.stringify(newOrgReq)
+    //       })
+    //     },
+    //     onSuccess:async()=>{
+    //         console.log('Show positive notification')
+    //     },
+    //     onError:()=>{
+    //         console.log('show negative notification')
+    //     }
+    //   })
 
 
 

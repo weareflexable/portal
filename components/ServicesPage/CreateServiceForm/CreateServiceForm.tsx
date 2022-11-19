@@ -8,8 +8,10 @@ import {v4 as uuidv4} from 'uuid'
 
 import { useRouter } from 'next/router';
 import {usePlacesWidget} from 'react-google-autocomplete'
-import { nftStorageClient } from "../../../utils/nftStorage";
-import { Service } from "../../../types/Services";
+import { asyncStore, nftStorageClient } from "../../../utils/nftStorage";
+import { Service, ServicePayload } from "../../../types/Services";
+import { useOrgContext } from "../../../context/OrgContext";
+import moment from "moment-timezone";
 
 interface StoreFormProps{
     onLaunchStore: (formData:any)=>void
@@ -17,10 +19,11 @@ interface StoreFormProps{
 }
 export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFormProps){
 
+    const {currentOrg} = useOrgContext()
     const [form]=Form.useForm()
     const [fullAddress, setFullAddress] = useState({
-        lat:0,
-        lon:0,
+        latitude:0,
+        longitude:0,
         state: '',
         country:'',
         city:''
@@ -29,20 +32,37 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
     const router = useRouter()
     const antInputRef = useRef();
 
+    const extractFullAddress = (place:any)=>{
+        const addressComponents = place.address_components 
+            let addressObj = {
+                state:'',
+                country:'',
+                city:'',
+                latitude:place.geometry.location.lat(),
+                longitude:place.geometry.location.lng()
+            };
+            addressComponents.forEach((address:any)=>{
+                const type = address.types[0]
+                if(type==='country') addressObj.country = address.long_name
+                if(type === 'locality') addressObj.state = address.short_name
+                if(type === 'administrative_area_level_1') addressObj.city = address.short_name
+            })
+
+            return addressObj
+    }
+
       const { ref: antRef } = usePlacesWidget({
         apiKey: 'AIzaSyB7ZUkMcIXpOKYU4r4iBMM9BFjCL5OpeeE', // move this key to env
         onPlaceSelected: (place) => {
-            // console.log(antInputRef.current.input) 
-            // const extractedAddress ={
-            //     lat:place.geometry.location.lat(),
-            //     lon:place.geometry.location.long()
-            // }
-            console.log(place.geometry.location.lat())
-            //   antInputRef.current.setValue(place?.formatted_address);
+            // console.log(antInputRef.current.input)
+            form.setFieldValue('address',place?.formatted_address)
+            
+            const fullAddress = extractFullAddress(place)
+            setFullAddress(fullAddress)
+
             //@ts-ignore
-        //   antInputRef.current.input.value = place?.formatted_address
-          form.setFieldValue('address',place?.formatted_address)
-          console.log(place)
+          antInputRef.current.input.value = place?.formatted_address
+
         },
       });
     
@@ -59,12 +79,27 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
         // const coverImage = formData.storeCoverImage[0].originFileObj
 
         // await hashAssets(logoImage,coverImage)
+        console.log(formData)
+        const imageHash = await asyncStore(formData.imageHash[0].originFileObj)
+        const coverImageHash = await asyncStore(formData.coverImage[0].originFileObj)
 
-        const formObject = {
+
+        const formObject: ServicePayload = {
             ...formData,
-            id:uuidv4()
+            ...fullAddress,
+            imageHash: imageHash,
+            coverImageHash: coverImageHash,
+            serviceId: uuidv4(),
+            orgId:currentOrg.id,
+            timeZone: moment.tz.guess(),
         }
-        onLaunchStore(formObject)
+        // remove address field since because we have extracted
+        // lat, long, city, state, country from ti
+        //@ts-ignore
+        delete formObject.address
+        console.log(formObject)
+
+        // onLaunchStore(formObject)
         showStoreCreationNotification()
     }
 
@@ -119,18 +154,26 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
 
 
             <Form.Item
-                name="type"
+                name="serviceType"
                 label='Business type'
                 rules={[{ required: true, message: 'Please input a valid address!' }]}
             >
                 <Input placeholder="eg Gym, Bar, Restaurant" />
             </Form.Item>
 
+            <Form.Item
+                name="currencyCode"
+                label='Currency'
+                rules={[{ required: true, message: 'Please input a valid code!' }]}
+            >
+                <Input placeholder="USD" />
+            </Form.Item>
+
 
 
             <Form.Item
-                name="storeLogo"
-                label="Store Logo"
+                name="imageHash"
+                label="Service Logo"
                 valuePropName="fileList"
                 getValueFromEvent={normFile}
                 extra="Upload file upto 2MB"
@@ -141,8 +184,8 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
             </Form.Item>
 
             <Form.Item
-                name="storeCoverImage"
-                label="Store cover image"
+                name="coverImageHash"
+                label="Service cover image"
                 valuePropName="fileList"
                 getValueFromEvent={normFile}
                 extra="Upload file upto 2MB"

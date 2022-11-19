@@ -64,7 +64,7 @@ export default function ServiceView({}:ServicesViewProps){
 
     const hookConfig = {
         fetchUrl: `services/user/get-services?orgId=${orgId}`,
-        mutateUrl: ''
+        mutateUrl: 'services/orgadmin/org-service'
     }
     
     const {
@@ -82,7 +82,6 @@ export default function ServiceView({}:ServicesViewProps){
         closeEditForm
     } = useCrudDB<Service>(hookConfig,'services')
      
-    console.log(state)
 
 
     
