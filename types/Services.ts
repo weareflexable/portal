@@ -44,7 +44,7 @@ export type ServiceItemReqPaylod = {
     endDate: string,
     startTime: string,
     rangeTime: string,
-    imageHash: string,
+    imageHash?: string,
     serviceItemId: string
  
 }

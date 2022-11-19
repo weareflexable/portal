@@ -22,28 +22,28 @@ const {Title,Text} = Typography
 
   type DataIndex = keyof Order;
 
-const bookings: Order[] = [
-    {
-      id: '1',
-      currency: 'USD',
-      serviceName:'Benhamins',
-      endTime: 'dfadfad',
-      userId:'mbappai',
-      ticketDate:'Jan 22, 2022',
-      name: 'Avery pro line skip',
-      quantity: 4,
-      ticketStatus: 'Redeemed',
-      orderStatus: 'Paid',
-      userTicketId:'dfadre364ikji',
-      unitPrice: 2500,
-      uniqueCode: '34u12y',
-      paymentIntentStatus: 'PAYMENT_PAID',
-      paymentIntentId: 'fakdfa93343',
-      orgServiceItemId:'bc6aaa35-e50e-40d5-a0ff-5e7fd20fe4b5',
-      hash: ''
-    },
+// const bookings: Order[] = [
+//     {
+//       id: '1',
+//       currency: 'USD',
+//       serviceName:'Benhamins',
+//       endTime: 'dfadfad',
+//       userId:'mbappai',
+//       ticketDate:'Jan 22, 2022',
+//       name: 'Avery pro line skip',
+//       quantity: 4,
+//       ticketStatus: 'Redeemed',
+//       orderStatus: 'Paid',
+//       userTicketId:'dfadre364ikji',
+//       unitPrice: 2500,
+//       uniqueCode: '34u12y',
+//       paymentStatus: 'PAYMENT_PAID',
+//       paymentIntentId: 'fakdfa93343',
+//       orgServiceItemId:'bc6aaa35-e50e-40d5-a0ff-5e7fd20fe4b5',
+//       hash: ''
+//     },
     
-  ];
+//   ];
 
 
 
@@ -65,7 +65,7 @@ export default function Bookings(){
   }
 
   const { isLoading, data, isError, dataUpdatedAt, refetch } = useQuery(
-    ['bookings'], fetchServiceBookings,{refetchInterval: 100000}
+    ['bookings'], fetchServiceBookings,{refetchInterval: 3000}
   ); 
 
   console.log(data && data.payload, isError) 
@@ -198,14 +198,14 @@ export default function Bookings(){
     
     {
       title: 'Payment Status',
-      dataIndex: 'paymentIntentStatus',
-      key: 'paymentIntentStatus',
-      render: paymentIntentStatus=>{
+      dataIndex: 'paymentStatus',
+      key: 'paymentStatus',
+      render: paymentStatus=>{
         let color = 'blue'
-        if(paymentIntentStatus==='PAYMENT_PAID') color='green'
-        if(paymentIntentStatus==='PAYMENT_INITIATED') color='blue'
+        if(paymentStatus==='PAYMENT_PAID') color='green'
+        if(paymentStatus==='PAYMENT_INITIATED') color='blue'
         return(
-          <Tag color={color}>{paymentIntentStatus}</Tag>
+          <Tag color={color}>{paymentStatus}</Tag>
         )
       },
       filters: [
@@ -214,7 +214,7 @@ export default function Bookings(){
       ], 
       filteredValue: filteredInfo.orderStatus || null,
       //@ts-ignore
-      onFilter: (value: string, record) => record.paymentIntentStatus.includes(value),
+      onFilter: (value: string, record) => record.paymentStatus.includes(value),
     },
     {
       title: 'Unit Price',

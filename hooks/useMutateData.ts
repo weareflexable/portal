@@ -15,11 +15,10 @@ export default function useMutateData<T>(url:string){
 
     const createDataHandler = async(newItem:any)=>{
         console.log('paseto',paseto)
-        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/${url}`,{
+        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/${url}`, newItem,{
             headers:{
                 "Authorization": paseto
             },
-            body:JSON.stringify(newItem)
         })
         return data
     }

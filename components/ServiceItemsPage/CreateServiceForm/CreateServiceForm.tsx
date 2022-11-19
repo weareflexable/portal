@@ -43,7 +43,6 @@ export default function ServiceItemForm({ onTriggerFormAction, onCloseForm}:Serv
                 endDate: moment(formData.endDate).format('YYYY-MMM-DD'),
                 startTime: moment(formData.startTime).format('HH:mm:ss'),
                 rangeTime: `${formData.rangeTime}:0:0`,
-                imageHash: '',
                 serviceItemId: uuidv4()
             }
             // console.log(formObject)
@@ -101,7 +100,10 @@ export default function ServiceItemForm({ onTriggerFormAction, onCloseForm}:Serv
            
             <div style={{display:'flex', alignItems:'center'}}>
 
-                <Form.Item name='startDate'  label="Start date">
+                <Form.Item
+                    rules={[{ required: true, message: 'Please select a date!' }]}
+                    name='startDate' 
+                    label="Start date">
                     <DatePicker />
                 </Form.Item>
 
@@ -113,11 +115,17 @@ export default function ServiceItemForm({ onTriggerFormAction, onCloseForm}:Serv
 
             <div style={{display:'flex', marginBottom:'1em', alignItems:'center'}}>
 
-                <Form.Item name='startTime'   label="Start time">
+                <Form.Item 
+                rules={[{ required: true, message: 'Please select a date!' }]}
+                name='startTime'   
+                label="Start time">
                     <TimePicker  format="h:mm:ss"  />
                 </Form.Item>
 
-                <Form.Item name='rangeTime' style={{marginLeft:'2em'}}  label="Duration time">
+                <Form.Item 
+                    rules={[{ required: true, message: 'Please specify a date range!' }]}
+                    name='rangeTime' 
+                    style={{marginLeft:'2em'}}  label="Duration time">
                     <InputNumber />
                 </Form.Item>
 

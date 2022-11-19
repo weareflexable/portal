@@ -48,11 +48,10 @@ export default function useCrudDB<T>(config:Config,queryId:string):{
 
     const createDataHandler = async(newItem:any)=>{
         console.log('paseto',paseto)
-        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/${mutateUrl}`,{
+        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/${mutateUrl}`, newItem,{
             headers:{
                 "Authorization": paseto
             },
-            body:JSON.stringify(newItem)
         })
         return data
     }

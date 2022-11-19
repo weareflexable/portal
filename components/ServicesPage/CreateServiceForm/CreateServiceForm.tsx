@@ -18,6 +18,13 @@ interface StoreFormProps{
 export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFormProps){
 
     const [form]=Form.useForm()
+    const [fullAddress, setFullAddress] = useState({
+        lat:0,
+        lon:0,
+        state: '',
+        country:'',
+        city:''
+    })
 
     const router = useRouter()
     const antInputRef = useRef();
@@ -26,6 +33,10 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
         apiKey: 'AIzaSyB7ZUkMcIXpOKYU4r4iBMM9BFjCL5OpeeE', // move this key to env
         onPlaceSelected: (place) => {
             // console.log(antInputRef.current.input) 
+            // const extractedAddress ={
+            //     lat:place.geometry.location.lat(),
+            //     lon:place.geometry.location.long()
+            // }
             console.log(place.geometry.location.lat())
             //   antInputRef.current.setValue(place?.formatted_address);
             //@ts-ignore
