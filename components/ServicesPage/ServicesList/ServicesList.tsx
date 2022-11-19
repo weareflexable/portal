@@ -62,7 +62,7 @@ export default function ServiceListProps({onDeleteService, onSelectService, isLo
                         </div>  
                         <div style={{display:'flex'}}>
                             <Text type='secondary' style={{marginRight:'.3em'}}>Service type:</Text>
-                            <Text>{item.serviceType}</Text>
+                            <Text>{item.serviceTypeName}</Text>
                         </div>
                     </div> 
                  }

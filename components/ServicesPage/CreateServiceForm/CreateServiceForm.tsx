@@ -15,25 +15,16 @@ import moment from "moment-timezone";
 import axios from "axios";
 import { useAuthContext } from "../../../context/AuthContext";
 import { useQuery } from "@tanstack/react-query";
+import useServiceTypes from "../../../hooks/useServiceTypes";
 
 interface StoreFormProps{
     onLaunchStore: (formData:any)=>void
     onCancelFormCreation: ()=>void
+    isCreatingData: boolean
 }
-export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFormProps){
-    const {paseto} = useAuthContext()
+export default function StoreForm({onLaunchStore, isCreatingData, onCancelFormCreation}:StoreFormProps){
 
-    const fetchServiceTypes = async()=>{
-        const {data} = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/services/public/generic-services`,{headers:{"Authorization":paseto}})
-        return data?.payload
-    }
-
-    const {data:serviceTypes,isLoading:isLoadingServiceType} = useQuery(['serviceTypes'],fetchServiceTypes)
-
-    const menuItems = serviceTypes && serviceTypes.map((service:any)=>({
-            label: service.name,
-            value: service.id
-    }))
+    const menuItems = useServiceTypes()
 
     const {currentOrg} = useOrgContext()
     const [form]=Form.useForm()
@@ -44,6 +35,7 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
         country:'',
         city:''
     })
+    const [isHashingAssets, setIsHashingAssets] = useState(false)
 
     const router = useRouter()
     const antInputRef = useRef();
@@ -85,9 +77,10 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
 
     const onFinish = async(formData:Service)=>{
 
-        console.log(formData)
+        setIsHashingAssets(true)
         const imageHash = await asyncStore(formData.imageHash[0].originFileObj)
-        const coverImageHash = await asyncStore(formData.coverImage[0].originFileObj)
+        const coverImageHash = await asyncStore(formData.coverImageHash[0].originFileObj)
+        setIsHashingAssets(false)
 
 
         const formObject: ServicePayload = {
@@ -100,7 +93,7 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
             timeZone: moment.tz.guess(),
         }
         // remove address field since because we have extracted
-        //@ts-ignore
+        // @ts-ignore
         delete formObject.address
         console.log(formObject)
 
@@ -123,10 +116,7 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
             'The next step is to create services inside store for user to be able to interact with.',
         });
       };
-      
-      const handleSelect=(e: any)=>{
-        console.log(e)
-      }
+    
 
     return (
             <Form
@@ -163,14 +153,12 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
 
             <Form.Item
                 name="serviceType"
-                label='Business type'
+                label='Service type'
                 rules={[{ required: true, message: 'Please input a valid address!' }]}
             >
-                {/* <Input placeholder="eg Gym, Bar, Restaurant" /> */}
                 <Select
                     defaultValue="Bar"
                     style={{ width: 120 }}
-                    onChange={handleSelect}
                     options={menuItems}
                     />
             </Form.Item>
@@ -214,11 +202,11 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
 
             <Form.Item>
                 <Space>
-                    <Button onClick={onCancelFormCreation} type='ghost'>
+                    <Button shape="round" onClick={onCancelFormCreation} type='ghost'>
                         Cancel
                     </Button>
 
-                    <Button type="primary"  htmlType="submit" >
+                    <Button shape="round" type="primary" loading={isHashingAssets || isCreatingData}  htmlType="submit" >
                     Launch service
                     </Button>
                 </Space>

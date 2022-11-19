@@ -71,6 +71,7 @@ export default function ServiceView({}:ServicesViewProps){
         state,
         showCreateForm, 
         isLoading,
+        isCreatingData,
         openCreateForm,
         showEditForm,
         itemToEdit,
@@ -125,6 +126,7 @@ export default function ServiceView({}:ServicesViewProps){
             <CreateServiceForm 
                 onCancelFormCreation={closeCreateForm} 
                 onLaunchStore={createItem}
+                isCreatingData = {isCreatingData}
              />
         </Modal>
 
