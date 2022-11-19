@@ -67,18 +67,8 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
       });
     
 
-      const hashAssets = async(...assets:any)=>{
-        const res = await nftStorageClient.storeDirectory(assets)
-        console.log(res)
-        // return res
-    }
-
     const onFinish = async(formData:Service)=>{
 
-        // const logoImage = formData.storeLogo[0].originFileObj
-        // const coverImage = formData.storeCoverImage[0].originFileObj
-
-        // await hashAssets(logoImage,coverImage)
         console.log(formData)
         const imageHash = await asyncStore(formData.imageHash[0].originFileObj)
         const coverImageHash = await asyncStore(formData.coverImage[0].originFileObj)
@@ -98,7 +88,7 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
         delete formObject.address
         console.log(formObject)
 
-        // onLaunchStore(formObject)
+        onLaunchStore(formObject)
         showStoreCreationNotification()
     }
 
@@ -172,25 +162,27 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
 
             <Form.Item
                 name="imageHash"
-                label="Service Logo"
+                label="Logo"
                 valuePropName="fileList"
                 getValueFromEvent={normFile}
                 extra="Upload file upto 2MB"
+                rules={[{ required: true, message: 'Please upload an image' }]}
             >
                 <Upload name="logo" action="" listType="picture">
-                <Button icon={<UploadOutlined />}>Click to upload</Button>
+                <Button icon={<UploadOutlined />}>Upload service logo</Button>
                 </Upload>
             </Form.Item>
 
             <Form.Item
                 name="coverImageHash"
-                label="Service cover image"
+                label="Cover image"
                 valuePropName="fileList"
                 getValueFromEvent={normFile}
                 extra="Upload file upto 2MB"
+                rules={[{ required: true, message: 'Please upload an image' }]}
             >
                 <Upload name="logo" action="" listType="picture">
-                <Button icon={<UploadOutlined />}>Upload store cover image</Button>
+                <Button icon={<UploadOutlined />}>Upload service cover image</Button>
                 </Upload>
             </Form.Item>
 

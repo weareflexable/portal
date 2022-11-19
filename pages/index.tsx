@@ -132,9 +132,6 @@ const Home: NextPage = () => {
 
             <Title level={1}>Welcome to the lounge</Title>
             
-
-            {data&&data.payload.length>0 
-                ?
                 <div style={{display:'flex', marginTop:'4em', flexDirection:'column', width:'60%'}} > 
                         <Title style={{marginBottom:'0'}} level={4}>My organizations</Title>
                         <Card  style={{width:'100%', marginTop:'1em'}}>
@@ -165,9 +162,9 @@ const Home: NextPage = () => {
                             />
                         </Card>
                     </div>
-                : <Button type='link' style={{marginBottom:'1em',display:'flex',alignItems:'center'}} icon={<PlusCircleOutlined />} onClick={()=>setShowOrgForm(true)}>Register new organisation</Button>
+
                 
-            }
+
 
             {/* <Card style={{width:'60%', marginTop:'2em'}}>
                 <List
