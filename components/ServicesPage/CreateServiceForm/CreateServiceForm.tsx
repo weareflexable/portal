@@ -94,7 +94,6 @@ export default function StoreForm({onLaunchStore, onCancelFormCreation}:StoreFor
             timeZone: moment.tz.guess(),
         }
         // remove address field since because we have extracted
-        // lat, long, city, state, country from ti
         //@ts-ignore
         delete formObject.address
         console.log(formObject)
