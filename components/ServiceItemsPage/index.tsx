@@ -2,7 +2,7 @@ import React,{useState} from 'react'
 import {Card,Button,Typography,Alert,Space,Modal, PageHeader} from 'antd'
 import {PlusCircleOutlined} from '@ant-design/icons'
 import router, { useRouter } from 'next/router';
-import ServiceItemForm from './CreateServiceForm/CreateServiceForm';
+import ServiceItemForm from './CreateServiceItemForm/CreateServiceItemForm';
 
 // import ServiceItemTable from '../ServicesPage/ServicesTable/ServicesTable';
 import ServiceList from './ServiceItemList/ServiceItemList';
@@ -22,30 +22,30 @@ interface UserServicesViewProps{
 
 }
 
-const mockServiceItems: ServiceItem[] = [
-    {
-    id:'fdafda387dsdwr3nv',
-    name: 'Line skip pro + cover',
-    price: 2500,
-    ticketsPerDay:21,
-    description: 'Best service in town ready to take over the place',
-    startDate: moment(),
-    endDate: moment(),
-    startTime:moment('00:00:00', 'HH:mm:ss'),
-    rangeTime:4
-    },
-    {
-    id:'fdafda3873nv',
-    name: 'Bottle service pro + cover',
-    price: 5500,
-    ticketsPerDay:21,
-    description: 'Skip the line and lets get you in',
-    startDate: moment(),
-    endDate: moment(),
-    startTime:moment('00:00:00', 'HH:mm:ss'),
-    rangeTime:5
-    },
-]
+// const mockServiceItems: ServiceItem[] = [
+//     {
+//     id:'fdafda387dsdwr3nv',
+//     name: 'Line skip pro + cover',
+//     price: 2500,
+//     ticketsPerDay:21,
+//     description: 'Best service in town ready to take over the place',
+//     startDate: moment(),
+//     endDate: moment(),
+//     startTime:moment('00:00:00', 'HH:mm:ss'),
+//     rangeTime:4
+//     },
+//     {
+//     id:'fdafda3873nv',
+//     name: 'Bottle service pro + cover',
+//     price: 5500,
+//     ticketsPerDay:21,
+//     description: 'Skip the line and lets get you in',
+//     startDate: moment(),
+//     endDate: moment(),
+//     startTime:moment('00:00:00', 'HH:mm:ss'),
+//     rangeTime:5
+//     },
+// ]
 
 export default function UserServicesView({}:UserServicesViewProps){
 

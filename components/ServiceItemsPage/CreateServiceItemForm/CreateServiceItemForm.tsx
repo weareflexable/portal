@@ -1,5 +1,5 @@
 import React,{useState} from 'react';
-import {Card,Form, Input,InputNumber, DatePicker,Upload,Button,notification, Space, Alert, Typography, TimePicker} from 'antd';
+import {Card,Form, Input,InputNumber, DatePicker,Upload,Button,notification, Space, Alert, Typography, TimePicker, Select} from 'antd';
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
 const {Text} = Typography;
@@ -10,6 +10,7 @@ import { useRouter } from 'next/router';
 import { ServiceItem, ServiceItemReqPaylod } from '../../../types/Services';
 import moment from 'moment';
 import { useServicesContext } from '../../../context/ServicesContext';
+import useServiceTypes from '../../../hooks/useServiceTypes';
 
 
 
@@ -26,6 +27,7 @@ export default function ServiceItemForm({ onTriggerFormAction,isCreatingServiceI
 
 
     // TODO: set field for editing
+    const menuItems = useServiceTypes()
 
     const router = useRouter()
     const [form] = Form.useForm()
@@ -44,9 +46,9 @@ export default function ServiceItemForm({ onTriggerFormAction,isCreatingServiceI
                 endDate: moment(formData.endDate).format('YYYY-MMM-DD'),
                 startTime: moment(formData.startTime).format('HH:mm:ss'),
                 rangeTime: `${formData.rangeTime}:0:0`,
-                serviceItemId: uuidv4()
+                serviceItemId: formData.serviceType
             }
-            // console.log(formObject)
+            console.log(formObject)
             onTriggerFormAction(formObject) 
             // showStoreCreationNotification()
 
@@ -95,6 +97,19 @@ export default function ServiceItemForm({ onTriggerFormAction,isCreatingServiceI
 
             <Form.Item name='description'  label="Service description">
                 <TextArea maxLength={150} showCount  placeholder='Best coffee shop in the entire world with the most beautiful scenary' rows={3} />
+            </Form.Item>
+
+
+            <Form.Item
+                name="serviceType"
+                label='Service type'
+                rules={[{ required: true, message: 'Please input a valid address!' }]}
+            >
+                <Select
+                    defaultValue="Bar"
+                    style={{ width: 120 }}
+                    options={menuItems}
+                    />
             </Form.Item>
 
            

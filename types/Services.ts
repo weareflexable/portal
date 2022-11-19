@@ -33,6 +33,7 @@ export type ServiceItem = {
     name: string,
     price: number,
     ticketsPerDay: number,
+    serviceType: string,
     description: string,
     startDate: moment.Moment | string,
     endDate: moment.Moment | string,
