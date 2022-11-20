@@ -14,7 +14,7 @@ interface CurrentUserProps{
 
 export default function CurrentUser({user={email:'mbappai@yahoo.com',role:'admin'}, openOrgSwitcher}:CurrentUserProps){
 
-    const {setIsAuthenticated,} = useAuthContext()
+    const {setIsAuthenticated,logout} = useAuthContext()
     const {orgUserRole} = useOrgContext()
 
    
@@ -23,7 +23,7 @@ export default function CurrentUser({user={email:'mbappai@yahoo.com',role:'admin
 const menu = (
   <Menu>
     <Menu.Item><Button onClick={openOrgSwitcher} type='link' >Switch organization</Button></Menu.Item>
-    <Menu.Item><Button danger type='link'>Logout</Button></Menu.Item>
+    <Menu.Item><Button onClick={logout} danger type='link'>Logout</Button></Menu.Item>
   </Menu>
 );
 

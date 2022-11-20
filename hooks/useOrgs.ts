@@ -6,7 +6,7 @@ import useLocalStorage from './useLocalStorage'
 
 export default function useOrgs(){
     // const [activeOrg, setActiveOrg] = useState<Org>({id:'weea434',logoUrl:'dfaerefadf',name:'Mujeex labs'})
-    const [currentOrg, setCurrentOrg] = useLocalStorage<Org>('currentOrg',{id:'weea434',logoUrl:'dfaerefadf',name:'Mujeex labs',role:'Admin'})
+    const [currentOrg, setCurrentOrg] = useLocalStorage('currentOrg',[])
 
     const switchOrg = (org:Org)=>{
         // setInLocal storage
