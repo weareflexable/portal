@@ -1,12 +1,18 @@
 import { Form, Input, Upload, Button, Divider } from "antd";
 import {UploadOutlined} from '@ant-design/icons'
 import {OrgFormData} from '../../../types/OrganisationTypes'
+import form from "antd/lib/form";
+import { usePlacesWidget } from "react-google-autocomplete";
+import { useRef } from "react";
 
 interface RegisterNewOrgProps{
     onRegisterNewOrg: (org:OrgFormData)=>void
     isRegisteringOrg: boolean
 }
 export default function RegisterOrgForm({onRegisterNewOrg,isRegisteringOrg}:RegisterNewOrgProps){
+
+    const [form]=Form.useForm()
+    const antInputRef = useRef();
 
     const onFinish= (formData:OrgFormData)=>{
         const payload={
@@ -32,12 +38,26 @@ export default function RegisterOrgForm({onRegisterNewOrg,isRegisteringOrg}:Regi
 
     }
 
+    
+    const { ref: antRef } = usePlacesWidget({
+        apiKey: 'AIzaSyB7ZUkMcIXpOKYU4r4iBMM9BFjCL5OpeeE', // move this key to env
+        onPlaceSelected: (place) => {
+            // console.log(antInputRef.current.input)
+            form.setFieldValue('address',place?.formatted_address)
+
+            //@ts-ignore
+          antInputRef.current.input.value = place?.formatted_address
+
+        },
+      });
+
     return(
         <Form
             name="organisationForm"
             initialValues={{ remember: false }}
             layout='vertical'
             onFinish={onFinish}
+            form={form}
             >
             <Form.Item
                 name="name"
@@ -52,7 +72,14 @@ export default function RegisterOrgForm({onRegisterNewOrg,isRegisteringOrg}:Regi
                 label='Address'
                 rules={[{ required: true, message: 'Please enter a valid address' }]}
             >
-                <Input placeholder="No 6, West bridge miller" />
+                <Input ref={(c) => {
+                    // @ts-ignore
+                    antInputRef.current = c;
+                    // @ts-ignore
+                    if (c) antRef.current = c.input;
+                    }} 
+                    placeholder="Wiscontin, United states" 
+                    /> 
             </Form.Item>
 
             <Form.Item

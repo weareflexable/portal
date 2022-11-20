@@ -1,20 +1,14 @@
-import React, { createRef, FC, RefObject, useRef, useState } from "react";
-import {Card,Form, Input,InputNumber,Upload,Button,notification, Space, Alert, Typography, Select} from 'antd';
-const { TextArea } = Input;
-const {Text} = Typography;
+import React, { useRef, useState } from "react";
+import {Card,Form, Input,Upload,Button,notification, Space, Alert, Typography, Select} from 'antd';
 import {UploadOutlined} from '@ant-design/icons'
 
 import {v4 as uuidv4} from 'uuid'
 
 import { useRouter } from 'next/router';
 import {usePlacesWidget} from 'react-google-autocomplete'
-import { asyncStore, nftStorageClient } from "../../../utils/nftStorage";
+import { asyncStore} from "../../../utils/nftStorage";
 import { Service, ServicePayload } from "../../../types/Services";
 import { useOrgContext } from "../../../context/OrgContext";
-import moment from "moment-timezone";
-import axios from "axios";
-import { useAuthContext } from "../../../context/AuthContext";
-import { useQuery } from "@tanstack/react-query";
 import useServiceTypes from "../../../hooks/useServiceTypes";
 
 interface StoreFormProps{

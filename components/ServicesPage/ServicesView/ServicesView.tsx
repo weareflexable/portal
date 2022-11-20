@@ -99,9 +99,9 @@ export default function ServiceView({}:ServicesViewProps){
                         </div>
 
                         <div style={{display:'flex', flex:'3', justifyContent:'space-between', alignItems:'center'}}>
-                            <CurrentUser/>
+                            {/* <CurrentUser /> */}
                             <div style={{padding:'.7em', cursor:'pointer', display:'flex', justifyContent:'center', alignItems:'center', borderRadius:'50px', background:'#f4f4f4'}}>
-                                <SettingOutlined style={{fontSize:'1.4em'}}/>
+                                {/* <SettingOutlined style={{fontSize:'1.4em'}}/> */}
                             </div>
                         </div>
                     </Col>
