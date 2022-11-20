@@ -90,7 +90,7 @@ export default function StoreForm({onLaunchStore, isCreatingData, onCancelFormCr
             coverImageHash: coverImageHash,
             serviceId: uuidv4(),
             orgId:currentOrg.id,
-            timeZone: moment.tz.guess(),
+            timeZone: 'UTC',
         }
         // remove address field since because we have extracted
         // @ts-ignore

@@ -1,5 +1,5 @@
 import React from 'react'
-import {Typography,Avatar,Space,Menu,Button, Dropdown,Tag} from 'antd'
+import {Typography,Avatar,Space,Menu,Button, Dropdown,Tag, Divider} from 'antd'
 import {DownOutlined,LogoutOutlined} from '@ant-design/icons'
 import { useAuthContext } from '../../../context/AuthContext'
 import { useOrgContext } from '../../../context/OrgContext'
@@ -8,29 +8,28 @@ import type { MenuProps } from 'antd';
 
 interface CurrentUserProps{
     user?: {email:string, role:string}
+    openOrgSwitcher: ()=>void
 }
 
 
-export default function CurrentUser({user={email:'mbappai@yahoo.com',role:'admin'}}:CurrentUserProps){
+export default function CurrentUser({user={email:'mbappai@yahoo.com',role:'admin'}, openOrgSwitcher}:CurrentUserProps){
 
-    const {setIsAuthenticated} = useAuthContext()
+    const {setIsAuthenticated,} = useAuthContext()
     const {orgUserRole} = useOrgContext()
 
    
 
-const items: MenuProps['items'] = [
-  {
-    label: <Button type='link' >Switch organization</Button>,
-    key: '0',
-  },
-  {
-    label: <Button danger type='link'>Logout</Button>,
-    key: '1',
-  },
-];
+
+const menu = (
+  <Menu>
+    <Menu.Item><Button onClick={openOrgSwitcher} type='link' >Switch organization</Button></Menu.Item>
+    <Menu.Item><Button danger type='link'>Logout</Button></Menu.Item>
+  </Menu>
+);
 
 
     return(
+      <Dropdown trigger={['click']} overlay={menu} >
       <div
         onClick={()=>console.log('show modal to switch')} 
           style={
@@ -44,13 +43,12 @@ const items: MenuProps['items'] = [
             justifyContent:'center', 
             alignItems:'center',
           }}>
-        {/* <Dropdown  trigger={['click']} overlay={undefined}> */}
           <Avatar src={''}/>
           <div style={{display:'flex', flexDirection:'column'}}>
             <Title ellipsis level={5} style={{marginBottom:'.001em', width:'150px', marginRight:'.5em', marginLeft:'.3em'}}>mujahidbappai@gmail.com</Title>
             <Text type='secondary' style={{width:'100%', marginTop:'0', maxWidth:'50px', marginLeft:'.3em'}}>{orgUserRole}</Text>
           </div>
-       {/* </Dropdown> */}
      </div>
+    </Dropdown>
     )
 }

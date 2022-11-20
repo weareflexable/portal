@@ -1,5 +1,6 @@
+import { useRouter } from 'next/router';
 import React,{useState,useContext,createContext, ReactNode, useEffect} from 'react';
-import { getStorage } from '../utils/storage';
+import { deleteStorage, getStorage } from '../utils/storage';
 
 
 const AuthContext = createContext<Values|undefined>(undefined);
@@ -7,7 +8,8 @@ const AuthContext = createContext<Values|undefined>(undefined);
 type Values = {
     isAuthenticated: boolean,
     setIsAuthenticated: (isAuthenticate:boolean)=>void,
-    paseto: string | undefined | null
+    paseto: string | undefined | null,
+    logout: ()=>void
 }
 
 interface AuthContextProviderProps{
@@ -16,6 +18,7 @@ interface AuthContextProviderProps{
 
 const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
 
+    const router = useRouter()
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [paseto, setPaseto] = useState(()=>{
         const localPaseto = getStorage('PLATFORM_PASETO')
@@ -23,12 +26,21 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
         return localPaseto
     })
 
+    const logout = () =>{
+        setIsAuthenticated(false)
+        // clear all caches
+        localStorage.clear()
+        // redirect user to login page
+        router.replace('/login')
+    }
+
 
 
     const values: Values = {
         isAuthenticated:true,
         setIsAuthenticated,
-        paseto
+        paseto,
+        logout
     }
 
     return(

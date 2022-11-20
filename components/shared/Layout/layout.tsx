@@ -24,17 +24,13 @@ const { Header, Sider, Content } = Layout;
     width?: number
   }
 
-  const items1: MenuProps['items'] = ['1', '2', '3'].map(key => ({
-    key,
-    label: `nav ${key}`,
-  }));
   
   const AppLayout: React.FC<LayoutProps> = ({children,width=80}) => {
     
-    const [collapsed, setCollapsed] = useState(false); 
     const {asPath} = useRouter()  
     const {isAuthenticated,setIsAuthenticated} = useAuthContext()
     const [showSwitcherModal, setSwitcherModal] = useState(false) 
+    const [showOrgSwitcher, setShowOrgSwitcher] = useState(false) 
     
     const splittedRoutes = asPath.split('/')
     const selectedRoute = splittedRoutes[5]
@@ -44,10 +40,10 @@ const { Header, Sider, Content } = Layout;
     return (
 
       <Layout style={{minHeight:'100vh',height:'100%'}}>
-        {/* <OrgSwitcherModal
-          isModalOpen={showSwitcherModal}
-          onCloseModal={()=>setSwitcherModal(!showSwitcherModal)}
-        /> */}
+        <OrgSwitcherModal
+          isModalOpen={showOrgSwitcher}
+          onCloseModal={()=>setShowOrgSwitcher(!showOrgSwitcher)}
+        />
         <ServicesSwitcherModal
           isModalOpen={showSwitcherModal} 
           onCloseModal={()=>setSwitcherModal(!showSwitcherModal)}
@@ -87,7 +83,7 @@ const { Header, Sider, Content } = Layout;
                   :(
                     <div style={{display:'flex',flex:'2'}}>
                       <ServiceSwitcherButton onOpenSwitcher={()=>setSwitcherModal(!showSwitcherModal)}/>
-                      <CurrentUser user={{email:'mbappai@yahoo.com',role:'admin'}}/>
+                      <CurrentUser openOrgSwitcher={()=>setShowOrgSwitcher(!showOrgSwitcher)} user={{email:'mbappai@yahoo.com',role:'admin'}}/>
                     </div>
                     )
                 }
