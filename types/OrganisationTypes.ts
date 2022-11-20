@@ -14,9 +14,14 @@ export type OrgFormData = {
     imageFile: Array<any>
 }
 
-export type Org = {
+export interface Org {
     name: string,
     id: string,
     logoUrl: string,
     role: string
 }
+
+export interface ActiveOrgs extends Org {
+    isActive:boolean
+}
+

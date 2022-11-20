@@ -11,7 +11,7 @@ interface OrgSwitcherModalProps{
 }
 export default function OrgSwitcherModal({isModalOpen, onCloseModal}:OrgSwitcherModalProps){
 
-    const {orgs} =  useFetchUserOrgs()
+    const {orgs,isLoadingOrgs} =  useFetchUserOrgs()
     const {switchOrg} = useOrgContext()
     const router = useRouter()
 
@@ -30,7 +30,8 @@ export default function OrgSwitcherModal({isModalOpen, onCloseModal}:OrgSwitcher
         <Modal open={isModalOpen} footer={null} onCancel={onCloseModal}>
             <List
                 size='small'
-                dataSource={orgs && orgs}
+                loading={isLoadingOrgs}
+                dataSource={orgs}
                 renderItem={(item) => (
                     <List.Item style={{border: 'none', marginBottom:'0'}}>
                         <div style={{width:'100%', borderRadius:'4px', background:'#f8f8f8', display:'flex', justifyContent: 'space-between', alignItems:'center', padding: '1.3em'}}>

@@ -18,12 +18,15 @@ import { Order } from '../types/Booking';
 import dynamic from 'next/dynamic';
 import useMutateData from '../hooks/useMutateData';
 
+
 const Home: NextPage = () => {
+
+    const {paseto} = useAuthContext()
 
     const {data,isLoading} = useQuery(['orgs'],async()=>{
         const {data} = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/org/user/get-org`,{
             headers:{
-                "Authorization": 'v4.local.URC2UcW0k5Xpn7PFhsjfjOu1z8sIOCWFbBOJnPxzfVOWWOusxpmBSCT1oNJ5edT4vTntsRNifEviLBk4KYrVCB5whgYpqFCSdQJ9-hACAvZ7FDtx9jgUe3aXHj_EszDQQ9WU7MLXDQTq07oK8s-v1HiMbjdW-jkMbtdVPpQ2qEXckX92BQD-uWX4dwy5gTmJfdEVpa_fi4IK_rjwVXo8i01bZ6c'
+                "Authorization": paseto
             }
         })
         return data;
@@ -44,23 +47,6 @@ const Home: NextPage = () => {
     const orgs: Org[] = data && data.payload;
 
     const {switchOrg} =  useOrgContext()
-
-    // const createNewOrg = useMutation({
-    //     mutationFn: (newOrgReq:OrganistationReq) => {
-    //       return axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/`,{
-    //         Headers:{
-    //             'Authorization':''
-    //         },
-    //         body: JSON.stringify(newOrgReq)
-    //       })
-    //     },
-    //     onSuccess:async()=>{
-    //         console.log('Show positive notification')
-    //     },
-    //     onError:()=>{
-    //         console.log('show negative notification')
-    //     }
-    //   })
 
 
 
