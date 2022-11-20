@@ -6,7 +6,7 @@ export default function ServiceStats(){
         <Card>
         <Statistic
           title="Total services"
-          value={34}
+          value={0}
         />
       </Card>
     )

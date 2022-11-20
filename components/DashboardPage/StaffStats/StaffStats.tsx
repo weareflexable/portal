@@ -6,7 +6,7 @@ export default function StaffStats(){
         <Card>
         <Statistic
           title="Total staff"
-          value={24}
+          value={0}
         />
       </Card>
     )
