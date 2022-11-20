@@ -41,7 +41,7 @@ export default function Earnings(){
     <Card>
         <Statistic
           title="Total earnings"
-          value={1145.25}
+          value={0.00}
           precision={2}
           prefix="$"
         /> 
