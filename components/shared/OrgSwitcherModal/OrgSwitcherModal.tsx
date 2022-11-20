@@ -19,7 +19,7 @@ export default function OrgSwitcherModal({isModalOpen, onCloseModal}:OrgSwitcher
 
     const switchOrgHandler = (selectedOrg:Org)=>{
         setTimeout(()=>{
-            router.replace(`/organisation/${selectedOrg.id}/dashboard`)
+            router.replace(`/organisation/${selectedOrg.id}`)
             switchOrg(selectedOrg)
             onCloseModal()
             setTargeOrg(selectedOrg)

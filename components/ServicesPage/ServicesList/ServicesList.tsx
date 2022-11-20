@@ -25,7 +25,7 @@ export default function ServiceListProps({onDeleteService, onSelectService, isLo
     const {switchService}= useServicesContext()
  
  
-    const navigateToDashboard = (service:Service)=>{
+    const navigateToBookings = (service:Service)=>{
         // set the current service in local storage
         switchService(service)
         push(`${asPath}/services/${service.id}/bookings`)
@@ -54,7 +54,7 @@ export default function ServiceListProps({onDeleteService, onSelectService, isLo
             >
                 <List.Item.Meta
                 key={item.id}
-                title={<Title onClick={()=>navigateToDashboard(item)}  level={5}> {item.name} </Title>}
+                title={<Title onClick={()=>navigateToBookings(item)}  level={5}> {item.name} </Title>}
                 description={
                     <div style={{display:'flex', width:'100%', flexDirection:'column'}}>
                         <div style={{display:'flex'}}>
