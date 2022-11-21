@@ -19,15 +19,19 @@ interface AuthContextProviderProps{
 const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
 
     const {push,replace,query} = useRouter()
+
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(()=>{
         const localPaseto = JSON.parse(getStorage('PLATFORM_PASETO')||'{}')
-          if(localPaseto === undefined) return false
+        console.log(localPaseto)
+          if(localPaseto === undefined || '{}'){
+              return false
+          } 
           return true
-
     });
+
     const [paseto, setPaseto] = useState<string|undefined|string[]|null>(()=>{
         const localPaseto = JSON.parse(getStorage('PLATFORM_PASETO')||'{}')
-          if(localPaseto === undefined) return
+          if(localPaseto === undefined || '{}') return
         return localPaseto
     })
 
@@ -41,14 +45,14 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
     }, [returnedPaseto]) 
     
     useEffect(() => { 
-        const paseto = JSON.parse(getStorage('PLATFORM_PASETO')||'{}')
+        // const paseto = JSON.parse(getStorage('PLATFORM_PASETO')||'{}')
         console.log(paseto)
-        if(paseto){
+        if(paseto === '{}' || paseto === undefined) return
             setPaseto(paseto)
             setIsAuthenticated(true)
             // redirect to lounge
             push('/')
-        } 
+        
     }, [isAuthenticated]) 
 
 
