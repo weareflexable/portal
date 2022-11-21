@@ -1,0 +1,5 @@
+namespace: flexable
+host: portal.flexabledats.com
+name: portal
+alb_group_name: flexable-alb
+port: 3000
