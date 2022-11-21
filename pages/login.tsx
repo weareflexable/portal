@@ -7,7 +7,7 @@ const {Title,Text} = Typography;
 
 export default function Login(){
 
-    // const {push, replace, query} = useRouter()
+    const {push, replace, query} = useRouter()
     const {isAuthenticated,setIsAuthenticated,logout}= useAuthContext()
     // // const paseto = query.paseto
     
@@ -22,6 +22,10 @@ export default function Login(){
     //         push('/') 
     //     }
     // }, [push, query, setIsAuthenticated])
+
+    if(isAuthenticated){
+        replace('/')
+    }
 
     const handleLogin = ()=>{ 
         if(window !== undefined){

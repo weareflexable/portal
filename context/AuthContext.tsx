@@ -36,6 +36,13 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
     const pasetoFromUrl = query.paseto 
     // console.log('urlpaseto',pasetoFromUrl)
 
+    useEffect(()=>{
+        if(paseto !== '' && paseto !== null){
+            console.log('should authenticte')
+            setIsAuthenticated(true)
+        }
+    },[paseto])
+
     useEffect(() => {
         // set state if url paseto exist
         if(pasetoFromUrl){
@@ -88,7 +95,7 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
 
 
     const values: Values = {
-        isAuthenticated:true,
+        isAuthenticated,
         setIsAuthenticated,
         paseto,
         logout
