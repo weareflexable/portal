@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import React,{useState,useContext,createContext, ReactNode, useEffect} from 'react';
+import useLocalStorage from '../hooks/useLocalStorage';
 import { deleteStorage, getStorage, setStorage } from '../utils/storage';
 
 
@@ -20,40 +21,58 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
 
     const {push,replace,query} = useRouter()
 
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(()=>{
-        const localPaseto = JSON.parse(getStorage('PLATFORM_PASETO')||'{}')
-        console.log(localPaseto)
-          if(localPaseto === undefined || '{}'){
-              return false
-          } 
-          return true
-    });
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
-    const [paseto, setPaseto] = useState<string|undefined|string[]|null>(()=>{
-        const localPaseto = JSON.parse(getStorage('PLATFORM_PASETO')||'{}')
-          if(localPaseto === undefined || '{}') return
-        return localPaseto
+    // const [paseto, setPaseto] =useLocalStorage<string>('PLATFORM_PASETO','v4.local.UozESpGaJorQ6WXrSFFFCMCcekZvVbokgIOejGniDGsz2_2XyIPKkrppb-FMsnKAVZtLNnOawvpIuPQXywGETc2X2xX9HNnzX5Auz4QvyTuyhLej-aizUv6GtroSxIZM4_ktrup8zHoVWkKbcP0qwrcrqbHg7Rd23v-okg8UpeJKFkc3rxsr40EdvPQx7ejsUlvGyGVkV8cvMz2h9Hhmj1cs')
+    const [paseto, setPaseto] =useState<string|string[]|undefined>(()=>{
+        const storedPaseto = getStorage('PLATFORM_PASETO')
+        console.log('storedPaseto',storedPaseto)
+        if(storedPaseto){
+            return storedPaseto
+        }
+        return ''
     })
 
-    const returnedPaseto = query.paseto
-    // effect to grab paseto from url and set to storage
-    useEffect(() => {
-        if(returnedPaseto){
-            setStorage('PLATFORM_PASETO',JSON.stringify(returnedPaseto))
-        }
+    const pasetoFromUrl = query.paseto 
+    // console.log('urlpaseto',pasetoFromUrl)
 
-    }, [returnedPaseto]) 
-    
-    useEffect(() => { 
-        // const paseto = JSON.parse(getStorage('PLATFORM_PASETO')||'{}')
-        console.log(paseto)
-        if(paseto === '{}' || paseto === undefined) return
-            setPaseto(paseto)
+    useEffect(() => {
+        // set state if url paseto exist
+        if(pasetoFromUrl){
+            // set ui and local storage
+            setPaseto(pasetoFromUrl) 
+            setStorage('PLATFORM_PASETO',JSON.stringify(pasetoFromUrl))
             setIsAuthenticated(true)
-            // redirect to lounge
-            push('/')
+        }
+        // check
+    //   console.log(pasetoFromUrl)
+    }, [pasetoFromUrl])
+
+    console.log('state paseto',paseto)
+    
+    // // effect to grab paseto from url and set to storage
+    // useEffect(() => {
+    //     console.log(returnedPaseto)
+    //     if(returnedPaseto){
+    //         setStorage('PLATFORM_PASETO',JSON.stringify(returnedPaseto))
+    //         setPaseto(returnedPaseto)
+    //         setIsAuthenticated(true)
+    //         push('/')
+    //     }
+    // }, [returnedPaseto]) 
+    
+    // useEffect(() => { 
+    //     // const paseto = JSON.parse(getStorage('PLATFORM_PASETO')||'{}')
+    //     console.log(paseto)
+    //     if(paseto === '{}' || paseto === undefined) return
+    //         setPaseto(paseto)
+    //         setIsAuthenticated(true)
+    //         // redirect to lounge
+            
         
-    }, [isAuthenticated]) 
+    // }, [isAuthenticated]) 
+
+
 
 
 

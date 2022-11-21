@@ -31,22 +31,22 @@ const Home: NextPage = () => {
     const {paseto,isAuthenticated} = useAuthContext()
 
     const {data,isLoading} = useQuery(['orgs'],async()=>{
-        console.log(paseto)
         const {data} = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/org/user/get-org`,{
             headers:{
-                "Authorization": paseto
+                //@ts-ignore
+                "Authorization": JSON.parse(paseto)
             }
         })
         return data;
-    })
+    }) 
 
 
-    useEffect(()=>{
-        console.log(isAuthenticated)
-        if(isAuthenticated)return
-        push('/login')
+    // useEffect(()=>{
+    //     console.log(isAuthenticated)
+    //     if(isAuthenticated)return
+    //     push('/login')
 
-    },[isAuthenticated, push ]) 
+    // },[isAuthenticated, push ]) 
 
 
     // const {orgs} = useFetchUserOrgs()
@@ -106,13 +106,13 @@ const Home: NextPage = () => {
 
    
 
-    if(!isAuthenticated){
-        return(
-            <div>
-                You have to be authenticated to view this page
-            </div>
-        )
-    }
+    // if(!isAuthenticated){
+    //     return(
+    //         <div>
+    //             You have to be authenticated to view this page
+    //         </div>
+    //     )
+    // }
 
     return(
         <div style={{

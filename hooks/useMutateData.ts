@@ -23,7 +23,11 @@ export default function useMutateData<T>(url:string){
         return data
     }
 
-    const createData = useMutation(createDataHandler)
+    const createData = useMutation(createDataHandler,{
+        onSuccess:()=>{
+            closeCreateForm()
+        }
+    })
     const {isError, isLoading:isCreatingData, isSuccess:isDataCreated, data:createdData} = createData
 
 
