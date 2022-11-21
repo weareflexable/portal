@@ -28,7 +28,7 @@ const Home: NextPage = () => {
 
     const {push} = useRouter()
 
-    const {paseto,isAuthenticated} = useAuthContext()
+    const {paseto,isAuthenticated,logout} = useAuthContext()
 
     const {data,isLoading} = useQuery(['orgs'],async()=>{
         const {data} = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/org/user/get-org`,{
@@ -127,10 +127,13 @@ const Home: NextPage = () => {
             paddingTop:'2rem'
         }}>
 
-            <Title level={1}>Welcome to the lounge</Title>
+                <div style={{display:'flex', justifyContent:'space-between',alignItems:'center',width:'90%'}}>
+                        <Title level={1}>Welcome to the lounge</Title>
+                        <Button danger type='ghost' onClick={logout}>Logout</Button>
+                </div>
             
                 <div style={{display:'flex', marginTop:'4em', flexDirection:'column', width:'60%'}} > 
-                        <Title style={{marginBottom:'0'}} level={4}>My organizations</Title>
+                             <Title style={{marginBottom:'0'}} level={4}>My organizations</Title>
                         <Card  style={{width:'100%', marginTop:'1em'}}>
                             <Button disabled={isLoading} type='link' style={{marginBottom:'1em',display:'flex',alignItems:'center'}} icon={<PlusCircleOutlined />} onClick={()=>setShowOrgForm(true)}>Register new organisation</Button>
                             <List
@@ -140,7 +143,7 @@ const Home: NextPage = () => {
                                 dataSource={orgs}
                                 renderItem={item => 
                                     <List.Item 
-                                    actions={[<Button key={item.id} size='middle' disabled={item.role===''||item.role==='STAFF'} type='primary' shape='round' loading={item.id===selectedOrg?isNavigatingToOrgs:false} onClick={()=>navigateToApp(item)}>Go to organisation</Button>]} 
+                                    actions={[<Button key={item.id} size='middle' disabled={!item.approved} type='primary' shape='round' loading={item.id===selectedOrg?isNavigatingToOrgs:false} onClick={()=>navigateToApp(item)}>{item.approved?`Go to organization`:'Organization in review'}</Button>]} 
                                         style={{border:'none', background:'#f9f9f9',marginBottom:'.5em',padding:'1em', borderRadius:'4px'}}
                                         key={item.id}
                                         >

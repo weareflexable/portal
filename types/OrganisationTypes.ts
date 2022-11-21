@@ -18,7 +18,8 @@ export interface Org {
     name: string,
     id: string,
     logoUrl: string,
-    role: string
+    role: string,
+    approved: boolean
 }
 
 export interface ActiveOrgs extends Org {

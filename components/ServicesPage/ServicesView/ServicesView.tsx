@@ -84,6 +84,8 @@ export default function ServiceView({}:ServicesViewProps){
     } = useCrudDB<Service>(hookConfig,'services')
      
 
+    const services = state && state.hasOwnProperty('payload')? state: []
+
 
     
 
@@ -113,7 +115,7 @@ export default function ServiceView({}:ServicesViewProps){
                         <ServicesList
                         isLoadingServices={isLoading}
                         onCreateService={openCreateForm}
-                        services={state}
+                        services={services}
                         onDeleteService={deleteItem}
                         onSelectService={selectItemToEdit}
                         />
