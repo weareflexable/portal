@@ -7,13 +7,10 @@ import EditServiceForm from '../EditServiceForm/EditServiceForm'
 
 import useCrud from '../../../hooks/useCrud';
 import { Service } from '../../../types/Services';
-import CurrentUser from '../../Header/CurrentUser/CurrentUser';
 import ServicesList from '../ServicesList/ServicesList';
-import axios from 'axios';
-import { Org } from '../../../types/OrganisationTypes';
+
 import { useOrgContext } from '../../../context/OrgContext';
-import { useQuery } from '@tanstack/react-query';
-import { useAuthContext } from '../../../context/AuthContext';
+
 import useCrudDB from '../../../hooks/useCrudDB';
 
 const {Text,Title} = Typography;
@@ -46,22 +43,9 @@ export default function ServiceView({}:ServicesViewProps){
 
     const {back} = useRouter()
     const {currentOrg} = useOrgContext()
-    const {paseto} = useAuthContext()
     const orgId = currentOrg.id 
     
-    // const fetchServices = async()=>{
-    //     console.log('runc',paseto)
-    //     const {data} =  await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/services/user/get-services?orgId=${orgId}`,{
-    //         headers:{
-    //             "Authorization": paseto
-    //         }
-    //     })
-    //     return data;
-    // }
-    // const {data, isLoading , isFetched} = useQuery(['services',orgId],fetchServices,{refetchInterval:300000})
-
-    // const services: Service[] = data && data.payload;
-
+    
     const hookConfig = {
         fetchUrl: `services/user/get-services?orgId=${orgId}`,
         mutateUrl: 'services/orgadmin/org-service'
@@ -84,7 +68,9 @@ export default function ServiceView({}:ServicesViewProps){
     } = useCrudDB<Service>(hookConfig,'services')
      
 
+    // remove this after there is guarantee of payload prop in response
     const services = state && state.hasOwnProperty('payload')? state: []
+    console.log(services)
 
 
     
@@ -115,7 +101,7 @@ export default function ServiceView({}:ServicesViewProps){
                         <ServicesList
                         isLoadingServices={isLoading}
                         onCreateService={openCreateForm}
-                        services={services}
+                        services={state}
                         onDeleteService={deleteItem}
                         onSelectService={selectItemToEdit}
                         />

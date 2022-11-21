@@ -11,6 +11,7 @@ import { ServiceItem, ServiceItemReqPaylod } from '../../../types/Services';
 import moment from 'moment';
 import { useServicesContext } from '../../../context/ServicesContext';
 import useServiceTypes from '../../../hooks/useServiceTypes';
+import useServiceItemTypes from '../../../hooks/useServiceItemTypes';
 
 
 
@@ -27,7 +28,7 @@ export default function ServiceItemForm({ onTriggerFormAction,isCreatingServiceI
 
 
     // TODO: set field for editing
-    const menuItems = useServiceTypes()
+    const menuItems = useServiceItemTypes()
 
     const router = useRouter()
     const [form] = Form.useForm()
@@ -106,7 +107,7 @@ export default function ServiceItemForm({ onTriggerFormAction,isCreatingServiceI
                 rules={[{ required: true, message: 'Please input a valid address!' }]}
             >
                 <Select
-                    defaultValue="Bar"
+                    defaultValue={'Line skip'}
                     style={{ width: 120 }}
                     options={menuItems}
                     />

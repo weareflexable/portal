@@ -3,7 +3,7 @@ import axios from 'axios'
 import {useState} from 'react'
 import { useAuthContext } from '../context/AuthContext'
 import { ServiceItem, ServicePayload } from '../types/Services'
-
+import {notification} from 'antd'
 
  
 // type Item<T> 
@@ -52,8 +52,8 @@ export default function useCrudDB<T>(config:Config,queryId:string):{
         console.log('paseto',paseto)
         const {data} = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/${mutateUrl}`, newItem,{
             headers:{
-
-                "Authorization": paseto
+                //@ts-ignore
+                "Authorization": JSON.parse(paseto)
             },
         })
         return data
