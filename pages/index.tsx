@@ -140,7 +140,7 @@ const Home: NextPage = () => {
                                 dataSource={orgs}
                                 renderItem={item => 
                                     <List.Item 
-                                    actions={[<Button key={item.id} size='middle' type='primary' shape='round' loading={item.id===selectedOrg?isNavigatingToOrgs:false} onClick={()=>navigateToApp(item)}>Go to organisation</Button>]} 
+                                    actions={[<Button key={item.id} size='middle' disabled={item.role===''||item.role==='STAFF'} type='primary' shape='round' loading={item.id===selectedOrg?isNavigatingToOrgs:false} onClick={()=>navigateToApp(item)}>Go to organisation</Button>]} 
                                         style={{border:'none', background:'#f9f9f9',marginBottom:'.5em',padding:'1em', borderRadius:'4px'}}
                                         key={item.id}
                                         >
@@ -149,7 +149,7 @@ const Home: NextPage = () => {
                                             title={
                                                 <div style={{display:'flex'}}>
                                                 <Typography.Text style={{marginRight: '1em'}}>{item.name}</Typography.Text>
-                                                    <Tag>{item.role}</Tag>
+                                                    <Tag>{item.role==='STAFF'?'Employee':item.role}</Tag>
                                                 </div>
                                                 }
                                             />

@@ -27,7 +27,7 @@ const { Header, Sider, Content } = Layout;
   
   const AppLayout: React.FC<LayoutProps> = ({children,width=80}) => {
     
-    const {asPath} = useRouter()  
+    const {asPath,push} = useRouter()  
     const {isAuthenticated,setIsAuthenticated} = useAuthContext()
     const [showSwitcherModal, setSwitcherModal] = useState(false) 
     const [showOrgSwitcher, setShowOrgSwitcher] = useState(false) 
@@ -79,7 +79,7 @@ const { Header, Sider, Content } = Layout;
                   ]}
                 />
                 {
-                  !isAuthenticated ? <Button onClick={()=>setIsAuthenticated(true)}>Login</Button>
+                  !isAuthenticated ? <Button type='primary' onClick={()=>push('/login')}>Login</Button>
                   :(
                     <div style={{display:'flex',flex:'2'}}>
                       <ServiceSwitcherButton onOpenSwitcher={()=>setSwitcherModal(!showSwitcherModal)}/>
