@@ -21,7 +21,14 @@ import useMutateData from '../hooks/useMutateData';
 
 const Home: NextPage = () => {
 
-    const {paseto} = useAuthContext()
+    const [isRegisteringOrg, setIsRegisteringOrg] = useState(false)
+    const [showOrgForm, setShowOrgForm] = useState(false)
+    const [selectedOrg, setSelectedOrg] = useState('')
+    const [isNavigatingToOrgs, setIsNavigatingToOrg] = useState(false)
+
+    const {push} = useRouter()
+
+    const {paseto,isAuthenticated} = useAuthContext()
 
     const {data,isLoading} = useQuery(['orgs'],async()=>{
         const {data} = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/org/user/get-org`,{
@@ -33,14 +40,17 @@ const Home: NextPage = () => {
     })
 
 
+    useEffect(()=>{
+        if(!isAuthenticated){  
+            push('/login')
+        }
+
+    },[isAuthenticated, push ]) 
+
+
     // const {orgs} = useFetchUserOrgs()
 
-    const [isRegisteringOrg, setIsRegisteringOrg] = useState(false)
-    const [showOrgForm, setShowOrgForm] = useState(false)
-    const [selectedOrg, setSelectedOrg] = useState('')
-    const [isNavigatingToOrgs, setIsNavigatingToOrg] = useState(false)
-    const {isAuthenticated} = useAuthContext()
-    const router = useRouter()
+   
 
     const {createItem} = useMutateData('org/user/create')
 
@@ -58,7 +68,7 @@ const Home: NextPage = () => {
         setTimeout(() => {
             setIsNavigatingToOrg(false)
             switchOrg(org)
-            router.push(`/organisation/${org.id}`)
+            push(`/organisation/${org.id}`)
         }, 3000);
     }
 

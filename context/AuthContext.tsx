@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import React,{useState,useContext,createContext, ReactNode, useEffect} from 'react';
-import { deleteStorage, getStorage } from '../utils/storage';
+import { deleteStorage, getStorage, setStorage } from '../utils/storage';
 
 
 const AuthContext = createContext<Values|undefined>(undefined);
@@ -18,20 +18,28 @@ interface AuthContextProviderProps{
 
 const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
 
-    const {push,replace} = useRouter()
+    const {push,replace,query} = useRouter()
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [paseto, setPaseto] = useState(()=>{
         const localPaseto = getStorage('PLATFORM_PASETO')
           if(localPaseto === undefined) return
         return localPaseto
     })
-
-    useEffect(()=>{
-        if(!isAuthenticated){
-            replace('/login')
+    // const paseto = query.paseto
+    
+    useEffect(() => { 
+        // console.log(router.isReady)
+        const paseto = query.paseto
+        if(paseto){
+            // setPaseto(paseto)
+            setIsAuthenticated(true)
+            setStorage('PLATFORM_PASETO',JSON.stringify(paseto))
+            // redirect to lounge
+            push('/') 
         }
+    }, [push, query, setIsAuthenticated])
 
-    },[isAuthenticated]) 
+
 
 
     const logout = () =>{
@@ -45,7 +53,7 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
 
 
     const values: Values = {
-        isAuthenticated:true,
+        isAuthenticated,
         setIsAuthenticated,
         paseto,
         logout

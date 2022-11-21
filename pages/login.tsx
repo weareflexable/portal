@@ -7,19 +7,21 @@ const {Title,Text} = Typography;
 
 export default function Login(){
 
-    const {push, replace, query} = useRouter()
+    // const {push, replace, query} = useRouter()
     const {isAuthenticated,setIsAuthenticated,logout}= useAuthContext()
-    const paseto = query.paseto
-
+    // // const paseto = query.paseto
+    
     // useEffect(() => { 
     //     // console.log(router.isReady)
+    //     const paseto = query.paseto
+    //     console.log(paseto)
     //     if(paseto){
     //         setIsAuthenticated(true)
     //         setStorage('PLATFORM_PASETO',JSON.stringify(paseto))
     //         // redirect to lounge
-    //         push('/')
+    //         push('/') 
     //     }
-    // }, [paseto, setIsAuthenticated])
+    // }, [push, query, setIsAuthenticated])
 
     const handleLogin = ()=>{ 
         if(window !== undefined){
@@ -31,7 +33,7 @@ export default function Login(){
     return(
         <div style={{width:'100vw',display:'flex', background:'#f9f9f9', justifyContent:'center',alignItems:'center',height:'100vh'}}>
             <Card style={{width:'30%'}}>
-                {isAuthenticated
+                {!isAuthenticated
                     ?
                     <>
                         <Title level={5}>Login to portal</Title>
