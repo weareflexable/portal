@@ -42,9 +42,9 @@ const Home: NextPage = () => {
 
 
     useEffect(()=>{
-        if(!isAuthenticated){  
-            push('/login')
-        }
+        console.log(isAuthenticated)
+        if(isAuthenticated)return
+        push('/login')
 
     },[isAuthenticated, push ]) 
 
