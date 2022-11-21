@@ -56,6 +56,9 @@ const Home: NextPage = () => {
     const {createItem} = useMutateData('org/user/create')
 
     const orgs: Org[] = data && data.payload;
+    const uniqueOrgs: Org[] = orgs?.filter((item, i) => orgs.findIndex((org)=>item.id===org.id)===i); 
+
+    console.log(uniqueOrgs)
 
     const {switchOrg} =  useOrgContext()
 
@@ -140,7 +143,7 @@ const Home: NextPage = () => {
                                 size="small"
                                 bordered={false}
                                 loading={isLoading} 
-                                dataSource={orgs}
+                                dataSource={uniqueOrgs}
                                 renderItem={item => 
                                     <List.Item 
                                     actions={[<Button key={item.id} size='middle' disabled={!item.approved} type='primary' shape='round' loading={item.id===selectedOrg?isNavigatingToOrgs:false} onClick={()=>navigateToApp(item)}>{item.approved?`Go to organization`:'Organization in review'}</Button>]} 
