@@ -8,7 +8,7 @@ const AuthContext = createContext<Values|undefined>(undefined);
 type Values = {
     isAuthenticated: boolean,
     setIsAuthenticated: (isAuthenticate:boolean)=>void,
-    paseto: string | undefined | null,
+    paseto: string | undefined | null | string[],
     logout: ()=>void
 }
 
@@ -20,22 +20,30 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
 
     const {push,replace,query} = useRouter()
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-    const [paseto, setPaseto] = useState(()=>{
+    const [paseto, setPaseto] = useState<string|undefined|string[]|null>(()=>{
         const localPaseto = getStorage('PLATFORM_PASETO')
           if(localPaseto === undefined) return
         return localPaseto
     })
+    // const [paseto, setPaseto] = useState<string|undefined| string[]>('')
     // const paseto = query.paseto
-    
-    useEffect(() => { 
-        // console.log(router.isReady)
+
+    // effect to grab paseto from url and set to storage
+    useEffect(() => {
         const paseto = query.paseto
         if(paseto){
-            // setPaseto(paseto)
+            setStorage('PLATFORM_PASETO',JSON.stringify(paseto)) 
+        }
+
+    }, [query.paseto])
+    
+    useEffect(() => { 
+        const paseto = getStorage('PLATFORM_PASETO')
+        if(paseto){
+            setPaseto(paseto)
             setIsAuthenticated(true)
-            setStorage('PLATFORM_PASETO',JSON.stringify(paseto))
             // redirect to lounge
-            push('/') 
+            push('/')
         }
     }, [push, query, setIsAuthenticated])
 
