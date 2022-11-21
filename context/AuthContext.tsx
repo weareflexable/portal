@@ -18,7 +18,7 @@ interface AuthContextProviderProps{
 
 const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
 
-    const router = useRouter()
+    const {push,replace} = useRouter()
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [paseto, setPaseto] = useState(()=>{
         const localPaseto = getStorage('PLATFORM_PASETO')
@@ -26,12 +26,20 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
         return localPaseto
     })
 
+    useEffect(()=>{
+        if(!isAuthenticated){
+            replace('/login')
+        }
+
+    },[isAuthenticated]) 
+
+
     const logout = () =>{
         setIsAuthenticated(false)
         // clear all caches
         localStorage.clear()
         // redirect user to login page
-        router.replace('/login')
+        replace('/login')
     }
 
 
