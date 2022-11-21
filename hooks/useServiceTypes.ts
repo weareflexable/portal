@@ -7,7 +7,12 @@ export default function useServiceTypes(){
     const {paseto} = useAuthContext()
 
     const fetchServiceTypes = async()=>{
-        const {data} = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/services/public/generic-services`,{headers:{"Authorization":paseto}})
+        const {data} = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/services/public/generic-services`,{
+            headers:{
+                //@ts-ignore
+                "Authorization":JSON.parse(paseto)
+            }
+        })
         return data?.payload
     }
 

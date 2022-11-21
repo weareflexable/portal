@@ -82,7 +82,6 @@ export default function StoreForm({onLaunchStore, isCreatingData, onCancelFormCr
             ...fullAddress,
             imageHash: imageHash,
             coverImageHash: coverImageHash,
-            serviceId: uuidv4(),
             orgId:currentOrg.id,
             timeZone: 'UTC',
         }
@@ -146,7 +145,7 @@ export default function StoreForm({onLaunchStore, isCreatingData, onCancelFormCr
 
 
             <Form.Item
-                name="serviceType"
+                name="serviceId"
                 label='Service type'
                 rules={[{ required: true, message: 'Please input a valid address!' }]}
             >

@@ -41,7 +41,8 @@ export default function useCrudDB<T>(config:Config,queryId:string):{
     const fetchData = async(url:string)=>{
         const {data} = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/${url}`,{
             headers:{
-                "Authorization": paseto
+                //@ts-ignore
+                "Authorization": JSON.parse(paseto)
             }
         })
         return data?.payload;
@@ -51,7 +52,8 @@ export default function useCrudDB<T>(config:Config,queryId:string):{
         console.log('paseto',paseto)
         const {data} = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/${mutateUrl}`, newItem,{
             headers:{
-                "Authorization": paseto
+                //@ts-ignore
+                "Authorization": JSON.parse(paseto)
             },
         })
         return data

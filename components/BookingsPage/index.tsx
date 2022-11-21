@@ -58,7 +58,8 @@ export default function Bookings(){
     const { data } = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/orgservmanager/get-serv-orders?orgServiceId=${serviceId}`,
       {
-        headers:{"Authorization":paseto}
+        //@ts-ignore
+        headers:{"Authorization":JSON.parse(paseto)}
       }
     );
     return data;

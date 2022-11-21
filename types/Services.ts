@@ -16,7 +16,7 @@ export type Service ={
 export type ServicePayload ={
     name: string,
     orgId: string,
-    serviceId: string,
+    serviceId?: string,
     state: string,
     country: string,
     city: string,

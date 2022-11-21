@@ -34,7 +34,7 @@ const Home: NextPage = () => {
         const {data} = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/org/user/get-org`,{
             headers:{
                 //@ts-ignore
-                "Authorization": JSON.parse(paseto)
+                "Authorization": JSON.parse(paseto) 
             }
         })
         return data;
