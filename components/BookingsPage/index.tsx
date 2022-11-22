@@ -247,7 +247,7 @@ export default function Bookings(){
       dataIndex: 'ticketDate',
       key: 'ticketDate',
       render: (_,record)=>{
-        const date = moment(record.startDate).format('MMM DD, YYYY')
+        const date = moment(record.startTime).format('MMM DD, YYYY')
         return(
           <Text>{date}</Text>
         )
