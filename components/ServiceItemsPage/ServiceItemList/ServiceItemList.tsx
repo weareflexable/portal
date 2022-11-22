@@ -41,7 +41,7 @@ export default function ServiceListProps({onDeleteService,serviceItemsIsLoading,
                     size='small' 
                     disabled={!isAdmin} 
                     type='text' onClick={()=>onDeleteService(item.id)} 
-                    key={item.id}>Delete</Button> , <Button size='small' type='link' disabled  onClick={()=>onSelectService(item)} key={item.id}>Edit</Button>  
+                    key={item.id}>Delete</Button> , <Button size='small' type='link'  onClick={()=>onSelectService(item)} key={item.id}>Edit</Button>  
                  ]}
             >
                 <List.Item.Meta
@@ -70,18 +70,6 @@ export default function ServiceListProps({onDeleteService,serviceItemsIsLoading,
                             ----
                             <div style={{display:'flex'}}>
                                 <Text type='secondary' style={{marginRight:'.3em'}}>End date:</Text>
-                                <Text>{moment(item.endDate).format('MMM DD, YYYY')}</Text>
-                            </div>
-                        </div>
-
-                        <div style={{display:'flex',alignItems:'center'}}>
-                            <div style={{display:'flex'}}>
-                                <Text type='secondary' style={{marginRight:'.3em'}}>Start time:</Text>
-                                <Text>{moment(item.startTime).format('MMM DD, YYYY')}  </Text>
-                            </div>
-                            ----
-                            <div style={{display:'flex'}}>
-                                <Text type='secondary' style={{marginRight:'.3em'}}>Range time:</Text>
                                 <Text>{moment(item.endDate).format('MMM DD, YYYY')}</Text>
                             </div>
                         </div>

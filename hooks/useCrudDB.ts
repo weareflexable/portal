@@ -9,7 +9,8 @@ import {notification} from 'antd'
 // type Item<T> 
 type Config={
     fetchUrl: string,
-    mutateUrl: string
+    mutateUrl: string,
+    patchUrl?: string
 }
 
 export default function useCrudDB<T>(config:Config,queryId:string):{
@@ -17,6 +18,7 @@ export default function useCrudDB<T>(config:Config,queryId:string):{
     deleteItem: (id:string)=>void
     isLoading: boolean,
     editItem: (id:T)=>void,
+    isPatchingData: boolean,
     createItem: (newItem:any)=>void,
     closeCreateForm: ()=>void,
     openCreateForm: ()=>void,
@@ -29,7 +31,7 @@ export default function useCrudDB<T>(config:Config,queryId:string):{
     selectItemToEdit: (item:T)=>void
 
 }{
-    const {fetchUrl, mutateUrl} = config
+    const {fetchUrl, mutateUrl, patchUrl} = config
     const {paseto} = useAuthContext()
     
     // const [state, setState] = useState<T[]>(initState? initState:[])
@@ -59,12 +61,46 @@ export default function useCrudDB<T>(config:Config,queryId:string):{
         return data
     }
 
+    const patchDataHandler = async(updatedItem:any)=>{
+        const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/${patchUrl}`,updatedItem,{
+            headers:{
+                //@ts-ignore
+                "Authorization": JSON.parse(paseto)
+            }
+        })
+        return data
+    }
+
+    const patchData = useMutation(patchDataHandler,{
+        onSuccess:()=>{
+            notification['success']({
+                message: 'Updated record succesfully!',
+              });
+            closeEditForm()
+        },
+        onError:()=>{
+            notification['error']({
+                message: 'Encountered an error while updating record',
+              });
+            //show error notification
+        }
+    })
+
     const createData = useMutation(createDataHandler,
         {onSuccess:()=>{
+            notification['success']({
+                message: 'Created record succesfully',
+              });
             closeCreateForm()
+        },
+        onError:()=>{
+            notification['error']({
+                message: 'Encountered an error while creating record',
+              });
         }
         })
     const {isError, isLoading:isCreatingData, isSuccess:isDataCreated, data:createdData} = createData
+    const {isLoading:isPatchingData, data: patchedData} = patchData
 
     const {data, isLoading, isSuccess} = useQuery([queryId],()=>fetchData(fetchUrl))
 
@@ -96,21 +132,12 @@ export default function useCrudDB<T>(config:Config,queryId:string):{
     }
 
     function editItem(updatedItem:T){
-
-        // copy state to avoid mutation
-        const stateCopy = state.slice()
-        // find index of updated service in old services
-        //@ts-ignore
-        const itemIndex: number = stateCopy.findIndex(item=>item.id === updatedItem.id)
-        // update edited service
-        stateCopy[itemIndex]= updatedItem;
-        // update service in state
-        // setState(stateCopy)
-        setShowEditForm(false)
+        patchData.mutate(updatedItem)
     }
 
 
     const selectItemToEdit=(item:T)=>{
+        console.log(item)
         setShowEditForm(true)
         setItemToEdit(item)
     }
@@ -120,6 +147,7 @@ export default function useCrudDB<T>(config:Config,queryId:string):{
         deleteItem, 
         isLoading,
         isCreatingData,
+        isPatchingData,
         editItem, 
         createItem, 
         closeCreateForm, 

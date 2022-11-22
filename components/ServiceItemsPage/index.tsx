@@ -57,13 +57,15 @@ export default function UserServicesView({}:UserServicesViewProps){
 
     const hookConfig = {
         fetchUrl: `services/user/get-service-items?orgServiceId=${serviceId}`,
-        mutateUrl: `services/orgadmin/org-service-item`
+        mutateUrl: 'services/orgadmin/org-service-item',
+        patchUrl: 'services/user/update-service-item'
     }
 
     const {
         state,
         showCreateForm, 
         openCreateForm,
+        isPatchingData,
         isCreatingData,
         isLoading,
         showEditForm,
@@ -96,6 +98,7 @@ export default function UserServicesView({}:UserServicesViewProps){
 
             <Modal title={'Edit Service item'} open={showEditForm} footer={null} onCancel={closeEditForm}>
                 <EditForm 
+                isPatchingServiceItem={isPatchingData}
                 initValues={itemToEdit} 
                 onTriggerFormAction={editItem} 
                 onCancelFormCreation={closeEditForm}/>

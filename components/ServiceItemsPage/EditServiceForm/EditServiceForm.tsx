@@ -8,33 +8,44 @@ import {v4 as uuidv4} from 'uuid'
 
 import { useRouter } from 'next/router';
 import { ServiceItem } from '../../../types/Services';
+import moment from 'moment';
+import { useOrgContext } from '../../../context/OrgContext';
+import { useServicesContext } from '../../../context/ServicesContext';
 
 
 interface ServiceItemFormProps{
     initValues: ServiceItem | undefined
-    onTriggerFormAction: (formData:ServiceItem)=>void
-    onCancelFormCreation: ()=>void
+    onTriggerFormAction: (formData:any)=>void
+    onCancelFormCreation: ()=>void,
+    isPatchingServiceItem: boolean
 }
-export default function EditForm({initValues, onTriggerFormAction, onCancelFormCreation}:ServiceItemFormProps){
+export default function EditForm({initValues, onTriggerFormAction, isPatchingServiceItem, onCancelFormCreation}:ServiceItemFormProps){
 
 
     // TODO: set field for editing
 
     const router = useRouter()
     const [form] = Form.useForm()
+    const {currentService} = useServicesContext()
 
     const prevValues = initValues
 
     const onFinish = (formData:ServiceItem)=>{
-        console.log('prevValues',prevValues)
         console.log(formData)
 
         const formObject = {
-            ...prevValues,
-            ...formData
+            id: prevValues?.id,
+            description:formData.description,
+            orgServiceItemId: currentService.id,
+            imageHash: '',
+            name: formData.name,
+            price: formData.price,
+            ticketMaxPerDay: formData.ticketsPerDay
         }
+        console.log(formObject)
+
         onTriggerFormAction(formObject)
-        showStoreCreationNotification()
+        // showStoreCreationNotification()
     }
 
     // if(initValues){
@@ -93,18 +104,18 @@ export default function EditForm({initValues, onTriggerFormAction, onCancelFormC
             </Form.Item>
 
             <div style={{display:'flex', alignItems:'center'}}>
-
-                <Form.Item name='startDate'  label="Start date">
-                    <DatePicker />
+{/* 
+                 <Form.Item name='startDate'  label="Start date">
+                    <DatePicker format={"YYYY-MM-DD"}  defaultValue={moment(initValues?.startDate)} />
                 </Form.Item>
 
                 <Form.Item name='endDate' style={{marginLeft:'2em'}} label="End date">
-                    <DatePicker />
-                </Form.Item>
+                    <DatePicker format={"YYYY-MM-DD"} defaultValue={moment(initValues?.endDate)} />
+                </Form.Item>  */}
 
             </div>
 
-            <div style={{display:'flex', marginBottom:'1em', alignItems:'center'}}>
+            {/* <div style={{display:'flex', marginBottom:'1em', alignItems:'center'}}>
 
                 <Form.Item name='startTime'   label="Start time">
                     <TimePicker  format="h:mm:ss"  />
@@ -114,7 +125,7 @@ export default function EditForm({initValues, onTriggerFormAction, onCancelFormC
                     <InputNumber />
                 </Form.Item>
 
-            </div>
+            </div> */}
 
 
             <Form.Item>
@@ -123,7 +134,7 @@ export default function EditForm({initValues, onTriggerFormAction, onCancelFormC
                         Cancel
                     </Button>
 
-                    <Button shape='round' type="primary"  htmlType="submit" >
+                    <Button loading={isPatchingServiceItem} shape='round' type="primary"  htmlType="submit" >
                      Apply changes
                     </Button>
                 </Space>
