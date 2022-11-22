@@ -19,7 +19,8 @@ export default function useFetchUserOrgs(){
     const {data,isLoading:isLoadingOrgs} = useQuery(['orgs'],async()=>{
         const {data} = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/org/user/get-org`,{
             headers:{
-                "Authorization": paseto
+                //@ts-ignore
+                "Authorization": JSON.parse(paseto)
             }
         })
         return data;

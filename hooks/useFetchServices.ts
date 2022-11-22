@@ -15,7 +15,8 @@ export default function useFetchUserServices(){
     const fetchServices = async()=>{
         const {data} =  await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/services/user/get-services?orgId=${currentOrg.id}`,{
             headers:{
-                "Authorization": paseto
+                //@ts-ignore
+                "Authorization": JSON.parse(paseto)
             }
         })
         return data?.payload;
