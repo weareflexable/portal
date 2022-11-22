@@ -40,14 +40,14 @@ const { Header, Sider, Content } = Layout;
     return (
 
       <Layout style={{minHeight:'100vh',height:'100%'}}>
-        <OrgSwitcherModal
+      { showOrgSwitcher?<OrgSwitcherModal
           isModalOpen={showOrgSwitcher}
           onCloseModal={()=>setShowOrgSwitcher(!showOrgSwitcher)}
-        />
-        <ServicesSwitcherModal
+        />:null}
+        {showSwitcherModal?<ServicesSwitcherModal
           isModalOpen={showSwitcherModal} 
           onCloseModal={()=>setSwitcherModal(!showSwitcherModal)}
-        />
+        />:null}
 
               <Header style={{lineHeight:'1.4',background:'white', width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
               <Menu
