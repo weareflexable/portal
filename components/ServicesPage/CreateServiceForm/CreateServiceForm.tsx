@@ -88,10 +88,8 @@ export default function StoreForm({onLaunchStore, isCreatingData, onCancelFormCr
         // remove address field since because we have extracted
         // @ts-ignore
         delete formObject.address
-        console.log(formObject)
 
         onLaunchStore(formObject)
-        showStoreCreationNotification()
     }
 
     const normFile = (e: any) => {
@@ -102,13 +100,6 @@ export default function StoreForm({onLaunchStore, isCreatingData, onCancelFormCr
         return e?.fileList;
       };
 
-    const showStoreCreationNotification = () => {
-        notification['success']({
-          message: 'Store created succesfully',
-          description:
-            'The next step is to create services inside store for user to be able to interact with.',
-        });
-      };
     
 
     return (

@@ -31,7 +31,6 @@ export default function EditForm({initValues, onTriggerFormAction, isPatchingSer
     const prevValues = initValues
 
     const onFinish = (formData:ServiceItem)=>{
-        console.log(formData)
 
         const formObject = {
             id: prevValues?.id,
@@ -45,7 +44,6 @@ export default function EditForm({initValues, onTriggerFormAction, isPatchingSer
         console.log(formObject)
 
         onTriggerFormAction(formObject)
-        // showStoreCreationNotification()
     }
 
     // if(initValues){

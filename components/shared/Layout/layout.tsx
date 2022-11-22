@@ -79,7 +79,7 @@ const { Header, Sider, Content } = Layout;
                   ]}
                 />
                 {
-                  !isAuthenticated ? <Button type='primary' onClick={()=>push('/login')}>Login</Button>
+                  !isAuthenticated ? <Button type='primary' onClick={()=>{location.href=`${process.env.NEXT_PUBLIC_AUTH}/login?redirect_to='portal`}}>Login</Button>
                   :(
                     <div style={{display:'flex',flex:'2'}}>
                       <ServiceSwitcherButton onOpenSwitcher={()=>setSwitcherModal(!showSwitcherModal)}/>

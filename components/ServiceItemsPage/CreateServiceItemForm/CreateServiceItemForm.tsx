@@ -51,16 +51,10 @@ export default function ServiceItemForm({ onTriggerFormAction,isCreatingServiceI
             }
             console.log(formObject)
             onTriggerFormAction(formObject) 
-            // showStoreCreationNotification()
 
     }
 
 
-    const showStoreCreationNotification = () => {
-        notification['success']({
-          message: 'Service created succesfully',
-        });
-      };
       
 
 
