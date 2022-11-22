@@ -44,6 +44,8 @@ export default function StaffView({}:StaffViewProps){
     } = useCrudDB<Staff>(hookConfig,'staff')
 
 
+    const staff = state && state
+
     return(
         <div>
            
@@ -52,7 +54,7 @@ export default function StaffView({}:StaffViewProps){
                 showCreateForm={openCreateForm}
                 onSelectStaffToEdit={selectItemToEdit} 
                 onDeleteStaff={deleteItem} 
-                staff={state}
+                staff={staff}
                 isFetchingStaff = {isFetchingStaff}
             />
             {/* // : <EmptyStore isAdmin={isAdmin} openFormModal={openCreateForm}/> */}

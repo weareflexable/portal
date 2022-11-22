@@ -80,12 +80,14 @@ export default function UserServicesView({}:UserServicesViewProps){
 
        console.log(state)
 
+       const serviceItems = state && state
+
 
     return(
         <div> 
            
             {/* { state  */}
-                <ServiceItemList serviceItemsIsLoading={isLoading} onDeleteService = {deleteItem} isFetching={isLoading} onSelectService={selectItemToEdit} onCreateService={openCreateForm} serviceItems={state}/>
+                <ServiceItemList serviceItemsIsLoading={isLoading} onDeleteService = {deleteItem} isFetching={isLoading} onSelectService={selectItemToEdit} onCreateService={openCreateForm} serviceItems={serviceItems}/>
                 {/* // :<EmptyServices onRegisterService={openCreateForm}/> */}
             {/* } */}
 
