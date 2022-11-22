@@ -69,8 +69,10 @@ export default function ServiceView({}:ServicesViewProps){
      
 
     // remove this after there is guarantee of payload prop in response
-    const services = state && state.hasOwnProperty('payload')? state: []
-    console.log(services)
+    // const services = state && state.hasOwnProperty('payload')? state: []
+    const uniqueServices = state && state?.filter((item, i) => state.findIndex((service)=>item.id===service.id)===i);
+    // console.log(services)
+    console.log(uniqueServices)
 
 
     
@@ -101,7 +103,7 @@ export default function ServiceView({}:ServicesViewProps){
                         <ServicesList
                         isLoadingServices={isLoading}
                         onCreateService={openCreateForm}
-                        services={state}
+                        services={uniqueServices}
                         onDeleteService={deleteItem}
                         onSelectService={selectItemToEdit}
                         />

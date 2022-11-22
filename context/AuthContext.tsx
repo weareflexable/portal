@@ -26,7 +26,6 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
     // const [paseto, setPaseto] =useLocalStorage<string>('PLATFORM_PASETO','v4.local.UozESpGaJorQ6WXrSFFFCMCcekZvVbokgIOejGniDGsz2_2XyIPKkrppb-FMsnKAVZtLNnOawvpIuPQXywGETc2X2xX9HNnzX5Auz4QvyTuyhLej-aizUv6GtroSxIZM4_ktrup8zHoVWkKbcP0qwrcrqbHg7Rd23v-okg8UpeJKFkc3rxsr40EdvPQx7ejsUlvGyGVkV8cvMz2h9Hhmj1cs')
     const [paseto, setPaseto] =useState<string|string[]|undefined>(()=>{
         const storedPaseto = getStorage('PLATFORM_PASETO')
-        console.log('storedPaseto',storedPaseto)
         if(storedPaseto){
             return storedPaseto
         }
@@ -38,7 +37,6 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
 
     useEffect(()=>{
         if(paseto !== '' && paseto !== null){
-            console.log('should authenticte')
             setIsAuthenticated(true)
         }
     },[paseto])
@@ -48,7 +46,7 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
         if(pasetoFromUrl){
             // set ui and local storage
             setPaseto(pasetoFromUrl) 
-
+            //@ts-ignore
             setStorage('PLATFORM_PASETO',JSON.stringify(pasetoFromUrl))
             setIsAuthenticated(true)
         }

@@ -3,7 +3,7 @@ export interface Order {
     userId: string,
     serviceName: string;
     name: string;
-    ticketDate: string;
+    startTime: string;
     quantity: number,
     orderStatus: string,
     ticketStatus: string,
