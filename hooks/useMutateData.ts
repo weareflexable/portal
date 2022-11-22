@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { notification } from 'antd'
 import axios from 'axios'
 import {useState} from 'react'
 import { useAuthContext } from '../context/AuthContext'
@@ -25,10 +26,15 @@ export default function useMutateData<T>(url:string){
 
     const createData = useMutation(createDataHandler,{
         onSuccess:()=>{
+            notification['success']({
+                message: 'Created record succesfully!',
+              });
             closeCreateForm()
         },
         onError:()=>{
-            closeCreateForm()
+            notification['error']({
+                message: 'Encountered an error while creating record',
+              });
             //show modal
         }
     })
