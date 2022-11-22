@@ -96,7 +96,7 @@ export default function ServiceView({}:ServicesViewProps){
                 </header>
 
                 <Col offset={2} span={20}>
-                    <Title style={{marginBottom:'1em'}} level={4}>Services</Title>
+                    <Title style={{marginBottom:'1em'}} level={2}>Services</Title>
                     {/* { isFetched && state.length > 0 ?   */}
                         <ServicesList
                         isLoadingServices={isLoading}

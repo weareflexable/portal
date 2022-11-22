@@ -16,11 +16,11 @@ interface StaffListProps{
 }
 export default function StaffLis({onSelectStaffToEdit, isFetchingStaff, staff, showCreateForm,onDeleteStaff}:StaffListProps){
     
-    const {isAdmin} = useOrgContext()
+    const {currentOrg} = useOrgContext()
 
     return(
         <div style={{display:'flex', padding:'1em',flexDirection:'column'}}>
-            <Button type='link' disabled={!isAdmin} icon={<PlusCircleOutlined />}  style={{alignSelf:'flex-start',marginBottom:'1em', display:'flex',alignItems:'center'}} onClick={showCreateForm}>Add new staff</Button>
+            <Button type='link' disabled={currentOrg.role!=="ADMIN"} icon={<PlusCircleOutlined />}  style={{alignSelf:'flex-start',marginBottom:'1em', display:'flex',alignItems:'center'}} onClick={showCreateForm}>Add new staff</Button>
             <List
                 itemLayout="horizontal"
                 loading={isFetchingStaff}
@@ -28,7 +28,7 @@ export default function StaffLis({onSelectStaffToEdit, isFetchingStaff, staff, s
                 renderItem={(item, index) => (
                 <List.Item
                 style={{border:'none', background:'#f9f9f9',marginBottom:'.5em',padding:'1em', borderRadius:'4px'}}
-                actions={[<Button danger type='text' disabled={!isAdmin} key={item.emailId} onClick={()=>onDeleteStaff(item.emailId)}>Delete</Button>,<Button disabled type='link' size='small' key={item.emailId} onClick={()=>onSelectStaffToEdit(item)}>Change role</Button>]}
+                actions={[<Button danger type='text' disabled key={item.emailId} onClick={()=>onDeleteStaff(item.emailId)}>Delete</Button>,<Button disabled type='link' size='small' key={item.emailId} onClick={()=>onSelectStaffToEdit(item)}>Change role</Button>]}
                 >
                     <List.Item.Meta
                         title={<Text >{item.emailId} {<Tag color={item.role==='admin'?'green':'blue'}>{item.role}</Tag>

@@ -43,7 +43,6 @@ export default function StaffView({}:StaffViewProps){
         selectItemToEdit
     } = useCrudDB<Staff>(hookConfig,'staff')
 
-    const {isAdmin} = useOrgContext()
 
     return(
         <div>
