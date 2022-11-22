@@ -45,7 +45,7 @@ const menu = (
           }}>
           <Avatar src={''}/>
           <div style={{display:'flex', flexDirection:'column'}}>
-            <Title ellipsis level={5} style={{marginBottom:'.001em', width:'150px', marginRight:'.5em', marginLeft:'.3em'}}>mujahidbappai@gmail.com</Title>
+            {/* <Title ellipsis level={5} style={{marginBottom:'.001em', width:'150px', marginRight:'.5em', marginLeft:'.3em'}}>mujahidbappai@gmail.com</Title> */}
             <Text type='secondary' style={{width:'100%', marginTop:'0', maxWidth:'50px', marginLeft:'.3em'}}>{orgUserRole}</Text>
           </div>
      </div>
