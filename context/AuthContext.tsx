@@ -56,7 +56,6 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
     //   console.log(pasetoFromUrl)
     }, [pasetoFromUrl])
 
-    console.log('state paseto',paseto)
     
     // // effect to grab paseto from url and set to storage
     // useEffect(() => {

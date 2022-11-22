@@ -3,21 +3,31 @@ import {Form, Input,Radio,Button,notification, Space, Typography} from 'antd';
 
 
 import { useRouter } from 'next/router';
-import { Staff } from '../../../types/Staff';
+import { Staff, StaffReqPayload } from '../../../types/Staff';
+import { useServicesContext } from '../../../context/ServicesContext';
 
 
 interface StoreFormProps{
-    onCreateStaff: (formData:Staff)=>void
-    onCloseForm: ()=>void
+    onCreateStaff: (formData:StaffReqPayload)=>void
+    onCloseForm: ()=>void,
+    isCreatingStaff: boolean
 }
-export default function CreateStaffForm({onCreateStaff, onCloseForm}:StoreFormProps){
+export default function CreateStaffForm({onCreateStaff, isCreatingStaff, onCloseForm}:StoreFormProps){
 
 
+    const {currentService} = useServicesContext()
 
     const onFinish = (formData:Staff)=>{
         // call function to create store
-        onCreateStaff(formData)
-        showStoreCreationNotification()
+
+        const payload={
+            orgServiceId: currentService.id,
+            staffEmailId: formData.emailId
+        }
+        // console.log(payload)
+
+        onCreateStaff(payload)
+        // showStoreCreationNotification()
     }
 
     const showStoreCreationNotification = () => {
@@ -35,14 +45,14 @@ export default function CreateStaffForm({onCreateStaff, onCloseForm}:StoreFormPr
             onFinish={onFinish}
             >
             <Form.Item
-                name="email"
+                name="emailId"
                 label="Email"
                 rules={[{ required: true, message: 'Please input a valid email' }]}
              >
                 <Input placeholder="eg. billcage@yahoo.com" />
             </Form.Item>
 
-            <Form.Item
+            {/* <Form.Item
                 name="role"
                 label="Assign role"
                 rules={[{ required: true, message: 'Please select a valid role' }]}
@@ -54,15 +64,15 @@ export default function CreateStaffForm({onCreateStaff, onCloseForm}:StoreFormPr
                     </Space>
                 </Radio.Group>
 
-            </Form.Item>
+            </Form.Item> */}
 
             <Form.Item>
                 <Space>
-                    <Button onClick={onCloseForm} type='ghost'>
+                    <Button shape='round' size='small' onClick={onCloseForm} type='ghost'>
                         Cancel
                     </Button>
 
-                    <Button type="primary"  htmlType="submit" >
+                    <Button loading={isCreatingStaff} shape='round' size='small' type="primary"  htmlType="submit" >
                         Add
                     </Button>
                 </Space>

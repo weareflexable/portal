@@ -1,5 +1,9 @@
 export type Staff = {
-    email: string,
+    emailId: string,
     role: string,
-    id: string
+}
+
+export type StaffReqPayload = {
+    orgServiceId: string,
+    staffEmailId: string
 }

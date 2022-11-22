@@ -7,6 +7,8 @@ import { Staff } from '../../types/Staff';
 import CreateStaffForm from './CreateStaffForm/CreateStaffForm';
 import EditStaffForm from './EditStaffForm/EditStaffForm';
 import { useOrgContext } from '../../context/OrgContext';
+import useCrudDB from '../../hooks/useCrudDB';
+import { useServicesContext } from '../../context/ServicesContext';
 const {Text} = Typography;
 
 
@@ -16,11 +18,21 @@ interface StaffViewProps{
 }
 export default function StaffView({}:StaffViewProps){
 
+    const {currentService} = useServicesContext()
+    const serviceId = currentService.id
+
+    const hookConfig ={
+        fetchUrl:`services/user/get-members?orgServiceId=${serviceId}`,
+        mutateUrl:'org/orgadmin/add-staff'
+    }
+
     const {
         state,
         createItem,
         editItem,
+        isLoading:isFetchingStaff,
         deleteItem,
+        isCreatingData:isCreatingStaff,
         showCreateForm,
         showEditForm,
         openCreateForm,
@@ -29,24 +41,27 @@ export default function StaffView({}:StaffViewProps){
         closeEditForm,
         itemToEdit,
         selectItemToEdit
-    } = useCrud<Staff>()
+    } = useCrudDB<Staff>(hookConfig,'staff')
 
     const {isAdmin} = useOrgContext()
 
     return(
         <div>
            
-        { state.length > 0 ? 
+        {/* { state.length > 0 ?  */}
             <StaffList 
                 showCreateForm={openCreateForm}
                 onSelectStaffToEdit={selectItemToEdit} 
                 onDeleteStaff={deleteItem} 
                 staff={state}
-            />: <EmptyStore isAdmin={isAdmin} openFormModal={openCreateForm}/>
+                isFetchingStaff = {isFetchingStaff}
+            />
+            {/* // : <EmptyStore isAdmin={isAdmin} openFormModal={openCreateForm}/> */}
             
-        }
-        <Modal title="Add new staff" open={showCreateForm} footer={null} onCancel={closeCreateForm}>
+        {/* } */}
+        <Modal title="Add new employee" open={showCreateForm} footer={null} onCancel={closeCreateForm}>
             <CreateStaffForm 
+                isCreatingStaff={isCreatingStaff}
                 onCloseForm={closeCreateForm} 
                 onCreateStaff={createItem}
             />
