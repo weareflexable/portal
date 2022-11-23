@@ -89,23 +89,23 @@ const {Text} = Typography
                   items={[
                     {
                       key: 'dashboard',
-                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Text style={{border: '1px solid'}} onClick={()=>handleRoute('dashboard')}>Dashboard</Text> </div> ,
+                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/dashboard`} ><a>Dashboard</a></Link> </div> ,
                     },
                     {
                       key: 'bookings',
-                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Text style={{border: '1px solid'}} onClick={()=>handleRoute('bookings')}>Bookings</Text> </div> ,
+                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/dashboard`} ><a>Bookings</a></Link> </div> ,
                     },
                     {
                       key: 'serviceItems',
-                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Text style={{border: '1px solid'}} onClick={()=>handleRoute('serviceItems')}>Service Items</Text> </div> ,
+                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/serviceItems`} ><a>Service Items</a></Link> </div> ,
                     },
                     {
                       key: 'staff',
-                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Text style={{border: '1px solid'}} onClick={()=>handleRoute('staff')}>Staff</Text> </div> ,
+                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/staff`} ><a>Staff</a></Link> </div> ,
                     },
                     {
                       key: 'billings',
-                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Text style={{border: '1px solid'}} onClick={()=>handleRoute('billings')}>Billings</Text> </div> ,
+                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/dashboard`} ><a>Billings</a></Link> </div> ,
                     },
                   ]}
                 />
