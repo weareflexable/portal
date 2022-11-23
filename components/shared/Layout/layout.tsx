@@ -6,7 +6,7 @@ import {
   import {  Menu, Breadcrumb, Typography ,Button, Layout, MenuProps, Spin} from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useState, useEffect } from 'react';
 import { useAuthContext } from '../../../context/AuthContext';
 import CurrentUser from '../../Header/CurrentUser/CurrentUser';
 import OrgSwitcher from '../../Header/OrgSwitcherButton/OrgSwitcherButton';
@@ -25,26 +25,42 @@ const {Text} = Typography
     width?: number
   }
 
+  type PageRoute = {
+    basePath: string,
+    selectedRoute: string
+  }
   
   const AppLayout: React.FC<LayoutProps> = ({children,width=80}) => {
     
-    const {asPath,push,isReady} = useRouter()  
+    const {asPath,push,query,isReady} = useRouter()  
     const {isAuthenticated,setIsAuthenticated} = useAuthContext()
     const [showSwitcherModal, setSwitcherModal] = useState(false) 
     const [showOrgSwitcher, setShowOrgSwitcher] = useState(false) 
+    const [pageRoutes, setPageRoutes] = useState<PageRoute>({basePath:'',selectedRoute:'dashboard'})
 
     
-    const splittedRoutes = isReady && asPath.split('/')
-    const selectedRoute = splittedRoutes && splittedRoutes[5]
-    // @ts-ignore
-    isReady && splittedRoutes.pop()
-    //@ts-ignore
-    const basePath = isReady && splittedRoutes.join('/')
-    console.log(selectedRoute)
-
+    
+    
     const handleRoute=(route:string)=>{
-      push(`${basePath}/${route}`)
+      push(`${pageRoutes.basePath}/${route}`)
     }
+
+    useEffect(() => {
+      if(isReady){
+        const splittedRoutes = asPath.split('/')
+        const selectedRoute = splittedRoutes && splittedRoutes[5]
+        splittedRoutes.pop()
+        const basePath =splittedRoutes.join('/')
+
+          setPageRoutes({
+            basePath:basePath,
+            selectedRoute:selectedRoute,
+
+          })
+        }
+    }, [isReady,asPath])
+
+    console.log(pageRoutes)
     
     if(!isReady){
       <div style={{width:'100vw', height:'100vh',display:'flex',justifyContent:'center',alignItems:'center'}}>
@@ -69,7 +85,7 @@ const {Text} = Typography
                 style={{height:'100%',display:'flex', flex:'3'}}
                   theme="light"
                   mode="horizontal"
-                  
+                  defaultSelectedKeys={[pageRoutes.selectedRoute]}
                   items={[
                     {
                       key: 'dashboard',
