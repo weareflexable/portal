@@ -34,10 +34,13 @@ const {Text} = Typography
     const [showOrgSwitcher, setShowOrgSwitcher] = useState(false) 
 
     
-    const splittedRoutes = asPath.split('/')
-    const selectedRoute = splittedRoutes[5]
-    splittedRoutes.pop()
-    const basePath = splittedRoutes.join('/')
+    const splittedRoutes = isReady && asPath.split('/')
+    const selectedRoute = splittedRoutes && splittedRoutes[5]
+    // @ts-ignore
+    isReady && splittedRoutes.pop()
+    //@ts-ignore
+    const basePath = isReady && splittedRoutes.join('/')
+    console.log(selectedRoute)
 
     const handleRoute=(route:string)=>{
       push(`${basePath}/${route}`)
