@@ -80,6 +80,7 @@ export default function Bookings(){
   const isFilterEmpty = Object.keys(filteredInfo).length === 0;
   const serviceBookings = data && data.payload
   const sortedBookings = serviceBookings?.sort((a:any,b:any)=>{
+    //@ts-ignore
     return new Date(b.startTime) - new Date(a.startTime)
   })
 

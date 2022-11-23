@@ -93,7 +93,7 @@ const {Text} = Typography
                     },
                     {
                       key: 'bookings',
-                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/dashboard`} ><a>Bookings</a></Link> </div> ,
+                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/bookings`} ><a>Bookings</a></Link> </div> ,
                     },
                     {
                       key: 'serviceItems',
