@@ -18,6 +18,7 @@ import UnAuthenticatedView from '../UnAuthenticated/UnAuthenticatedView';
 
 
 const { Header, Sider, Content } = Layout;
+const {Text} = Typography
 
   interface LayoutProps{
     children: ReactNode,
@@ -37,6 +38,10 @@ const { Header, Sider, Content } = Layout;
     const selectedRoute = splittedRoutes[5]
     splittedRoutes.pop()
     const basePath = splittedRoutes.join('/')
+
+    const handleRoute=(route:string)=>{
+      push(`${basePath}/${route}`)
+    }
     
     if(!isReady){
       <div style={{width:'100vw', height:'100vh',display:'flex',justifyContent:'center',alignItems:'center'}}>
@@ -62,27 +67,26 @@ const { Header, Sider, Content } = Layout;
                   theme="light"
                   mode="horizontal"
                   
-                  defaultSelectedKeys={['dashboard']}
                   items={[
                     {
                       key: 'dashboard',
-                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link style={{border: '1px solid'}} type='link' href={`${basePath}/dashboard`}>Dashboard</Link> </div> ,
+                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Text style={{border: '1px solid'}} onClick={()=>handleRoute('dashboard')}>Dashboard</Text> </div> ,
                     },
                     {
                       key: 'bookings',
-                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link type='link' href={`${basePath}/bookings`}>Bookings</Link> </div> ,
+                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Text style={{border: '1px solid'}} onClick={()=>handleRoute('bookings')}>Bookings</Text> </div> ,
                     },
                     {
                       key: 'serviceItems',
-                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link type='link' href={`${basePath}/serviceItems`}>Service Items</Link> </div> ,
+                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Text style={{border: '1px solid'}} onClick={()=>handleRoute('serviceItems')}>Service Items</Text> </div> ,
                     },
                     {
                       key: 'staff',
-                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link type='link' href={`${basePath}/staff`}>Staff</Link> </div> ,
+                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Text style={{border: '1px solid'}} onClick={()=>handleRoute('staff')}>Staff</Text> </div> ,
                     },
                     {
                       key: 'billings',
-                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link type='link' href={`${basePath}/billings`}>Billings</Link> </div> ,
+                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Text style={{border: '1px solid'}} onClick={()=>handleRoute('billings')}>Billings</Text> </div> ,
                     },
                   ]}
                 />
