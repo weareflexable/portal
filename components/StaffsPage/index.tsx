@@ -49,7 +49,6 @@ export default function StaffView({}:StaffViewProps){
     return(
         <div>
            
-        {/* { state.length > 0 ?  */}
             <StaffList 
                 showCreateForm={openCreateForm}
                 onSelectStaffToEdit={selectItemToEdit} 
@@ -57,7 +56,6 @@ export default function StaffView({}:StaffViewProps){
                 staff={staff}
                 isFetchingStaff = {isFetchingStaff}
             />
-            {/* // : <EmptyStore isAdmin={isAdmin} openFormModal={openCreateForm}/> */}
             
         {/* } */}
         <Modal title="Add new employee" open={showCreateForm} footer={null} onCancel={closeCreateForm}>

@@ -22,7 +22,7 @@ export default function Billings(){
                         minHeight:'70vh',
                         }}
                     >
-                        <BillingsView/>
+                        {/* <BillingsView/> */}
                     </Content>
                 </Col>
             </Row>

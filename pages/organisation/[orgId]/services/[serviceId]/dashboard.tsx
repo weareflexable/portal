@@ -28,18 +28,18 @@ export default function Dashboard(){
                     >
                       <Row gutter={[16, 16]}> 
                         <Col span={12}>
-                            <Earnings/> 
+                            {/* <Earnings/>  */}
                         </Col>
 
                           <Col  span={12}>
 
                           <Row gutter={[16,16]}>
                             <Col span={24}>
-                            <StaffStats/>
+                            {/* <StaffStats/> */}
                             </Col>
 
                             <Col span={24}>
-                              <ServiceStats/>
+                              {/* <ServiceStats/> */}
                             </Col>
                             
                           </Row>
