@@ -79,6 +79,9 @@ export default function Bookings(){
 
   const isFilterEmpty = Object.keys(filteredInfo).length === 0;
   const serviceBookings = data && data.payload
+  const sortedBookings = serviceBookings?.sort((a:any,b:any)=>{
+    return new Date(b.startTime) - new Date(a.startTime)
+  })
 
   const handleSearch = (
     selectedKeys: string[],
@@ -266,7 +269,7 @@ export default function Bookings(){
           <Button style={{display:'flex', alignItems:'center'}} icon={<ReloadOutlined/>} type='link' onClick={()=>refetch()}>Refresh</Button>
         </div>
         {!isFilterEmpty? <Button type='link' icon={<ClearOutlined />} style={{marginBottom:'.5em', display:'flex',alignItems:'center'}} onClick={clearFilters}>Clear filters</Button>:null}
-        <Table style={{width:'100%'}} loading={isLoading} columns={columns} onChange={handleChange} dataSource={serviceBookings} />
+        <Table style={{width:'100%'}} loading={isLoading} columns={columns} onChange={handleChange} dataSource={sortedBookings} />
       </div>
     )
 }

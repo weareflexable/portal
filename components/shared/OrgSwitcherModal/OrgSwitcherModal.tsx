@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { useOrgContext } from '../../../context/OrgContext'
 import useFetchUserOrgs from '../../../hooks/useFetchUserOrgs'
-import { Org } from '../../../types/OrganisationTypes'
+import { ActiveOrgs, Org } from '../../../types/OrganisationTypes'
 
 interface OrgSwitcherModalProps{
     isModalOpen: boolean
@@ -12,6 +12,8 @@ interface OrgSwitcherModalProps{
 export default function OrgSwitcherModal({isModalOpen, onCloseModal}:OrgSwitcherModalProps){
 
     const {orgs,isLoadingOrgs} =  useFetchUserOrgs()
+    const uniqueOrgs: ActiveOrgs[] = orgs?.filter((item, i) => orgs.findIndex((org)=>item.id===org.id)===i); 
+
     const {switchOrg} = useOrgContext()
     const router = useRouter()
 
@@ -31,7 +33,7 @@ export default function OrgSwitcherModal({isModalOpen, onCloseModal}:OrgSwitcher
             <List
                 size='small'
                 loading={isLoadingOrgs}
-                dataSource={orgs}
+                dataSource={uniqueOrgs && uniqueOrgs}
                 renderItem={(item) => (
                     <List.Item style={{border: 'none', marginBottom:'0'}}>
                         <div style={{width:'100%', borderRadius:'4px', background:'#f8f8f8', display:'flex', justifyContent: 'space-between', alignItems:'center', padding: '1.3em'}}>
