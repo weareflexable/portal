@@ -1,4 +1,4 @@
-import React,{useState} from 'react'
+import React,{useEffect, useState} from 'react'
 import {Card,Button,Typography,Alert,Space,Modal, PageHeader} from 'antd'
 import {PlusCircleOutlined} from '@ant-design/icons'
 import router, { useRouter } from 'next/router';
@@ -49,10 +49,15 @@ interface UserServicesViewProps{
 
 export default function UserServicesView({}:UserServicesViewProps){
 
-    const {asPath} = useRouter()
+    const {asPath,isReady} = useRouter()
     const {currentService} = useServicesContext();
     // const serviceId = asPath.split('/')[5]
     const serviceId = currentService.id
+
+    useEffect(() => {
+    //   console.log('random content')
+      console.log('is route ready', isReady)
+    }, [isReady])
 
 
     const hookConfig = {

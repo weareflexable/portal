@@ -12,6 +12,8 @@ interface ServiceSwitcherModalProps{
 export default function ServiceSwitcherModal({isModalOpen, onCloseModal}:ServiceSwitcherModalProps){
 
     const {services, isFetchingServices} =  useFetchUserServices()
+    const uniqueServices = services && services?.filter((item, i) => services.findIndex((service)=>item.id===service.id)===i);
+
     const {switchService} = useServicesContext()
 
     const {asPath,replace} = useRouter() 
@@ -36,7 +38,7 @@ export default function ServiceSwitcherModal({isModalOpen, onCloseModal}:Service
             <List
                 size='small'
                 loading={isFetchingServices}
-                dataSource={services && services}
+                dataSource={uniqueServices && uniqueServices}
                 renderItem={(item) => (
                     <List.Item style={{border: 'none', marginBottom:'0'}}>
                         <div style={{width:'100%', borderRadius:'4px', background:'#f8f8f8', display:'flex', justifyContent: 'space-between', alignItems:'center', padding: '1.3em'}}>
