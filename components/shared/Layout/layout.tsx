@@ -32,15 +32,11 @@ const { Header, Sider, Content } = Layout;
     const [showSwitcherModal, setSwitcherModal] = useState(false) 
     const [showOrgSwitcher, setShowOrgSwitcher] = useState(false) 
 
-    let basePath;
-    let selectedRoute='';
-
-    if(isReady){
-      const splittedRoutes = asPath.split('/')
-      selectedRoute = splittedRoutes[5]
-      splittedRoutes.pop()
-      basePath = splittedRoutes.join('/')
-    }
+    
+    const splittedRoutes = asPath.split('/')
+    const selectedRoute = splittedRoutes[5]
+    splittedRoutes.pop()
+    const basePath = splittedRoutes.join('/')
     
     if(!isReady){
       <div style={{width:'100vw', height:'100vh',display:'flex',justifyContent:'center',alignItems:'center'}}>
