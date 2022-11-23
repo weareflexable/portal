@@ -61,7 +61,8 @@ const { Header, Sider, Content } = Layout;
                 style={{height:'100%',display:'flex', flex:'3'}}
                   theme="light"
                   mode="horizontal"
-                  defaultSelectedKeys={[selectedRoute]}
+                  
+                  defaultSelectedKeys={['dashboard']}
                   items={[
                     {
                       key: 'dashboard',
