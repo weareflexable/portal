@@ -3,7 +3,7 @@ import {
     UserOutlined,
     VideoCameraOutlined,
   } from '@ant-design/icons';
-  import {  Menu, Breadcrumb, Typography ,Button, Layout, MenuProps} from 'antd';
+  import {  Menu, Breadcrumb, Typography ,Button, Layout, MenuProps, Spin} from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { ReactNode, useState } from 'react';
@@ -27,15 +27,26 @@ const { Header, Sider, Content } = Layout;
   
   const AppLayout: React.FC<LayoutProps> = ({children,width=80}) => {
     
-    const {asPath,push} = useRouter()  
+    const {asPath,push,isReady} = useRouter()  
     const {isAuthenticated,setIsAuthenticated} = useAuthContext()
     const [showSwitcherModal, setSwitcherModal] = useState(false) 
     const [showOrgSwitcher, setShowOrgSwitcher] = useState(false) 
+
+    let basePath;
+    let selectedRoute='';
+
+    if(isReady){
+      const splittedRoutes = asPath.split('/')
+      selectedRoute = splittedRoutes[5]
+      splittedRoutes.pop()
+      basePath = splittedRoutes.join('/')
+    }
     
-    const splittedRoutes = asPath.split('/')
-    const selectedRoute = splittedRoutes[5]
-    splittedRoutes.pop()
-    const basePath = splittedRoutes.join('/')
+    if(!isReady){
+      <div style={{width:'100vw', height:'100vh',display:'flex',justifyContent:'center',alignItems:'center'}}>
+        return <Spin size='large'/>
+      </div>
+    }
   
     return (
 

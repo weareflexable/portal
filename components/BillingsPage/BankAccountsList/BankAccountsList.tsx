@@ -43,7 +43,7 @@ export default function BankAccountListProps({onDeleteBankAccount, onSelectBankA
             >
                 <List.Item.Meta
                 key={item.id}
-                title={<Title level={5}>{item.accountName}</Title>}
+                title={item.accountName}
                 description={
                     <div style={{display:'flex', width:'100%', flexDirection:'column'}}>
                         <div style={{display:'flex'}}>
