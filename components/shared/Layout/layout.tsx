@@ -3,7 +3,7 @@ import {
     UserOutlined,
     VideoCameraOutlined,
   } from '@ant-design/icons';
-  import {  Menu, Breadcrumb, Typography ,Button, Layout, MenuProps, Spin} from 'antd';
+  import {  Menu, Breadcrumb, Typography ,Button, Layout, MenuProps, Spin, Col, Row} from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { ReactNode, useState, useEffect } from 'react';
@@ -34,34 +34,30 @@ const {Text} = Typography
   const AppLayout: React.FC<LayoutProps> = ({children,width=80}) => {
     
     const {asPath,push,query,isReady} = useRouter()  
-    const {isAuthenticated,setIsAuthenticated} = useAuthContext()
+    const {isAuthenticated} = useAuthContext()
     const [showSwitcherModal, setSwitcherModal] = useState(false) 
     const [showOrgSwitcher, setShowOrgSwitcher] = useState(false) 
     const [pageRoutes, setPageRoutes] = useState<PageRoute>({basePath:'',selectedRoute:'dashboard'})
 
     
     
+
+    const splittedRoutes = asPath.split('/')
+    const selectedRoute = splittedRoutes && splittedRoutes[5]
+    splittedRoutes.pop()
     
-    const handleRoute=(route:string)=>{
-      push(`${pageRoutes.basePath}/${route}`)
-    }
 
     useEffect(() => {
       if(isReady){
-        const splittedRoutes = asPath.split('/')
-        const selectedRoute = splittedRoutes && splittedRoutes[5]
-        splittedRoutes.pop()
         const basePath =splittedRoutes.join('/')
-
           setPageRoutes({
             basePath:basePath,
             selectedRoute:selectedRoute,
-
           })
         }
-    }, [isReady,asPath])
+    }, [isReady])
 
-    console.log(pageRoutes)
+    // console.log(pageRoutes)
     
     if(!isReady){
       <div style={{width:'100vw', height:'100vh',display:'flex',justifyContent:'center',alignItems:'center'}}>
@@ -81,46 +77,35 @@ const {Text} = Typography
           onCloseModal={()=>setSwitcherModal(!showSwitcherModal)}
         />:null}
 
-              <Header style={{lineHeight:'1.4',background:'white', width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-              <Menu
-                style={{height:'100%',display:'flex', flex:'3'}}
-                  theme="light"
-                  mode="horizontal"
-                  defaultSelectedKeys={[pageRoutes.selectedRoute]}
-                  items={[
-                    {
-                      key: 'dashboard',
-                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/dashboard`} ><a>Dashboard</a></Link> </div> ,
-                    },
-                    {
-                      key: 'bookings',
-                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/bookings`} ><a>Bookings</a></Link> </div> ,
-                    },
-                    {
-                      key: 'serviceItems',
-                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/serviceItems`} ><a>Service Items</a></Link> </div> ,
-                    },
-                    {
-                      key: 'staff',
-                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/staff`} ><a>Staff</a></Link> </div> ,
-                    },
-                    {
-                      key: 'billings',
-                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/billings`} ><a>Billings</a></Link> </div> ,
-                    },
-                  ]}
-                />
-                {
-                  !isAuthenticated ? <Button type='primary' onClick={()=>{location.href=`${process.env.NEXT_PUBLIC_AUTH}/login?redirect_to='portal`}}>Login</Button>
-                  :(
-                    <div style={{display:'flex',flex:'2'}}>
-                      <ServiceSwitcherButton onOpenSwitcher={()=>setSwitcherModal(!showSwitcherModal)}/>
-                      <CurrentUser openOrgSwitcher={()=>setShowOrgSwitcher(!showOrgSwitcher)} user={{email:'mbappai@yahoo.com',role:'admin'}}/>
-                    </div>
-                    )
-                }
-    
-              </Header> 
+          <Row>
+                <Header style={{lineHeight:'1.4',background:'white', width:'100%', display:'flex', flex: '3', justifyContent:'space-between', alignItems:'center'}}>
+                  
+            <Col offset={1} span={10}>
+                <div style={{display:'flex',  height:'100%', justifyContent:'space-between'}}>
+                  <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/dashboard`} ><a style={{color:`${selectedRoute==='dashboard'?'#1890ff':'black'}`}}>Dashboard</a></Link> </div>
+                  <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/bookings`} ><a style={{color:`${selectedRoute==='bookings'?'#1890ff':'black'}`}}>Bookings</a></Link> </div>
+                  <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/serviceItems`} ><a style={{color:`${selectedRoute==='serviceItems'?'#1890ff':'black'}`}}>Service Items</a></Link> </div> 
+                  <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/staff`} ><a style={{color:`${selectedRoute==='staff'?'#1890ff':'black'}`}}>Staff</a></Link> </div>
+                  <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/billings`} ><a style={{color:`${selectedRoute==='billings'?'#1890ff':'black'}`}}>Billings</a></Link> </div>
+                </div>
+            </Col>
+
+            <Col offset={2} span={10}>
+                  {
+                    !isAuthenticated ? <Button type='primary' onClick={()=>{location.href=`${process.env.NEXT_PUBLIC_AUTH}/login?redirect_to='portal`}}>Login</Button>
+                    :(
+                      <div style={{display:'flex',flex:'2'}}>
+                        <ServiceSwitcherButton onOpenSwitcher={()=>setSwitcherModal(!showSwitcherModal)}/>
+                        <CurrentUser openOrgSwitcher={()=>setShowOrgSwitcher(!showOrgSwitcher)} user={{email:'mbappai@yahoo.com',role:'admin'}}/>
+                      </div>
+                      )
+                    }
+      
+                    </Col>
+                </Header> 
+                    
+              
+            </Row>
               <Layout style={{width:'100%',height:'100%'}}>
                   {isAuthenticated? children : <UnAuthenticatedView/>}
               </Layout>
@@ -130,3 +115,4 @@ const {Text} = Typography
   };
 
 export default AppLayout
+
