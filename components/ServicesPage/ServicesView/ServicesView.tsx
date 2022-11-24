@@ -65,7 +65,7 @@ export default function ServiceView({}:ServicesViewProps){
         deleteItem,
         closeCreateForm,
         closeEditForm
-    } = useCrudDB<Service>(hookConfig,'services')
+    } = useCrudDB<Service>(hookConfig,['services', orgId])
      
 
     // remove this after there is guarantee of payload prop in response
