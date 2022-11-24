@@ -54,7 +54,7 @@ export default function ServiceListProps({onDeleteService, onSelectService, isLo
             >
                 <List.Item.Meta
                 key={item.id}
-                title={<Title style={{marginBottom:'0', cursor:'pointer'}} onClick={()=>navigateToBookings(item)}  level={5}> {item.name} </Title>}
+                title={<Text style={{marginBottom:'0', cursor:'pointer'}} onClick={()=>navigateToBookings(item)}> {item.name} </Text>}
                 description={
                     <div style={{display:'flex', width:'100%', flexDirection:'column'}}>
                         <div style={{display:'flex'}}>
