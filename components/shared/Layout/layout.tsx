@@ -43,8 +43,6 @@ const {Text} = Typography
     
 
     const splittedRoutes = asPath.split('/')
-    console.log('isReady',isReady)
-    console.log('splitted routes',splittedRoutes);
     const selectedRoute = splittedRoutes && splittedRoutes[5]
     splittedRoutes.pop()
     
@@ -79,8 +77,15 @@ const {Text} = Typography
           onCloseModal={()=>setSwitcherModal(!showSwitcherModal)}
         />:null}
 
-              <Header style={{lineHeight:'1.4',background:'white', width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-              <Menu
+              <Header style={{lineHeight:'1.4',background:'white', width:'100%', display:'flex', flex: '3', justifyContent:'space-between', alignItems:'center'}}>
+              <div style={{display:'flex', flex:'4', height:'100%', justifyContent:'space-between'}}>
+                <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/dashboard`} ><a>Dashboard</a></Link> </div>
+                <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/bookings`} ><a>Bookings</a></Link> </div>
+                <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/serviceItems`} ><a>Service Items</a></Link> </div> 
+                <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/staff`} ><a>Staff</a></Link> </div>
+                <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/billings`} ><a>Billings</a></Link> </div>
+              </div>
+              {/* <Menu
                 style={{height:'100%',display:'flex', flex:'3'}}
                   theme="light"
                   mode="horizontal"
@@ -107,7 +112,7 @@ const {Text} = Typography
                       label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/billings`} ><a>Billings</a></Link> </div> ,
                     },
                   ]}
-                />
+                /> */}
                 {
                   !isAuthenticated ? <Button type='primary' onClick={()=>{location.href=`${process.env.NEXT_PUBLIC_AUTH}/login?redirect_to='portal`}}>Login</Button>
                   :(
@@ -128,3 +133,4 @@ const {Text} = Typography
   };
 
 export default AppLayout
+
