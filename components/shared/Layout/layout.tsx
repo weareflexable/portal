@@ -34,34 +34,32 @@ const {Text} = Typography
   const AppLayout: React.FC<LayoutProps> = ({children,width=80}) => {
     
     const {asPath,push,query,isReady} = useRouter()  
-    const {isAuthenticated,setIsAuthenticated} = useAuthContext()
+    const {isAuthenticated} = useAuthContext()
     const [showSwitcherModal, setSwitcherModal] = useState(false) 
     const [showOrgSwitcher, setShowOrgSwitcher] = useState(false) 
     const [pageRoutes, setPageRoutes] = useState<PageRoute>({basePath:'',selectedRoute:'dashboard'})
 
     
     
+
+    const splittedRoutes = asPath.split('/')
+    console.log('isReady',isReady)
+    console.log('splitted routes',splittedRoutes);
+    const selectedRoute = splittedRoutes && splittedRoutes[5]
+    splittedRoutes.pop()
     
-    const handleRoute=(route:string)=>{
-      push(`${pageRoutes.basePath}/${route}`)
-    }
 
     useEffect(() => {
       if(isReady){
-        const splittedRoutes = asPath.split('/')
-        const selectedRoute = splittedRoutes && splittedRoutes[5]
-        splittedRoutes.pop()
         const basePath =splittedRoutes.join('/')
-
           setPageRoutes({
             basePath:basePath,
             selectedRoute:selectedRoute,
-
           })
         }
-    }, [isReady,asPath])
+    }, [isReady])
 
-    console.log(pageRoutes)
+    // console.log(pageRoutes)
     
     if(!isReady){
       <div style={{width:'100vw', height:'100vh',display:'flex',justifyContent:'center',alignItems:'center'}}>
@@ -86,7 +84,7 @@ const {Text} = Typography
                 style={{height:'100%',display:'flex', flex:'3'}}
                   theme="light"
                   mode="horizontal"
-                  defaultSelectedKeys={[pageRoutes.selectedRoute]}
+                  defaultSelectedKeys={[selectedRoute]}
                   items={[
                     {
                       key: 'dashboard',
