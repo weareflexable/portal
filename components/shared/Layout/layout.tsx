@@ -106,7 +106,7 @@ const {Text} = Typography
                     },
                     {
                       key: 'billings',
-                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/dashboard`} ><a>Billings</a></Link> </div> ,
+                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/billings`} ><a>Billings</a></Link> </div> ,
                     },
                   ]}
                 />
