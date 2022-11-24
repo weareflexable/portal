@@ -2,7 +2,7 @@
 import React from "react"
 import {Button, Card, Typography} from 'antd'
 
-class ServiceItemErrorBoundary extends React.Component {
+class ErrorBoundary extends React.Component {
     constructor(props) {
       super(props)
   
@@ -24,7 +24,7 @@ class ServiceItemErrorBoundary extends React.Component {
         // You can render any custom fallback UI
         return (
           <Card>
-            <Typography.Title level={3}>Oops, there is an error in service items!</Typography.Title>
+            <Typography.Title level={3}>Oops, there is an error in {this.props.name}!</Typography.Title>
             <Button
               shape="round"
               onClick={() => this.setState({ hasError: false })}
@@ -41,4 +41,4 @@ class ServiceItemErrorBoundary extends React.Component {
     }
   }
   
-  export default ServiceItemErrorBoundary
+  export default ErrorBoundary
