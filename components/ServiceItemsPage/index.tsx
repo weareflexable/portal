@@ -81,7 +81,7 @@ export default function UserServicesView({}:UserServicesViewProps){
         deleteItem,
         closeCreateForm,
         closeEditForm
-       } = useCrudDB<ServiceItem>(hookConfig,'serviceItems')
+       } = useCrudDB<ServiceItem>(hookConfig,['serviceItems',serviceId])
 
        console.log(state)
 
