@@ -11,6 +11,7 @@ import { useAuthContext } from '../../../context/AuthContext';
 import CurrentUser from '../../Header/CurrentUser/CurrentUser';
 import OrgSwitcher from '../../Header/OrgSwitcherButton/OrgSwitcherButton';
 import ServiceSwitcherButton from '../../Header/ServicesSwitcherButton/ServicesSwitcherButton';
+import ErrorBoundary from '../ErrorBoundary/ErrorBoundary';
 import OrgSwitcherModal from '../OrgSwitcherModal/OrgSwitcherModal';
 import ServicesSwitcherModal from '../ServicesSwitcherModal/ServicesSwitcherModal';
 import UnAuthenticatedView from '../UnAuthenticated/UnAuthenticatedView';
@@ -69,7 +70,7 @@ const {Text} = Typography
     }
   
     return (
-
+   <ErrorBoundary name={`Layout for ${pageRoutes.basePath}`} >
       <Layout style={{minHeight:'100vh',height:'100%'}}>
       { showOrgSwitcher?<OrgSwitcherModal
           isModalOpen={showOrgSwitcher}
@@ -105,7 +106,7 @@ const {Text} = Typography
                     },
                     {
                       key: 'billings',
-                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/dashboard`} ><a>Billings</a></Link> </div> ,
+                      label: <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/billings`} ><a>Billings</a></Link> </div> ,
                     },
                   ]}
                 />
@@ -124,6 +125,7 @@ const {Text} = Typography
                   {isAuthenticated? children : <UnAuthenticatedView/>}
               </Layout>
       </Layout>
+      </ErrorBoundary>
     );
   };
 

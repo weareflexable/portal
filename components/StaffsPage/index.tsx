@@ -41,7 +41,7 @@ export default function StaffView({}:StaffViewProps){
         closeEditForm,
         itemToEdit,
         selectItemToEdit
-    } = useCrudDB<Staff>(hookConfig,'staff')
+    } = useCrudDB<Staff>(hookConfig,['staff',serviceId])
 
 
     const staff = state && state

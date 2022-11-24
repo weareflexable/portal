@@ -13,7 +13,7 @@ type Config={
     patchUrl?: string
 }
 
-export default function useCrudDB<T>(config:Config,queryId:string):{
+export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
     state:T[],
     deleteItem: (id:string)=>void
     isLoading: boolean,
@@ -102,7 +102,7 @@ export default function useCrudDB<T>(config:Config,queryId:string):{
     const {isError, isLoading:isCreatingData, isSuccess:isDataCreated, data:createdData} = createData
     const {isLoading:isPatchingData, data: patchedData} = patchData
 
-    const {data, isLoading, isSuccess} = useQuery([queryId],()=>fetchData(fetchUrl))
+    const {data, isLoading, isSuccess} = useQuery([...queryKeys],()=>fetchData(fetchUrl))
 
 
     // return empty array if req successful and no payload

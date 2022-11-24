@@ -5,6 +5,7 @@ import { Content } from 'antd/lib/layout/layout'
 import { Typography, Row, Col } from 'antd'
 const {Title} = Typography
 import { useRouter } from 'next/router'
+import ServiceItemErrorBoundary from '../../../../../components/shared/ErrorBoundary/ErrorBoundary'
 
 export default function Staffs(){
 
@@ -26,7 +27,9 @@ export default function Staffs(){
                         minHeight:'70vh',
                         }}
                     >
-                        <ServicePageView/>
+                        <ServiceItemErrorBoundary name='Service page'>
+                            <ServicePageView/>
+                        </ServiceItemErrorBoundary>
                     </Content>
                 </Col>
             </Row>

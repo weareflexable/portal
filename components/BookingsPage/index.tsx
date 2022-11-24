@@ -79,8 +79,6 @@ export default function Bookings(){
 
   const isFilterEmpty = Object.keys(filteredInfo).length === 0;
   const serviceBookings = data && data.payload
-  
-
   const handleSearch = (
     selectedKeys: string[],
     confirm: (param?: FilterConfirmProps) => void,

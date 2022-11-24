@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-quer
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { OrgContextProvider } from '../context/OrgContext';
 import { ServicesContextProvider } from '../context/ServicesContext';
+import ErrorBoundary from '../components/shared/ErrorBoundary/ErrorBoundary';
 
 const queryClient = new QueryClient()
 
@@ -16,7 +17,9 @@ function MyApp({ Component, pageProps }: AppProps) {
       <AuthContextProvider>
         <OrgContextProvider>
             <ServicesContextProvider>
+              <ErrorBoundary name='entire app'>
                 <Component {...pageProps} />
+              </ErrorBoundary>
             </ServicesContextProvider>
         </OrgContextProvider>
       </AuthContextProvider>
