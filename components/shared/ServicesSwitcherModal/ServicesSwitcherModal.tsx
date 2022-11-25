@@ -26,7 +26,7 @@ export default function ServiceSwitcherModal({isModalOpen, onCloseModal}:Service
     const switchServiceHandler = (selectedService:Service)=>{
         setTargeService(selectedService)
         setTimeout(()=>{
-            replace(`${basePath}/${selectedService.id}/dashboard`)
+            replace(`${basePath}/${selectedService.id}/bookings`)
             switchService(selectedService)
             onCloseModal()
             // setTargeService(selectedService)
