@@ -38,12 +38,12 @@ export default function EditForm({initValues, onTriggerFormAction, isPatchingSer
             orgServiceItemId: currentService.id,
             imageHash: '',
             name: formData.name,
-            price: formData.price,
-            ticketMaxPerDay: formData.ticketsPerDay
+            price: formData.price * 100,
+            ticketMaxPerDay: formData.ticketsMaxPerDay
         }
         console.log(formObject)
 
-        onTriggerFormAction(formObject)
+        // onTriggerFormAction(formObject)
     }
 
     // if(initValues){
@@ -89,7 +89,7 @@ export default function EditForm({initValues, onTriggerFormAction, isPatchingSer
 
 
             <Form.Item
-                name="ticketsPerDay"
+                name="ticketsMaxPerDay"
                 label='Tickets per day'
                 rules={[{ required: true, message: 'Please input a valid number!' }]}
             >
