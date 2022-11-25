@@ -211,7 +211,7 @@ export default function Bookings(){
         { text: 'Paid', value: 'PAYMENT_PAID' },
         { text: 'Initiated', value: 'PAYMENT_INITIATED' },
       ], 
-      filteredValue: filteredInfo.orderStatus || null,
+      filteredValue: filteredInfo.paymentStatus || null,
       //@ts-ignore
       onFilter: (value: string, record) => record.paymentStatus.includes(value),
     },
