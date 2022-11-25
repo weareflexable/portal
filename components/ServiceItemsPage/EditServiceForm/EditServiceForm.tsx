@@ -43,7 +43,7 @@ export default function EditForm({initValues, onTriggerFormAction, isPatchingSer
         }
         console.log(formObject)
 
-        // onTriggerFormAction(formObject)
+        onTriggerFormAction(formObject)
     }
 
     // if(initValues){
