@@ -5,6 +5,8 @@ import { useAuthContext } from '../../../context/AuthContext'
 import { useOrgContext } from '../../../context/OrgContext'
 const {Text,Title} = Typography
 import type { MenuProps } from 'antd';
+import { useServicesContext } from '../../../context/ServicesContext'
+import { useRouter } from 'next/router'
 
 interface CurrentUserProps{
     user?: {email:string, role:string}
@@ -15,15 +17,20 @@ interface CurrentUserProps{
 export default function CurrentUser({user={email:'mbappai@yahoo.com',role:'admin'}, openOrgSwitcher}:CurrentUserProps){
 
     const {setIsAuthenticated,logout} = useAuthContext()
+    const {currentService} = useServicesContext()
+    const router = useRouter()
     const {orgUserRole} = useOrgContext()
 
-   
+   const navigateBackToServices=()=>{
+      router.push(`/organisation/${currentService.id}`)
+   }
 
 
 const menu = (
   <Menu>
-    <Menu.Item><Button onClick={openOrgSwitcher} type='link' >Switch organization</Button></Menu.Item>
-    <Menu.Item><Button onClick={logout} danger type='link'>Logout</Button></Menu.Item>
+    <Menu.Item key={'servicesPage'}><Button onClick={navigateBackToServices} type='link' >Services page</Button></Menu.Item>
+    <Menu.Item key={'switchOrganisation'}><Button onClick={openOrgSwitcher} type='link' >Switch organization</Button></Menu.Item>
+    <Menu.Item key={'logout'}><Button onClick={logout} danger type='link'>Logout</Button></Menu.Item>
   </Menu>
 );
 

@@ -41,7 +41,7 @@ interface ServicesViewProps{
 }
 export default function ServiceView({}:ServicesViewProps){
 
-    const {back} = useRouter()
+    const {replace} = useRouter()
     const {currentOrg} = useOrgContext()
     const [hydrated, setHydrated] = useState(false)
     const [orgName, setOrgName] = useState('')
@@ -94,7 +94,7 @@ export default function ServiceView({}:ServicesViewProps){
                 <header style={{width:'100%', background:'#ffffff'}}>
                     <Col style={{display:'flex', justifyContent:'space-between'}} offset={2} span={20}>
                         <div style={{display:'flex', flex:'7', flexDirection:'column'}}> 
-                            <Button style={{display:'flex', padding: '0', margin:'0', alignItems:'center', textAlign:'left'}} onClick={()=>back()} icon={<ArrowLeftOutlined />} type='link'>Back to organizations</Button>
+                            <Button style={{display:'flex', padding: '0', margin:'0', alignItems:'center', textAlign:'left'}} onClick={()=>replace('/')} icon={<ArrowLeftOutlined />} type='link'>Back to organizations</Button>
                             {orgName === ''? <Skeleton.Input active size='large' />:<Title level={4}>{orgName}</Title> }
                         </div>
 
