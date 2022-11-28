@@ -23,8 +23,8 @@ export default function Staffs(){
                         background:'white' ,
                         width:`98%`,
                         maxWidth:'100%',
-                        height: '100%',
-                        minHeight:'70vh',
+                        // height: '100%',
+                        // minHeight:'70vh',
                         }}
                     >
                         <ServiceItemErrorBoundary name='Service page'>
@@ -37,8 +37,3 @@ export default function Staffs(){
     )
 }
 
-export async function getServerSideProps() {
-    return {
-      props: {}, // will be passed to the page component as props
-    }
-  }

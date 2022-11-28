@@ -22,24 +22,24 @@ export default function Dashboard(){
                         background:'white' ,
                         width:`98%`,
                         maxWidth:'100%',
-                        height: '100%',
+                        // height: '100%',
                         minHeight:'70vh',
                       }}
                     >
                       <Row gutter={[16, 16]}> 
                         <Col span={12}>
-                            {/* <Earnings/>  */}
+                            <Earnings/> 
                         </Col>
 
                           <Col  span={12}>
 
                           <Row gutter={[16,16]}>
                             <Col span={24}>
-                            {/* <StaffStats/> */}
+                            <StaffStats/>
                             </Col>
 
                             <Col span={24}>
-                              {/* <ServiceStats/> */}
+                              <ServiceStats/>
                             </Col>
                             
                           </Row>
@@ -51,10 +51,4 @@ export default function Dashboard(){
             </Row>
         </AppLayout>
     )
-}
-
-export async function getServerSideProps() {
-  return {
-    props: {}, // will be passed to the page component as props
-  }
 }

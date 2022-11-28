@@ -19,8 +19,8 @@ export default function Bookings(){
                         background:'white' ,
                         width:`98%`,
                         maxWidth:'100%',
-                        height: '100%',
-                        minHeight:'70vh',
+                        // height: '100%',
+                        // minHeight:'70vh',
                         }}
                     > 
                         <BookingsView/>

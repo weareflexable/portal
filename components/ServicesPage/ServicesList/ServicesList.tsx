@@ -32,7 +32,7 @@ export default function ServiceListProps({onDeleteService, onSelectService, isLo
     }
 
     return(
-        <div style={{display:'flex',flexDirection:'column', height:'100%',  background:'#ffffff', width:'70%',padding:'1em'}}>
+        <div style={{display:'flex',flexDirection:'column',   background:'#ffffff', width:'70%',padding:'1em'}}>
             <Button type='link' disabled={isLoadingServices} icon={<PlusCircleOutlined />} shape='round' style={{alignSelf:'flex-start',marginBottom:'1em', display:'flex',alignItems:'center'}} onClick={onCreateService}>Launch new service</Button>
             <List
             loading={isLoadingServices || !services}

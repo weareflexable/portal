@@ -24,7 +24,7 @@ export default function BankAccountListProps({onDeleteBankAccount, onSelectBankA
 
     return(
         <div style={{display:'flex',flexDirection:'column', width:'100%',padding:'1em'}}>
-            <Button type='link' icon={<PlusCircleOutlined />} shape='round' style={{alignSelf:'flex-start',marginBottom:'1em', display:'flex',alignItems:'center'}} onClick={onCreateBankAccount}>Add new bank account</Button>
+            <Button type='link' icon={<PlusCircleOutlined />} disabled shape='round' style={{alignSelf:'flex-start',marginBottom:'1em', display:'flex',alignItems:'center'}} onClick={onCreateBankAccount}>Add new bank account</Button>
             <List
             itemLayout="horizontal"
             dataSource={bankAccounts}

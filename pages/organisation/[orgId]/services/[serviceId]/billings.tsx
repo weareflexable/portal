@@ -18,8 +18,8 @@ export default function Billings(){
                         background:'white' ,
                         // width:`98%`,
                         maxWidth:'100%',
-                        height: '100%',
-                        minHeight:'70vh',
+                        // height: '100%',
+                        // minHeight:'70vh',
                         }}
                     >
                         <BillingsView/>
@@ -29,9 +29,3 @@ export default function Billings(){
     </AppLayout> 
     )
 }
-
-export async function getServerSideProps() {
-    return {
-      props: {}, // will be passed to the page component as props
-    }
-  }
