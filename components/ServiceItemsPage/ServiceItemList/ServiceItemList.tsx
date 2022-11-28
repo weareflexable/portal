@@ -55,7 +55,7 @@ export default function ServiceListProps({onDeleteService,serviceItemsIsLoading,
                         </div>
                         <div style={{display:'flex'}}>
                             <Text type='secondary' style={{marginRight:'.3em'}}>Tickets per day:</Text>
-                            <Text>{item.ticketsPerDay} tickets</Text>
+                            <Text>{item.ticketsMaxPerDay} tickets</Text>
                         </div>
                         <div style={{display:'flex'}}>
                             <Text type='secondary' style={{marginRight:'.3em'}}>Description:</Text>

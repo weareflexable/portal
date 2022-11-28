@@ -1,5 +1,5 @@
-import React,{useState} from 'react'
-import {Card,Button,Typography,Alert,Space,Modal, Row,Col} from 'antd'
+import React,{useEffect, useState} from 'react'
+import {Card,Button,Typography,Alert,Space,Modal, Row,Col,Skeleton} from 'antd'
 import {PlusCircleOutlined,ArrowLeftOutlined,SettingOutlined} from '@ant-design/icons'
 import router, { useRouter } from 'next/router';
 import CreateServiceForm from '../CreateServiceForm/CreateServiceForm';
@@ -43,8 +43,16 @@ export default function ServiceView({}:ServicesViewProps){
 
     const {back} = useRouter()
     const {currentOrg} = useOrgContext()
+    const [hydrated, setHydrated] = useState(false)
+    const [orgName, setOrgName] = useState('')
     const orgId = currentOrg.id 
     
+    useEffect(()=>{
+        setHydrated(true)
+            if(hydrated){
+                 setOrgName(currentOrg.name)
+            }
+    },[hydrated])
     
     const hookConfig = {
         fetchUrl: `services/user/get-services?orgId=${orgId}`,
@@ -70,6 +78,8 @@ export default function ServiceView({}:ServicesViewProps){
 
     // remove this after there is guarantee of payload prop in response
     // const services = state && state.hasOwnProperty('payload')? state: []
+    console.log('services',state)
+    // const uniqueServices = services.length > 0 ? state?.filter((item, i) => state.findIndex((service)=>item.id===service.id)===i):services;
     const uniqueServices = state && state?.filter((item, i) => state.findIndex((service)=>item.id===service.id)===i);
     // console.log(services)
     console.log(uniqueServices)
@@ -85,7 +95,7 @@ export default function ServiceView({}:ServicesViewProps){
                     <Col style={{display:'flex', justifyContent:'space-between'}} offset={2} span={20}>
                         <div style={{display:'flex', flex:'7', flexDirection:'column'}}> 
                             <Button style={{display:'flex', padding: '0', margin:'0', alignItems:'center', textAlign:'left'}} onClick={()=>back()} icon={<ArrowLeftOutlined />} type='link'>Back to organizations</Button>
-                            <Title level={4}>{currentOrg.name}</Title> 
+                            {orgName === ''? <Skeleton.Input active size='large' />:<Title level={4}>{orgName}</Title> }
                         </div>
 
                         <div style={{display:'flex', flex:'3', justifyContent:'space-between', alignItems:'center'}}>
@@ -112,21 +122,23 @@ export default function ServiceView({}:ServicesViewProps){
                     {/* } */}
                 </Col>
             </Row>
+        {showCreateForm?
         <Modal title="Launch new store" open={showCreateForm} footer={null} onCancel={closeCreateForm}>
             <CreateServiceForm 
                 onCancelFormCreation={closeCreateForm} 
                 onLaunchStore={createItem}
                 isCreatingData = {isCreatingData}
              />
-        </Modal>
+        </Modal>:null}
 
+        {showEditForm?
         <Modal title="Edit store" open={showEditForm} footer={null} onCancel={closeEditForm}>
             <EditServiceForm 
                 initValues={itemToEdit} 
                 onCloseEditForm={closeEditForm} 
                 onEditService={editItem}
             />
-        </Modal>
+        </Modal>:null}
 
         </div>
     )
