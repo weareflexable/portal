@@ -41,7 +41,7 @@ export default function useMutateData<T>(url:string){
                 message: 'Encountered an error while creating record',
               });
             //show modal
-        }
+        } 
     })
     const {isError, isLoading:isCreatingData, isSuccess:isDataCreated, data:createdData} = createData
 
