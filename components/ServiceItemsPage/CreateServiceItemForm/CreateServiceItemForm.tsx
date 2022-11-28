@@ -101,7 +101,7 @@ export default function ServiceItemForm({ onTriggerFormAction,isCreatingServiceI
                 rules={[{ required: true, message: 'Please input a valid address!' }]}
             >
                 <Select
-                    defaultValue={'Line skip'}
+                    placeholder={'Line skip'}
                     style={{ width: 120 }}
                     options={menuItems}
                     />

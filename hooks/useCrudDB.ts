@@ -1,4 +1,4 @@
-import { useQuery, useMutation } from '@tanstack/react-query'
+import { useQuery, useMutation,useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import {useState} from 'react'
 import { useAuthContext } from '../context/AuthContext'
@@ -33,6 +33,8 @@ export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
 }{
     const {fetchUrl, mutateUrl, patchUrl} = config
     const {paseto} = useAuthContext()
+
+    const queryClient = useQueryClient()
     
     // const [state, setState] = useState<T[]>(initState? initState:[])
     const [showCreateForm, setShowCreateForm] = useState(false)
@@ -87,7 +89,12 @@ export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
     })
 
     const createData = useMutation(createDataHandler,
-        {onSuccess:()=>{
+        {
+            onSuccess:()=>{
+            // Invalidate query after a new item has been create
+            queryClient.invalidateQueries({queryKey:[...queryKeys]})
+
+            // Show success notification
             notification['success']({
                 message: 'Created record succesfully',
               });
