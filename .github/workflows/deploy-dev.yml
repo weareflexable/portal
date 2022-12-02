@@ -1,7 +1,7 @@
 name: "[DEV] Deploy to EKS"
 on:
   push:
-    branches: [main]
+    branches: [main,thisisommore/use-fix-skaffold-version-15]
 
 jobs:
   build:
@@ -38,6 +38,6 @@ jobs:
           kubectl version --client
           mkdir -p ~/.kube
           echo "$KUBE_CONFIG_DATA" | base64 -d > ~/.kube/config
-          curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && \
+          curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/v2.0.2/skaffold-linux-amd64 && \
           sudo install skaffold /usr/local/bin/
           skaffold run --namespace="flexable-dev"
