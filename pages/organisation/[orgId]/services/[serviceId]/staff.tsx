@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import StaffView from '../../../../../components/StaffsPage'
 import AppLayout from '../../../../../components/shared/Layout/layout'
 import { useAuthContext } from '../../../../../context/AuthContext'
 import { Content } from 'antd/lib/layout/layout'
-import { Typography,Row, Col } from 'antd'
+import { Typography,Row, Col, Spin } from 'antd'
 import dynamic from 'next/dynamic'
 const {Title} = Typography
 
@@ -32,7 +32,9 @@ export default function Staff(){
                         // minHeight:'70vh',
                         }}
                     >
-                        <DynamicStaff/>
+                        <Suspense fallback={<Spin size='large'/>}>
+                            <DynamicStaff/>
+                        </Suspense>
                     </Content>
                 </Col>
             </Row>

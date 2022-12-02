@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import ServicePageView from '../../../../../components/ServiceItemsPage'
 import AppLayout from '../../../../../components/shared/Layout/layout' 
 import { Content } from 'antd/lib/layout/layout'
-import { Typography, Row, Col } from 'antd'
+import { Typography, Row, Col, Spin } from 'antd'
 const {Title} = Typography
 import { useRouter } from 'next/router'
 import ServiceItemErrorBoundary from '../../../../../components/shared/ErrorBoundary/ErrorBoundary'
@@ -33,7 +33,9 @@ export default function Staffs(){
                         }}
                     >
                         <ServiceItemErrorBoundary name='Service page'>
-                            <DynamicServiceItems/>
+                            <Suspense fallback={<Spin size='large'/>}>
+                                <DynamicServiceItems/>
+                            </Suspense>
                         </ServiceItemErrorBoundary>
                     </Content>
                 </Col>

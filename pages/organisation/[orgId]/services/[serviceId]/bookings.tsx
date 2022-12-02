@@ -1,8 +1,8 @@
 import { Content } from 'antd/lib/layout/layout'
-import React from 'react'
+import React, { Suspense } from 'react'
 import BookingsView from '../../../../../components/BookingsPage/index'
 import AppLayout from '../../../../../components/shared/Layout/layout'
-import { Typography,Col, Row } from 'antd'
+import { Typography,Col, Row, Spin } from 'antd'
 import dynamic from 'next/dynamic'
 const {Title} = Typography;
 
@@ -28,7 +28,9 @@ export default function Bookings(){
                         // minHeight:'70vh',
                         }}
                     > 
-                        <DynamicBookings/>
+                        <Suspense fallback={<Spin size='large'/>}>
+                         <DynamicBookings/>
+                        </Suspense>
                     </Content>
                 </Col>
             </Row>
