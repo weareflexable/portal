@@ -18,26 +18,24 @@ export default function Staff(){
     return(
         
         <AppLayout>
-            <Row>
-                <Col offset={1} span={15}>
-                    <Title style={{marginLeft: '1em', marginTop:'1em'}} level={3}>Staff</Title>
-                    <Content
-                        style={{
-                        padding: '1em',
-                        margin:'1em',
-                        background:'white' ,
-                        width:`98%`,
-                        maxWidth:'100%',
-                        // height: '100%',
-                        // minHeight:'70vh',
-                        }}
-                    >
-                        <Suspense fallback={<Spin size='large'/>}>
-                            <DynamicStaff/>
-                        </Suspense>
-                    </Content>
-                </Col>
-            </Row>
+            <Suspense fallback={<Spin size='large'/>}>
+                <Row>
+                    <Col offset={1} span={15}>
+                        <Title style={{marginLeft: '1em', marginTop:'1em'}} level={3}>Staff</Title>
+                        <Content
+                            style={{
+                            padding: '1em',
+                            margin:'1em',
+                            background:'white' ,
+                            width:`98%`,
+                            maxWidth:'100%',
+                            }}
+                        >
+                                <DynamicStaff/>
+                        </Content>
+                    </Col>
+                </Row>
+            </Suspense>
         </AppLayout>
     )
 }

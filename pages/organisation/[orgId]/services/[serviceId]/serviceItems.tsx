@@ -18,28 +18,28 @@ export default function Staffs(){
 
     return(
         <AppLayout>
-            <Row>
-                <Col offset={1} span={15}>
-                    <Title style={{marginLeft: '1em', marginTop:'1em'}} level={3}>Service Item</Title>
-                    <Content
-                        style={{
-                        padding: '1em',
-                        margin:'1em',
-                        background:'white' ,
-                        width:`98%`,
-                        maxWidth:'100%',
-                        // height: '100%',
-                        // minHeight:'70vh',
-                        }}
-                    >
-                        <ServiceItemErrorBoundary name='Service page'>
-                            <Suspense fallback={<Spin size='large'/>}>
-                                <DynamicServiceItems/>
-                            </Suspense>
-                        </ServiceItemErrorBoundary>
-                    </Content>
-                </Col>
-            </Row>
+            <Suspense fallback={<Spin size='large'/>}>
+                <Row>
+                    <Col offset={1} span={15}>
+                        <Title style={{marginLeft: '1em', marginTop:'1em'}} level={3}>Service Item</Title>
+                        <Content
+                            style={{
+                            padding: '1em',
+                            margin:'1em',
+                            background:'white' ,
+                            width:`98%`,
+                            maxWidth:'100%',
+                            // height: '100%',
+                            // minHeight:'70vh',
+                            }}
+                        >
+                            <ServiceItemErrorBoundary name='Service page'>
+                                    <DynamicServiceItems/>
+                            </ServiceItemErrorBoundary>
+                        </Content>
+                    </Col>
+                </Row>
+            </Suspense>
         </AppLayout> 
     )
 }

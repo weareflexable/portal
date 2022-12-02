@@ -14,26 +14,26 @@ export default function Bookings(){
     return(
 
         <AppLayout>
-            <Row>
-                <Col offset={1} span={21}>
-                    <Title style={{marginLeft: '1em', marginTop:'1em'}} level={3}>Bookings</Title>
-                    <Content
-                        style={{
-                        padding: '1em',
-                        margin:'1em',
-                        background:'white' ,
-                        width:`98%`,
-                        maxWidth:'100%',
-                        // height: '100%',
-                        // minHeight:'70vh',
-                        }}
-                    > 
-                        <Suspense fallback={<Spin size='large'/>}>
-                         <DynamicBookings/>
-                        </Suspense>
-                    </Content>
-                </Col>
-            </Row>
+            <Suspense fallback={<Spin size='large'/>}>
+                <Row>
+                    <Col offset={1} span={21}>
+                        <Title style={{marginLeft: '1em', marginTop:'1em'}} level={3}>Bookings</Title>
+                        <Content
+                            style={{
+                            padding: '1em',
+                            margin:'1em',
+                            background:'white' ,
+                            width:`98%`,
+                            maxWidth:'100%',
+                            // height: '100%',
+                            // minHeight:'70vh',
+                            }}
+                        > 
+                            <DynamicBookings/>
+                        </Content>
+                    </Col>
+                </Row>
+            </Suspense>
         </AppLayout>
 
     )
