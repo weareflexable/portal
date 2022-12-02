@@ -3,7 +3,12 @@ import React from 'react'
 import BookingsView from '../../../../../components/BookingsPage/index'
 import AppLayout from '../../../../../components/shared/Layout/layout'
 import { Typography,Col, Row } from 'antd'
+import dynamic from 'next/dynamic'
 const {Title} = Typography;
+
+const DynamicBookings = dynamic(()=>import('../../../../../components/BookingsPage/index'),{
+    ssr:false
+})
 
 export default function Bookings(){
     return(
@@ -23,7 +28,7 @@ export default function Bookings(){
                         // minHeight:'70vh',
                         }}
                     > 
-                        <BookingsView/>
+                        <DynamicBookings/>
                     </Content>
                 </Col>
             </Row>

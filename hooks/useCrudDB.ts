@@ -106,6 +106,7 @@ export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
               });
         }
         })
+        
     const {isError, isLoading:isCreatingData, isSuccess:isDataCreated, data:createdData} = createData
     const {isLoading:isPatchingData, data: patchedData} = patchData
 

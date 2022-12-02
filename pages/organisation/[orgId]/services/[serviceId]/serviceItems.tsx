@@ -6,6 +6,11 @@ import { Typography, Row, Col } from 'antd'
 const {Title} = Typography
 import { useRouter } from 'next/router'
 import ServiceItemErrorBoundary from '../../../../../components/shared/ErrorBoundary/ErrorBoundary'
+import dynamic from 'next/dynamic'
+
+const DynamicServiceItems = dynamic(()=>import('../../../../../components/ServiceItemsPage'),{
+    ssr:false
+})
 
 export default function Staffs(){
 
@@ -28,7 +33,7 @@ export default function Staffs(){
                         }}
                     >
                         <ServiceItemErrorBoundary name='Service page'>
-                            <ServicePageView/>
+                            <DynamicServiceItems/>
                         </ServiceItemErrorBoundary>
                     </Content>
                 </Col>

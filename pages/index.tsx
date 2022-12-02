@@ -21,6 +21,8 @@ import useMutateData from '../hooks/useMutateData';
 
 const Home: NextPage = () => {
 
+    console.log("Is SSR? Footer -->", typeof window === "undefined");
+
     const [isRegisteringOrg, setIsRegisteringOrg] = useState(false)
     const [showOrgForm, setShowOrgForm] = useState(false)
     const [selectedOrg, setSelectedOrg] = useState('')
@@ -50,7 +52,7 @@ const Home: NextPage = () => {
 
 
     // const {orgs} = useFetchUserOrgs()
-
+ 
    
 
     const {createItem} = useMutateData('org/user/create')

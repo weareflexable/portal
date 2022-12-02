@@ -4,7 +4,13 @@ import AppLayout from '../../../../../components/shared/Layout/layout'
 import { useAuthContext } from '../../../../../context/AuthContext'
 import { Content } from 'antd/lib/layout/layout'
 import { Typography,Row, Col } from 'antd'
+import dynamic from 'next/dynamic'
 const {Title} = Typography
+
+const DynamicStaff = dynamic(()=>import('../../../../../components/StaffsPage'),{
+    ssr:false
+})
+
 
 export default function Staff(){
 
@@ -26,7 +32,7 @@ export default function Staff(){
                         // minHeight:'70vh',
                         }}
                     >
-                        <StaffView/>
+                        <DynamicStaff/>
                     </Content>
                 </Col>
             </Row>

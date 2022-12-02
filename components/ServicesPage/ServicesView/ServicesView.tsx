@@ -78,11 +78,11 @@ export default function ServiceView({}:ServicesViewProps){
 
     // remove this after there is guarantee of payload prop in response
     // const services = state && state.hasOwnProperty('payload')? state: []
-    console.log('services',state)
+    // console.log('services',state)
     // const uniqueServices = services.length > 0 ? state?.filter((item, i) => state.findIndex((service)=>item.id===service.id)===i):services;
     const uniqueServices = state && state?.filter((item, i) => state.findIndex((service)=>item.id===service.id)===i);
     // console.log(services)
-    console.log(uniqueServices)
+    // console.log(uniqueServices)
 
 
     
