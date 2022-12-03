@@ -55,6 +55,8 @@ export default function OrganizationList({}:OrganizationListProps) {
     enabled: paseto !== ''
 }) 
 
+console.log('paseto',paseto)
+
     const orgs: Org[] = data && data.payload;
     const uniqueOrgs: Org[] = orgs?.filter((item, i) => orgs.findIndex((org)=>item.id===org.id)===i); 
 
