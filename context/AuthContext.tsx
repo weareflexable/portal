@@ -47,7 +47,7 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
             // set ui and local storage
             setPaseto(pasetoFromUrl) 
             //@ts-ignore
-            setStorage('PLATFORM_PASETO',JSON.stringify(pasetoFromUrl))
+            setStorage('PLATFORM_PASETO',pasetoFromUrl)
             setIsAuthenticated(true)
         }
 

@@ -47,13 +47,13 @@ export default function OrganizationList({}:OrganizationListProps) {
         const {data} = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/org/user/get-org`,{
             headers:{
                 //@ts-ignore
-                "Authorization": JSON.parse(paseto) 
+                "Authorization": paseto 
             }
         })
         return data;
     }) 
 
-    const orgs: Org[] = data;
+    const orgs: Org[] = data && data.payload;
     const uniqueOrgs: Org[] = orgs?.filter((item, i) => orgs.findIndex((org)=>item.id===org.id)===i); 
 
 
