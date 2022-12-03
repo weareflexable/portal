@@ -57,7 +57,7 @@ export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
         const {data} = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/${mutateUrl}`, newItem,{
             headers:{
                 //@ts-ignore
-                "Authorization": JSON.parse(paseto)
+                "Authorization": paseto
             },
         })
         return data
@@ -67,7 +67,7 @@ export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
         const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/${patchUrl}`,updatedItem,{
             headers:{
                 //@ts-ignore
-                "Authorization": JSON.parse(paseto)
+                "Authorization": paseto
             }
         })
         return data
