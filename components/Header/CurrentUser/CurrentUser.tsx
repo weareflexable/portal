@@ -22,10 +22,10 @@ export default function CurrentUser({user={email:'mbappai@yahoo.com',role:'admin
     const {orgUserRole} = useOrgContext()
 
    const navigateBackToServices=()=>{
-      router.push(`/organisation/${currentService.id}`)
+      router.replace(`/organisation/${currentService.id}`)
    }
    const navigateBackToOrgs=()=>{
-      router.push(`/`)
+      router.replace(`/`)
    }
 
   

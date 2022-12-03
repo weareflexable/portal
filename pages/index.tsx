@@ -10,6 +10,7 @@ import RegisterOrgForm from '../components/LoungePage/RegisterOrgForm/RegisterOr
 import {PlusCircleOutlined} from '@ant-design/icons'
 import dynamic from 'next/dynamic';
 import useMutateData from '../hooks/useMutateData';
+import OrganizationList from '../components/HomePage/OrganizationList/OrganizationList';
 
 const DynamicOrgs = dynamic(()=>import('../components/HomePage/OrganizationList/OrganizationList'),{
     ssr:false,
@@ -88,7 +89,7 @@ const Home: NextPage = () => {
                 <div style={{display:'flex', marginTop:'4em', flexDirection:'column', width:'60%'}} > 
                              <Title style={{marginBottom:'0'}} level={4}>My organizations</Title>
                                 <Button  type='link' style={{ marginTop:'1.5em', display: 'flex', alignItems: 'center' }} icon={<PlusCircleOutlined />} onClick={()=>setShowOrgForm(true)}>Register new organisation</Button>
-                                <DynamicOrgs/>
+                                <OrganizationList/>
                     </div> 
 
 
