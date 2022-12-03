@@ -1,13 +1,14 @@
 import React from 'react'
+import StaffView from '../../../../../components/StaffsPage'
 import AppLayout from '../../../../../components/shared/Layout/layout'
 import { Content } from 'antd/lib/layout/layout'
 import { Typography,Row, Col, Spin } from 'antd'
 import dynamic from 'next/dynamic'
 const {Title} = Typography
 
-const DynamicStaff = dynamic(()=>import('../../../../../components/StaffsPage'),{
-    ssr:false
-})
+// const DynamicStaff = dynamic(()=>import('../../../../../components/StaffsPage'),{
+//     ssr:false
+// })
 
 
 export default function Staff(){
@@ -28,7 +29,7 @@ export default function Staff(){
                             maxWidth:'100%',
                             }}
                         >
-                                <DynamicStaff/>
+                                <StaffView/>
                         </Content>
                     </Col>
                 </Row>

@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { Suspense } from 'react'
+import ServicePageView from '../../../../../components/ServiceItemsPage'
 import AppLayout from '../../../../../components/shared/Layout/layout' 
 import { Content } from 'antd/lib/layout/layout'
 import { Typography, Row, Col, Spin } from 'antd'
@@ -7,9 +8,9 @@ import { useRouter } from 'next/router'
 import ServiceItemErrorBoundary from '../../../../../components/shared/ErrorBoundary/ErrorBoundary'
 import dynamic from 'next/dynamic'
 
-const DynamicServiceItems = dynamic(()=>import('../../../../../components/ServiceItemsPage'),{
-    ssr:false
-})
+// const DynamicServiceItems = dynamic(()=>import('../../../../../components/ServiceItemsPage'),{
+//     ssr:false
+// })
 
 export default function Staffs(){
 
@@ -32,7 +33,7 @@ export default function Staffs(){
                             }}
                         >
                             <ServiceItemErrorBoundary name='Service page'>
-                                    <DynamicServiceItems/>
+                                    <ServicePageView/>
                             </ServiceItemErrorBoundary>
                         </Content>
                     </Col>
