@@ -43,7 +43,7 @@ export default function OrganizationList({}:OrganizationListProps) {
 
     // }, [paseto])
 
-    const {data,isLoading:isLoadingOrgs} = useQuery(['orgs'],async()=>{
+    const {data,isLoading:isLoadingOrgs} = useQuery({queryKey:['orgs'],queryFn: async()=>{
         const {data} = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/org/user/get-org`,{
             headers:{
                 //@ts-ignore
@@ -51,7 +51,9 @@ export default function OrganizationList({}:OrganizationListProps) {
             }
         })
         return data;
-    }) 
+    },
+    enabled: paseto !== ''
+}) 
 
     const orgs: Org[] = data && data.payload;
     const uniqueOrgs: Org[] = orgs?.filter((item, i) => orgs.findIndex((org)=>item.id===org.id)===i); 
