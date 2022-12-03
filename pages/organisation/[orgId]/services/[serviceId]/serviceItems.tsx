@@ -1,5 +1,4 @@
-import React, { Suspense } from 'react'
-import ServicePageView from '../../../../../components/ServiceItemsPage'
+import React from 'react'
 import AppLayout from '../../../../../components/shared/Layout/layout' 
 import { Content } from 'antd/lib/layout/layout'
 import { Typography, Row, Col, Spin } from 'antd'
@@ -18,7 +17,6 @@ export default function Staffs(){
 
     return(
         <AppLayout>
-            <Suspense fallback={<Spin size='large'/>}>
                 <Row>
                     <Col offset={1} span={15}>
                         <Title style={{marginLeft: '1em', marginTop:'1em'}} level={3}>Service Item</Title>
@@ -39,7 +37,6 @@ export default function Staffs(){
                         </Content>
                     </Col>
                 </Row>
-            </Suspense>
         </AppLayout> 
     )
 }
