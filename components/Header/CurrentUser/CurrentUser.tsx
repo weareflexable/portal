@@ -24,11 +24,17 @@ export default function CurrentUser({user={email:'mbappai@yahoo.com',role:'admin
    const navigateBackToServices=()=>{
       router.push(`/organisation/${currentService.id}`)
    }
+   const navigateBackToOrgs=()=>{
+      router.push(`/`)
+   }
+
+  
 
 
 const menu = (
   <Menu>
-    <Menu.Item key={'servicesPage'}><Button onClick={navigateBackToServices} type='link' >Services page</Button></Menu.Item>
+    <Menu.Item key={'servicesPage'}><Button onClick={navigateBackToServices} type='link' >Back to services</Button></Menu.Item>
+    <Menu.Item key={'servicesPage'}><Button onClick={navigateBackToOrgs} type='link' >Back to organizations</Button></Menu.Item>
     <Menu.Item key={'switchOrganisation'}><Button onClick={openOrgSwitcher} type='link' >Switch organization</Button></Menu.Item>
     <Menu.Item key={'logout'}><Button onClick={logout} danger type='link'>Logout</Button></Menu.Item>
   </Menu>
