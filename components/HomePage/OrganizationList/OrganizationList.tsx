@@ -18,8 +18,8 @@ export default function OrganizationList({}:OrganizationListProps) {
 
     const [selectedOrg, setSelectedOrg] = useState('')
     const [isNavigatingToOrgs, setIsNavigatingToOrg] = useState(false)
-    const [isLoadingOrgs, setIsLoadingOrgs] = useState(true)
-    const [data, setData] = useState([])
+    // const [isLoadingOrgs, setIsLoadingOrgs] = useState(true)
+    // const [data, setData] = useState([])
 
     const {switchOrg} =  useOrgContext()
     const {push} =  useRouter()
@@ -27,31 +27,31 @@ export default function OrganizationList({}:OrganizationListProps) {
 
     const {paseto} = useAuthContext()
 
-    useEffect(() => {
-        async function fetchOrgs(){
-            const {data} = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/org/user/get-org`,{
-                headers:{
-                    //@ts-ignore
-                    "Authorization": JSON.parse(paseto) 
-                }
-            })
-            // return data
-            setIsLoadingOrgs(false)
-            setData(data.payload)
-        }
-        fetchOrgs()
+    // useEffect(() => {
+    //     async function fetchOrgs(){
+    //         const {data} = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/org/user/get-org`,{
+    //             headers:{
+    //                 //@ts-ignore
+    //                 "Authorization": JSON.parse(paseto) 
+    //             }
+    //         })
+    //         // return data
+    //         setIsLoadingOrgs(false)
+    //         setData(data.payload)
+    //     }
+    //     fetchOrgs()
 
-    }, [paseto])
+    // }, [paseto])
 
-    // const {data,isLoading:isLoadingOrgs} = useQuery(['orgs'],async()=>{
-    //     const {data} = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/org/user/get-org`,{
-    //         headers:{
-    //             //@ts-ignore
-    //             "Authorization": JSON.parse(paseto) 
-    //         }
-    //     })
-    //     return data;
-    // }) 
+    const {data,isLoading:isLoadingOrgs} = useQuery(['orgs'],async()=>{
+        const {data} = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/org/user/get-org`,{
+            headers:{
+                //@ts-ignore
+                "Authorization": JSON.parse(paseto) 
+            }
+        })
+        return data;
+    }) 
 
     const orgs: Org[] = data;
     const uniqueOrgs: Org[] = orgs?.filter((item, i) => orgs.findIndex((org)=>item.id===org.id)===i); 
