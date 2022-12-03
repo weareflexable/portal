@@ -46,7 +46,7 @@ export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
         const {data} = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/${url}`,{
             headers:{
                 //@ts-ignore
-                "Authorization": JSON.parse(paseto)
+                "Authorization": paseto
             }
         })
         return data?.payload;
@@ -110,7 +110,7 @@ export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
     const {isError, isLoading:isCreatingData, isSuccess:isDataCreated, data:createdData} = createData
     const {isLoading:isPatchingData, data: patchedData} = patchData
 
-    const {data, isLoading, isSuccess} = useQuery([...queryKeys],()=>fetchData(fetchUrl))
+    const {data, isLoading, isSuccess} = useQuery({queryKey:[...queryKeys],queryFn:()=>fetchData(fetchUrl),enabled:paseto !== ''})
 
 
     // return empty array if req successful and no payload
