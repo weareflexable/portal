@@ -1,12 +1,10 @@
-import {Suspense, useEffect, useState} from 'react'
+import {useState} from 'react'
 import type { NextPage } from 'next'
 
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { Card, Button, List, Typography, Avatar, Tag, Modal, Spin } from 'antd';
+import { Button,Typography,Modal} from 'antd';
 const {Title} = Typography; 
-import axios from 'axios';
 import { useAuthContext } from '../context/AuthContext';
-import {  Org, OrgFormData } from '../types/OrganisationTypes';
+import {OrgFormData } from '../types/OrganisationTypes';
 import { nftStorageClient } from '../utils/nftStorage';
 import RegisterOrgForm from '../components/LoungePage/RegisterOrgForm/RegisterOrgForm';
 import {PlusCircleOutlined} from '@ant-design/icons'
@@ -15,7 +13,6 @@ import useMutateData from '../hooks/useMutateData';
 
 const DynamicOrgs = dynamic(()=>import('../components/HomePage/OrganizationList/OrganizationList'),{
     ssr:false,
-    suspense:true
 })
 
 
