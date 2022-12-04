@@ -16,7 +16,7 @@ import { useAuthContext } from '../../context/AuthContext';
 import { useServicesContext } from '../../context/ServicesContext';
 import { DatePickRef } from 'antd/lib/date-picker/generatePicker/interface';
 import { Moment } from 'moment-timezone';
-
+import dayjs from 'dayjs'
 
 
 const {Title,Text} = Typography
@@ -219,7 +219,7 @@ export default function Bookings(){
     filterDropdown:({ setSelectedKeys, selectedKeys, confirm, clearFilters})=>(
       <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
         <DatePicker 
-          value={moment(selectedKeys[0])}
+          value={dayjs(selectedKeys[0])}
           onChange={e => setSelectedKeys([moment(e).format('MMM DD, YYYY')] )}  
           style={{ marginBottom: 8, display: 'block' }} 
           ref={ticketSearchRef}
@@ -268,7 +268,7 @@ export default function Bookings(){
           highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
           searchWords={[searchedDate]}
           autoEscape
-          textToHighlight={date ? moment(date).format('MMM DD, YYYY') : ''}
+          textToHighlight={date ? dayjs(date).format('MMM DD, YYYY') : ''}
         />
       ) : (
         moment(date).format('MMM DD, YYYY')
@@ -341,7 +341,7 @@ export default function Bookings(){
       dataIndex: 'startTime',
       key: 'startTime',
       render: (_,record)=>{
-        const date = moment(record.startTime).format('MMM DD, YYYY')
+        const date = dayjs(record.startTime).format('MMM DD, YYYY')
         return(
           <Text>{date}</Text>
         )
