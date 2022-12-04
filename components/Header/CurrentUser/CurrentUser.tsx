@@ -1,5 +1,5 @@
 import React from 'react'
-import {Typography,Avatar,Space,Menu,Button, Dropdown,Tag, Divider} from 'antd'
+import {Typography,Avatar,Button, Dropdown} from 'antd'
 import {DownOutlined,LogoutOutlined} from '@ant-design/icons'
 import { useAuthContext } from '../../../context/AuthContext'
 import { useOrgContext } from '../../../context/OrgContext'
@@ -30,19 +30,16 @@ export default function CurrentUser({user={email:'mbappai@yahoo.com',role:'admin
 
   
 
-
-const menu = (
-  <Menu>
-    <Menu.Item key={'servicesPage'}><Button onClick={navigateBackToServices} type='link' >Back to services</Button></Menu.Item>
-    <Menu.Item key={'servicesPage'}><Button onClick={navigateBackToOrgs} type='link' >Back to organizations</Button></Menu.Item>
-    <Menu.Item key={'switchOrganisation'}><Button onClick={openOrgSwitcher} type='link' >Switch organization</Button></Menu.Item>
-    <Menu.Item key={'logout'}><Button onClick={logout} danger type='link'>Logout</Button></Menu.Item>
-  </Menu>
-);
+  const items: MenuProps['items'] = [
+    {label:<Button onClick={navigateBackToServices} type='link' >Back to services</Button>, key:'servicesPage'},
+    {label:<Button onClick={navigateBackToOrgs} type='link' >Back to organizations</Button>, key:'organizationsPage'},
+    {label:<Button onClick={openOrgSwitcher} type='link' >Switch organization</Button>, key:'switchOrganizations'},
+    {label:<Button onClick={logout} danger type='link'>Logout</Button>, key:'logout'},
+  ];
 
 
     return(
-      <Dropdown trigger={['click']} overlay={menu} >
+      <Dropdown trigger={['click']} menu={{items}} >
       <div
         onClick={()=>console.log('show modal to switch')} 
           style={
