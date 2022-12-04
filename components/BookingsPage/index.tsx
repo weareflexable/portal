@@ -219,7 +219,7 @@ export default function Bookings(){
       <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
         <DatePicker 
           value={dayjs(selectedKeys[0])}
-          onChange={e => setSelectedKeys([moment(e).format('MMM DD, YYYY')] )}  
+          onChange={e => setSelectedKeys([dayjs(e).format('MMM DD, YYYY')] )}  
           style={{ marginBottom: 8, display: 'block' }} 
           ref={ticketSearchRef}
           />
