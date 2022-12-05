@@ -39,8 +39,8 @@ export default function ServiceItemForm({ onTriggerFormAction,isCreatingServiceI
         // only generate key if it's a new service
             const formObject: ServiceItemReqPaylod = {
                 name: formData.name,
-                price: formData.price,
-                ticketMaxPerDay: formData.ticketsPerDay,
+                price: formData.price * 100,
+                ticketMaxPerDay: formData.ticketsMaxPerDay,
                 description:formData.description,
                 orgServiceId: currentService.id,
                 startDate: moment(formData.startDate).format('YYYY-MMM-DD'),
@@ -83,7 +83,7 @@ export default function ServiceItemForm({ onTriggerFormAction,isCreatingServiceI
             </Form.Item>
 
             <Form.Item
-                name="ticketsPerDay"
+                name="ticketsMaxPerDay"
                 label='Tickets per day'
                 rules={[{ required: true, message: 'Please input a valid number!' }]}
             >
@@ -101,7 +101,7 @@ export default function ServiceItemForm({ onTriggerFormAction,isCreatingServiceI
                 rules={[{ required: true, message: 'Please input a valid address!' }]}
             >
                 <Select
-                    defaultValue={'Line skip'}
+                    placeholder={'Line skip'}
                     style={{ width: 120 }}
                     options={menuItems}
                     />

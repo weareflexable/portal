@@ -1,12 +1,15 @@
 import React from 'react'
-import ServiceView from '../../../components/ServicesPage/ServicesView/ServicesView'
-import AppLayout from '../../../components/shared/Layout/layout'
-import { Content } from 'antd/lib/layout/layout'
+import dynamic from 'next/dynamic'
+import ServicesView from '../../../components/ServicesPage/ServicesView/ServicesView'
+
+const DynamicServices = dynamic(()=>import('../../../components/ServicesPage/ServicesView/ServicesView'),{
+    ssr:false
+})
 
 export default function Services(){
 
-    return(
-        
-         <ServiceView/>
+    return( 
+            <DynamicServices/>
+            // <ServicesView/>
     )
 }

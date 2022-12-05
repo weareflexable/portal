@@ -47,35 +47,12 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
             // set ui and local storage
             setPaseto(pasetoFromUrl) 
             //@ts-ignore
-            setStorage('PLATFORM_PASETO',JSON.stringify(pasetoFromUrl))
+            setStorage('PLATFORM_PASETO',pasetoFromUrl)
             setIsAuthenticated(true)
         }
-        // check
-    //   console.log(pasetoFromUrl)
+
     }, [pasetoFromUrl])
 
-    
-    // // effect to grab paseto from url and set to storage
-    // useEffect(() => {
-    //     console.log(returnedPaseto)
-    //     if(returnedPaseto){
-    //         setStorage('PLATFORM_PASETO',JSON.stringify(returnedPaseto))
-    //         setPaseto(returnedPaseto)
-    //         setIsAuthenticated(true)
-    //         push('/')
-    //     }
-    // }, [returnedPaseto]) 
-    
-    // useEffect(() => { 
-    //     // const paseto = JSON.parse(getStorage('PLATFORM_PASETO')||'{}')
-    //     console.log(paseto)
-    //     if(paseto === '{}' || paseto === undefined) return
-    //         setPaseto(paseto)
-    //         setIsAuthenticated(true)
-    //         // redirect to lounge
-            
-        
-    // }, [isAuthenticated]) 
 
 
 

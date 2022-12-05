@@ -58,7 +58,7 @@ export default function BillingsView(){
             {state.length<1
             ?<Button type='link' style={{display:'flex', alignItems:'center'}} icon={<PlusCircleOutlined />} onClick={openCreateForm}>Add new bank account</Button>
             : <BankAccountsList
-                bankAccounts={state}
+                bankAccounts={[]}
                 onCreateBankAccount={openCreateForm}
                 onDeleteBankAccount={deleteItem}
                 onSelectBankAccount={selectItemToEdit}

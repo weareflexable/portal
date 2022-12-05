@@ -1,7 +1,7 @@
 import { SearchOutlined } from '@ant-design/icons';
 import type { FilterConfirmProps } from 'antd/es/table/interface';
 import React, { useRef, useState } from 'react'
-import {Typography,Button,Avatar, Tag, InputRef, Input, Space} from 'antd'
+import {Typography,Button,Avatar, Tag, InputRef, Input, Space, DatePicker} from 'antd'
 import { useRouter } from 'next/router'
 import Table, { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import Highlighter from 'react-highlight-words'
@@ -14,7 +14,8 @@ import moment from 'moment';
 import {ReloadOutlined} from '@ant-design/icons'
 import { useAuthContext } from '../../context/AuthContext';
 import { useServicesContext } from '../../context/ServicesContext';
-
+import { DatePickRef } from 'antd/lib/date-picker/generatePicker/interface';
+import dayjs from 'dayjs'
 
 
 const {Title,Text} = Typography
@@ -59,26 +60,32 @@ export default function Bookings(){
       `${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/orgservmanager/get-serv-orders?orgServiceId=${serviceId}`,
       {
         //@ts-ignore
-        headers:{"Authorization":JSON.parse(paseto)} }
+        headers:{"Authorization":paseto} }
     );
     return data;
   }
 
   const { isLoading, data, isError, dataUpdatedAt, refetch } = useQuery(
-    ['bookings'], fetchServiceBookings,{refetchInterval: 5000}
+    ['bookings',currentService.id], fetchServiceBookings,{refetchInterval: 5000}
   ); 
 
-  console.log(data && data.payload, isError) 
+  const serviceBookings = data && data.payload
   const lastUpdate = moment(dataUpdatedAt).format('HH:mm:ss')
+
+
 
 
   const [searchText, setSearchText] = useState('');
   const [filteredInfo, setFilteredInfo] = useState<Record<string, FilterValue | null>>({});
+  const [searchedDate, setSearchedDate] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
   const searchInput = useRef<InputRef>(null);
+  const ticketSearchRef = useRef(null)
+
+  console.log(searchedColumn)
 
   const isFilterEmpty = Object.keys(filteredInfo).length === 0;
-  const serviceBookings = data && data.payload
+
   const handleSearch = (
     selectedKeys: string[],
     confirm: (param?: FilterConfirmProps) => void,
@@ -89,13 +96,33 @@ export default function Bookings(){
     setSearchedColumn(dataIndex);
   };
 
+  const handleDateSearch = (
+    selectedKeys: string[],
+    confirm: (param?: FilterConfirmProps) => void,
+    dataIndex: DataIndex,
+  ) => {
+    confirm();
+    setSearchedDate(selectedKeys[0]);
+    setSearchedColumn(dataIndex);
+  };
+
   const clearFilters = () => {
     setFilteredInfo({});
   };
 
+  const clearDateSearch = ()=>{
+    setSearchedDate('') // convert to filter
+  }
+
+
   const handleReset = (clearFilters: () => void) => {
     clearFilters();
     setSearchText('');
+  };
+
+  const handleDateReset = () => {
+    clearDateSearch();
+    setSearchedDate('');
   };
 
   const handleChange: TableProps<Order>['onChange'] = (pagination, filters, sorter) => {
@@ -120,13 +147,16 @@ export default function Bookings(){
             onClick={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
             icon={<SearchOutlined />}
             size="small"
-            style={{ width: 90 }}
+            shape='round'
+            style={{ width: 90, display:'flex',alignItems:'center' }}
           >
             Search
           </Button>
+          
           <Button
             onClick={() => clearFilters && handleReset(clearFilters)}
             size="small"
+            shape='round'
             style={{ width: 90 }}
           >
             Reset
@@ -143,7 +173,8 @@ export default function Bookings(){
             Filter
           </Button>
           <Button
-            type="link"
+            type='link'
+            danger
             size="small"
             onClick={() => {
               confirm({closeDropdown:true})
@@ -167,8 +198,10 @@ export default function Bookings(){
         setTimeout(() => searchInput.current?.select(), 100);
       }
     },
-    render: text =>
-      searchedColumn === dataIndex ? (
+    render: text =>{
+      console.log('text',text)
+      console.log('dataIndex',dataIndex)
+      return searchedColumn === dataIndex ? (
         <Highlighter
           highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
           searchWords={[searchText]}
@@ -177,9 +210,70 @@ export default function Bookings(){
         />
       ) : (
         text
-      ),
+      )
+    }
   });
 
+  const getTicketDateColumnSearchProps = (dataIndex: DataIndex): ColumnType<Order> =>({
+    filterDropdown:({ setSelectedKeys, selectedKeys, confirm, clearFilters})=>(
+      <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
+        <DatePicker 
+          value={dayjs(selectedKeys[0])}
+          onChange={e => setSelectedKeys([dayjs(e).format('MMM DD, YYYY')] )}  
+          style={{ marginBottom: 8, display: 'block' }} 
+          ref={ticketSearchRef}
+          />
+
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => handleDateSearch(selectedKeys as string[], confirm, dataIndex)}
+            icon={<SearchOutlined />}
+            size="small"
+            shape='round'
+            style={{ width: 90, display:'flex',alignItems:'center' }}
+          >
+            Search
+          </Button>
+          <Button
+            onClick={() => handleDateReset()}
+            size="small"
+            shape='round'
+            style={{ width: 90 }}
+          >
+            Reset
+          </Button>
+      
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              confirm({closeDropdown:true})
+            }}
+          >
+            close
+          </Button>
+        </Space>
+      </div>
+  ),
+  filterIcon: (filtered: boolean) => (
+    <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
+  ),
+  render: date =>{
+    // console.log('searchedDate',searchedDate)
+    // console.log('dataIndex',dataIndex)
+     return searchedColumn === dataIndex ? (
+        <Highlighter
+          highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+          searchWords={[searchedDate]}
+          autoEscape
+          textToHighlight={date ? dayjs(date).format('MMM DD, YYYY') : ''}
+        />
+      ) : (
+        moment(date).format('MMM DD, YYYY')
+      )
+  }
+  })
 
   const columns: ColumnsType<Order> = [
     {
@@ -192,7 +286,7 @@ export default function Bookings(){
       title: 'UserId',
       dataIndex: 'userId',
       key: 'userId',
-      ...getColumnSearchProps('name'),
+      ...getColumnSearchProps('userId'),
     },
     
     {
@@ -211,7 +305,7 @@ export default function Bookings(){
         { text: 'Paid', value: 'PAYMENT_PAID' },
         { text: 'Initiated', value: 'PAYMENT_INITIATED' },
       ], 
-      filteredValue: filteredInfo.orderStatus || null,
+      filteredValue: filteredInfo.paymentStatus || null,
       //@ts-ignore
       onFilter: (value: string, record) => record.paymentStatus.includes(value),
     },
@@ -243,14 +337,15 @@ export default function Bookings(){
     },
     {
       title: 'TicketDate',
-      dataIndex: 'ticketDate',
-      key: 'ticketDate',
+      dataIndex: 'startTime',
+      key: 'startTime',
       render: (_,record)=>{
-        const date = moment(record.startTime).format('MMM DD, YYYY')
+        const date = dayjs(record.startTime).format('MMM DD, YYYY')
         return(
           <Text>{date}</Text>
         )
     },
+    ...getTicketDateColumnSearchProps('startTime')
   }
   ];
 

@@ -1,5 +1,5 @@
 import React,{useEffect, useState} from 'react'
-import {Card,Button,Typography,Alert,Space,Modal, PageHeader} from 'antd'
+import {Card,Button,Typography,Alert,Space,Modal} from 'antd'
 import {PlusCircleOutlined} from '@ant-design/icons'
 import router, { useRouter } from 'next/router';
 import ServiceItemForm from './CreateServiceItemForm/CreateServiceItemForm';
@@ -120,12 +120,3 @@ export default function UserServicesView({}:UserServicesViewProps){
 
 
 
-
-interface EmptyStoreProps{
-    onRegisterService: ()=>void
-}
-const EmptyServices = ({onRegisterService}:EmptyStoreProps)=>{
-    return(
-        <Button type='link' style={{display:'flex', alignItems:'center'}} icon={<PlusCircleOutlined />} onClick={onRegisterService}>Create service item</Button>
-    )
-}

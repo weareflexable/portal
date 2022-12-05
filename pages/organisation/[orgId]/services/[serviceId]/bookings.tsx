@@ -3,6 +3,7 @@ import React from 'react'
 import BookingsView from '../../../../../components/BookingsPage/index'
 import AppLayout from '../../../../../components/shared/Layout/layout'
 import { Typography,Col, Row } from 'antd'
+import dynamic from 'next/dynamic'
 const {Title} = Typography;
 
 export default function Bookings(){
@@ -19,8 +20,8 @@ export default function Bookings(){
                         background:'white' ,
                         width:`98%`,
                         maxWidth:'100%',
-                        height: '100%',
-                        minHeight:'70vh',
+                        // height: '100%',
+                        // minHeight:'70vh',
                         }}
                     > 
                         <BookingsView/>

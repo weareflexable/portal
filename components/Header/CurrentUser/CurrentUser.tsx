@@ -1,10 +1,12 @@
 import React from 'react'
-import {Typography,Avatar,Space,Menu,Button, Dropdown,Tag, Divider} from 'antd'
+import {Typography,Avatar,Button, Dropdown} from 'antd'
 import {DownOutlined,LogoutOutlined} from '@ant-design/icons'
 import { useAuthContext } from '../../../context/AuthContext'
 import { useOrgContext } from '../../../context/OrgContext'
 const {Text,Title} = Typography
 import type { MenuProps } from 'antd';
+import { useServicesContext } from '../../../context/ServicesContext'
+import { useRouter } from 'next/router'
 
 interface CurrentUserProps{
     user?: {email:string, role:string}
@@ -15,21 +17,29 @@ interface CurrentUserProps{
 export default function CurrentUser({user={email:'mbappai@yahoo.com',role:'admin'}, openOrgSwitcher}:CurrentUserProps){
 
     const {setIsAuthenticated,logout} = useAuthContext()
+    const {currentService} = useServicesContext()
+    const router = useRouter()
     const {orgUserRole} = useOrgContext()
 
-   
+   const navigateBackToServices=()=>{
+      router.replace(`/organisation/${currentService.id}`)
+   }
+   const navigateBackToOrgs=()=>{
+      router.replace(`/`)
+   }
 
+  
 
-const menu = (
-  <Menu>
-    <Menu.Item><Button onClick={openOrgSwitcher} type='link' >Switch organization</Button></Menu.Item>
-    <Menu.Item><Button onClick={logout} danger type='link'>Logout</Button></Menu.Item>
-  </Menu>
-);
+  const items: MenuProps['items'] = [
+    {label:<Button onClick={navigateBackToServices} type='link' >Back to services</Button>, key:'servicesPage'},
+    {label:<Button onClick={navigateBackToOrgs} type='link' >Back to organizations</Button>, key:'organizationsPage'},
+    {label:<Button onClick={openOrgSwitcher} type='link' >Switch organization</Button>, key:'switchOrganizations'},
+    {label:<Button onClick={logout} danger type='link'>Logout</Button>, key:'logout'},
+  ];
 
 
     return(
-      <Dropdown trigger={['click']} overlay={menu} >
+      <Dropdown trigger={['click']} menu={{items}} >
       <div
         onClick={()=>console.log('show modal to switch')} 
           style={

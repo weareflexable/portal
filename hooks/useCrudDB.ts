@@ -1,4 +1,4 @@
-import { useQuery, useMutation } from '@tanstack/react-query'
+import { useQuery, useMutation,useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import {useState} from 'react'
 import { useAuthContext } from '../context/AuthContext'
@@ -33,6 +33,8 @@ export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
 }{
     const {fetchUrl, mutateUrl, patchUrl} = config
     const {paseto} = useAuthContext()
+
+    const queryClient = useQueryClient()
     
     // const [state, setState] = useState<T[]>(initState? initState:[])
     const [showCreateForm, setShowCreateForm] = useState(false)
@@ -44,7 +46,7 @@ export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
         const {data} = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/${url}`,{
             headers:{
                 //@ts-ignore
-                "Authorization": JSON.parse(paseto)
+                "Authorization": paseto
             }
         })
         return data?.payload;
@@ -55,7 +57,7 @@ export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
         const {data} = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/${mutateUrl}`, newItem,{
             headers:{
                 //@ts-ignore
-                "Authorization": JSON.parse(paseto)
+                "Authorization": paseto
             },
         })
         return data
@@ -65,7 +67,7 @@ export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
         const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/${patchUrl}`,updatedItem,{
             headers:{
                 //@ts-ignore
-                "Authorization": JSON.parse(paseto)
+                "Authorization": paseto
             }
         })
         return data
@@ -87,7 +89,12 @@ export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
     })
 
     const createData = useMutation(createDataHandler,
-        {onSuccess:()=>{
+        {
+            onSuccess:()=>{
+            // Invalidate query after a new item has been create
+            queryClient.invalidateQueries({queryKey:[...queryKeys]})
+
+            // Show success notification
             notification['success']({
                 message: 'Created record succesfully',
               });
@@ -99,10 +106,11 @@ export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
               });
         }
         })
+        
     const {isError, isLoading:isCreatingData, isSuccess:isDataCreated, data:createdData} = createData
     const {isLoading:isPatchingData, data: patchedData} = patchData
 
-    const {data, isLoading, isSuccess} = useQuery([...queryKeys],()=>fetchData(fetchUrl))
+    const {data, isLoading, isSuccess} = useQuery({queryKey:[...queryKeys],queryFn:()=>fetchData(fetchUrl),enabled:paseto !== ''})
 
 
     // return empty array if req successful and no payload

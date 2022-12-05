@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { notification } from 'antd'
 import axios from 'axios'
 import {useState} from 'react'
@@ -8,10 +8,13 @@ import { useAuthContext } from '../context/AuthContext'
 export default function useMutateData<T>(url:string){
 
     const {paseto} = useAuthContext()
+    const queryClient = useQueryClient()
 
     const [showCreateForm, setShowCreateForm] = useState(false)
     const [showEditForm, setShowEditForm] = useState(false)
     const [itemToEdit, setItemToEdit] = useState<T>()
+
+
     
 
     const createDataHandler = async(newItem:any)=>{
@@ -26,6 +29,8 @@ export default function useMutateData<T>(url:string){
 
     const createData = useMutation(createDataHandler,{
         onSuccess:()=>{
+            // Invalidate query
+            queryClient.invalidateQueries({queryKey:['orgs']})
             notification['success']({
                 message: 'Created record succesfully!',
               });
@@ -36,7 +41,7 @@ export default function useMutateData<T>(url:string){
                 message: 'Encountered an error while creating record',
               });
             //show modal
-        }
+        } 
     })
     const {isError, isLoading:isCreatingData, isSuccess:isDataCreated, data:createdData} = createData
 
