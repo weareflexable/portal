@@ -45,14 +45,14 @@ export default function ServiceView({}:ServicesViewProps){
     const {currentOrg} = useOrgContext()
     const [hydrated, setHydrated] = useState(false)
     const [orgName, setOrgName] = useState('')
-    const [orgId, setOrgId] = useState('')
-    // const orgId = currentOrg.id 
+    // const [orgId, setOrgId] = useState('')
+    const orgId = currentOrg.id 
     
     useEffect(()=>{
         setHydrated(true)
             if(hydrated){
                  setOrgName(currentOrg.name)
-                 setOrgId(currentOrg.id)
+                //  setOrgId(currentOrg.id)
             }
     },[currentOrg.id, currentOrg.name, hydrated])
     
@@ -125,7 +125,7 @@ export default function ServiceView({}:ServicesViewProps){
                 </Col>
             </Row>
         {showCreateForm?
-        <Modal title="Launch new store" open={showCreateForm} footer={null} onCancel={closeCreateForm}>
+        <Modal title="Launch new service" open={showCreateForm} footer={null} onCancel={closeCreateForm}>
             <CreateServiceForm 
                 onCancelFormCreation={closeCreateForm} 
                 onLaunchStore={createItem}
@@ -134,7 +134,7 @@ export default function ServiceView({}:ServicesViewProps){
         </Modal>:null}
 
         {showEditForm?
-        <Modal title="Edit store" open={showEditForm} footer={null} onCancel={closeEditForm}>
+        <Modal title="Edit service" open={showEditForm} footer={null} onCancel={closeEditForm}>
             <EditServiceForm 
                 initValues={itemToEdit} 
                 onCloseEditForm={closeEditForm} 
