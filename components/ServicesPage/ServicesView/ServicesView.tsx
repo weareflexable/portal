@@ -45,14 +45,16 @@ export default function ServiceView({}:ServicesViewProps){
     const {currentOrg} = useOrgContext()
     const [hydrated, setHydrated] = useState(false)
     const [orgName, setOrgName] = useState('')
-    const orgId = currentOrg.id 
+    const [orgId, setOrgId] = useState('')
+    // const orgId = currentOrg.id 
     
     useEffect(()=>{
         setHydrated(true)
             if(hydrated){
                  setOrgName(currentOrg.name)
+                 setOrgId(currentOrg.id)
             }
-    },[hydrated])
+    },[currentOrg.id, currentOrg.name, hydrated])
     
     const hookConfig = {
         fetchUrl: `services/user/get-services?orgId=${orgId}`,
