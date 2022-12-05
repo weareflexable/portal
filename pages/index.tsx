@@ -69,10 +69,12 @@ const Home: NextPage = () => {
     // }
 
     return(
+        <>
+        {/* <Button type='primary'>Button</Button> */}
         <div style={{
             width: '100vw',
             minHeight:'100vh',
-            background: '#f9f9f9',
+            background: '#f7f7f7',
             height: '100%',
             display:'flex',
             flexDirection:'column',
@@ -83,7 +85,7 @@ const Home: NextPage = () => {
 
                 <div style={{display:'flex', justifyContent:'space-between',alignItems:'center',width:'90%'}}>
                         <Title level={1}>Welcome to the lounge</Title>
-                        <Button danger type='ghost' onClick={logout}>Logout</Button>
+                        <Button danger onClick={logout}>Logout</Button>
                 </div>
             
                 <div style={{display:'flex', marginTop:'4em', flexDirection:'column', width:'60%'}} > 
@@ -102,6 +104,7 @@ const Home: NextPage = () => {
             </Modal>
             
         </div>
+        </>
     )
 }
 

@@ -6,6 +6,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { OrgContextProvider } from '../context/OrgContext';
 import { ServicesContextProvider } from '../context/ServicesContext';
 import ErrorBoundary from '../components/shared/ErrorBoundary/ErrorBoundary';
+import { ConfigProvider } from 'antd';
 
 const queryClient = new QueryClient()
 
@@ -17,7 +18,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         <OrgContextProvider>
             <ServicesContextProvider>
               <ErrorBoundary name='entire app'>
-                <Component {...pageProps} />
+                {/* <ConfigProvider theme={{token:{}}}> */}
+                   <Component {...pageProps} />
+                {/* </ConfigProvider> */}
               </ErrorBoundary>
             </ServicesContextProvider>
         </OrgContextProvider>

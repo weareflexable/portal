@@ -1,4 +1,5 @@
-import { Card, Button, List, Avatar, Typography, Tag } from "antd";
+import { Card, List, Avatar, Typography, Tag } from "antd";
+import {Button} from 'antd'
 import { Org } from "../../../types/OrganisationTypes";
 import {PlusCircleOutlined} from '@ant-design/icons'
 import { useEffect, useState } from "react";
@@ -80,8 +81,8 @@ export default function OrganizationList({}:OrganizationListProps) {
             loading={isLoadingOrgs}
             dataSource={uniqueOrgs}
             renderItem={item => <List.Item
-                actions={[<Button key={item.id} size='middle' disabled={!item.approved} type='primary' shape='round' loading={item.id === selectedOrg ? isNavigatingToOrgs : false} onClick={() => navigateToApp(item)}>{item.approved ? `Go to organization` : 'Organization in review'}</Button>]}
-                style={{ border: 'none', background: '#f9f9f9', marginBottom: '.5em', padding: '1em', borderRadius: '4px' }}
+                actions={[<Button key={item.id} shape='round' disabled={!item.approved} type='primary' loading={item.id === selectedOrg ? isNavigatingToOrgs : false} onClick={() => navigateToApp(item)}>{item.approved ? `Go to organization` : 'Organization in review'}</Button>]}
+                style={{ border: 'none', backgroundColor: '#f9f9f9', marginBottom: '.5em', padding: '1em', borderRadius: '4px' }}
                 key={item.id}
             >
                 <List.Item.Meta
