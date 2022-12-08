@@ -15,10 +15,11 @@ interface ServiceListProps{
     onSelectService: (service:ServiceItem)=>void,
     onDeleteService: (itemKey: string)=>void,
     serviceItemsIsLoading: boolean,
-    isFetching: boolean
+    isFetching: boolean,
+    isPatchingRecord: boolean
 }
 
-export default function ServiceListProps({onDeleteService,serviceItemsIsLoading, isFetching, onSelectService, serviceItems, onCreateService}:ServiceListProps){
+export default function ServiceListProps({onDeleteService,isPatchingRecord, serviceItemsIsLoading, isFetching, onSelectService, serviceItems, onCreateService}:ServiceListProps){
 
     const router = useRouter()
     const {isAdmin} = useOrgContext()
