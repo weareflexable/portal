@@ -83,7 +83,7 @@ export default function UserServicesView({}:UserServicesViewProps){
         closeEditForm
        } = useCrudDB<ServiceItem>(hookConfig,['serviceItems',serviceId])
 
-       console.log(state)
+    //    console.log(state)
 
        const serviceItems = state && state
 
@@ -103,13 +103,13 @@ export default function UserServicesView({}:UserServicesViewProps){
                 onCloseForm={closeCreateForm}/>
             </Modal>
 
-            <Modal title={'Edit Service item'} open={showEditForm} footer={null} onCancel={closeEditForm}>
+            {showEditForm ? <Modal title={'Edit Service item'} open={showEditForm} footer={null} onCancel={closeEditForm}>
                 <EditForm 
                 isPatchingServiceItem={isPatchingData}
                 initValues={itemToEdit} 
                 onTriggerFormAction={editItem} 
                 onCancelFormCreation={closeEditForm}/>
-            </Modal>
+            </Modal>:null}
 
         </div>
     )
