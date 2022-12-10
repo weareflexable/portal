@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React,{useState,useEffect} from 'react';
 import {Card,Form, Input,InputNumber, DatePicker,Upload,Button,notification, Space, Alert, Typography, TimePicker} from 'antd';
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
@@ -24,18 +24,20 @@ export default function EditForm({initValues, onTriggerFormAction, isPatchingSer
 
     // TODO: set field for editing
 
-    const router = useRouter()
     const [form] = Form.useForm()
-    const {currentService} = useServicesContext()
 
     const prevValues = initValues
+    
+    // convert value of price in cents to dollars
+    const transformedValues = {...initValues,price:initValues!.price/100}
+    console.log('transformed',transformedValues)
 
     const onFinish = (formData:ServiceItem)=>{
 
         const formObject = {
-            id: prevValues?.id,
+            // id: prevValues?.id,
             description:formData.description,
-            orgServiceItemId: currentService.id,
+            orgServiceItemId: prevValues?.id,
             imageHash: '',
             name: formData.name,
             price: formData.price * 100,
@@ -46,12 +48,19 @@ export default function EditForm({initValues, onTriggerFormAction, isPatchingSer
         onTriggerFormAction(formObject)
     }
 
+    useEffect(() => {
+      return () => {
+        console.log('closed')
+        form.resetFields()
+      };
+    }, [form])
+
     // if(initValues){
     //     form.setFieldsValue({
-    //         name: initValues.name,
-    //         description: initValues.description,
-    //         price: initValues.price,
-    //         serviceDuration: initValues.serviceDuration
+    //         name: transformedValues.name,
+    //         description: transformedValues.description,
+    //         price: transformedValues.price,
+    //         ticketsMaxPerDay: transformedValues.ticketsMaxPerDay
     //     })
     // }
 
@@ -66,7 +75,8 @@ export default function EditForm({initValues, onTriggerFormAction, isPatchingSer
     return (
             <Form
             name="serviceForm"
-            initialValues={initValues}
+            initialValues={transformedValues}
+            preserve={false}
             layout='vertical'
             form={form}
             onFinish={onFinish}
