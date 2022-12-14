@@ -91,7 +91,7 @@ const Home: NextPage = () => {
                 <div style={{display:'flex', marginTop:'4em', flexDirection:'column', width:'60%'}} > 
                              <Title style={{marginBottom:'0'}} level={4}>My organizations</Title>
                                 <Button type='link' style={{ marginTop:'1.5em', display: 'flex', alignItems: 'center' }} icon={<PlusCircleOutlined />} onClick={()=>setShowOrgForm(true)}>Register new organisation</Button>
-                                <OrganizationList/>
+                                <DynamicOrgs/>
                     </div> 
 
 
