@@ -21,7 +21,7 @@ export default function ServiceSwitcher({onOpenSwitcher}:ServiceSwitcherProps){
                     justifyContent:'center', 
                     alignItems:'center'
                     }}>
-                  <Avatar src={'https://joeschmoe.io/api/v1/random'}/>
+                  <Avatar src={`https://nftstorage.link/ipfs/${currentService.imageHash}`}/>
                   <div style={{display:'flex', flexDirection:'column'}}>
                     <Title  ellipsis level={5} style={{marginBottom:'.001em', width:'150px', marginRight:'.5em', marginLeft:'.5em'}}>{currentService.name}</Title>
                     <Button onClick={onOpenSwitcher} type='link' size='small' style={{padding:'0', textAlign:'start', margin:'0', marginLeft:'.5em'}}>Switch service</Button>
