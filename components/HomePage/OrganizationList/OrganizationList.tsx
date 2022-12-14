@@ -86,7 +86,7 @@ export default function OrganizationList({}:OrganizationListProps) {
                 key={item.id}
             >
                 <List.Item.Meta
-                    avatar={<Avatar src={item.logoUrl} />}
+                    avatar={<Avatar src={`https://nftstorage.link/ipfs/${item.imageHash}`} />}
                     title={<div style={{ display: 'flex' }}>
                         <Typography.Text style={{ marginRight: '1em' }}>{item.name}</Typography.Text>
                         <Tag>{item.role === 'STAFF' ? 'Employee' : item.role}</Tag>

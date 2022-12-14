@@ -17,7 +17,7 @@ export type OrgFormData = {
 export interface Org {
     name: string,
     id: string,
-    logoUrl: string,
+    imageHash: string,
     role: string,
     approved: boolean
 }
