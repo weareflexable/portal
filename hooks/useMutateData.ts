@@ -18,7 +18,6 @@ export default function useMutateData<T>(url:string){
     
 
     const createDataHandler = async(newItem:any)=>{
-        console.log('paseto',paseto)
         const {data} = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/${url}`, newItem,{
             headers:{
                 "Authorization": paseto
@@ -31,16 +30,16 @@ export default function useMutateData<T>(url:string){
         onSuccess:()=>{
             // Invalidate query
             queryClient.invalidateQueries({queryKey:['orgs']})
+            closeCreateForm()
             notification['success']({
                 message: 'Created record succesfully!',
               });
-            closeCreateForm()
         },
         onError:()=>{
             notification['error']({
                 message: 'Encountered an error while creating record',
               });
-            //show modal
+            // leave modal open
         } 
     })
     const {isError, isLoading:isCreatingData, isSuccess:isDataCreated, data:createdData} = createData
