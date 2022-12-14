@@ -21,7 +21,7 @@ export default function OrgSwitcher({onOpenSwitcher}:OrgSwitcherProps){
                     justifyContent:'center', 
                     alignItems:'center'
                     }}>
-                  <Avatar src={currentOrg.logoUrl}/>
+                  <Avatar src={`https://nftstorage.link/ipfs/${currentOrg.imageHash}`}/>
                   <div style={{display:'flex', flexDirection:'column'}}>
                     <Title  ellipsis level={5} style={{marginBottom:'.001em', width:'150px', marginRight:'.5em', marginLeft:'.5em'}}>{currentOrg.name}</Title>
                     <Button onClick={onOpenSwitcher} type='link' size='small' style={{padding:'0', textAlign:'start', margin:'0', marginLeft:'.5em'}}>Switch organistation</Button>
