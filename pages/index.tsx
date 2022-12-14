@@ -96,12 +96,12 @@ const Home: NextPage = () => {
 
 
 
-            <Modal  title="Create organization" open={showOrgForm} footer={null} onCancel={()=>setShowOrgForm(false)}>
+           { showOrgForm? <Modal  title="Create organization" open={showOrgForm} footer={null} onCancel={()=>setShowOrgForm(false)}>
                 <RegisterOrgForm
                     onRegisterNewOrg={registerOrg}
                     isRegisteringOrg={isRegisteringOrg}
                 />
-            </Modal>
+            </Modal>: null}
             
         </div>
         </>
