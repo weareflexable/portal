@@ -8,7 +8,7 @@ const {Content} = Layout
 
 const countryList = require('country-list')
 import codes from 'country-calling-code';
-// import CountryList from 'country-list-with-dial-code-and-flag'
+
 
 
 const getBase64 = (file: any): Promise<string> => 
@@ -19,7 +19,7 @@ reader.onload = () => resolve(reader.result as string);
 reader.onerror = (error) => reject(error);
 });
 
-console.log(codes) 
+
 
 export default function Profile(){
 
@@ -163,20 +163,6 @@ export default function Profile(){
 }
 
 
-// const countryList = [
-//     {
-//         value: 'USA',
-//         label: 'United States of America'
-//     },
-//     {
-//         value: 'India',
-//         label: 'India'
-//     },
-//     {
-//         value: 'Nigeria',
-//         label: 'Nigeria'
-//     },
-// ]
 
 const prefixSelector = (
     <Form.Item name="prefix" noStyle>
@@ -184,9 +170,6 @@ const prefixSelector = (
         {codes.map(code=>
             <Option key={code.country} value={code.countryCodes[0]}>+{code.countryCodes[0]}</Option>
         )}
-        {/* <Option value="86">+86</Option>
-        <Option value="87">+87</Option>
-        <Option value="234">+234</Option> */}
       </Select>
     </Form.Item>
   );
