@@ -6,8 +6,12 @@ const {Option} = Select
 const {Title} = Typography;
 const {Content} = Layout
 
+const countryList = require('country-list')
+import codes from 'country-calling-code';
+// import CountryList from 'country-list-with-dial-code-and-flag'
 
-const getBase64 = (file: any): Promise<string> =>
+
+const getBase64 = (file: any): Promise<string> => 
 new Promise((resolve, reject) => {
 const reader = new FileReader();
 reader.readAsDataURL(file);
@@ -15,6 +19,7 @@ reader.onload = () => resolve(reader.result as string);
 reader.onerror = (error) => reject(error);
 });
 
+console.log(codes) 
 
 export default function Profile(){
 
@@ -64,7 +69,7 @@ export default function Profile(){
                     padding: '1em',
                     margin:'1em',
                     background:'white' ,
-                    width:`98%`,
+                    width:`50%`,
                     maxWidth:'100%',
                     // height: '100%',
                     // minHeight:'70vh',
@@ -101,7 +106,7 @@ export default function Profile(){
                         name="fullName"
                         label="Full name"
                         hasFeedback
-                        rules={[
+                        rules={[ 
                         {
                             type: 'string',
                             message: 'The input is not a valid name!',
@@ -112,16 +117,7 @@ export default function Profile(){
                         },
                         ]}
                     >
-                        <Input />
-                    </Form.Item>
-
-
-                    <Form.Item
-                        name="phone"
-                        label="Phone Number"
-                        rules={[{ required: true, message: 'Please input your phone number!' }]}
-                    >
-                        <Input addonBefore={prefixSelector} style={{ width: '100%' }} />
+                        <Input placeholder='Ryan Prochna' />
                     </Form.Item>
 
                     <Form.Item
@@ -130,14 +126,30 @@ export default function Profile(){
                         rules={[{ required: true, message: 'Please select your country !' }]}
                     >
                         <Select
-                        placeholder="Select a option and change input text above"
+                        placeholder="United states of America"
                         onChange={onSelectCountry}
+                        defaultValue={'USA'}
                         allowClear
                         >
-                            {countryList.map(country=>(
-                                <Option key={country.value} value={country.value}>{country.label}</Option>
+                            {countryList.getData().map((country:any)=>(
+                                <Option key={country.code} value={country.code}>{country.name}</Option>
                             ))}
                         </Select>
+                    </Form.Item> 
+
+                    <Form.Item
+                        name="phone"
+                        label="Phone Number"
+                        rules={[{ required: true, message: 'Please input your phone number!' }]}
+                    >
+                        <Input addonBefore={prefixSelector} placeholder={'44124321'} style={{ width: '100%' }} />
+                    </Form.Item>
+
+
+                    <Form.Item>
+                        <Button type="primary" htmlType="submit">
+                        Apply changes
+                        </Button>
                     </Form.Item>
 
             </Form>
@@ -151,28 +163,30 @@ export default function Profile(){
 }
 
 
-const countryList = [
-    {
-        value: 'USA',
-        label: 'United States of America'
-    },
-    {
-        value: 'India',
-        label: 'India'
-    },
-    {
-        value: 'Nigeria',
-        label: 'Nigeria'
-    },
-]
+// const countryList = [
+//     {
+//         value: 'USA',
+//         label: 'United States of America'
+//     },
+//     {
+//         value: 'India',
+//         label: 'India'
+//     },
+//     {
+//         value: 'Nigeria',
+//         label: 'Nigeria'
+//     },
+// ]
 
 const prefixSelector = (
     <Form.Item name="prefix" noStyle>
-      <Select style={{ width: 70 }}>
-        <Option value="1">+1</Option>
-        <Option value="86">+86</Option>
+      <Select defaultValue={'1'} style={{ width: 120 }}>
+        {codes.map(code=>
+            <Option key={code.country} value={code.countryCodes[0]}>+{code.countryCodes[0]}</Option>
+        )}
+        {/* <Option value="86">+86</Option>
         <Option value="87">+87</Option>
-        <Option value="234">+234</Option>
+        <Option value="234">+234</Option> */}
       </Select>
     </Form.Item>
   );
