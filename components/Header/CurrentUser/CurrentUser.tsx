@@ -28,12 +28,16 @@ export default function CurrentUser({user={email:'mbappai@yahoo.com',role:'admin
       router.replace(`/`)
    }
 
+   const navigateToProfile=()=>{
+    router.replace('/profile')
+   }
   
 
   const items: MenuProps['items'] = [
-    {label:<Button onClick={navigateBackToServices} type='link' >Back to services</Button>, key:'servicesPage'},
-    {label:<Button onClick={navigateBackToOrgs} type='link' >Back to organizations</Button>, key:'organizationsPage'},
-    {label:<Button onClick={openOrgSwitcher} type='link' >Switch organization</Button>, key:'switchOrganizations'},
+    {label:<Button onClick={navigateBackToServices} type='text' >Back to services</Button>, key:'servicesPage'},
+    {label:<Button onClick={navigateBackToOrgs} type='text' >Back to organizations</Button>, key:'organizationsPage'},
+    {label:<Button onClick={openOrgSwitcher} type='text' >Switch organization</Button>, key:'switchOrganizations'},
+    {label:<Button onClick={navigateToProfile} type='text' >Profile</Button>, key:'switchOrganizations'},
     {label:<Button onClick={logout} danger type='link'>Logout</Button>, key:'logout'},
   ];
 
