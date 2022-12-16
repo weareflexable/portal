@@ -40,10 +40,11 @@ const {Text} = Typography
     const [pageRoutes, setPageRoutes] = useState<PageRoute>({basePath:'',selectedRoute:'dashboard'})
 
     
-    
+    // console.log('from layout',asPath)
 
     const splittedRoutes = asPath.split('/')
-    const selectedRoute = splittedRoutes && splittedRoutes[5]
+    console.log(splittedRoutes)
+    const selectedRoute = splittedRoutes && splittedRoutes[3]
     splittedRoutes.pop()
     
 
@@ -57,7 +58,7 @@ const {Text} = Typography
         }
     }, [isReady])
 
-    // console.log(pageRoutes)
+
     
     if(!isReady){
       <div style={{width:'100vw', height:'100vh',display:'flex',justifyContent:'center',alignItems:'center'}}>

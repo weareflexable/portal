@@ -69,7 +69,7 @@ export default function OrganizationList({}:OrganizationListProps) {
         setTimeout(() => {
             setIsNavigatingToOrg(false)
             switchOrg(org)
-            push(`/organisation/${org.id}`)
+            push(`/organisation`)
         }, 3000);
     }
 

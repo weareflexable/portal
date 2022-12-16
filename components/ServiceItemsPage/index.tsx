@@ -91,10 +91,7 @@ export default function UserServicesView({}:UserServicesViewProps){
     return(
         <div> 
            
-            {/* { state  */}
-                <ServiceItemList serviceItemsIsLoading={isLoading} onDeleteService = {deleteItem} isFetching={isLoading} isPatchingRecord={isPatchingData} onSelectService={selectItemToEdit} onCreateService={openCreateForm} serviceItems={serviceItems}/>
-                {/* // :<EmptyServices onRegisterService={openCreateForm}/> */}
-            {/* } */}
+            <ServiceItemList serviceItemsIsLoading={isLoading} onDeleteService = {deleteItem} isFetching={isLoading} isPatchingRecord={isPatchingData} onSelectService={selectItemToEdit} onCreateService={openCreateForm} serviceItems={serviceItems}/>
 
             <Modal title={'Create service item'} open={showCreateForm} footer={null} onCancel={closeCreateForm}>
                 <ServiceItemForm 

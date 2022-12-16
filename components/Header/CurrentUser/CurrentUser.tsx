@@ -22,7 +22,7 @@ export default function CurrentUser({user={email:'mbappai@yahoo.com',role:'admin
     const {orgUserRole} = useOrgContext()
 
    const navigateBackToServices=()=>{
-      router.replace(`/organisation/${currentService.id}`)
+      router.replace(`/organisation`)
    }
    const navigateBackToOrgs=()=>{
       router.replace(`/`)
@@ -37,7 +37,7 @@ export default function CurrentUser({user={email:'mbappai@yahoo.com',role:'admin
     {label:<Button onClick={navigateBackToServices} type='text' >Back to services</Button>, key:'servicesPage'},
     {label:<Button onClick={navigateBackToOrgs} type='text' >Back to organizations</Button>, key:'organizationsPage'},
     {label:<Button onClick={openOrgSwitcher} type='text' >Switch organization</Button>, key:'switchOrganizations'},
-    {label:<Button onClick={navigateToProfile} type='text' >Profile</Button>, key:'switchOrganizations'},
+    {label:<Button onClick={navigateToProfile} type='text' >Profile</Button>, key:'profile'},
     {label:<Button onClick={logout} danger type='link'>Logout</Button>, key:'logout'},
   ];
 

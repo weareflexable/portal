@@ -1,7 +1,7 @@
 import { Content } from 'antd/lib/layout/layout'
 import React from 'react'
-import BookingsView from '../../../../../components/BookingsPage/index'
-import AppLayout from '../../../../../components/shared/Layout/layout'
+import BookingsView from '../../../components/BookingsPage/index'
+import AppLayout from '../../../components/shared/Layout/layout'
 import { Typography,Col, Row } from 'antd'
 import dynamic from 'next/dynamic'
 const {Title} = Typography;

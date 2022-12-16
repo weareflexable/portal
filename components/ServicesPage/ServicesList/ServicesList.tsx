@@ -28,7 +28,7 @@ export default function ServiceListProps({onDeleteService, onSelectService, isLo
     const navigateToBookings = (service:Service)=>{
         // set the current service in local storage
         switchService(service)
-        push(`${asPath}/services/${service.id}/bookings`)
+        push(`${asPath}/services/bookings`)
     }
 
     return(

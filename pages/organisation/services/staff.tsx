@@ -1,6 +1,6 @@
 import React from 'react'
-import StaffView from '../../../../../components/StaffsPage'
-import AppLayout from '../../../../../components/shared/Layout/layout'
+import StaffView from '../../../components/StaffsPage'
+import AppLayout from '../../../components/shared/Layout/layout'
 import { Content } from 'antd/lib/layout/layout'
 import { Typography,Row, Col, Spin } from 'antd'
 import dynamic from 'next/dynamic'

@@ -111,7 +111,6 @@ export default function ServiceView({}:ServicesViewProps){
 
                 <Col offset={2} span={20}>
                     <Title style={{marginBottom:'1em'}} level={2}>Services</Title>
-                    {/* { isFetched && state.length > 0 ?   */}
                         <ServicesList
                         isLoadingServices={isLoading}
                         onCreateService={openCreateForm}
@@ -119,9 +118,7 @@ export default function ServiceView({}:ServicesViewProps){
                         onDeleteService={deleteItem}
                         onSelectService={selectItemToEdit}
                         />
-                        {/* : */}
-                        {/* <EmptyStore onRegisterStore={openCreateForm}/> */}
-                    {/* } */}
+
                 </Col>
             </Row>
         {showCreateForm?
