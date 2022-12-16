@@ -124,7 +124,7 @@ export default function ServiceView({}:ServicesViewProps){
         {showCreateForm?
         <Modal title="Launch new service" open={showCreateForm} footer={null} onCancel={closeCreateForm}>
             <CreateServiceForm 
-                onCancelFormCreation={closeCreateForm} 
+                onCancelFormCreation={closeCreateForm} // don't need this
                 onLaunchStore={createItem}
                 isCreatingData = {isCreatingData}
              />
