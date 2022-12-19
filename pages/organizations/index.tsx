@@ -12,7 +12,7 @@ import {PlusCircleOutlined} from '@ant-design/icons'
 import dynamic from 'next/dynamic';
 import useMutateData from '../../hooks/useMutateData';
 
-const DynamicOrgs = dynamic(()=>import('../../components/HomePage/OrganizationList/OrganizationList'),{
+const DynamicOrgs = dynamic(()=>import('../../components/OrganizationsPage/OrganizationList/OrganizationList'),{
     ssr:false,
 })
 

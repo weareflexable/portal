@@ -1,5 +1,5 @@
 import React from 'react'
-import StaffView from '../../../components/StaffsPage'
+import StaffView from '../../../components/StaffPage'
 import AppLayout from '../../../components/shared/Layout/layout'
 import { Content } from 'antd/lib/layout/layout'
 import { Typography,Row, Col, Spin } from 'antd'
