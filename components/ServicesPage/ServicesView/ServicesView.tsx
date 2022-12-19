@@ -5,7 +5,6 @@ import router, { useRouter } from 'next/router';
 import CreateServiceForm from '../CreateServiceForm/CreateServiceForm';
 import EditServiceForm from '../EditServiceForm/EditServiceForm'
 
-import useCrud from '../../../hooks/useCrud';
 import { Service } from '../../../types/Services';
 import ServicesList from '../ServicesList/ServicesList';
 

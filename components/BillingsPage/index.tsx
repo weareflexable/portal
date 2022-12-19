@@ -4,11 +4,11 @@ const {Text} = Typography
 import BillingsForm from './CreateBankAccountForm/CreateBankAccountForm'
 import {PlusCircleOutlined} from '@ant-design/icons'
 import { useRouter } from 'next/router'
-import useCrud from '../../hooks/useCrud'
 import { BankAccount } from '../../types/BankAccount'
 import BankAccountsList from './BankAccountsList/BankAccountsList'
 import EditBankAccountForm from './EditBankAccountForm/EditBankAccountForm'
 import CreateBankAccountForm from './CreateBankAccountForm/CreateBankAccountForm'
+import useCrudDB from '../../hooks/useCrudDB'
 
 const mockBankAcounts: BankAccount[] = [
 {
@@ -29,6 +29,11 @@ export default function BillingsView(){
 
     const {back} = useRouter()
 
+    const hookConfig = {
+        mutateUrl:'',
+        fetchUrl: ''
+    }
+
     const {
          state,
          showCreateForm, 
@@ -41,7 +46,7 @@ export default function BillingsView(){
          deleteItem,
          closeCreateForm,
          closeEditForm
-        } = useCrud<BankAccount>(mockBankAcounts)
+        } = useCrudDB<BankAccount>(hookConfig,['banks'])
 
 
     return(

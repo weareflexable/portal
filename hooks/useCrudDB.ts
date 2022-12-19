@@ -75,7 +75,6 @@ export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
 
     const patchData = useMutation(patchDataHandler,{
         onSuccess:()=>{
-            queryClient.invalidateQueries({queryKey:[...queryKeys]})
             notification['success']({
                 message: 'Updated record succesfully!',
               });
@@ -110,7 +109,6 @@ export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
         
     const {isError, isLoading:isCreatingData, isSuccess:isDataCreated, data:createdData} = createData
     const {isLoading:isPatchingData, data: patchedData} = patchData
-    console.log(patchedData)
 
     const {data, isLoading, isSuccess} = useQuery({queryKey:[...queryKeys],queryFn:()=>fetchData(fetchUrl),enabled:paseto !== ''})
 
