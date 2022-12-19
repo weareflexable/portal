@@ -22,10 +22,10 @@ export default function CurrentUser({user={email:'mbappai@yahoo.com',role:'admin
     const {orgUserRole} = useOrgContext()
 
    const navigateBackToServices=()=>{
-      router.replace(`/organisation`)
+      router.replace(`/organizations/services`)
    }
    const navigateBackToOrgs=()=>{
-      router.replace(`/`)
+      router.replace(`/organizations`)
    }
 
    const navigateToProfile=()=>{
@@ -36,8 +36,11 @@ export default function CurrentUser({user={email:'mbappai@yahoo.com',role:'admin
   const items: MenuProps['items'] = [
     {label:<Text onClick={navigateBackToServices}  >Back to services</Text>, key:'servicesPage'},
     {label:<Text onClick={navigateBackToOrgs} >Back to organizations</Text>, key:'organizationsPage'},
+    {type:'divider', key:'divider0'},
     {label:<Text onClick={openOrgSwitcher}  >Switch organization</Text>, key:'switchOrganizations'},
+    {type:'divider', key:'divider1'},
     {label:<Text onClick={navigateToProfile}  >Profile</Text>, key:'profile'},
+    {type:'divider', key:'divider2'},
     {label:<Button onClick={logout} danger type='link'>Logout</Button>, key:'logout'},
   ];
 

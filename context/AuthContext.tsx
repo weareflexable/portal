@@ -1,6 +1,5 @@
 import { useRouter } from 'next/router';
-import React,{useState,useContext,createContext, ReactNode, useEffect} from 'react';
-import useLocalStorage from '../hooks/useLocalStorage';
+import React,{useState,useContext,createContext, ReactNode, useEffect, useMemo, useCallback} from 'react';
 import { deleteStorage, getStorage, setStorage } from '../utils/storage';
 
 
@@ -23,7 +22,6 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
 
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
-    // const [paseto, setPaseto] =useLocalStorage<string>('PLATFORM_PASETO','v4.local.UozESpGaJorQ6WXrSFFFCMCcekZvVbokgIOejGniDGsz2_2XyIPKkrppb-FMsnKAVZtLNnOawvpIuPQXywGETc2X2xX9HNnzX5Auz4QvyTuyhLej-aizUv6GtroSxIZM4_ktrup8zHoVWkKbcP0qwrcrqbHg7Rd23v-okg8UpeJKFkc3rxsr40EdvPQx7ejsUlvGyGVkV8cvMz2h9Hhmj1cs')
     const [paseto, setPaseto] =useState<string|string[]|undefined>(()=>{
         const storedPaseto = getStorage('PLATFORM_PASETO')
         if(storedPaseto){
@@ -32,13 +30,17 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
         return ''
     })
 
+    // Get paseto that go passed through query parameter
+    // from auth-web
     const pasetoFromUrl = query.paseto 
-    // console.log('urlpaseto',pasetoFromUrl)
+
 
     useEffect(()=>{
         if(paseto !== '' && paseto !== null){
             setIsAuthenticated(true)
+            // take user to desired route
         }
+        // take user to login page
     },[paseto])
 
     useEffect(() => {
@@ -54,17 +56,12 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
     }, [pasetoFromUrl])
 
 
-
-
-
-
-
     const logout = () =>{
         setIsAuthenticated(false)
         // clear all caches
         localStorage.clear()
         // redirect user to login page
-        replace('/login')
+        replace('/')
     }
 
 

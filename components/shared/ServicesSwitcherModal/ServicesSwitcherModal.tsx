@@ -18,15 +18,12 @@ export default function ServiceSwitcherModal({isModalOpen, onCloseModal}:Service
 
     const {asPath,replace} = useRouter() 
 
-    const splittedRoutes = asPath.split('/')
-    const basePath = splittedRoutes.slice(0,4).join('/')
-
     const [targetService, setTargeService] = useState<Service>()
 
     const switchServiceHandler = (selectedService:Service)=>{
         setTargeService(selectedService)
         setTimeout(()=>{
-            replace(`${basePath}/${selectedService.id}/bookings`)
+            replace(`/organizations/services/bookings`)
             switchService(selectedService)
             onCloseModal()
             // setTargeService(selectedService)

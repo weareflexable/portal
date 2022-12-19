@@ -31,9 +31,10 @@ export default function Login(){
 
     useEffect(() => {
       if(isAuthenticated){
-          replace('/')
+        // navigate to lounge
+          replace('/organizations')
       }
-    }, [isAuthenticated, replace])
+    }, [isAuthenticated, replace]) 
 
 
     if(!isAuthenticated){

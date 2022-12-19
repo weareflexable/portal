@@ -5,14 +5,14 @@ const {Title} = Typography
 
 import { useRouter } from 'next/router';
 import {usePlacesWidget} from 'react-google-autocomplete'
-import { asyncStore} from "../../utils/nftStorage";
-import { Service, ServicePayload } from "../../types/Services";
-import { useOrgContext } from "../../context/OrgContext";
-import useServiceTypes from "../../hooks/useServiceTypes";
+import { asyncStore} from "../../../utils/nftStorage";
+import { Service, ServicePayload } from "../../../types/Services";
+import { useOrgContext } from "../../../context/OrgContext";
+import useServiceTypes from "../../../hooks/useServiceTypes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { url } from "inspector";
-import { useAuthContext } from "../../context/AuthContext";
+import { useAuthContext } from "../../../context/AuthContext";
 
 
 export default function NewService(){

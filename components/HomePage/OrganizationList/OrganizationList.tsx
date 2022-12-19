@@ -23,7 +23,7 @@ export default function OrganizationList({}:OrganizationListProps) {
     // const [data, setData] = useState([])
 
     const {switchOrg} =  useOrgContext()
-    const {push} =  useRouter()
+    const {push,asPath} =  useRouter()
 
 
     const {paseto} = useAuthContext()
@@ -69,7 +69,7 @@ export default function OrganizationList({}:OrganizationListProps) {
         setTimeout(() => {
             setIsNavigatingToOrg(false)
             switchOrg(org)
-            push(`/organisation`)
+            push(`${asPath}/services`)
         }, 3000);
     }
 
