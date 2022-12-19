@@ -20,7 +20,7 @@ export default function Login(){
     useEffect(() => {
       if(isAuthenticated){
         // navigate to lounge
-          replace('/organizations')
+          replace('/organization')
       }
     }, [isAuthenticated, replace]) 
 

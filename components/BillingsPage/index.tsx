@@ -60,29 +60,30 @@ export default function BillingsView(){
                 </Col>
             </Row> */}
 
-            {state.length<1
-            ?<Button type='link' style={{display:'flex', alignItems:'center'}} icon={<PlusCircleOutlined />} onClick={openCreateForm}>Add new bank account</Button>
-            : <BankAccountsList
-                bankAccounts={[]}
-                onCreateBankAccount={openCreateForm}
-                onDeleteBankAccount={deleteItem}
-                onSelectBankAccount={selectItemToEdit}
-            />}
+            {/* {state.length<1 */}
+            {/* ? */}
+            <Button type='link' disabled style={{display:'flex', alignItems:'center'}} icon={<PlusCircleOutlined />} onClick={openCreateForm}>Add new bank account</Button>
+            {/* // : <BankAccountsList
+            //     bankAccounts={[]}
+            //     onCreateBankAccount={openCreateForm}
+            //     onDeleteBankAccount={deleteItem}
+            //     onSelectBankAccount={selectItemToEdit}
+            // />} 
 
-            <Modal title="Create new bank acount" open={showCreateForm} footer={null} onCancel={closeCreateForm}>
-                <CreateBankAccountForm
-                    onCloseForm={closeCreateForm}
-                    onCreateBankAccount={createItem}
-                />        
-            </Modal>
+            // <Modal title="Create new bank acount" open={showCreateForm} footer={null} onCancel={closeCreateForm}>
+            //     <CreateBankAccountForm
+            //         onCloseForm={closeCreateForm}
+            //         onCreateBankAccount={createItem}
+            //     />        
+            // </Modal>
 
-            <Modal title="Edit bank account" open={showEditForm} footer={null} onCancel={closeEditForm}>
-                <EditBankAccountForm
-                    onCloseEditForm={closeEditForm}
-                    onEditBankAccount={editItem}
-                    initValues={itemToEdit}
-                />        
-            </Modal>
+            // <Modal title="Edit bank account" open={showEditForm} footer={null} onCancel={closeEditForm}>
+            //     <EditBankAccountForm
+            //         onCloseEditForm={closeEditForm}
+            //         onEditBankAccount={editItem}
+            //         initValues={itemToEdit}
+            //     />        
+            // </Modal> */}
         </div>
         )
     }
