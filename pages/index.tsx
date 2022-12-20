@@ -2,7 +2,7 @@ import {Button, Typography, Card, Spin} from 'antd'
 import { useRouter } from 'next/router'
 import { useEffect,useState } from 'react'
 import { useAuthContext } from '../context/AuthContext';
-import { deleteStorage, setStorage } from '../utils/storage'
+
 const {Title,Text} = Typography;
 
 export default function Login(){
@@ -19,7 +19,10 @@ export default function Login(){
 
     useEffect(() => {
       if(isAuthenticated){
-        // navigate to lounge
+        // check users currrent role
+        // navigate user accordingly
+        // if user is manager, navigate to manager page
+        // if user is admin, navigate to organizations page
           replace('/organization')
       }
     }, [isAuthenticated, replace]) 

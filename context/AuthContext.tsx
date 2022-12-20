@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import React,{useState,useContext,createContext, ReactNode, useEffect, useMemo, useCallback} from 'react';
+import useLocalStorage from '../hooks/useLocalStorage';
 import { deleteStorage, getStorage, setStorage } from '../utils/storage';
 
 
@@ -7,6 +8,7 @@ const AuthContext = createContext<Values|undefined>(undefined);
 
 type Values = {
     isAuthenticated: boolean,
+    currentUser: any,
     setIsAuthenticated: (isAuthenticate:boolean)=>void,
     paseto: string | undefined | null | string[],
     logout: ()=>void
@@ -21,6 +23,7 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
     const {push,replace,query} = useRouter()
 
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+    const [currentUser, setCurrentUser] = useLocalStorage('currentUser',{email:'mujahid.bappai@yahoo.com',role:'ADMIN'})
 
     const [paseto, setPaseto] =useState<string|string[]|undefined>(()=>{
         const storedPaseto = getStorage('PLATFORM_PASETO')
@@ -30,17 +33,21 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
         return ''
     })
 
-    // Get paseto that go passed through query parameter
-    // from auth-web
+    /*
+    * Get paseto that got passed through query parameter
+    * from auth-web
+    */ 
     const pasetoFromUrl = query.paseto 
 
 
+    /*
+    * Effect for setting isAuthenticated state to true if paseto exist
+    * in local storage
+    */
     useEffect(()=>{
         if(paseto !== '' && paseto !== null){
             setIsAuthenticated(true)
-            // take user to desired route
         }
-        // take user to login page
     },[paseto])
 
     useEffect(() => {
@@ -54,6 +61,8 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
         }
 
     }, [pasetoFromUrl])
+
+    // Effect for decoding user paseto and fetching user role.
 
 
     const logout = () =>{
@@ -69,6 +78,7 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
     const values: Values = {
         isAuthenticated,
         setIsAuthenticated,
+        currentUser,
         paseto,
         logout
     }
