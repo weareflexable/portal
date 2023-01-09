@@ -44,8 +44,8 @@ export default function ManagerOrgsLayout({children}:Props){
             label: <Text onClick={()=>navigateToSubPage('inReview')}>In Review</Text>
         },
         {
-            key:'denied',
-            label: <Text onClick={()=>navigateToSubPage('denied')}>Denied</Text>
+            key:'rejected',
+            label: <Text onClick={()=>navigateToSubPage('rejected')}>Rejected</Text>
         },
         {
             key:'deActivated',

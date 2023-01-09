@@ -46,13 +46,13 @@ export default function ApprovedOrgs(){
         return res; 
     }
 
-    async function rejectOrg(orgId:string){
+    async function reActivateOrg(orgId:string){
         const res = await axios({
             method:'patch',
             url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,
             data:{
                 key:'status',
-                value: '4',
+                value: '1',
                 org_id: orgId
             },
             headers:{
@@ -62,39 +62,24 @@ export default function ApprovedOrgs(){
         return res; 
     }
 
-    const acceptOrgMutation = useMutation(['acceptOrgMutation'],{
+    const reActivateOrgMutation = useMutation(['acceptOrgMutation'],{
         mutationFn: acceptOrg,
         onSuccess:(data:any)=>{
             console.log('successfully mutate data', data)
-            queryClient.invalidateQueries({queryKey:['approvedOrgs']})
+            queryClient.invalidateQueries({queryKey:['rejectedOrgs']})
         },
         onError:()=>{
             console.log('Error changing status')
         }
     })
 
-    const rejectOrgMutation = useMutation(['rejectOrgMutation'],{
-        mutationFn: rejectOrg,
-        onSuccess:(data:any)=>{
-            console.log('successfully mutate data', data)
-            queryClient.invalidateQueries({queryKey:['approvedOrgs']})
-        },
-        onError:()=>{
-            console.log('Error changing status')
-        }
-    })
-
-    function rejectOrgHandler(org:any){
+    
+    function reActivateOrgHandler(org:any){
         setSelelectedOrg(org.org_id)
-        rejectOrgMutation.mutate(org.org_id)
-
-    }
-    function acceptOrgHandler(org:any){
-        setSelelectedOrg(org.org_id)
-        acceptOrgMutation.mutate(org.org_id)
+        reActivateOrgMutation.mutate(org.org_id)
     }
 
-    const orgQuery = useQuery({queryKey:['approvedOrgs'], queryFn:fetchApprovedOrgs, enabled:paseto !== ''})
+    const orgQuery = useQuery({queryKey:['deActivatedOrgs'], queryFn:fetchApprovedOrgs, enabled:paseto !== ''})
     const approvedOrgs = orgQuery.data && orgQuery.data.data
 
 
@@ -108,7 +93,7 @@ export default function ApprovedOrgs(){
                 loading={orgQuery.isLoading}
                 dataSource={approvedOrgs}
                 renderItem={(item:any )=> <List.Item
-                    actions={[<Button key={item.id} shape='round' loading={selectedOrg === item.org_id && rejectOrgMutation.isLoading}  onClick={()=>rejectOrgHandler(item)} danger type="text" >Reject Request</Button>,<Button key={item.id} shape='round' loading={selectedOrg === item.org_id && acceptOrgMutation.isLoading} onClick={()=>acceptOrgHandler(item)} type='primary' >Accept Request</Button>]}
+                    actions={[<Button key={item.id} shape='round' loading={selectedOrg === item.org_id && reActivateOrgMutation.isLoading} onClick={()=>reActivateOrgHandler(item)} type='primary' >Re-activate</Button>]}
                     style={{ border: 'none', backgroundColor: '#f9f9f9', marginBottom: '.5em', padding: '1em', borderRadius: '4px' }}
                     key={item.id}
                 >

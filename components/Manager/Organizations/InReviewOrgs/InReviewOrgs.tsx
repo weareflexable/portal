@@ -1,19 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, List, Button, Avatar, Typography, Tag } from "antd";
 import axios from "axios";
-import {PlusCircleOutlined} from '@ant-design/icons'
 import { useAuthContext } from "../../../../context/AuthContext";
 import { useState } from "react";
 
 
-export default function ApprovedOrgs(){
+export default function InReviewOrgs(){
 
     const {paseto} = useAuthContext()
     const queryClient = useQueryClient()
 
     const [selectedOrg, setSelelectedOrg] = useState(null)
 
-    async function fetchApprovedOrgs(){
+    async function fetchInReviewOrgs(){
     const res = await axios({
             method:'get',
             url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/orgs`,
@@ -66,7 +65,7 @@ export default function ApprovedOrgs(){
         mutationFn: acceptOrg,
         onSuccess:(data:any)=>{
             console.log('successfully mutate data', data)
-            queryClient.invalidateQueries({queryKey:['approvedOrgs']})
+            queryClient.invalidateQueries({queryKey:['inReviewOrgs']})
         },
         onError:()=>{
             console.log('Error changing status')
@@ -77,7 +76,7 @@ export default function ApprovedOrgs(){
         mutationFn: rejectOrg,
         onSuccess:(data:any)=>{
             console.log('successfully mutate data', data)
-            queryClient.invalidateQueries({queryKey:['approvedOrgs']})
+            queryClient.invalidateQueries({queryKey:['inReviewOrgs']})
         },
         onError:()=>{
             console.log('Error changing status')
@@ -94,8 +93,8 @@ export default function ApprovedOrgs(){
         acceptOrgMutation.mutate(org.org_id)
     }
 
-    const orgQuery = useQuery({queryKey:['approvedOrgs'], queryFn:fetchApprovedOrgs, enabled:paseto !== ''})
-    const approvedOrgs = orgQuery.data && orgQuery.data.data
+    const orgQuery = useQuery({queryKey:['inReviewOrgs'], queryFn:fetchInReviewOrgs, enabled:paseto !== ''})
+    const InReviewOrgs = orgQuery.data && orgQuery.data.data
 
 
 
@@ -106,7 +105,7 @@ export default function ApprovedOrgs(){
                 size="small"
                 bordered={false}
                 loading={orgQuery.isLoading}
-                dataSource={approvedOrgs}
+                dataSource={InReviewOrgs}
                 renderItem={(item:any )=> <List.Item
                     actions={[<Button key={item.id} shape='round' loading={selectedOrg === item.org_id && rejectOrgMutation.isLoading}  onClick={()=>rejectOrgHandler(item)} danger type="text" >Reject Request</Button>,<Button key={item.id} shape='round' loading={selectedOrg === item.org_id && acceptOrgMutation.isLoading} onClick={()=>acceptOrgHandler(item)} type='primary' >Accept Request</Button>]}
                     style={{ border: 'none', backgroundColor: '#f9f9f9', marginBottom: '.5em', padding: '1em', borderRadius: '4px' }}
