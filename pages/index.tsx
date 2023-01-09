@@ -8,7 +8,7 @@ const {Title,Text} = Typography;
 export default function Login(){
 
     const {replace} = useRouter()
-    const {isAuthenticated}= useAuthContext()
+    const {isAuthenticated, currentUser}= useAuthContext()
   
 
     const handleLogin = ()=>{ 
@@ -18,14 +18,14 @@ export default function Login(){
     }
 
     useEffect(() => {
-      if(isAuthenticated){
+      if(isAuthenticated && currentUser.id){
         // check users currrent role
         // navigate user accordingly
         // if user is manager, navigate to manager page
         // if user is admin, navigate to organizations page
-          replace('/organization')
+          replace('/organizations')
       }
-    }, [isAuthenticated, replace]) 
+    }, [isAuthenticated, currentUser, replace]) 
 
 
     if(!isAuthenticated){

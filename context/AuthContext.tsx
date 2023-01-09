@@ -2,6 +2,8 @@ import { useRouter } from 'next/router';
 import React,{useState,useContext,createContext, ReactNode, useEffect, useMemo, useCallback} from 'react';
 import useLocalStorage from '../hooks/useLocalStorage';
 import { deleteStorage, getStorage, setStorage } from '../utils/storage';
+import  {useQuery} from '@tanstack/react-query'
+import axios from 'axios';
 
 
 const AuthContext = createContext<Values|undefined>(undefined);
@@ -23,7 +25,7 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
     const {push,replace,query} = useRouter()
 
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-    const [currentUser, setCurrentUser] = useLocalStorage('currentUser',{email:'mujahid.bappai@yahoo.com',role:'ADMIN'})
+    const [currentUser, setCurrentUser] = useLocalStorage('currentUser','')
 
     const [paseto, setPaseto] =useState<string|string[]|undefined>(()=>{
         const storedPaseto = getStorage('PLATFORM_PASETO')
@@ -63,7 +65,26 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
     }, [pasetoFromUrl])
 
     // Effect for decoding user paseto and fetching user role.
+    async function fetchCurrentUser(){
+        // use axios to fetch
+        const res =  await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/users`,{
+            headers:{
+                "Authorization": paseto
+            }
+        })
+        return res.data.data[0]; 
+    }
 
+    const userQuery = useQuery({
+        queryKey:['user'], 
+        queryFn:fetchCurrentUser, 
+        enabled:paseto!=='', 
+        onSuccess:(user)=>{setCurrentUser(user)}, 
+        staleTime:Infinity,
+        retry:false
+    })
+    console.log(userQuery.data)
+    
 
     const logout = () =>{
         setIsAuthenticated(false)
