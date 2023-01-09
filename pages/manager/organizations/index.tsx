@@ -5,7 +5,8 @@ import { Typography,Col, Row, Button, Tabs } from 'antd'
 // import AdminOrgs from '../components/AdminOrgs'
 import TabPane from 'antd/lib/tabs/TabPane'
 // import AwaitingOrgs from '../components/AdminOrgs/AwaitingOrgsTable'
-import ManagerLayout from '../../components/Manager/Layout/Layout'
+import ManagerLayout from '../../../components/Manager/Layout/Layout'
+import ManagerOrgsLayout from '../../../components/Manager/Organizations/Layout'
 const {Title} = Typography;
 
 export default function Bookings(){
@@ -15,13 +16,6 @@ export default function Bookings(){
             <Row>
                 <Col offset={1} span={21}>
                     <Title style={{marginLeft: '1em', marginTop:'1em'}} level={3}>Organizations</Title>
-
-                        <Tabs defaultActiveKey="1">
-                            <TabPane tab="Approved" key="approved" />
-                            <TabPane tab="Awaiting approval" key="awaitingApproval" />
-                        </Tabs>
-                        
-                    
                     <Content
                         style={{
                         padding: '1em',
@@ -31,9 +25,9 @@ export default function Bookings(){
                         maxWidth:'100%',
                         }}
                     > 
-                        {/* <AdminOrgs/> */}
-                        {/* <AwaitingOrgs/> */}
-                        <div>Table for flexable admins</div>
+                        <ManagerOrgsLayout>
+                            
+                        </ManagerOrgsLayout>
                     </Content>
                 </Col>
             </Row>

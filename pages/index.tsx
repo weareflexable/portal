@@ -23,7 +23,7 @@ export default function Login(){
         // navigate user accordingly
         // if user is manager, navigate to manager page
         // if user is admin, navigate to organizations page
-          replace('/organizations')
+          replace('/manager/organizations')
       }
     }, [isAuthenticated, currentUser, replace]) 
 

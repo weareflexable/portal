@@ -83,7 +83,7 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
         staleTime:Infinity,
         retry:false
     })
-    console.log(userQuery.data)
+
     
 
     const logout = () =>{
