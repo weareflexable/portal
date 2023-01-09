@@ -2,7 +2,7 @@ import { Layout, Menu,Typography } from "antd";
 import { useRouter } from "next/router";
 const {Text} = Typography;
 const {Content, Sider} = Layout
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 
 
 interface Props{
@@ -11,6 +11,23 @@ interface Props{
 export default function ManagerOrgsLayout({children}:Props){
 
     const router = useRouter()
+    const [pageRoutes, setPageRoutes] = useState({basePath:'',selectedRoute:'dashboard'})
+
+    const splittedRoutes = router.asPath.split('/')
+    console.log(splittedRoutes)
+    const selectedRoute = splittedRoutes && splittedRoutes[3]
+    splittedRoutes.pop()
+
+    // useEffect(() => {
+    //     if(router.isReady){
+    //       const basePath =splittedRoutes.join('/')
+    //         setPageRoutes({
+    //           basePath:basePath,
+    //           selectedRoute:selectedRoute,
+    //         })
+    //       }
+    //   }, [router.isReady])
+    
 
     function navigateToSubPage(pageRoute:string){
         router.push(`/manager/organizations/${pageRoute}`)
@@ -41,7 +58,7 @@ export default function ManagerOrgsLayout({children}:Props){
         <Sider style={{ background: "#ffffff" }} width={200}>
           <Menu
             mode="inline"
-            defaultSelectedKeys={['approved']}
+            defaultSelectedKeys={[selectedRoute]}
             style={{ height: '100%', margin:0 }}
             items={navItems}
           />
