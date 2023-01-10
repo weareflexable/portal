@@ -2,6 +2,7 @@ import React from 'react'
 import { Content } from 'antd/lib/layout/layout'
 import { Typography,Row, Col } from 'antd'
 import ManagerLayout from '../../components/Manager/Layout/Layout'
+import ManagerBookingsView from '../../components/Manager/Bookings/Bookings'
 
 const {Title} = Typography
 
@@ -12,7 +13,7 @@ export default function AdminStaff(){
         
         <ManagerLayout>
             <Row>
-                <Col offset={1} span={15}>
+                <Col offset={1} span={22}>
                     <Title style={{marginLeft: '1em', marginTop:'1em'}} level={3}>Organization bookings</Title>
                     <Content
                         style={{
@@ -23,7 +24,7 @@ export default function AdminStaff(){
                         maxWidth:'100%',
                         }}
                     >
-                        {/* <StaffView/> */}
+                        <ManagerBookingsView/>
                     </Content>
                 </Col>
             </Row>
