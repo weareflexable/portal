@@ -14,9 +14,9 @@ interface CurrentUserProps{
 }
 
 
-export default function CurrentUser({user={email:'mbappai@yahoo.com',role:'admin'}, openOrgSwitcher}:CurrentUserProps){
+export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
 
-    const {setIsAuthenticated,logout} = useAuthContext()
+    const {setIsAuthenticated,logout,currentUser} = useAuthContext()
     const {currentService} = useServicesContext()
     const router = useRouter()
     const {orgUserRole} = useOrgContext()
@@ -52,7 +52,6 @@ export default function CurrentUser({user={email:'mbappai@yahoo.com',role:'admin
           style={
             {
               display:'flex', 
-              marginLeft:'1.4em',
             cursor:'pointer', 
             //  background:'#f4f4f4' , 
             borderRadius:'50px', 
@@ -61,9 +60,9 @@ export default function CurrentUser({user={email:'mbappai@yahoo.com',role:'admin
             alignItems:'center',
           }}>
           <Avatar src={''}/>
-          <div style={{display:'flex', flexDirection:'column'}}>
-            {/* <Title ellipsis level={5} style={{marginBottom:'.001em', width:'150px', marginRight:'.5em', marginLeft:'.3em'}}>mujahidbappai@gmail.com</Title> */}
-            <Text type='secondary' style={{width:'100%', marginTop:'0', maxWidth:'50px', marginLeft:'.3em'}}>{orgUserRole}</Text>
+          <div style={{display:'flex', marginLeft:'.4rem', flexDirection:'column'}}>
+            <Text style={{width:'100%', marginTop:'0', maxWidth:'50px', marginLeft:'.3em'}}>{currentUser.name}</Text>
+            <Text type='secondary' ellipsis style={{width:'150px', marginBottom:'0', marginRight:'.5em', marginLeft:'.3em'}}>{currentUser.email}</Text>
           </div>
      </div>
     </Dropdown>

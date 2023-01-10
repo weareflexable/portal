@@ -69,38 +69,25 @@ const {Text} = Typography
     return (
    <ErrorBoundary name={`Layout for ${pageRoutes.basePath}`} >
       <Layout style={{minHeight:'100vh',height:'100%'}}>
-      {/* { showOrgSwitcher?<OrgSwitcherModal
-          isModalOpen={showOrgSwitcher}
-          onCloseModal={()=>setShowOrgSwitcher(!showOrgSwitcher)}
-        />:null}
-        {showSwitcherModal?<ServicesSwitcherModal
-          isModalOpen={showSwitcherModal} 
-          onCloseModal={()=>setSwitcherModal(!showSwitcherModal)}
-        />:null} */}
-
           <Row>
             <Header style={{lineHeight:'1.4',background:'white', width:'100%', display:'flex', flex: '3', justifyContent:'space-between', alignItems:'center'}}>
-            <Col offset={1} span={10}>
-                <div style={{display:'flex',  height:'100%', justifyContent:'space-between'}}>
+            <Col style={{display:'flex', justifyContent:'space-between',alignItems:'center'}} offset={1} span={22}>
+                <div style={{display:'flex', width:'350px',  height:'100%', justifyContent:'space-between'}}>
                   <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`/manager/dashboard`} ><a style={{color:`${selectedRoute==='dashboard'?'#1890ff':'black'}`}}>Dashboard</a></Link> </div>
                   <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`/manager/organizations`} ><a style={{color:`${selectedRoute==='organizations'?'#1890ff':'black'}`}}>Organizations</a></Link> </div>
                   <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`/manager/bookings`} ><a style={{color:`${selectedRoute==='bookings'?'#1890ff':'black'}`}}>Bookings</a></Link> </div> 
                   <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`/manager/users`} ><a style={{color:`${selectedRoute==='users'?'#1890ff':'black'}`}}>Users</a></Link> </div> 
                 </div>
+
+                <div style={{display:'flex', justifyContent:'flex-end'}}>
+
+                  { !isAuthenticated ? <Button type='primary' shape='round' onClick={()=>{location.href=`${process.env.NEXT_PUBLIC_AUTH}/login?redirect_to='portal`}}>Login</Button>:
+                    <CurrentUser openOrgSwitcher={()=>setShowOrgSwitcher(!showOrgSwitcher)} user={{email:'mbappai@yahoo.com',role:'admin'}}/>
+                  }
+                  </div>
+                    
             </Col>
 
-            <Col offset={2} span={10}>
-                  {
-                    !isAuthenticated ? <Button type='primary' onClick={()=>{location.href=`${process.env.NEXT_PUBLIC_AUTH}/login?redirect_to='portal`}}>Login</Button>
-                    :(
-                      <div style={{display:'flex',flex:'2'}}>
-
-                        <CurrentUser openOrgSwitcher={()=>setShowOrgSwitcher(!showOrgSwitcher)} user={{email:'mbappai@yahoo.com',role:'admin'}}/>
-                      </div>
-                      )
-                    }
-      
-                    </Col>
                 </Header> 
                     
               
