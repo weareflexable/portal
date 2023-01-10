@@ -54,6 +54,7 @@ export default function ManagerOrgsLayout({children}:Props){
     ]
 
     return(
+        
         <Layout style={{ background: "#ffffff"}}>
         <Sider style={{ background: "#ffffff" }} width={200}>
           <Menu

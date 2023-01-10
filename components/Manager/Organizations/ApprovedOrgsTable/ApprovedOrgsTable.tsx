@@ -19,7 +19,7 @@ export default function ApprovedOrgs(){
             url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/orgs`,
             data:{
                 key:'status',
-                value: '1',
+                value: '4',
                 page_number: 0,
                 page_size: 6
             },
@@ -27,7 +27,9 @@ export default function ApprovedOrgs(){
                 "Authorization": paseto
             }
         })
+
         return res.data;
+   
     }
 
     async function acceptOrg(orgId: string){

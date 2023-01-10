@@ -48,7 +48,7 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
     */
     useEffect(()=>{
         if(paseto !== '' && paseto !== null){
-            setIsAuthenticated(true)
+            setIsAuthenticated(true) 
         }
     },[paseto])
 
