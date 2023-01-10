@@ -11,6 +11,7 @@ const countryList = require('country-list')
 import codes from 'country-calling-code';
 import { useRouter } from 'next/router';
 import { useAuthContext } from '../context/AuthContext';
+import CurrentUser from '../components/Header/CurrentUser/CurrentUser';
 
 
 
@@ -26,21 +27,32 @@ reader.onerror = (error) => reject(error);
 
 export default function Profile(){
 
-    const placeholder = 'placeholder.png'
-    const [profilePic, setProfilePic] = useState(placeholder)
+    // placeholder hash on nft.storage
+    const placeholder = 'bafkreic3hz2mfy7rpyffzwbf2jfklehmuxnvvy3ardoc5vhtkq3cjd7of4'
+
+    const [profilePic, setProfilePic] = useState<string>(placeholder)
     const router  = useRouter()
     const {currentUser} = useAuthContext()
     // This state is just enabled to mimick behaviour of fetching user data from db
     const [isLoadingProfile, setIsLoadingProfile] = useState(true)
 
-    console.log(currentUser)
+    const [form] = Form.useForm();
+
+    useEffect(() => {
+        const profilePicHash = currentUser.profile_pic !== ''? currentUser.profilePic: placeholder;
+        setProfilePic(profilePicHash)
+        form.setFieldsValue({
+            fullName: currentUser.name,
+            phone: currentUser.mobile_number,
+            country: currentUser.country
+        })
+    }, [])
 
     useEffect(()=>{
         setTimeout(()=>{
             setIsLoadingProfile(false)
         },3000)
     })
-
 
     // check if user has uploaded profile picture
     const isProfilePic = profilePic !== placeholder
@@ -73,6 +85,12 @@ export default function Profile(){
 
         return e?.fileList;
       };
+
+      function updateUserProfileHandler(formData:any){
+
+      }
+
+
 
 
       if(isLoadingProfile){
@@ -112,15 +130,15 @@ export default function Profile(){
                 > 
 
             <Form
-                // form={form}
+                form={form}
                 layout='vertical'
                 name="userProfile"
-                onFinish={handleEditProfile}
+                onFinish={updateUserProfileHandler}
                 scrollToFirstError
             >
                     {/* <Form.Item> */}
 
-                    <Image src={profilePic} alt='Profile picture' style={{borderRadius:'200px',objectFit:'cover',border:'1px solid #e5e5e5'}} height={200} width={200}/>  
+                    <Image src={`https://nftstorage.link/ipfs/${profilePic}`} alt='Profile picture' style={{borderRadius:'200px',objectFit:'cover',border:'1px solid #e5e5e5'}} height={200} width={200}/>  
                     {/* </Form.Item> */}
                     <Form.Item
                         name="profilePic"
@@ -177,7 +195,7 @@ export default function Profile(){
                         label="Phone Number"
                         rules={[{ required: true, message: 'Please input your phone number!' }]}
                     >
-                        <Input addonBefore={prefixSelector} placeholder={'44124321'} style={{ width: '100%' }} />
+                        <Input addonBefore={getPrefixSelector(currentUser.country)} placeholder={'44124321'} style={{ width: '100%' }} />
                     </Form.Item>
 
 
@@ -198,13 +216,20 @@ export default function Profile(){
 }
 
 
-
-const prefixSelector = (
-    <Form.Item name="prefix" noStyle>
-      <Select defaultValue={'1'} style={{ width: 120 }}>
-        {codes.map(code=>
-            <Option key={code.country} value={code.countryCodes[0]}>+{code.countryCodes[0]}</Option>
-        )}
-      </Select>
-    </Form.Item>
-  );
+function getPrefixSelector(userCountry:any){
+    let currenUserCountry = codes.forEach((item,index) =>{
+        item.country === userCountry ? item.countryCodes[0]:'1'
+    })
+    return(
+        <Form.Item name="prefix" noStyle>
+        <Select defaultValue={'1'} style={{ width: 120 }}>
+          {codes.map(code=>
+              <Option key={code.country} value={code.countryCodes[0]}>+{code.countryCodes[0]}</Option>
+          )}
+        </Select>
+      </Form.Item> 
+    )
+}
+// const prefixSelector = (
+   
+//   );
