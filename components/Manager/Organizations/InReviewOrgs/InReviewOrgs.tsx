@@ -15,13 +15,7 @@ export default function InReviewOrgs(){
     async function fetchInReviewOrgs(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/orgs`,
-            data:{
-                key:'status',
-                value: '1',
-                page_number: 0,
-                page_size: 6
-            },
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/orgs?key=status&value=2&page_number=0&page_size=10`,
             headers:{
                 "Authorization": paseto
             }

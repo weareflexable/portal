@@ -85,6 +85,7 @@ const {Text} = Typography
                   <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`/manager/dashboard`} ><a style={{color:`${selectedRoute==='dashboard'?'#1890ff':'black'}`}}>Dashboard</a></Link> </div>
                   <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`/manager/organizations`} ><a style={{color:`${selectedRoute==='organizations'?'#1890ff':'black'}`}}>Organizations</a></Link> </div>
                   <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`/manager/bookings`} ><a style={{color:`${selectedRoute==='bookings'?'#1890ff':'black'}`}}>Bookings</a></Link> </div> 
+                  <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`/manager/users`} ><a style={{color:`${selectedRoute==='users'?'#1890ff':'black'}`}}>Users</a></Link> </div> 
                 </div>
             </Col>
 

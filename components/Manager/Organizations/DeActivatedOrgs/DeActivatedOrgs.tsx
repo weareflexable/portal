@@ -13,16 +13,10 @@ export default function ApprovedOrgs(){
 
     const [selectedOrg, setSelelectedOrg] = useState(null)
 
-    async function fetchApprovedOrgs(){
+    async function fetchDeActivatedOrgs(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/orgs`,
-            data:{
-                key:'status',
-                value: '1',
-                page_number: 0,
-                page_size: 6
-            },
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/orgs?key=status&value=0&page_number=0&page_size=10`,
             headers:{
                 "Authorization": paseto
             }
@@ -79,7 +73,7 @@ export default function ApprovedOrgs(){
         reActivateOrgMutation.mutate(org.org_id)
     }
 
-    const orgQuery = useQuery({queryKey:['deActivatedOrgs'], queryFn:fetchApprovedOrgs, enabled:paseto !== ''})
+    const orgQuery = useQuery({queryKey:['deActivatedOrgs'], queryFn:fetchDeActivatedOrgs, enabled:paseto !== ''})
     const approvedOrgs = orgQuery.data && orgQuery.data.data
 
 
