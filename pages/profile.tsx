@@ -1,6 +1,7 @@
-import {useState} from 'react'
-import {Form,Input,Col, Image, Row, Select, Upload, Button, Layout, Typography, Avatar} from 'antd'
+import {useEffect, useState} from 'react'
+import {Form,Input,Col, Image, Row, Select, Upload, Button, Layout, Typography, Avatar, Spin} from 'antd'
 import {UploadOutlined, ArrowLeftOutlined} from '@ant-design/icons'
+import {useQuery} from '@tanstack/react-query';
 
 const {Option} = Select
 const {Title} = Typography;
@@ -9,6 +10,7 @@ const {Content} = Layout
 const countryList = require('country-list')
 import codes from 'country-calling-code';
 import { useRouter } from 'next/router';
+import { useAuthContext } from '../context/AuthContext';
 
 
 
@@ -27,6 +29,18 @@ export default function Profile(){
     const placeholder = 'placeholder.png'
     const [profilePic, setProfilePic] = useState(placeholder)
     const router  = useRouter()
+    const {currentUser} = useAuthContext()
+    // This state is just enabled to mimick behaviour of fetching user data from db
+    const [isLoadingProfile, setIsLoadingProfile] = useState(true)
+
+    console.log(currentUser)
+
+    useEffect(()=>{
+        setTimeout(()=>{
+            setIsLoadingProfile(false)
+        },3000)
+    })
+
 
     // check if user has uploaded profile picture
     const isProfilePic = profilePic !== placeholder
@@ -59,6 +73,15 @@ export default function Profile(){
 
         return e?.fileList;
       };
+
+
+      if(isLoadingProfile){
+        return(
+            <div style={{display:'flex', background:'#ffffff', width:'100%', height:'100vh', justifyContent:'center', alignItems:'center'}}>
+                <Spin tip='Loading user profile ...' size='large'/>
+            </div>
+        )
+      }
 
 
     return(

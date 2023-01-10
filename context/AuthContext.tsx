@@ -79,7 +79,9 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
         queryKey:['user'], 
         queryFn:fetchCurrentUser, 
         enabled:paseto!=='', 
-        onSuccess:(user)=>{setCurrentUser(user)}, 
+        onSuccess:(user)=>{
+            setCurrentUser(user && user)
+        }, 
         staleTime:Infinity,
         retry:false
     })
