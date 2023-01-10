@@ -29,7 +29,7 @@ export default function InReviewOrgs(){
             url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,
             data:{
                 key:'status',
-                value: '2',
+                value: '1',
                 org_id: orgId
             },
             headers:{
@@ -57,8 +57,7 @@ export default function InReviewOrgs(){
 
     const acceptOrgMutation = useMutation(['acceptOrgMutation'],{
         mutationFn: acceptOrg,
-        onSuccess:(data:any)=>{
-            console.log('successfully mutate data', data)
+        onSuccess:()=>{
             queryClient.invalidateQueries({queryKey:['inReviewOrgs']})
         },
         onError:()=>{
@@ -68,8 +67,7 @@ export default function InReviewOrgs(){
 
     const rejectOrgMutation = useMutation(['rejectOrgMutation'],{
         mutationFn: rejectOrg,
-        onSuccess:(data:any)=>{
-            console.log('successfully mutate data', data)
+        onSuccess:()=>{
             queryClient.invalidateQueries({queryKey:['inReviewOrgs']})
         },
         onError:()=>{
