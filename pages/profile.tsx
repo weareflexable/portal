@@ -1,13 +1,14 @@
 import {useState} from 'react'
 import {Form,Input,Col, Image, Row, Select, Upload, Button, Layout, Typography, Avatar} from 'antd'
-import {UploadOutlined} from '@ant-design/icons'
-import AppLayout from '../components/shared/Layout/layout';
+import {UploadOutlined, ArrowLeftOutlined} from '@ant-design/icons'
+
 const {Option} = Select
 const {Title} = Typography;
 const {Content} = Layout
 
 const countryList = require('country-list')
 import codes from 'country-calling-code';
+import { useRouter } from 'next/router';
 
 
 
@@ -25,6 +26,7 @@ export default function Profile(){
 
     const placeholder = 'placeholder.png'
     const [profilePic, setProfilePic] = useState(placeholder)
+    const router  = useRouter()
 
     // check if user has uploaded profile picture
     const isProfilePic = profilePic !== placeholder
@@ -60,10 +62,20 @@ export default function Profile(){
 
 
     return(
-        <AppLayout>
+        <div style={{background:'#ffffff', minHeight:'100vh'}}>
+            <div style={{marginBottom:'3rem', padding: '1rem', borderBottom:'1px solid #e5e5e5',}}>
+                <Row>
+                    <Col offset={1}> 
+                        <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
+                            <Button shape='round' style={{marginRight:'1rem'}} type='text' onClick={()=>router.back()} icon={<ArrowLeftOutlined/>}/>
+                            <Title style={{margin:'0'}} level={3}>Update profile</Title>
+                        </div>
+                    </Col>
+                </Row>
+            </div>
         <Row>
             <Col offset={1} span={21}>
-                <Title style={{marginLeft: '1em', marginTop:'1em'}} level={2}>User Profile</Title>
+                {/* <Title style={{marginLeft: '1em', marginTop:'1em'}} level={2}>User Profile</Title> */}
                 <Content
                     style={{
                     padding: '1em',
@@ -157,7 +169,7 @@ export default function Profile(){
                 </Content>
             </Col>
         </Row>
-    </AppLayout>
+     </div>
            
     )
 }
