@@ -15,7 +15,7 @@ export default function InReviewOrgs(){
     async function fetchInReviewOrgs(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/orgs?key=status&value=2&page_number=0&page_size=10`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/orgs?key=status&value=2&pageNumber=0&pageSize=10`,
             headers:{
                 "Authorization": paseto
             }
@@ -99,7 +99,7 @@ export default function InReviewOrgs(){
                 loading={orgQuery.isLoading}
                 dataSource={InReviewOrgs}
                 renderItem={(item:any )=> <List.Item
-                    actions={[<Button key={item.id} shape='round' loading={selectedOrg === item.org_id && rejectOrgMutation.isLoading}  onClick={()=>rejectOrgHandler(item)} danger type="text" >Reject Request</Button>,<Button key={item.id} shape='round' loading={selectedOrg === item.org_id && acceptOrgMutation.isLoading} onClick={()=>acceptOrgHandler(item)} type='primary' >Accept Request</Button>]}
+                    actions={[<Button key={item.id} shape='round' loading={selectedOrg === item.orgId && rejectOrgMutation.isLoading}  onClick={()=>rejectOrgHandler(item)} danger type="text" >Reject Request</Button>,<Button key={item.id} shape='round' loading={selectedOrg === item.org_id && acceptOrgMutation.isLoading} onClick={()=>acceptOrgHandler(item)} type='primary' >Accept Request</Button>]}
                     style={{ border: 'none', backgroundColor: '#f9f9f9', marginBottom: '.5em', padding: '1em', borderRadius: '4px' }}
                     key={item.id}
                 >

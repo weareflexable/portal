@@ -16,7 +16,7 @@ export default function ApprovedOrgs(){
     async function fetchDeActivatedOrgs(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/orgs?key=status&value=0&page_number=0&page_size=10`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/orgs?key=status&value=0&pageNumber=0&pageSize=10`,
             headers:{
                 "Authorization": paseto
             }
@@ -24,21 +24,6 @@ export default function ApprovedOrgs(){
         return res.data;
     }
 
-    async function acceptOrg(orgId: string){
-        const res = await axios({
-            method:'patch',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,
-            data:{
-                key:'status',
-                value: '2',
-                org_id: orgId
-            },
-            headers:{
-                "Authorization": paseto
-            }
-        })
-        return res; 
-    }
 
     async function reActivateOrg(orgId:string){
         const res = await axios({
@@ -57,7 +42,7 @@ export default function ApprovedOrgs(){
     }
 
     const reActivateOrgMutation = useMutation(['acceptOrgMutation'],{
-        mutationFn: acceptOrg,
+        mutationFn: reActivateOrg,
         onSuccess:(data:any)=>{
             console.log('successfully mutate data', data)
             queryClient.invalidateQueries({queryKey:['rejectedOrgs']})

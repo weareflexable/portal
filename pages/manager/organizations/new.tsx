@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import {Form, Row, Col, Input,Upload,Button,notification, Typography, Space, Select} from 'antd';
-import {UploadOutlined} from '@ant-design/icons'
+import {UploadOutlined, ArrowLeftOutlined} from '@ant-design/icons'
 const {Title} = Typography
 
 import { useRouter } from 'next/router';
@@ -133,13 +133,16 @@ export default function NewOrg(){
         <div style={{background:'#ffffff', minHeight:'100vh'}}>
             <div style={{marginBottom:'3rem', padding: '1rem', borderBottom:'1px solid #e5e5e5',}}>
                 <Row>
-                    <Col offset={3}> 
-                        <Title style={{marginTop:'0'}} level={3}>Create new organization</Title>
+                    <Col offset={1}> 
+                         <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
+                            <Button shape='round' style={{marginRight:'1rem'}} type='text' onClick={()=>router.back()} icon={<ArrowLeftOutlined/>}/>
+                            <Title style={{margin:'0'}} level={3}>Create new organization</Title>
+                        </div>
                     </Col>
                 </Row>
             </div>
             <Row >
-                <Col offset={3} span={8}>
+                <Col offset={2} span={8}>
                     
                     <Form
                     name="storeForm"
@@ -217,14 +220,14 @@ export default function NewOrg(){
                     </Form.Item>
 
                     {/* onCancelFormCreation */}
-                    <Form.Item style={{marginTop:'4rem'}}>
-                        <Space>
+                    <Form.Item style={{ marginTop:'4rem', width:'100%'}}>
+                        <Space >
                             <Button shape="round" onClick={()=>{}} type='ghost'>
                                 Cancel
                             </Button>
 
                             <Button shape="round" type="primary" size="large" loading={isHashingAssets || isCreatingData}  htmlType="submit" >
-                                Create new organization
+                                Create organization
                             </Button>
                         </Space>
                         

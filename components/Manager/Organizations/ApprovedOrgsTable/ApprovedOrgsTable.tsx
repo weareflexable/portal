@@ -15,7 +15,7 @@ export default function ApprovedOrgs(){
     async function fetchApprovedOrgs(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/orgs?key=status&value=1&page_number=0&page_size=10`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/orgs?key=status&value=1&pageNumber=0&pageSize=10`,
             headers:{
                 "Authorization": paseto
             }
@@ -73,7 +73,7 @@ export default function ApprovedOrgs(){
                 loading={orgQuery.isLoading}
                 dataSource={approvedOrgs}
                 renderItem={(item:any )=> <List.Item
-                    actions={[<Button key={item.id} shape='round' loading={selectedOrg === item.org_id && deActivateOrgMutation.isLoading} onClick={()=>deActivateOrgHandler(item)} type='primary' >De-activate</Button>]}
+                    actions={[<Button key={item.id} shape='round' loading={selectedOrg === item.orgId && deActivateOrgMutation.isLoading} onClick={()=>deActivateOrgHandler(item)} type='primary' >De-activate</Button>]}
                     style={{ border: 'none', backgroundColor: '#f9f9f9', marginBottom: '.5em', padding: '1em', borderRadius: '4px' }}
                     key={item.id}
                 >
