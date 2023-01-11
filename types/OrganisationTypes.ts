@@ -22,6 +22,25 @@ export interface Org {
     approved: boolean
 }
 
+export interface NewOrg{
+    status: number,
+    orgId: string,
+    name: string,
+    email: string,
+    phone: string,
+    street: string,
+    city: string,
+    country: string,
+    zipCode: string,
+    logoImageHash: string,
+    coverImageHash: string,
+    createdBy: string,
+    createdAt: string,
+    statusName: string,
+    updatedBy: string,
+    updatedAt: string
+}
+
 export interface ActiveOrgs extends Org {
     isActive:boolean
 }

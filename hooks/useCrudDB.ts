@@ -43,18 +43,18 @@ export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
     
 
     const fetchData = async(url:string)=>{
-        const {data} = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/${url}`,{
+        const {data} = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}${url}`,{
             headers:{
                 //@ts-ignore
                 "Authorization": paseto
             }
         })
-        return data?.payload;
+        return data.data;
     }
 
     const createDataHandler = async(newItem:any)=>{
         console.log('paseto',paseto)
-        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/${mutateUrl}`, newItem,{
+        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}${mutateUrl}`, newItem,{
             headers:{
                 //@ts-ignore
                 "Authorization": paseto
@@ -64,7 +64,7 @@ export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
     }
 
     const patchDataHandler = async(updatedItem:any)=>{
-        const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/${patchUrl}`,updatedItem,{
+        const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}${patchUrl}`,updatedItem,{
             headers:{
                 //@ts-ignore
                 "Authorization": paseto
@@ -111,7 +111,6 @@ export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
     const {isLoading:isPatchingData, data: patchedData} = patchData
 
     const {data, isLoading, isSuccess} = useQuery({queryKey:[...queryKeys],queryFn:()=>fetchData(fetchUrl),enabled:paseto !== ''})
-
 
     // return empty array if req successful and no payload
     const state: T[] = data && data

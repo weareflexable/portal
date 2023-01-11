@@ -1,14 +1,14 @@
 import React,{useState,useContext,createContext, ReactNode} from 'react';
 import useOrgs from '../hooks/useOrgs';
-import {Org} from '../types/OrganisationTypes'
+import {NewOrg, Org} from '../types/OrganisationTypes'
 
 const OrgContext = createContext<Values|undefined>(undefined);
 
 
 
 type Values = {
-    currentOrg: Org,
-    switchOrg: (org:Org)=>void,
+    currentOrg: NewOrg,
+    switchOrg: (org:NewOrg)=>void,
     orgUserRole: string,
     isAdmin: boolean,
     isStaff: boolean

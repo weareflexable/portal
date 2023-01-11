@@ -3,12 +3,18 @@ import { Card, List, Button, Avatar, Typography, Tag } from "antd";
 import axios from "axios";
 import { useAuthContext } from "../../../../context/AuthContext";
 import { useState } from "react";
+import { useRouter } from "next/router";
+import { NewOrg } from "../../../../types/OrganisationTypes";
+import useOrgs from "../../../../hooks/useOrgs";
+const {Text} = Typography
 
 
 export default function ApprovedOrgs(){
 
     const {paseto} = useAuthContext()
     const queryClient = useQueryClient()
+    const router = useRouter()
+    const {switchOrg} = useOrgs()
 
     const [selectedOrg, setSelelectedOrg] = useState(null)
 
@@ -39,6 +45,13 @@ export default function ApprovedOrgs(){
             }
         })
         return res; 
+    }
+
+    function gotoServices(org:NewOrg){
+        // switch org
+        switchOrg(org)
+        // navigate user to services page
+        router.push('/organizations/services/')
     }
 
     
@@ -72,7 +85,8 @@ export default function ApprovedOrgs(){
                 bordered={false}
                 loading={orgQuery.isLoading}
                 dataSource={approvedOrgs}
-                renderItem={(item:any )=> <List.Item
+                renderItem={(item:any )=> 
+                <List.Item
                     actions={[<Button key={item.id} shape='round' loading={selectedOrg === item.orgId && deActivateOrgMutation.isLoading} onClick={()=>deActivateOrgHandler(item)} type='primary' >De-activate</Button>]}
                     style={{ border: 'none', backgroundColor: '#f9f9f9', marginBottom: '.5em', padding: '1em', borderRadius: '4px' }}
                     key={item.id}
@@ -80,7 +94,7 @@ export default function ApprovedOrgs(){
                     <List.Item.Meta
                         avatar={<Avatar src={`https://nftstorage.link/ipfs/${item.imageHash}`} />}
                         title={<div style={{ display: 'flex' }}>
-                            <Typography.Text style={{ marginRight: '1em' }}>{item.name}</Typography.Text>
+                            <Text onClick={()=>gotoServices(item)} style={{ cursor:'pointer', color:'#1890ff', marginRight: '1em' }}>{item.name}</Text>
                             {/* <Tag>{item.role === 'STAFF' ? 'Employee' : item.role}</Tag> */}
                         </div>} />
 

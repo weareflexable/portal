@@ -1,7 +1,7 @@
 import React,{useEffect, useState} from 'react'
 import {Card,Button,Typography,Alert,Space,Modal, Row,Col,Skeleton} from 'antd'
 import {PlusCircleOutlined,ArrowLeftOutlined,SettingOutlined} from '@ant-design/icons'
-import router, { useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 import CreateServiceForm from '../CreateServiceForm/CreateServiceForm';
 import EditServiceForm from '../EditServiceForm/EditServiceForm'
 
@@ -11,6 +11,9 @@ import ServicesList from '../ServicesList/ServicesList';
 import { useOrgContext } from '../../../context/OrgContext';
 
 import useCrudDB from '../../../hooks/useCrudDB';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import { useAuthContext } from '../../../context/AuthContext';
 
 const {Text,Title} = Typography;
 
@@ -41,11 +44,12 @@ interface ServicesViewProps{
 export default function ServiceView({}:ServicesViewProps){
 
     const {replace} = useRouter()
+    const {paseto} = useAuthContext()
     const {currentOrg} = useOrgContext()
     const [hydrated, setHydrated] = useState(false)
     const [orgName, setOrgName] = useState('')
     // const [orgId, setOrgId] = useState('')
-    const orgId = currentOrg.id 
+    const orgId = currentOrg.orgId 
     
     useEffect(()=>{
         setHydrated(true)
@@ -53,10 +57,30 @@ export default function ServiceView({}:ServicesViewProps){
                  setOrgName(currentOrg.name)
                 //  setOrgId(currentOrg.id)
             }
-    },[currentOrg.id, currentOrg.name, hydrated])
+    },[currentOrg.orgId, currentOrg.name, hydrated])
+
+    // async function fetchServices(){
+    //         const res  = await axios({
+    //             method: 'get',
+    //             url: `${process.env.NEXT_PUBLIC_NEW_API_URL}/services?key=org_id&value=12&pageNumber=0&pageSize=2&orgId=${orgId}`,
+    //             headers:{
+    //                 "Authorization": paseto
+    //             }
+    //         })
+    //         return res.data.data 
+    // }
+
+    // const servicesQuery = useQuery(
+    //     {
+    //     queryKey:['services', orgId],  
+    //     queryFn:fetchServices,
+    //     // enabled: paseto ! === '    
+    // })
+
+    // console.log(servicesQuery.data)
     
     const hookConfig = {
-        fetchUrl: `services/user/get-services?orgId=${orgId}`,
+        fetchUrl: `/manager/services?key=org_id&value=12&pageNumber=0&pageSize=2&orgId=${orgId}`,
         mutateUrl: 'services/orgadmin/org-service'
     }
     
@@ -75,13 +99,14 @@ export default function ServiceView({}:ServicesViewProps){
         closeCreateForm,
         closeEditForm
     } = useCrudDB<Service>(hookConfig,['services', orgId])
+
      
 
     // remove this after there is guarantee of payload prop in response
     // const services = state && state.hasOwnProperty('payload')? state: []
     // console.log('services',state)
     // const uniqueServices = services.length > 0 ? state?.filter((item, i) => state.findIndex((service)=>item.id===service.id)===i):services;
-    const uniqueServices = state && state?.filter((item, i) => state.findIndex((service)=>item.id===service.id)===i);
+    // const uniqueServices = state && state?.filter((item, i) => state.findIndex((service)=>item.id===service.id)===i);
     // console.log(services)
     // console.log(uniqueServices)
 
@@ -113,23 +138,23 @@ export default function ServiceView({}:ServicesViewProps){
                         <ServicesList
                         isLoadingServices={isLoading}
                         onCreateService={openCreateForm}
-                        services={uniqueServices}
+                        services={state}
                         onDeleteService={deleteItem}
                         onSelectService={selectItemToEdit}
                         />
 
-                </Col>
+                </Col> 
             </Row>
-        {showCreateForm?
+         {showCreateForm?
         <Modal title="Launch new service" open={showCreateForm} footer={null} onCancel={closeCreateForm}>
             <CreateServiceForm 
                 onCancelFormCreation={closeCreateForm} // don't need this
                 onLaunchStore={createItem}
                 isCreatingData = {isCreatingData}
              />
-        </Modal>:null}
+        </Modal>:null} 
 
-        {showEditForm?
+         {showEditForm?
         <Modal title="Edit service" open={showEditForm} footer={null} onCancel={closeEditForm}>
             <EditServiceForm 
                 initValues={itemToEdit} 
