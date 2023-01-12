@@ -61,7 +61,7 @@ export default function ServiceEditForm({initValues, onEditService, isPatchingDa
     }
 
       const { ref: antRef } = usePlacesWidget({
-        apiKey: 'AIzaSyB7ZUkMcIXpOKYU4r4iBMM9BFjCL5OpeeE', // move this key to env
+        apiKey: process.env.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API, // move this key to env
         onPlaceSelected: (place) => {
             // console.log(antInputRef.current.input)
             form.setFieldValue('address',place?.formatted_address)

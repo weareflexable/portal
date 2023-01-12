@@ -72,7 +72,8 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
                 "Authorization": paseto
             }
         })
-        return res.data.data[0]; 
+        console.log(res)
+        return res && res.data.data[0]; 
     }
 
     const userQuery = useQuery({
