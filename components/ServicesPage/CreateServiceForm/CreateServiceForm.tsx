@@ -72,7 +72,7 @@ export default function StoreForm({onLaunchStore, isCreatingData, onCancelFormCr
     const onFinish = async(formData:Service)=>{
 
         setIsHashingAssets(true)
-        const imageHash = await asyncStore(formData.imageHash[0].originFileObj)
+        const imageHash = await asyncStore(formData.logoImageHash[0].originFileObj)
         const coverImageHash = await asyncStore(formData.coverImageHash[0].originFileObj)
         setIsHashingAssets(false)
 
@@ -80,9 +80,9 @@ export default function StoreForm({onLaunchStore, isCreatingData, onCancelFormCr
         const formObject: ServicePayload = {
             ...formData,
             ...fullAddress,
-            imageHash: imageHash,
+            logoImageHash: imageHash,
             coverImageHash: coverImageHash,
-            orgId:currentOrg.id,
+            orgId:currentOrg.orgId,
             timeZone: 'UTC',
         }
         // remove address field since because we have extracted
@@ -136,7 +136,7 @@ export default function StoreForm({onLaunchStore, isCreatingData, onCancelFormCr
 
 
             <Form.Item
-                name="serviceId"
+                name="serviceTypeId"
                 label='Service type'
                 rules={[{ required: true, message: 'Please input a valid address!' }]}
             >
@@ -148,7 +148,7 @@ export default function StoreForm({onLaunchStore, isCreatingData, onCancelFormCr
             </Form.Item>
 
             <Form.Item
-                name="currencyCode"
+                name="currency"
                 label='Currency'
                 rules={[{ required: true, message: 'Please input a valid code!' }]}
             >
@@ -158,7 +158,7 @@ export default function StoreForm({onLaunchStore, isCreatingData, onCancelFormCr
 
 
             <Form.Item
-                name="imageHash"
+                name="logoImageHash"
                 label="Logo"
                 valuePropName="fileList"
                 getValueFromEvent={normFile}

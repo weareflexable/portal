@@ -6,7 +6,7 @@ export type Service ={
     country: string,
     state: string,
     serviceTypeName: string,
-    imageHash: Array<any> ,
+    logoImageHash: Array<any> ,
     coverImageHash: Array<any>,
     id: string
 }
@@ -16,14 +16,14 @@ export type Service ={
 export type ServicePayload ={
     name: string,
     orgId: string,
-    serviceId?: string,
+    serviceTypeId?: string,
     state: string,
     country: string,
     city: string,
     latitude: number,
     longitude: number,
     timeZone: string,
-    imageHash: string,
+    logoImageHash: string,
     coverImageHash: string,
 }
 

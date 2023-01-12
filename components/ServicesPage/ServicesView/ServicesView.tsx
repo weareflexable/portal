@@ -80,8 +80,8 @@ export default function ServiceView({}:ServicesViewProps){
     // console.log(servicesQuery.data)
     
     const hookConfig = {
-        fetchUrl: `/manager/services?key=org_id&value=12&pageNumber=0&pageSize=2&orgId=${orgId}`,
-        mutateUrl: 'services/orgadmin/org-service'
+        fetchUrl: `/manager/services?key=org_id&value=${orgId}&pageNumber=0&pageSize=10`,
+        mutateUrl: '/manager/services'
     }
     
     const {

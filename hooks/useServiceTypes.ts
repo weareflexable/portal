@@ -7,16 +7,18 @@ export default function useServiceTypes(){
     const {paseto} = useAuthContext()
 
     const fetchServiceTypes = async()=>{
-        const {data} = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/services/public/generic-services`,{
+        const {data} = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service_types?pageNumber=0&pageSize=5`,{
             headers:{
                 //@ts-ignore
                 "Authorization":paseto
             }
         })
-        return data?.payload
+        return data && data.data
     }
 
-    const {data:serviceTypes} = useQuery(['serviceTypes'],fetchServiceTypes)
+    
+    const {data:serviceTypes} = useQuery({queryKey:['serviceTypes'],queryFn:fetchServiceTypes, staleTime: Infinity})
+
 
     const menuItems = serviceTypes && serviceTypes.map((service:any)=>({
             label: service.name,
