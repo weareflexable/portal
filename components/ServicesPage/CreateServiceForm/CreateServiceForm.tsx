@@ -16,7 +16,7 @@ interface StoreFormProps{
     onCancelFormCreation: ()=>void
     isCreatingData: boolean
 }
-export default function StoreForm({onLaunchStore, isCreatingData, onCancelFormCreation}:StoreFormProps){
+export default function CreateServiceForm({onLaunchStore, isCreatingData, onCancelFormCreation}:StoreFormProps){
 
     const menuItems = useServiceTypes()
 
@@ -85,7 +85,7 @@ export default function StoreForm({onLaunchStore, isCreatingData, onCancelFormCr
             orgId:currentOrg.orgId,
             timeZone: 'UTC',
         }
-        // remove address field since because we have extracted
+        // remove address field because we have extracted it
         // @ts-ignore
         delete formObject.address
 

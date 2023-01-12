@@ -17,7 +17,7 @@ export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
     state:T[],
     deleteItem: (id:string)=>void
     isLoading: boolean,
-    editItem: (id:T)=>void,
+    editItem: (id:any)=>void,
     isPatchingData: boolean,
     createItem: (newItem:any)=>void,
     closeCreateForm: ()=>void,
@@ -64,7 +64,7 @@ export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
     }
 
     const patchDataHandler = async(updatedItem:any)=>{
-        const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}${patchUrl}`,updatedItem,{
+        const {data} = await axios.put(`${process.env.NEXT_PUBLIC_NEW_API_URL}${patchUrl}`,updatedItem,{
             headers:{
                 //@ts-ignore
                 "Authorization": paseto
@@ -75,6 +75,9 @@ export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
 
     const patchData = useMutation(patchDataHandler,{
         onSuccess:()=>{
+
+            queryClient.invalidateQueries({queryKey:[...queryKeys]})
+
             notification['success']({
                 message: 'Updated record succesfully!',
               });
@@ -125,7 +128,6 @@ export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
 
     const createItem = (newItem:T) =>{
 
-        console.log('new item',newItem)
         createData.mutate(newItem)
         // setState(stateCopy);
         // setShowCreateForm(false);

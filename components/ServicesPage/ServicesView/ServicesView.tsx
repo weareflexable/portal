@@ -81,7 +81,8 @@ export default function ServiceView({}:ServicesViewProps){
     
     const hookConfig = {
         fetchUrl: `/manager/services?key=org_id&value=${orgId}&pageNumber=0&pageSize=10`,
-        mutateUrl: '/manager/services'
+        mutateUrl: '/manager/services',
+        patchUrl: '/manager/services'
     }
     
     const {
@@ -93,6 +94,7 @@ export default function ServiceView({}:ServicesViewProps){
         showEditForm,
         itemToEdit,
         selectItemToEdit,
+        isPatchingData,
         createItem,
         editItem,
         deleteItem,
@@ -160,6 +162,7 @@ export default function ServiceView({}:ServicesViewProps){
                 initValues={itemToEdit} 
                 onCloseEditForm={closeEditForm} 
                 onEditService={editItem}
+                isPatchingData={isPatchingData}
             />
         </Modal>:null}
 

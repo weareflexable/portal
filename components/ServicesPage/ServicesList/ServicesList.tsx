@@ -49,7 +49,7 @@ export default function ServiceListProps({onDeleteService, onSelectService, isLo
                     size='small' 
                     disabled={!isAdmin} 
                     type='text' onClick={()=>onDeleteService(item.id)} 
-                    key={item.id}>Delete</Button> , <Button size='small' type='link' disabled  onClick={()=>onSelectService(item)} key={item.id}>Edit</Button>  
+                    key={item.id}>Delete</Button> , <Button size='small' type='link'   onClick={()=>onSelectService(item)} key={item.id}>Edit</Button>  
                  ]}
             >
                 <List.Item.Meta

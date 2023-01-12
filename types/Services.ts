@@ -14,6 +14,7 @@ export type Service ={
 // This is the structure required by request body API for 
 // creating services
 export type ServicePayload ={
+    id: string | undefined,
     name: string,
     orgId: string,
     serviceTypeId?: string,
@@ -23,8 +24,8 @@ export type ServicePayload ={
     latitude: number,
     longitude: number,
     timeZone: string,
-    logoImageHash: string,
-    coverImageHash: string,
+    logoImageHash: string | undefined | any[],
+    coverImageHash: string | undefined | any[],
 }
 
 
