@@ -60,9 +60,9 @@ export default function UserServicesView({}:UserServicesViewProps){
 
 
     const hookConfig = {
-        fetchUrl: `services/user/get-service-items?orgServiceId=${serviceId}`,
-        mutateUrl: 'services/orgadmin/org-service-item',
-        patchUrl: 'services/user/update-service-item'
+        fetchUrl: `/manager/service_items?key=org_service_id&value=${serviceId}&pageNumber=0&pageSize=10`,
+        mutateUrl: '',
+        patchUrl: '/manager/service_items'
     }
 
     const {

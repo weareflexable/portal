@@ -4,7 +4,7 @@ import {PlusCircleOutlined} from '@ant-design/icons'
 import { useRouter } from 'next/router'
 import { ServiceItem } from '../../../types/Services'
 import { useOrgContext } from '../../../context/OrgContext'
-import moment from 'moment'
+import dayjs from 'dayjs'
 
 const {Title,Text} = Typography
 
@@ -56,7 +56,7 @@ export default function ServiceListProps({onDeleteService,isPatchingRecord, serv
                         </div>
                         <div style={{display:'flex'}}>
                             <Text type='secondary' style={{marginRight:'.3em'}}>Tickets per day:</Text>
-                            <Text>{item.ticketsMaxPerDay} tickets</Text>
+                            <Text>{item.ticketsPerDay} tickets</Text>
                         </div>
                         <div style={{display:'flex'}}>
                             <Text type='secondary' style={{marginRight:'.3em'}}>Description:</Text>
@@ -66,12 +66,12 @@ export default function ServiceListProps({onDeleteService,isPatchingRecord, serv
                         <div style={{display:'flex',alignItems:'center'}}>
                             <div style={{display:'flex'}}>
                                 <Text type='secondary' style={{marginRight:'.3em'}}>Start date:</Text>
-                                <Text>{moment(item.startDate).format('MMM DD, YYYY')}  </Text>
+                                <Text>{dayjs(item.startDate).format('MMM DD, YYYY')}  </Text>
                             </div>
                             ----
                             <div style={{display:'flex'}}>
                                 <Text type='secondary' style={{marginRight:'.3em'}}>End date:</Text>
-                                <Text>{moment(item.endDate).format('MMM DD, YYYY')}</Text>
+                                <Text>{dayjs(item.endDate).format('MMM DD, YYYY')}</Text>
                             </div>
                         </div>
 

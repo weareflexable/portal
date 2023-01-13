@@ -8,7 +8,7 @@ import {v4 as uuidv4} from 'uuid'
 
 import { useRouter } from 'next/router';
 import { ServiceItem, ServiceItemReqPaylod } from '../../../types/Services';
-import moment from 'moment';
+import dayjs from 'dayjs'
 import { useServicesContext } from '../../../context/ServicesContext';
 import useServiceTypes from '../../../hooks/useServiceTypes';
 import useServiceItemTypes from '../../../hooks/useServiceItemTypes';
@@ -40,12 +40,12 @@ export default function ServiceItemForm({ onTriggerFormAction,isCreatingServiceI
             const formObject: ServiceItemReqPaylod = {
                 name: formData.name,
                 price: formData.price * 100,
-                ticketMaxPerDay: formData.ticketsMaxPerDay,
+                ticketsPerDay: formData.ticketsMaxPerDay,
                 description:formData.description,
                 orgServiceId: currentService.id,
-                startDate: moment(formData.startDate).format('YYYY-MMM-DD'),
-                endDate: moment(formData.endDate).format('YYYY-MMM-DD'),
-                startTime: moment(formData.startTime).format('HH:mm:ss'),
+                startDate: dayjs(formData.startDate).format('YYYY-MMM-DD'), // convert to dayjs
+                endDate: dayjs(formData.endDate).format('YYYY-MMM-DD'),
+                startTime: dayjs(formData.startTime).format('HH:mm:ss'),
                 rangeTime: `${formData.rangeTime}:0:0`,
                 serviceItemId: formData.serviceType
             }

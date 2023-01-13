@@ -33,26 +33,26 @@ export type ServiceItem = {
     id:string,
     name: string,
     price: number,
-    ticketsMaxPerDay: number,
+    ticketsPerDay: number,
     serviceType: string,
     description: string,
-    startDate: moment.Moment | string,
-    endDate: moment.Moment | string,
-    startTime: moment.Moment | string,
+    startDate:  string,
+    endDate: string,
+    startTime: string,
     rangeTime: number
 }
 
 export type ServiceItemReqPaylod = {
     name: string,
     price: number
-    ticketMaxPerDay: number,
+    ticketsPerDay: number,
     description:string,
     orgServiceId: string,
     startDate: string,
     endDate: string,
     startTime: string,
     rangeTime: string,
-    imageHash?: string,
+    logoImageHash?: string,
     serviceItemId: string
  
 }

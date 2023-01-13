@@ -35,13 +35,13 @@ export default function EditForm({initValues, onTriggerFormAction, isPatchingSer
     const onFinish = (formData:ServiceItem)=>{
 
         const formObject = {
-            // id: prevValues?.id,
             description:formData.description,
-            orgServiceItemId: prevValues?.id,
-            imageHash: '',
+            id: `${prevValues?.id}`,
+            logoImageHash: '',
             name: formData.name,
-            price: formData.price * 100,
-            ticketMaxPerDay: formData.ticketsMaxPerDay
+            serviceItemTypeId: '6',
+            price: `${formData.price * 100}`,
+            ticketsPerDay: `${formData.ticketsPerDay}`
         }
         console.log(formObject)
 
@@ -99,7 +99,7 @@ export default function EditForm({initValues, onTriggerFormAction, isPatchingSer
 
 
             <Form.Item
-                name="ticketsMaxPerDay"
+                name="ticketsPerDay"
                 label='Tickets per day'
                 rules={[{ required: true, message: 'Please input a valid number!' }]}
             >
@@ -107,7 +107,7 @@ export default function EditForm({initValues, onTriggerFormAction, isPatchingSer
             </Form.Item>
 
 
-            <Form.Item name='description'  label="ServiceItem description">
+            <Form.Item name='description'  label="Description">
                 <TextArea maxLength={150} showCount  placeholder='Best coffee shop in the entire world with the most beautiful scenary' rows={3} />
             </Form.Item>
 
