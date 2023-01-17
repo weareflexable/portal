@@ -48,6 +48,7 @@ export default function ApprovedOrgs(){
     }
 
     function gotoServices(org:NewOrg){
+        console.log(org)
         // switch org
         switchOrg(org)
         // navigate user to services page

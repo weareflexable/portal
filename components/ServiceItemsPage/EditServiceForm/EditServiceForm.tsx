@@ -30,7 +30,7 @@ export default function EditForm({initValues, onTriggerFormAction, isPatchingSer
     
     // convert value of price in cents to dollars
     const transformedValues = {...initValues,price:initValues!.price/100}
-    console.log('transformed',transformedValues)
+
 
     const onFinish = (formData:ServiceItem)=>{
 
@@ -60,7 +60,7 @@ export default function EditForm({initValues, onTriggerFormAction, isPatchingSer
     //         name: transformedValues.name,
     //         description: transformedValues.description,
     //         price: transformedValues.price,
-    //         ticketsMaxPerDay: transformedValues.ticketsMaxPerDay
+    //         ticketsPerDay: transformedValues.ticketsPerDay
     //     })
     // }
 

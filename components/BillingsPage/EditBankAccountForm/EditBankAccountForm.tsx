@@ -1,19 +1,19 @@
 import React,{useState} from 'react'
-import {Card,Form,Input, InputNumber,Button, notification} from 'antd'
+import {Card,Form,Input, InputNumber,Button, Radio} from 'antd'
 import { BankAccount } from '../../../types/BankAccount'
 
 
 interface EditBankAccountFormProps{
     initValues: BankAccount | undefined
     onEditBankAccount: (store:BankAccount)=>void
-    onCloseEditForm: ()=>void
+    onCloseEditForm: ()=>void,
+    isPatchingData: boolean
 }
 
-export default function EditBankAccountForm({initValues,onEditBankAccount, onCloseEditForm}:EditBankAccountFormProps){
+export default function EditBankAccountForm({initValues,onEditBankAccount, isPatchingData, onCloseEditForm}:EditBankAccountFormProps){
 
 
     const prevValues = initValues;
-    console.log(initValues)
 
     const onFinish = (formData:BankAccount)=>{
         // call function to create store
@@ -22,16 +22,11 @@ export default function EditBankAccountForm({initValues,onEditBankAccount, onClo
             ...formData
         }
         onEditBankAccount(formObject)
-        showStoreCreationNotification()
-        onCloseEditForm()
+        // onCloseEditForm()
 
     }
 
-    const showStoreCreationNotification = () => {
-        notification['success']({
-          message: 'Bank account updated succesfully',
-        });
-      };
+    
 
     return(
              <Form
@@ -49,7 +44,7 @@ export default function EditBankAccountForm({initValues,onEditBankAccount, onClo
             </Form.Item>
 
             <Form.Item
-                name="accountName"
+                name="beneficiaryName"
                 label='Beneficiary name'
                 rules={[{ required: true, message: 'Please input name used on card' }]}
             >
@@ -57,20 +52,33 @@ export default function EditBankAccountForm({initValues,onEditBankAccount, onClo
             </Form.Item>
 
             <Form.Item
-                name="accountNumber"
+                name="beneficiaryAddress"
+                label='Beneficiary address'
+                rules={[{ required: true, message: 'Please enter valid address' }]}
+            >
+                <Input placeholder="89, Highstreet Boston" />
+            </Form.Item>
+
+
+            <Form.Item
+                name="accountNo"
                 label='Beneficiary account number'
                 rules={[{ required: true, message: 'Please input a valid account number' }]}
             >
                 <Input type='number' placeholder="0127467382" />
             </Form.Item>
 
-            <Form.Item
-                name="address"
-                label='Beneficiary address'
-                rules={[{ required: true, message: 'Please enter valid address' }]}
-            >
-                <Input placeholder="89, Highstreet Boston" />
+            <Form.Item 
+                label="Account type" 
+                name="accountType"
+                rules={[{ required: true, message: 'Please select an accountType' }]}
+                >
+                <Radio.Group defaultValue='savings'>
+                    <Radio.Button value="savings">Savings</Radio.Button>
+                    <Radio.Button value="current">Current</Radio.Button>
+                </Radio.Group>
             </Form.Item>
+
 
             <Form.Item
                 name="bankName"
@@ -98,8 +106,8 @@ export default function EditBankAccountForm({initValues,onEditBankAccount, onClo
 
 
             <Form.Item>
-                <Button type="primary" htmlType="submit">
-                Add bank details
+                <Button type="primary" loading={isPatchingData} htmlType="submit">
+                 {isPatchingData? `Updating...`:`Apply changes`}
                 </Button>
             </Form.Item>
 

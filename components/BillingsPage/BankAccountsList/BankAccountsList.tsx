@@ -13,10 +13,11 @@ interface BankAccountListProps{
     bankAccounts: Array<any>,
     onCreateBankAccount: ()=>void,
     onSelectBankAccount: (service:BankAccount)=>void,
-    onDeleteBankAccount: (itemKey: string)=>void
+    onDeleteBankAccount: (itemKey: string)=>void,
+    isLoading: boolean,
 }
 
-export default function BankAccountListProps({onDeleteBankAccount, onSelectBankAccount, bankAccounts, onCreateBankAccount}:BankAccountListProps){
+export default function BankAccountListProps({onDeleteBankAccount, isLoading,  onSelectBankAccount, bankAccounts, onCreateBankAccount}:BankAccountListProps){
 
     const router = useRouter()
     const {isAdmin} = useOrgContext()
@@ -24,10 +25,10 @@ export default function BankAccountListProps({onDeleteBankAccount, onSelectBankA
 
     return(
         <div style={{display:'flex',flexDirection:'column', width:'100%',padding:'1em'}}>
-            <Button type='link' icon={<PlusCircleOutlined />} disabled shape='round' style={{alignSelf:'flex-start',marginBottom:'1em', display:'flex',alignItems:'center'}} onClick={onCreateBankAccount}>Add new bank account</Button>
             <List
             itemLayout="horizontal"
             dataSource={bankAccounts}
+            loading={isLoading}
             bordered={false}
             renderItem={(item:BankAccount) => (
             <List.Item 
@@ -43,16 +44,16 @@ export default function BankAccountListProps({onDeleteBankAccount, onSelectBankA
             >
                 <List.Item.Meta
                 key={item.id}
-                title={item.accountName}
+                title={item.bankName}
                 description={
                     <div style={{display:'flex', width:'100%', flexDirection:'column'}}>
                         <div style={{display:'flex'}}>
                             <Text type='secondary' style={{marginRight:'.3em'}}>Acct No:</Text>
-                            <Text>{item.accountNumber}</Text>
+                            <Text>{item.accountNo}</Text>
                         </div>
                         <div style={{display:'flex'}}>
                             <Text type='secondary' style={{marginRight:'.3em'}}>Address:</Text>
-                            <Text>{item.address}</Text>
+                            <Text>{item.beneficiaryAddress}</Text>
                         </div>
                         <div style={{display:'flex'}}>
                             <Text type='secondary' style={{marginRight:'.3em'}}>Swift Code:</Text>
@@ -65,8 +66,8 @@ export default function BankAccountListProps({onDeleteBankAccount, onSelectBankA
                         </div>
 
                         <div style={{display:'flex'}}>
-                            <Text type='secondary' style={{marginRight:'.3em'}}>Bank name:</Text>
-                            <Text>{item.bankName}</Text>
+                            <Text type='secondary' style={{marginRight:'.3em'}}>Account name:</Text>
+                            <Text>{item.beneficiaryName}</Text>
                         </div>
 
                         <div style={{display:'flex'}}>

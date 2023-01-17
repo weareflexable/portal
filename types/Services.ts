@@ -33,6 +33,7 @@ export type ServiceItem = {
     id:string,
     name: string,
     price: number,
+    logoImageHash: Array<any>,
     ticketsPerDay: number,
     serviceType: string,
     description: string,
@@ -54,5 +55,5 @@ export type ServiceItemReqPaylod = {
     rangeTime: string,
     logoImageHash?: string,
     serviceItemId: string
- 
+    serviceItemTypeId?: string
 }
