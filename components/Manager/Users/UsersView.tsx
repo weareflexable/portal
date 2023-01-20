@@ -14,6 +14,7 @@ import {ReloadOutlined} from '@ant-design/icons'
 import { DatePickRef } from 'antd/lib/date-picker/generatePicker/interface';
 import dayjs from 'dayjs'
 import {User} from './Users.types'
+import { useAuthContext } from '../../../context/AuthContext';
 
  
 const {Title,Text} = Typography
@@ -25,6 +26,7 @@ const {Title,Text} = Typography
 export default function UsersView(){
 
   const router = useRouter()
+  const {paseto} = useAuthContext()
 
 
   const [searchText, setSearchText] = useState('');
@@ -35,6 +37,21 @@ export default function UsersView(){
   const ticketSearchRef = useRef(null)
 
   const isFilterEmpty = Object.keys(filteredInfo).length === 0;
+
+  async function fetchUsers(){
+    const res = await axios({
+      method:'get',
+      url: `${process.env.NEXT_PUBLIC_NEW_API_URL}/super-admin/users-list`,
+      headers:{
+        "Authorization": paseto
+      }
+    })
+    return res.data.data 
+  }
+
+  const usersQuery = useQuery({queryKey:['uses'],queryFn:fetchUsers})
+
+  console.log(usersQuery.data)
 
   const handleSearch = (
     selectedKeys: string[],
@@ -264,8 +281,8 @@ export default function UsersView(){
     // },
     {
       title: 'Role',
-      dataIndex: 'userRole',
-      key: 'userRole',
+      dataIndex: 'userRoleName',
+      key: 'userRoleName',
       render: (role)=>{
         return(
           <Tag>{role}</Tag>
@@ -301,7 +318,7 @@ export default function UsersView(){
     return(
     <div style={{marginBottom:'.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
         {!isFilterEmpty? <Button type='link' icon={<ClearOutlined />} style={{marginBottom:'.5em', display:'flex',alignItems:'center'}} onClick={clearFilters}>Clear filters</Button>:null}
-        <Table style={{width:'100%'}} columns={columns} onChange={handleChange} dataSource={users} />
+        <Table style={{width:'100%'}} key='fdva' columns={columns} onChange={handleChange} dataSource={usersQuery.data} />
       </div>
     )
 }
@@ -309,42 +326,18 @@ export default function UsersView(){
 
 
 
-const users:User[] = [
-    {
-        id: '34343',
-        name: 'Mujahid Bappai',
-        email: 'mujahid.bappai@yahoo.com',
-        phone: '08043437583',
-        gender: 'male',
-        createdAt: "2023-01-07T10:45:24.002929Z",
-        city: 'Kano',
-        country: 'Nigeria',
-        userRole: 'User',
-        profilePicHash: 'bafkreic3hz2mfy7rpyffzwbf2jfklehmuxnvvy3ardoc5vhtkq3cjd7of4'  
-    },
-    {
-        id: '34343',
-        name: 'Ryan Prochna',
-        email: 'ryanprochna@outlook.com',
-        phone: '08043437583',
-        gender: 'male',
-        createdAt: "2023-01-07T10:45:24.002929Z",
-        city: 'Kano',
-        country: 'Nigeria',
-        userRole: 'User',
-        profilePicHash: 'bafkreic3hz2mfy7rpyffzwbf2jfklehmuxnvvy3ardoc5vhtkq3cjd7of4'  
-    },
-    {
-        id: '34343',
-        name: 'Schachindra Kumar',
-        email: 'schachindra@flexable.com',
-        phone: '08043437583',
-        gender: 'male',
-        createdAt: "2023-01-07T10:45:24.002929Z",
-        city: 'Kano',
-        country: 'Nigeria',
-        userRole: 'User',
-        profilePicHash: 'bafkreic3hz2mfy7rpyffzwbf2jfklehmuxnvvy3ardoc5vhtkq3cjd7of4'  
-    },
+// const users:User[] = [
+//     {
+//         id: '34343',
+//         name: 'Mujahid Bappai',
+//         email: 'mujahid.bappai@yahoo.com',
+//         mobileNumber: '08043437583',
+//         gender: 'male',
+//         createdAt: "2023-01-07T10:45:24.002929Z",
+//         city: 'Kano',
+//         country: 'Nigeria',
+//         userRoleName: 'User',
+//         profilePic: 'bafkreic3hz2mfy7rpyffzwbf2jfklehmuxnvvy3ardoc5vhtkq3cjd7of4'  
+//     },
    
-]
+// ]

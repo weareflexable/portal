@@ -1,12 +1,22 @@
 export interface User {
     id: string
+    role: number
+    status: boolean
+    mfa: false
+    walletAddress: string
+    userType: string
     name: string
     email: string
-    phone: string
+    mobileNumber: string
+    superiadUserId: string
     gender: string
     country: string
     city: string
-    profilePicHash: string
-    userRole: string
+    profilePic: string
+    userRoleName: string
+    deviceType: string
+    mfaType: string
     createdAt: string
+    updatedAt: string
+    updatedBy: string
   }

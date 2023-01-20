@@ -77,7 +77,7 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
     }
 
     const userQuery = useQuery({
-        queryKey:['user'], 
+        queryKey:['currentUser'], 
         queryFn:fetchCurrentUser, 
         enabled:paseto!=='', 
         onSuccess:(user)=>{

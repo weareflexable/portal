@@ -3,8 +3,8 @@ export interface Order {
     userId: string,
     serviceName: string;
     name: string;
-    startTime: string;
     quantity: number,
+    startTime: string;
     orderStatus: string,
     ticketStatus: string,
     unitPrice:number,
