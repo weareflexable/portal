@@ -1,7 +1,8 @@
 import React, { useRef, useState } from "react";
-import {Form, Row, Col, Input,Upload,Button,notification, Typography, Space, Select} from 'antd';
+import {Form, Row, Col, Image, Input,Upload,Button,notification, Typography, Space, Select, Divider} from 'antd';
 import {UploadOutlined, ArrowLeftOutlined} from '@ant-design/icons'
 const {Title} = Typography
+const {TextArea} = Input
 
 import { useRouter } from 'next/router';
 import {usePlacesWidget} from 'react-google-autocomplete'
@@ -14,6 +15,16 @@ import axios from "axios";
 import { url } from "inspector";
 import { useAuthContext } from "../../../context/AuthContext";
 
+
+const getBase64 = (file: any): Promise<string> => 
+new Promise((resolve, reject) => {
+const reader = new FileReader();
+reader.readAsDataURL(file);
+reader.onload = () => resolve(reader.result as string);
+reader.onerror = (error) => reject(error);
+});
+
+const PLACEHOLDER_IMAGE = '/placeholder.png'
 
 export default function NewOrg(){
 
@@ -34,6 +45,8 @@ export default function NewOrg(){
 
     const router = useRouter()
     const antInputRef = useRef();
+    const [logoImage, setLogoImage] = useState(PLACEHOLDER_IMAGE)
+    const [coverImage, setCoverImage] = useState(PLACEHOLDER_IMAGE)
 
     const extractFullAddress = (place:any)=>{
         const addressComponents = place.address_components 
@@ -73,7 +86,7 @@ export default function NewOrg(){
     const onFinish = async(formData:Service)=>{
 
         setIsHashingAssets(true)
-        const imageHash = await asyncStore(formData.imageHash[0].originFileObj)
+        const logoHash = await asyncStore(formData.logoImageHash[0].originFileObj)
         const coverImageHash = await asyncStore(formData.coverImageHash[0].originFileObj)
         setIsHashingAssets(false)
 
@@ -81,9 +94,9 @@ export default function NewOrg(){
         const formObject: ServicePayload = {
             ...formData,
             ...fullAddress,
-            imageHash: imageHash,
+            logoImageHash: logoHash,
             coverImageHash: coverImageHash,
-            orgId:currentOrg.id,
+            orgId:currentOrg.orgId,
             timeZone: 'UTC',
         }
         // remove address field since because we have extracted
@@ -92,13 +105,38 @@ export default function NewOrg(){
         createDataHandler(formObject)
     }
 
-    const normFile = (e: any) => {
-        console.log('Upload event:', e);
-        if (Array.isArray(e)) {
-          return e;
-        } 
+        const extractLogoImage = async(e: any) => {
+            console.log('Upload event:', e);
+            if (Array.isArray(e)) {
+            return e;
+            }
+
+            console.log(e)
+            const imageBlob = e.fileList[0].originFileObj
+            console.log("blob",imageBlob)
+            const src = await getBase64(imageBlob)
+            setLogoImage(src)
+       
+
         return e?.fileList;
       };
+
+        const extractCoverImage = async(e: any) => {
+            console.log('Upload event:', e);
+            if (Array.isArray(e)) {
+            return e;
+            }
+
+            console.log(e)
+            const imageBlob = e.fileList[0].originFileObj
+            console.log("blob",imageBlob)
+            const src = await getBase64(imageBlob)
+            setCoverImage(src)
+       
+
+        return e?.fileList;
+      };
+
 
       const createDataHandler = async(newItem:any)=>{
         const {data} = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/services/orgadmin/org-service`, newItem,{
@@ -142,7 +180,7 @@ export default function NewOrg(){
                 </Row>
             </div>
             <Row >
-                <Col offset={2} span={8}>
+                <Col offset={2} span={9}>
                     
                     <Form
                     name="storeForm"
@@ -156,7 +194,7 @@ export default function NewOrg(){
                         label="Organization name"
                         rules={[{ required: true, message: 'Please input a valid service name' }]}
                     >
-                        <Input placeholder="Flexable org" />
+                        <Input size="large" placeholder="Flexable org" />
                     </Form.Item>
 
 
@@ -165,7 +203,7 @@ export default function NewOrg(){
                         label='Organization email'
                         rules={[{ required: true, message: 'Please input a valid email!' }]}
                     >
-                        <Input placeholder="mujahid.bappai@flexable.com" />
+                        <Input size="large" placeholder="mujahid.bappai@flexable.com" />
                     </Form.Item>
 
                     <Form.Item 
@@ -173,49 +211,53 @@ export default function NewOrg(){
                         label='Address'
                         rules={[{ required: true, message: 'Please input a valid address!' }]}
                     >
-                        <Input ref={(c) => {
+                        <TextArea rows={3} placeholder='Apt. 235 30B NorthPointsettia Street, Syracuse'/>
+                        {/* <Input ref={(c) => {
                             // @ts-ignore
                             antInputRef.current = c;
                             // @ts-ignore
                             if (c) antRef.current = c.input;
                             }} 
                             placeholder="Syracuse, United states" 
-                            />
+                            /> */}
                     </Form.Item>
 
 
                     <Form.Item
                         name="zipCode"
+                        style={{width:'100px'}}
                         label='Zip Code'
                         rules={[{ required: true, message: 'Please input a valid code!' }]}
                     >
-                        <Input placeholder="374739" />
+                        <Input size="large" placeholder="374739" />
                     </Form.Item>
 
 
+                    <Divider orientation='left'>Asset upload</Divider>
+                    <Image alt='Organization logo' src={logoImage} style={{width:'150px',height:'150px', borderRadius:'50%', border:'1px solid #e5e5e5'}}/>
                     <Form.Item
-                        name="imageHash"
-                        label="Logo"
-                        valuePropName="fileList"
-                        getValueFromEvent={normFile}
-                        extra="Upload file upto 2MB"
+                        name="logoImageHash"
+                        // label="Logo"
+                        valuePropName="logoImageHash"
+                        getValueFromEvent={extractLogoImage}
                         rules={[{ required: true, message: 'Please upload an image' }]}
                     >
-                        <Upload name="logo" action="" listType="picture">
-                        <Button icon={<UploadOutlined />}>Upload organization logo</Button>
+                        
+                        <Upload name="logoImageHash" multiple={false} fileList={[]} >
+                                <Button size='small' type='link'>Upload logo image</Button>
                         </Upload>
                     </Form.Item>
 
+                    <Image alt='Organization cover image' src={coverImage} style={{width:'350px',height:'150px', objectFit:'cover', borderRadius:'4px', border:'2px dashed #dddddd'}}/>
                     <Form.Item
-                        name="coverImageHash"
-                        label="Cover image"
-                        valuePropName="fileList"
-                        getValueFromEvent={normFile}
-                        extra="Upload file upto 2MB"
+                        name="coverImage"
+                        // label="Cover image"
+                        valuePropName="coverImage"
+                        getValueFromEvent={extractCoverImage}
                         rules={[{ required: true, message: 'Please upload an image' }]}
                     >
-                        <Upload name="logo" action="" listType="picture">
-                        <Button icon={<UploadOutlined />}>Upload organization cover image</Button>
+                        <Upload name="coverImage" multiple={false} fileList={[]} >
+                            <Button size='small' type='link'>Upload cover image</Button>
                         </Upload>
                     </Form.Item>
 
