@@ -39,7 +39,7 @@ export default function ApprovedOrgs(){
     type DataIndex = keyof NewOrg;
 
     const [selectedOrg, setSelelectedOrg] = useState(null)
-    const [currentStatus, setCurrentStatus] = useState({id:'1',name: 'In Review'})
+    const [currentStatus, setCurrentStatus] = useState({id:'1',name: 'Approved'})
 
     async function fetchApprovedOrgs(){
     const res = await axios({
@@ -291,20 +291,20 @@ export default function ApprovedOrgs(){
     }
     })
 
-    const items = [
-        {
-          key: '1',
-          label: 'Reject',
-        },
-        {
-          key: '2',
-          label: 'Accept',
-        },
-        {
-          key: '3',
-          label: 'Org Details',
-        },
-      ];
+    function getCurrentStatusActionItems(){
+        switch(currentStatus.id){
+            // 1 = approved
+            case '1': return approvedOrgsActions 
+            // 2 = inReview
+            case '2': return inReviewOrgsActions 
+            // 4 = rejected
+            case '4': return rejectedOrgsActions 
+            // 0 = deActivated
+            case '0': return deActivatedOrgsActions 
+        }
+    }
+
+    
 
     const orgStatus = [
         {
@@ -316,11 +316,11 @@ export default function ApprovedOrgs(){
             name: 'In Review'
         },
         {
-            id: '3',
+            id: '4',
             name: 'Rejected'
         },
         {
-            id: '4',
+            id: '0',
             name: 'De-activated'
         },
     ]
@@ -376,41 +376,18 @@ export default function ApprovedOrgs(){
         },
     },
     {
-    //   title: 'Phone',
-      dataIndex: 'actions',
+      dataIndex: 'actions', 
       key: 'actions',
-      render:()=>(
-        // <Button type="text" icon={<MoreOutlined />} size={'small'} />
-        <Dropdown.Button menu={{ items, onClick: onMenuClick }}>Actions</Dropdown.Button>
-      )
-    },
+      render:()=>{
+        const items = getCurrentStatusActionItems()
+        return (<Dropdown.Button menu={{ items , onClick: onMenuClick }}>Actions</Dropdown.Button>)
+      }
+    }
     ];
   
     
 
         return (
-
-            // <Card style={{ width: '100%', marginTop: '1em' }}>
-            //  <List
-            //     size="small"
-            //     bordered={false}
-            //     loading={orgQuery.isLoading}
-            //     dataSource={approvedOrgs}
-            //     renderItem={(item:any )=> 
-            //     <List.Item
-            //         actions={[<Button key={item.id} shape='round' loading={selectedOrg === item.orgId && deActivateOrgMutation.isLoading} onClick={()=>deActivateOrgHandler(item)} type='primary' >De-activate</Button>]}
-            //         style={{ border: 'none', backgroundColor: '#f9f9f9', marginBottom: '.5em', padding: '1em', borderRadius: '4px' }}
-            //         key={item.id}
-            //     >
-            //         <List.Item.Meta
-            //             avatar={<Avatar src={`https://nftstorage.link/ipfs/${item.imageHash}`} />}
-            //             title={<div style={{ display: 'flex' }}>
-            //                 <Text onClick={()=>gotoServices(item)} style={{ cursor:'pointer', color:'#1890ff', marginRight: '1em' }}>{item.name}</Text>
-            //                 {/* <Tag>{item.role === 'STAFF' ? 'Employee' : item.role}</Tag> */}
-            //             </div>} />
-
-            //     </List.Item>} />
-            // </Card>
             <div>
                 <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                 <Radio.Group defaultValue={currentStatus.id} buttonStyle="solid">
@@ -425,3 +402,54 @@ export default function ApprovedOrgs(){
             </div>
     )
 }
+
+
+
+const approvedOrgsActions = [
+    {
+        key: '4',
+        label: 'De-activate'
+    },
+    {
+        key: 'details',
+        label: 'View details'
+    },
+
+]
+const deActivatedOrgsActions = [
+    {
+        key: 'activate',
+        label: 'Activate'
+    },
+    {
+        key: 'details',
+        label: 'View details'
+    },
+
+]
+const inReviewOrgsActions = [
+    {
+        key: 'accept',
+        label: 'Accept'
+    },
+    {
+        key: 'reject',
+        label: 'Reject'
+    },
+    {
+        key: 'details',
+        label: 'View details'
+    },
+
+]
+const rejectedOrgsActions = [
+    {
+        key: 'review',
+        label: 'Review'
+    },
+    {
+        key: 'details',
+        label: 'View details'
+    },
+
+]
