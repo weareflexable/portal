@@ -7,8 +7,9 @@ import TabPane from 'antd/lib/tabs/TabPane'
 // import AwaitingOrgs from '../components/AdminOrgs/AwaitingOrgsTable'
 import ManagerLayout from '../../../components/Manager/Layout/Layout'
 import ManagerOrgsLayout from '../../../components/Manager/Organizations/Layout'
-import ApprovedOrgs from '../../../components/Manager/Organizations/ApprovedOrgsTable/ApprovedOrgsTable'
+import ApprovedOrgs from '../../../components/Manager/Organizations/ManagerOrgsView/ManagerOrgsView'
 import { useRouter } from 'next/router'
+import ManagerOrgsView from '../../../components/Manager/Organizations/ManagerOrgsView/ManagerOrgsView'
 const {Title} = Typography;
 
 export default function ManagerOrganizations(){
@@ -32,8 +33,7 @@ export default function ManagerOrganizations(){
                         maxWidth:'100%',
                         }}
                     > 
-
-                            <ApprovedOrgs/>
+                            <ManagerOrgsView/>
 
                     </Content>
                 </Col>

@@ -19,7 +19,7 @@ import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 
 
-export default function ApprovedOrgs(){
+export default function ManagerOrgsView(){
 
     const {paseto} = useAuthContext()
     const queryClient = useQueryClient()
@@ -61,7 +61,7 @@ export default function ApprovedOrgs(){
             data:{
                 key:'status',
                 value: '0', // 0 means de-activated in db
-                org_id: orgId
+                org_id: Number(orgId) 
             },
             headers:{
                 "Authorization": paseto
@@ -325,8 +325,12 @@ export default function ApprovedOrgs(){
         },
     ]
 
-      const onMenuClick: MenuProps['onClick'] = (e) => {
-        console.log('click', e);
+      const onMenuClick=(e:any, record:NewOrg) => {
+        const event = e.key
+        if (event === 'deActivate'){
+            deActivateOrg(record.orgId)
+        }
+        console.log('click', record);
       };
       
   
@@ -378,12 +382,18 @@ export default function ApprovedOrgs(){
     {
       dataIndex: 'actions', 
       key: 'actions',
-      render:()=>{
+      render:(_,record)=>{
         const items = getCurrentStatusActionItems()
-        return (<Dropdown.Button menu={{ items , onClick: onMenuClick }}>Actions</Dropdown.Button>)
+        return (<Dropdown.Button menu={{ items , onClick: (e)=>onMenuClick(e,record) }}>Actions</Dropdown.Button>)
       }
     }
     ];
+
+    if(deActivateOrgMutation.isError){
+        return (
+            <div>{deActivateOrgMutation.data}</div>
+        )
+    }
   
     
 
@@ -407,11 +417,11 @@ export default function ApprovedOrgs(){
 
 const approvedOrgsActions = [
     {
-        key: '4',
+        key: 'deActivate',
         label: 'De-activate'
     },
     {
-        key: 'details',
+        key: 'approvedDetails',
         label: 'View details'
     },
 
@@ -422,7 +432,7 @@ const deActivatedOrgsActions = [
         label: 'Activate'
     },
     {
-        key: 'details',
+        key: 'deActivatedDetails',
         label: 'View details'
     },
 
@@ -437,7 +447,7 @@ const inReviewOrgsActions = [
         label: 'Reject'
     },
     {
-        key: 'details',
+        key: 'inReviewDetails',
         label: 'View details'
     },
 
@@ -448,7 +458,7 @@ const rejectedOrgsActions = [
         label: 'Review'
     },
     {
-        key: 'details',
+        key: 'rejectedDetails',
         label: 'View details'
     },
 
