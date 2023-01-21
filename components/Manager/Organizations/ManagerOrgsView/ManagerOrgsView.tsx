@@ -41,7 +41,7 @@ export default function ManagerOrgsView(){
     const [selectedOrg, setSelelectedOrg] = useState(null)
     const [currentStatus, setCurrentStatus] = useState({id:'1',name: 'Approved'})
 
-    async function fetchApprovedOrgs(){
+    async function fetchOrgs(){
     const res = await axios({
             method:'get',
             url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/orgs?key=status&value=${currentStatus.id}&pageNumber=0&pageSize=10`,
@@ -54,14 +54,16 @@ export default function ManagerOrgsView(){
    
     }
 
-    async function deActivateOrg(orgId: string){
+   
+
+    async function changeOrgStatus({orgId, statusNumber}:{orgId:string, statusNumber: string}){
         const res = await axios({
             method:'patch',
             url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,
             data:{
                 key:'status',
-                value: '0', // 0 means de-activated in db
-                org_id: Number(orgId) 
+                value: statusNumber, // 0 means de-activated in db
+                orgId: orgId 
             },
             headers:{
                 "Authorization": paseto
@@ -79,10 +81,11 @@ export default function ManagerOrgsView(){
     }
 
     
-    const deActivateOrgMutation = useMutation(['deActivateOrgMutation'],{
-        mutationFn: deActivateOrg,
+
+    const changeStatusMutation = useMutation(['orgs'],{
+        mutationFn: changeOrgStatus,
         onSuccess:(data:any)=>{
-            queryClient.invalidateQueries({queryKey:['approvedOrgs']})
+            queryClient.invalidateQueries({queryKey:['organizations',currentStatus]})
         },
         onError:()=>{
             console.log('Error changing status')
@@ -90,13 +93,26 @@ export default function ManagerOrgsView(){
     })
 
 
-
-    function deActivateOrgHandler(org:any){
-        setSelelectedOrg(org.org_id)
-        deActivateOrgMutation.mutate(org.org_id)
+    function deActivateOrgHandler(org:NewOrg){
+        // setSelelectedOrg(org.orgId)
+        changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'0'})
     }
 
-    const orgQuery = useQuery({queryKey:['approvedOrgs', currentStatus], queryFn:fetchApprovedOrgs, enabled:paseto !== ''})
+    function reviewHandler(org:NewOrg){
+        // setSelelectedOrg(org.orgId)
+        changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'2'})
+    }
+
+    function rejectOrgHandler(org:NewOrg){
+        changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'4'})
+    }
+
+    function acceptOrgHandler(org:NewOrg){
+        // setSelelectedOrg(org.orgId)
+        changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'1'})
+    }
+
+    const orgQuery = useQuery({queryKey:['organizations', currentStatus], queryFn:fetchOrgs, enabled:paseto !== ''})
     const approvedOrgs = orgQuery.data && orgQuery.data.data
 
 
@@ -305,30 +321,16 @@ export default function ManagerOrgsView(){
     }
 
     
-
-    const orgStatus = [
-        {
-            id: '1',
-            name: 'Approved'
-        },
-        {
-            id: '2',
-            name: 'In Review'
-        },
-        {
-            id: '4',
-            name: 'Rejected'
-        },
-        {
-            id: '0',
-            name: 'De-activated'
-        },
-    ]
-
       const onMenuClick=(e:any, record:NewOrg) => {
         const event = e.key
-        if (event === 'deActivate'){
-            deActivateOrg(record.orgId)
+        switch(event){
+          case 'deActivate': deActivateOrgHandler(record);
+          break;
+          case 'review': reviewHandler(record)
+          break;
+          case 'accept': acceptOrgHandler(record)
+          break;
+          case 'reject': rejectOrgHandler(record)
         }
         console.log('click', record);
       };
@@ -389,9 +391,9 @@ export default function ManagerOrgsView(){
     }
     ];
 
-    if(deActivateOrgMutation.isError){
+    if(changeStatusMutation.isError){
         return (
-            <div>{deActivateOrgMutation.data}</div>
+            <div>{changeStatusMutation.data}</div>
         )
     }
   
@@ -413,6 +415,25 @@ export default function ManagerOrgsView(){
     )
 }
 
+const orgStatus = [
+  {
+      id: '1',
+      name: 'Approved'
+  },
+  {
+      id: '2',
+      name: 'In Review'
+  },
+  {
+      id: '4',
+      name: 'Rejected'
+  },
+  {
+      id: '0',
+      name: 'De-activated'
+  },
+]
+
 
 
 const approvedOrgsActions = [
@@ -428,8 +449,8 @@ const approvedOrgsActions = [
 ]
 const deActivatedOrgsActions = [
     {
-        key: 'activate',
-        label: 'Activate'
+        key: 'review',
+        label: 'Review'
     },
     {
         key: 'deActivatedDetails',
