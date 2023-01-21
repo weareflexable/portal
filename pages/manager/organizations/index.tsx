@@ -19,20 +19,22 @@ export default function ManagerOrganizations(){
         <ManagerLayout>
             <Row>
                 <Col offset={1} span={21}>
-                    <Title style={{marginLeft: '1em', marginTop:'1em'}} level={3}>Organizations</Title>
+                    <div style={{width:'100%', display:'flex', marginTop:'2rem', justifyContent:'space-between', alignItems:'center'}}>
+                        <Title style={{marginLeft: '1em'}} level={3}>Organizations</Title>
+                        <Button type='primary' onClick={()=>router.push('/manager/organizations/new')}>Create organization</Button>
+                    </div>
                     <Content
                         style={{
                         padding: '1em',
                         margin:'1em',
-                        background:'white' ,
+                        // background:'white' ,
                         width:`98%`,
                         maxWidth:'100%',
                         }}
                     > 
-                    <Button onClick={()=>router.push('/manager/organizations/new')}>Create new organization</Button>
-                        <ManagerOrgsLayout>
+
                             <ApprovedOrgs/>
-                        </ManagerOrgsLayout>
+
                     </Content>
                 </Col>
             </Row>
