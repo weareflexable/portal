@@ -5,7 +5,7 @@ const {Text} = Typography
 import { SearchOutlined } from '@ant-design/icons';
 import type { FilterConfirmProps } from 'antd/es/table/interface';
 import React, { useRef, useState } from 'react'
-import {Typography,Button,Avatar, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider} from 'antd'
+import {Typography,Button,Avatar, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form} from 'antd'
 import { useRouter } from 'next/router'
 import Highlighter from 'react-highlight-words'
 import axios from 'axios';
@@ -18,6 +18,7 @@ import { DatePickRef } from 'antd/lib/date-picker/generatePicker/interface';
 import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import EditOrganizationForm from "../EditOrganizationForm/EditOrganizationForm";
+import { useOrgContext } from "../../../../context/OrgContext";
 
 
 export default function ManagerOrgsView(){
@@ -446,21 +447,108 @@ export default function ManagerOrgsView(){
     }
   function DetailDrawer({selectedOrg}:DrawerProps){
 
-    const [isEditMode, setIsEditMode] = useState(false)
-
-    function toggleEditMode(){
-     setIsEditMode(!isEditMode); 
-    }
 
     return( 
     <Drawer title="Organization Details" width={640} placement="right" closable={true} onClose={() => setIsDrawerOpen(false)} open={isDrawerOpen}>
       
-      {isEditMode? <EditOrganizationForm selectedOrg={selectedOrg} onToggleEdit={toggleEditMode}/> : <ReadOnly onToggleEdit={toggleEditMode} selectedOrg={selectedOrg}/>}
+      <EditableName selectedOrg={selectedOrg}/>
 
     </Drawer>
     )
   }
 }
+
+
+interface EditableProp{
+  selectedOrg: NewOrg
+}
+function EditableName({selectedOrg}:EditableProp){
+
+  const [isEditMode, setIsEditMode] = useState(false)
+
+  const {paseto} = useAuthContext()
+
+  function toggleEdit(){
+    setIsEditMode(!isEditMode)
+  }
+
+  const readOnly = (
+      <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+        <Text>{selectedOrg.name}</Text>
+        <Button type="link" onClick={toggleEdit}>Edit</Button>
+      </div>
+  )
+
+  const nameMutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
+      headers:{
+          //@ts-ignore
+          "Authorization": paseto
+      }
+    })
+      return data;
+  }
+  const nameMutation = useMutation({
+    mutationKey:['name'],
+    mutationFn: nameMutationHandler,
+    onSuccess:()=>{
+      toggleEdit()
+    }
+  })
+
+  function onFinish(updatedItem:any){
+    const payload = {
+      key:'name',
+      value: updatedItem.name,
+      orgId: selectedOrg.orgId
+    }
+    console.log(payload)
+    nameMutation.mutate(payload)
+  }
+
+  const {isLoading:isEditing} = nameMutation 
+
+  const editable = (
+    <Form
+     style={{ marginTop:'.5rem' }}
+     name="editableName"
+     initialValues={selectedOrg}
+     onFinish={onFinish}
+     >
+      <Row>
+        <Col span={16}>
+          <Form.Item
+              name="name"
+              rules={[{ required: true, message: 'Please input a valid service name' }]}
+          >
+              <Input disabled={isEditing} placeholder="Flexable org" />
+          </Form.Item>
+        </Col>
+        <Col span={4}>
+          <Form.Item style={{ width:'100%'}}>
+              <Space >
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                      Cancel
+                  </Button>
+                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                      Apply changes
+                  </Button>
+              </Space>
+                        
+          </Form.Item>
+        </Col>
+      </Row>
+           
+    </Form>
+  )
+  return(
+    <div style={{width:'100%', display:'flex', flexDirection:'column'}}>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>Name</Text>
+    {isEditMode?editable:readOnly}
+    </div>
+  )
+}
+
 
 interface ReadOnlyProps{
   selectedOrg: NewOrg,
