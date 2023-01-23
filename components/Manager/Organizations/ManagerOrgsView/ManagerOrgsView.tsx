@@ -9,7 +9,7 @@ import {Typography,Button,Avatar, Tag, Image, Descriptions, Table, InputRef, Inp
 import { useRouter } from 'next/router'
 import Highlighter from 'react-highlight-words'
 import axios from 'axios';
-import {MoreOutlined} from '@ant-design/icons'
+import {MoreOutlined,ReloadOutlined} from '@ant-design/icons'
 import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
 
 import { useAuthContext } from '../../../../context/AuthContext';
@@ -115,7 +115,7 @@ export default function ManagerOrgsView(){
     }
 
     const orgQuery = useQuery({queryKey:['organizations', currentStatus], queryFn:fetchOrgs, enabled:paseto !== ''})
-    const approvedOrgs = orgQuery.data && orgQuery.data.data
+    const orgs = orgQuery.data && orgQuery.data.data
 
 
     
@@ -426,9 +426,10 @@ export default function ManagerOrgsView(){
                      )
                     )}
                 </Radio.Group>
+                <Button type='link' loading={orgQuery.isRefetching} onClick={()=>orgQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
 
                 </div>
-                <Table style={{width:'100%'}} key='dfadfe' loading={orgQuery.isLoading} columns={columns} onChange={handleChange} dataSource={approvedOrgs} />
+                <Table style={{width:'100%'}} key='dfadfe' loading={orgQuery.isLoading} columns={columns} onChange={handleChange} dataSource={orgs} />
                 {
                   isDrawerOpen
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedOrg={selectedOrg} />
