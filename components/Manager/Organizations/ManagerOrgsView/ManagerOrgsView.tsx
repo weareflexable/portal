@@ -429,7 +429,7 @@ export default function ManagerOrgsView(){
                 <Button type='link' loading={orgQuery.isRefetching} onClick={()=>orgQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
 
                 </div>
-                <Table style={{width:'100%'}} key='dfadfe' loading={orgQuery.isLoading} columns={columns} onChange={handleChange} dataSource={orgs} />
+                <Table style={{width:'100%'}} key='dfadfe' loading={orgQuery.isLoading||orgQuery.isRefetching} columns={columns} onChange={handleChange} dataSource={orgs} />
                 {
                   isDrawerOpen
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedOrg={selectedOrg} />

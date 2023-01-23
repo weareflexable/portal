@@ -85,9 +85,12 @@ export default function NewOrg(){
 
     const onFinish = async(formData:Service)=>{
 
+        const logoRes = await formData.logoImageHash
+        const coverImageRes = await formData.coverImageHash
+
         setIsHashingAssets(true)
-        const logoHash = await asyncStore(formData.logoImageHash[0].originFileObj)
-        const coverImageHash = await asyncStore(formData.coverImageHash[0].originFileObj)
+        const logoHash = await asyncStore(logoRes[0].originFileObj)
+        const coverImageHash = await asyncStore(coverImageRes[0].originFileObj)
         setIsHashingAssets(false)
 
 
@@ -102,7 +105,7 @@ export default function NewOrg(){
         // remove address field since because we have extracted
         // @ts-ignore
         delete formObject.address
-        createDataHandler(formObject)
+        createData.mutate(formObject)
     }
 
         const extractLogoImage = async(e: any) => {
@@ -139,7 +142,7 @@ export default function NewOrg(){
 
 
       const createDataHandler = async(newItem:any)=>{
-        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/services/orgadmin/org-service`, newItem,{
+        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`, newItem,{
             headers:{
                 "Authorization": paseto
             },
@@ -148,7 +151,16 @@ export default function NewOrg(){
     }
 
     const createData = useMutation(createDataHandler,{
-       
+       onSuccess:()=>{
+        form.resetFields()
+        console.log('record created')
+        notification['success']({
+            message: 'Successfully created new organization!'
+        })
+        setInterval(()=>{
+            router.back()
+        },2000)
+       },
         onError:()=>{
             notification['error']({
                 message: 'Encountered an error while creating record',
@@ -158,14 +170,16 @@ export default function NewOrg(){
     })
 
     const {isError, isLoading:isCreatingData, isSuccess:isDataCreated, data:createdData} = createData
+
+    console.log('data is created:', isDataCreated)
     
-    if(isDataCreated){
-        notification['success']({
-            message: 'Created record succesfully!',
-          });
-          // navigate back to services page
-          router.replace('/manager/organizations/')
-    }
+    // if(isDataCreated){
+    //     notification['success']({
+    //         message: 'Created record succesfully!',
+    //       });
+    //       // navigate back to services page
+    //       router.replace('/manager/organizations/')
+    // }
 
     return (
         <div style={{background:'#ffffff', minHeight:'100vh'}}>
@@ -183,7 +197,7 @@ export default function NewOrg(){
                 <Col offset={2} span={9}>
                     
                     <Form
-                    name="storeForm"
+                    name="organizationForm"
                     initialValues={{ remember: true }}
                     layout='vertical'
                     onFinish={onFinish}
@@ -199,11 +213,19 @@ export default function NewOrg(){
 
 
                     <Form.Item
-                        name="organizationEmail"
+                        name="email"
                         label='Organization email'
                         rules={[{ required: true, message: 'Please input a valid email!' }]}
                     >
                         <Input size="large" placeholder="mujahid.bappai@flexable.com" />
+                    </Form.Item>
+
+                    <Form.Item
+                        name="phone"
+                        label='Phone number'
+                        // rules={[{ required: true, message: 'Please input a valid email!' }]}
+                    >
+                        <Input size="large" placeholder="+234802323493" />
                     </Form.Item>
 
                     <Form.Item 
@@ -243,20 +265,20 @@ export default function NewOrg(){
                         rules={[{ required: true, message: 'Please upload an image' }]}
                     >
                         
-                        <Upload name="logoImageHash" multiple={false} fileList={[]} >
+                        <Upload name="logoImageHash" multiple={false} fileList={[]}  >
                                 <Button size='small' type='link'>Upload logo image</Button>
                         </Upload>
                     </Form.Item>
 
                     <Image alt='Organization cover image' src={coverImage} style={{width:'350px',height:'150px', objectFit:'cover', borderRadius:'4px', border:'2px dashed #dddddd'}}/>
                     <Form.Item
-                        name="coverImage"
+                        name="coverImageHash"
                         // label="Cover image"
-                        valuePropName="coverImage"
+                        valuePropName="coverImageHash"
                         getValueFromEvent={extractCoverImage}
                         rules={[{ required: true, message: 'Please upload an image' }]}
                     >
-                        <Upload name="coverImage" multiple={false} fileList={[]} >
+                        <Upload name="coverImageHash" multiple={false} fileList={[]} >
                             <Button size='small' type='link'>Upload cover image</Button>
                         </Upload>
                     </Form.Item>
