@@ -417,10 +417,6 @@ export default function ManagerOrgsView(){
     }
     ];
 
-
-  
-    
-
         return (
             <div>
                 <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
@@ -435,27 +431,45 @@ export default function ManagerOrgsView(){
                 <Table style={{width:'100%'}} key='dfadfe' loading={orgQuery.isLoading} columns={columns} onChange={handleChange} dataSource={approvedOrgs} />
                 {
                   isDrawerOpen
-                  ?<DetailDrawer  selectedOrg={selectedOrg} />
+                  ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedOrg={selectedOrg} />
                 :null
                 }
             </div>
     )
 
 
-    interface DrawerProps{
-      selectedOrg: NewOrg
-    }
-  function DetailDrawer({selectedOrg}:DrawerProps){
 
+}
 
-    return( 
-    <Drawer title="Organization Details" width={640} placement="right" closable={true} onClose={() => setIsDrawerOpen(false)} open={isDrawerOpen}>
-      
-      <EditableName selectedOrg={selectedOrg}/>
+interface DrawerProps{
+  selectedOrg: NewOrg,
+  isDrawerOpen: boolean,
+  closeDrawer: (value:boolean)=>void
+}
+function DetailDrawer({selectedOrg,isDrawerOpen,closeDrawer}:DrawerProps){
 
-    </Drawer>
-    )
-  }
+const queryClient = useQueryClient()
+
+function closeDrawerHandler(){
+  queryClient.invalidateQueries(['organizations'])
+  closeDrawer(!isDrawerOpen)
+}
+
+return( 
+<Drawer title="Organization Details" width={640} placement="right" closable={true} onClose={closeDrawerHandler} open={isDrawerOpen}>
+  
+  <EditableName selectedOrg={selectedOrg}/>
+  <EditablePhone selectedOrg={selectedOrg}/>
+  <EditableZipCode selectedOrg={selectedOrg}/>
+
+  <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
+    <Divider/>
+    <Button danger type="link">De-activate organization</Button>
+    <Divider/>
+  </div>
+
+</Drawer>
+)
 }
 
 
@@ -464,20 +478,19 @@ interface EditableProp{
 }
 function EditableName({selectedOrg}:EditableProp){
 
+  const [state, setState] = useState(selectedOrg)
+
   const [isEditMode, setIsEditMode] = useState(false)
 
   const {paseto} = useAuthContext()
+
+  const queryClient = useQueryClient()
 
   function toggleEdit(){
     setIsEditMode(!isEditMode)
   }
 
-  const readOnly = (
-      <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{selectedOrg.name}</Text>
-        <Button type="link" onClick={toggleEdit}>Edit</Button>
-      </div>
-  )
+ 
 
   const nameMutationHandler = async(updatedItem:any)=>{
     const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
@@ -502,11 +515,22 @@ function EditableName({selectedOrg}:EditableProp){
       value: updatedItem.name,
       orgId: selectedOrg.orgId
     }
-    console.log(payload)
+    const updatedOrg = {
+      ...selectedOrg,
+      name: updatedItem.name
+    }
+    setState(updatedOrg)
     nameMutation.mutate(payload)
   }
 
-  const {isLoading:isEditing} = nameMutation 
+  const {isLoading:isEditing} = nameMutation ;
+
+  const readOnly = (
+    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+      <Text>{state.name}</Text>
+      <Button type="link" onClick={toggleEdit}>Edit</Button>
+    </div>
+)
 
   const editable = (
     <Form
@@ -516,12 +540,12 @@ function EditableName({selectedOrg}:EditableProp){
      onFinish={onFinish}
      >
       <Row>
-        <Col span={16}>
+        <Col span={16} style={{height:'100%'}}>
           <Form.Item
               name="name"
               rules={[{ required: true, message: 'Please input a valid service name' }]}
           >
-              <Input disabled={isEditing} placeholder="Flexable org" />
+              <Input  disabled={isEditing} placeholder="Flexable org" />
           </Form.Item>
         </Col>
         <Col span={4}>
@@ -548,41 +572,186 @@ function EditableName({selectedOrg}:EditableProp){
     </div>
   )
 }
+function EditablePhone({selectedOrg}:EditableProp){
 
+  const [isEditMode, setIsEditMode] = useState(false)
 
-interface ReadOnlyProps{
-  selectedOrg: NewOrg,
-  onToggleEdit: ()=>void
+  const {paseto} = useAuthContext()
+
+  const queryClient = useQueryClient()
+
+  function toggleEdit(){
+    setIsEditMode(!isEditMode)
+  }
+
+  const readOnly = (
+      <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+        <Text>{selectedOrg.phone}</Text>
+        <Button type="link" onClick={toggleEdit}>Edit</Button>
+      </div>
+  )
+
+  const nameMutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
+      headers:{
+          //@ts-ignore
+          "Authorization": paseto
+      }
+    })
+      return data;
+  }
+  const nameMutation = useMutation({
+    mutationKey:['phone'],
+    mutationFn: nameMutationHandler,
+    onSuccess:()=>{
+      toggleEdit()
+      queryClient.invalidateQueries(['organizations'])
+    }
+  })
+
+  function onFinish(field:any){
+    const payload = {
+      key:'phone',
+      value: field.phone,
+      orgId: selectedOrg.orgId
+    }
+    console.log(payload)
+    nameMutation.mutate(payload)
+  }
+
+  const {isLoading:isEditing} = nameMutation 
+
+  const editable = (
+    <Form
+     style={{ marginTop:'.5rem' }}
+     name="editablePhone"
+     initialValues={selectedOrg}
+     onFinish={onFinish}
+     >
+      <Row>
+        <Col span={16}>
+          <Form.Item
+              name="phone"
+              rules={[{ required: true, message: 'Please input a valid phone number' }]}
+          >
+              <Input disabled={isEditing} placeholder="09023234857" />
+          </Form.Item>
+        </Col>
+        <Col span={4}>
+          <Form.Item style={{ width:'100%'}}>
+              <Space >
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                      Cancel
+                  </Button>
+                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                      Apply changes
+                  </Button>
+              </Space>
+                        
+          </Form.Item>
+        </Col>
+      </Row>
+           
+    </Form>
+  )
+  return(
+    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>Phone</Text>
+      {isEditMode?editable:readOnly}
+    </div>
+  )
+}
+function EditableZipCode({selectedOrg}:EditableProp){
+
+  const [isEditMode, setIsEditMode] = useState(false)
+
+  const queryClient = useQueryClient()
+
+  const {paseto} = useAuthContext()
+
+  function toggleEdit(){
+    setIsEditMode(!isEditMode)
+  }
+
+  const readOnly = (
+      <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+        <Text>{selectedOrg.zipCode}</Text>
+        <Button type="link" onClick={toggleEdit}>Edit</Button>
+      </div>
+  )
+
+  const mutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
+      headers:{
+          //@ts-ignore
+          "Authorization": paseto
+      }
+    })
+      return data;
+  }
+  const mutation = useMutation({
+    mutationKey:['zipCode'],
+    mutationFn: mutationHandler,
+    onSuccess:()=>{
+      toggleEdit()
+      queryClient.invalidateQueries(['organizations'])
+    }
+  })
+
+  function onFinish(field:any){
+    const payload = {
+      key:'zip_code',
+      value: field.zipCode,
+      orgId: selectedOrg.orgId
+    }
+    mutation.mutate(payload)
+  }
+
+  const {isLoading:isEditing} = mutation
+
+  const editable = (
+    <Form
+     style={{ marginTop:'.5rem' }}
+     name="editableZipCode"
+     initialValues={selectedOrg}
+     onFinish={onFinish}
+     >
+      <Row>
+        <Col span={10}>
+          <Form.Item
+              name="zipCode"
+              rules={[{ required: true, message: 'Please input a valid zip code' }]}
+          >
+              <Input disabled={isEditing} placeholder="937462" />
+          </Form.Item>
+        </Col>
+        <Col span={4}>
+          <Form.Item style={{ width:'100%'}}>
+              <Space >
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                      Cancel
+                  </Button>
+                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                      Apply changes
+                  </Button>
+              </Space>
+                        
+          </Form.Item>
+        </Col>
+      </Row>
+           
+    </Form>
+  )
+  return(
+    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>Zip Code</Text>
+      {isEditMode?editable:readOnly}
+    </div>
+  )
 }
 
-  function ReadOnly({selectedOrg, onToggleEdit}:ReadOnlyProps){
-    return(
-      <div style={{width:'100%'}}>
-        <div>
-        <Text type="secondary" style={{ marginRight: '2rem' }}>Name</Text>
-        <Text>{selectedOrg.name}</Text>
-      </div>
-      <div>
-        <Text type="secondary" style={{ marginRight: '2rem' }}>Country</Text>
-        <Text>{selectedOrg.country}</Text>
-      </div>
-      <div>
-        <Text type="secondary" style={{ marginRight: '2rem' }}>City</Text>
-        <Text>{selectedOrg.city}</Text>
-      </div>
-      <div>
-        <Text type="secondary" style={{ marginRight: '2rem' }}>Zip Code</Text>
-        <Text>{selectedOrg.zipCode}</Text>
-      </div>
-      <div>
-        <Text type="secondary" style={{ marginRight: '2rem' }}>Phone</Text>
-        <Text>{selectedOrg.phone}</Text>
-      </div>
 
-      <Button onClick={onToggleEdit}>Edit </Button>
-      </div>
-    )
-  }
+
 
 const orgStatus = [
   {
