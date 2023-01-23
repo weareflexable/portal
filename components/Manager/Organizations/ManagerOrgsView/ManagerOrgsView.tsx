@@ -5,18 +5,19 @@ const {Text} = Typography
 import { SearchOutlined } from '@ant-design/icons';
 import type { FilterConfirmProps } from 'antd/es/table/interface';
 import React, { useRef, useState } from 'react'
-import {Typography,Button,Avatar, Tag, Image, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps} from 'antd'
+import {Typography,Button,Avatar, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider} from 'antd'
 import { useRouter } from 'next/router'
 import Highlighter from 'react-highlight-words'
 import axios from 'axios';
 import {MoreOutlined} from '@ant-design/icons'
 import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
-import {ReloadOutlined} from '@ant-design/icons'
+
 import { useAuthContext } from '../../../../context/AuthContext';
 import { useServicesContext } from '../../../../context/ServicesContext';
 import { DatePickRef } from 'antd/lib/date-picker/generatePicker/interface';
 import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
+import EditOrganizationForm from "../EditOrganizationForm/EditOrganizationForm";
 
 
 export default function ManagerOrgsView(){
@@ -32,13 +33,13 @@ export default function ManagerOrgsView(){
     const [searchedColumn, setSearchedColumn] = useState('');
     const searchInput = useRef<InputRef>(null);
     const ticketSearchRef = useRef(null)
-  
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   
     // const isFilterEmpty = Object.keys(filteredInfo).length === 0;
 
     type DataIndex = keyof NewOrg;
 
-    const [selectedOrg, setSelelectedOrg] = useState(null)
+    const [selectedOrg, setSelelectedOrg] = useState<any|NewOrg>({})
     const [currentStatus, setCurrentStatus] = useState({id:'1',name: 'Approved'})
 
     async function fetchOrgs(){
@@ -320,6 +321,14 @@ export default function ManagerOrgsView(){
         }
     }
 
+    function viewOrgDetails(org:NewOrg){
+      // set state
+      setSelelectedOrg(org)
+      // opne drawer
+      setIsDrawerOpen(true)
+
+    }
+  
     
       const onMenuClick=(e:any, record:NewOrg) => {
         const event = e.key
@@ -331,6 +340,8 @@ export default function ManagerOrgsView(){
           case 'accept': acceptOrgHandler(record)
           break;
           case 'reject': rejectOrgHandler(record)
+          break;
+          case 'viewDetails': viewOrgDetails(record)
         }
         console.log('click', record);
       };
@@ -365,6 +376,20 @@ export default function ManagerOrgsView(){
         dataIndex: 'city',
         key: 'city'
       },
+      // {
+      //   title: 'State',
+      //   dataIndex: 'state',
+      //   key: 'state'
+      // },
+      {
+        title: 'Zip Code',
+        dataIndex: 'zipCode',
+        key: 'zipCode',
+        render:(_,record)=>{
+          const zipCode = record.zipCode  === ""? <Text>--</Text>: <Text>{record.zipCode}</Text>
+          return zipCode
+      }
+      },
       {
         title: 'Phone',
         dataIndex: 'phone',
@@ -391,11 +416,7 @@ export default function ManagerOrgsView(){
     }
     ];
 
-    if(changeStatusMutation.isError){
-        return (
-            <div>{changeStatusMutation.data}</div>
-        )
-    }
+
   
     
 
@@ -411,9 +432,69 @@ export default function ManagerOrgsView(){
 
                 </div>
                 <Table style={{width:'100%'}} key='dfadfe' loading={orgQuery.isLoading} columns={columns} onChange={handleChange} dataSource={approvedOrgs} />
+                {
+                  isDrawerOpen
+                  ?<DetailDrawer  selectedOrg={selectedOrg} />
+                :null
+                }
             </div>
     )
+
+
+    interface DrawerProps{
+      selectedOrg: NewOrg
+    }
+  function DetailDrawer({selectedOrg}:DrawerProps){
+
+    const [isEditMode, setIsEditMode] = useState(false)
+
+    function toggleEditMode(){
+     setIsEditMode(!isEditMode); 
+    }
+
+    return( 
+    <Drawer title="Organization Details" width={640} placement="right" closable={true} onClose={() => setIsDrawerOpen(false)} open={isDrawerOpen}>
+      
+      {isEditMode? <EditOrganizationForm selectedOrg={selectedOrg} onToggleEdit={toggleEditMode}/> : <ReadOnly onToggleEdit={toggleEditMode} selectedOrg={selectedOrg}/>}
+
+    </Drawer>
+    )
+  }
 }
+
+interface ReadOnlyProps{
+  selectedOrg: NewOrg,
+  onToggleEdit: ()=>void
+}
+
+  function ReadOnly({selectedOrg, onToggleEdit}:ReadOnlyProps){
+    return(
+      <div style={{width:'100%'}}>
+        <div>
+        <Text type="secondary" style={{ marginRight: '2rem' }}>Name</Text>
+        <Text>{selectedOrg.name}</Text>
+      </div>
+      <div>
+        <Text type="secondary" style={{ marginRight: '2rem' }}>Country</Text>
+        <Text>{selectedOrg.country}</Text>
+      </div>
+      <div>
+        <Text type="secondary" style={{ marginRight: '2rem' }}>City</Text>
+        <Text>{selectedOrg.city}</Text>
+      </div>
+      <div>
+        <Text type="secondary" style={{ marginRight: '2rem' }}>Zip Code</Text>
+        <Text>{selectedOrg.zipCode}</Text>
+      </div>
+      <div>
+        <Text type="secondary" style={{ marginRight: '2rem' }}>Phone</Text>
+        <Text>{selectedOrg.phone}</Text>
+      </div>
+
+      <Button onClick={onToggleEdit}>Edit </Button>
+      </div>
+    )
+  }
 
 const orgStatus = [
   {
@@ -434,15 +515,13 @@ const orgStatus = [
   },
 ]
 
-
-
 const approvedOrgsActions = [
     {
         key: 'deActivate',
         label: 'De-activate'
     },
     {
-        key: 'approvedDetails',
+        key: 'viewDetails',
         label: 'View details'
     },
 
@@ -453,7 +532,7 @@ const deActivatedOrgsActions = [
         label: 'Review'
     },
     {
-        key: 'deActivatedDetails',
+        key: 'viewDetails',
         label: 'View details'
     },
 
@@ -468,7 +547,7 @@ const inReviewOrgsActions = [
         label: 'Reject'
     },
     {
-        key: 'inReviewDetails',
+        key: 'viewDetails',
         label: 'View details'
     },
 
@@ -479,7 +558,7 @@ const rejectedOrgsActions = [
         label: 'Review'
     },
     {
-        key: 'rejectedDetails',
+        key: 'viewDetails',
         label: 'View details'
     },
 

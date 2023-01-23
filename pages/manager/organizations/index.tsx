@@ -11,6 +11,7 @@ import ApprovedOrgs from '../../../components/Manager/Organizations/ManagerOrgsV
 import { useRouter } from 'next/router'
 import ManagerOrgsView from '../../../components/Manager/Organizations/ManagerOrgsView/ManagerOrgsView'
 const {Title} = Typography;
+import { PlusOutlined } from '@ant-design/icons';
 
 export default function ManagerOrganizations(){
 
@@ -22,7 +23,7 @@ export default function ManagerOrganizations(){
                 <Col offset={1} span={21}>
                     <div style={{width:'100%', display:'flex', marginTop:'2rem', justifyContent:'space-between', alignItems:'center'}}>
                         <Title style={{marginLeft: '1em'}} level={3}>Organizations</Title>
-                        <Button type='primary' onClick={()=>router.push('/manager/organizations/new')}>Create organization</Button>
+                        <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/manager/organizations/new')}>New organization</Button>
                     </div>
                     <Content
                         style={{
