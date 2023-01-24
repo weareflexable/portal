@@ -5,7 +5,7 @@ const {Text} = Typography
 import { SearchOutlined } from '@ant-design/icons';
 import type { FilterConfirmProps } from 'antd/es/table/interface';
 import React, { useRef, useState } from 'react'
-import {Typography,Button,Avatar, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form} from 'antd'
+import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form} from 'antd'
 import { useRouter } from 'next/router'
 import Highlighter from 'react-highlight-words'
 import axios from 'axios';
@@ -19,6 +19,7 @@ import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import EditOrganizationForm from "../EditOrganizationForm/EditOrganizationForm";
 import { useOrgContext } from "../../../../context/OrgContext";
+import { asyncStore } from "../../../../utils/nftStorage";
 
 
 export default function ManagerOrgsView(){
@@ -462,6 +463,7 @@ return(
   <EditableName selectedOrg={selectedOrg}/>
   <EditablePhone selectedOrg={selectedOrg}/>
   <EditableZipCode selectedOrg={selectedOrg}/>
+  <EditableLogoImage selectedOrg={selectedOrg}/>
 
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
     <Divider/>
@@ -746,6 +748,119 @@ function EditableZipCode({selectedOrg}:EditableProp){
   return(
     <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
       <Text type="secondary" style={{ marginRight: '2rem',}}>Zip Code</Text>
+      {isEditMode?editable:readOnly}
+    </div>
+  )
+}
+function EditableLogoImage({selectedOrg}:EditableProp){
+
+  const [isEditMode, setIsEditMode] = useState(false)
+  const [isHashingImage, setIsHashingImage] = useState(false)
+
+  const queryClient = useQueryClient()
+
+  const {paseto} = useAuthContext()
+
+  function toggleEdit(){
+    setIsEditMode(!isEditMode)
+  }
+
+  const readOnly = (
+      <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+        <Image style={{width:'200px', height:'200px', borderRadius:'50%'}} alt='Logo image for organization' src={`NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL/${selectedOrg.logoImageHash}`}/>
+        <Button type="link" onClick={toggleEdit}>Edit</Button>
+      </div>
+  )
+
+  const mutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
+      headers:{
+          //@ts-ignore
+          "Authorization": paseto
+      }
+    })
+      return data;
+  }
+  const mutation = useMutation({
+    mutationKey:['logoImage'],
+    mutationFn: mutationHandler,
+    onSuccess:()=>{
+      toggleEdit()
+    }
+  })
+
+  async function onFinish(field:any){
+
+    // hash it first
+    const logoRes = await field.logoImage
+
+    setIsHashingImage(true)
+    const logoHash = await asyncStore(logoRes[0].originFileObj)
+    setIsHashingImage(false)
+
+    console.log(logoHash)
+
+    const payload = {
+      key:'logo_image_hash',
+      value: logoHash,
+      orgId: selectedOrg.orgId
+    }
+    mutation.mutate(payload)
+  }
+
+  const {isLoading:isEditing} = mutation
+
+  const extractLogoImage = async(e: any) => {
+    console.log('Upload event:', e);
+    if (Array.isArray(e)) {
+    return e;
+    }
+
+   return e?.fileList;
+};
+
+
+  const editable = (
+    <Form
+     style={{ marginTop:'.5rem' }}
+     name="EditablelogoImage"
+     initialValues={selectedOrg}
+     onFinish={onFinish}
+     >
+      <Row>
+        <Col span={10}>
+          <Form.Item
+              name="logoImage"
+              valuePropName="logoImage"
+              getValueFromEvent={extractLogoImage}
+              rules={[{ required: true, message: 'Please input a valid zip code' }]}
+          >
+              
+              <Upload name="logoImageHash" listType="picture" multiple={false}>
+                   <Button size='small' disabled={isHashingImage} type='link'>Upload logo image</Button>
+              </Upload>
+          </Form.Item>
+        </Col>
+        <Col span={4}>
+          <Form.Item style={{ width:'100%'}}>
+              <Space >
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                      Cancel
+                  </Button>
+                  <Button shape="round" loading={isEditing||isHashingImage} type="link" size="small"  htmlType="submit" >
+                      Apply changes
+                  </Button>
+              </Space>
+                        
+          </Form.Item>
+        </Col>
+      </Row>
+           
+    </Form>
+  )
+  return(
+    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>Logo</Text>
       {isEditMode?editable:readOnly}
     </div>
   )
