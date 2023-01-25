@@ -24,7 +24,7 @@ export interface Org {
 
 export interface NewOrg{
     status: number,
-    orgId: string,
+    id: string,
     name: string,
     email: string,
     phone: string,

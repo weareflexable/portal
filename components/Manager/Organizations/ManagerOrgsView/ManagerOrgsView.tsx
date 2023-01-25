@@ -20,6 +20,8 @@ import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import EditOrganizationForm from "../EditOrganizationForm/EditOrganizationForm";
 import { useOrgContext } from "../../../../context/OrgContext";
 import { asyncStore } from "../../../../utils/nftStorage";
+import { usePlacesWidget } from "react-google-autocomplete";
+const {TextArea} = Input
 
 
 export default function ManagerOrgsView(){
@@ -75,13 +77,13 @@ export default function ManagerOrgsView(){
         return res; 
     }
 
-    function gotoServices(org:NewOrg){
-        console.log(org)
-        // switch org
-        switchOrg(org)
-        // navigate user to services page
-        router.push('/organizations/services/')
-    }
+    // function gotoServices(org:NewOrg){
+    //     console.log(org)
+    //     // switch org
+    //     switchOrg(org)
+    //     // navigate user to services page
+    //     router.push('/organizations/services/')
+    // }
 
     
 
@@ -433,8 +435,8 @@ export default function ManagerOrgsView(){
                 <Table style={{width:'100%'}} key='dfadfe' loading={orgQuery.isLoading||orgQuery.isRefetching} columns={columns} onChange={handleChange} dataSource={orgs} />
                 {
                   isDrawerOpen
-                  ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedOrg={selectedOrg} />
-                :null
+                  ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedOrg={selectedOrg}/>
+                  :null
                 }
             </div>
     )
@@ -461,9 +463,11 @@ return(
 <Drawer title="Organization Details" width={640} placement="right" closable={true} onClose={closeDrawerHandler} open={isDrawerOpen}>
   
   <EditableName selectedOrg={selectedOrg}/>
+  <EditableAddress selectedOrg={selectedOrg}/>
   <EditablePhone selectedOrg={selectedOrg}/>
   <EditableZipCode selectedOrg={selectedOrg}/>
   <EditableLogoImage selectedOrg={selectedOrg}/>
+  <EditableCoverImage selectedOrg={selectedOrg}/>
 
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
     <Divider/>
@@ -571,6 +575,155 @@ function EditableName({selectedOrg}:EditableProp){
   return(
     <div style={{width:'100%', display:'flex', flexDirection:'column'}}>
       <Text type="secondary" style={{ marginRight: '2rem',}}>Name</Text>
+    {isEditMode?editable:readOnly}
+    </div>
+  )
+}
+function EditableAddress({selectedOrg}:EditableProp){
+
+  const [state, setState] = useState(selectedOrg)
+
+  const [isEditMode, setIsEditMode] = useState(false)
+  const antInputRef = useRef();
+  const [fullAddress, setFullAddress] = useState({
+    latitude:0,
+    longitude:0,
+    state: '',
+    country:'',
+    city:''
+})
+
+  const {paseto} = useAuthContext()
+
+
+  function toggleEdit(){
+    setIsEditMode(!isEditMode)
+  }
+
+  const [form]  = Form.useForm()
+
+  const extractFullAddress = (place:any)=>{
+    const addressComponents = place.address_components 
+        let addressObj = {
+            state:'',
+            country:'',
+            city:'',
+            latitude:place.geometry.location.lat(),
+            longitude:place.geometry.location.lng()
+        };
+        addressComponents.forEach((address:any)=>{
+            const type = address.types[0]
+            if(type==='country') addressObj.country = address.long_name
+            if(type === 'locality') addressObj.state = address.short_name
+            if(type === 'administrative_area_level_1') addressObj.city = address.short_name
+        })
+
+        return addressObj
+}
+
+  const { ref: antRef } = usePlacesWidget({
+    apiKey: `${process.env.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API}`, // move this key to env
+    // apiKey: `AIzaSyB7ZUkMcIXpOKYU4r4iBMM9BFjCL5OpeeE`, // move this key to env
+    onPlaceSelected: (place) => {
+        // console.log(antInputRef.current.input)
+        form.setFieldValue('address',place?.formatted_address)
+        
+        const fullAddress = extractFullAddress(place)
+        setFullAddress(fullAddress)
+
+        //@ts-ignore
+      antInputRef.current.input.value = place?.formatted_address
+
+    },
+  });
+
+
+  const nameMutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
+      headers:{
+          //@ts-ignore
+          "Authorization": paseto
+      }
+    })
+      return data;
+  }
+  const nameMutation = useMutation({
+    mutationKey:['address'],
+    mutationFn: nameMutationHandler,
+    onSuccess:()=>{
+      toggleEdit()
+    }
+  })
+
+  function onFinish(updatedItem:any){
+    const payload = {
+      key:'country',
+      value: updatedItem.country,
+      orgId: selectedOrg.orgId
+    }
+    const updatedOrg = {
+      ...selectedOrg,
+      name: updatedItem.country
+    }
+    setState(updatedOrg)
+    nameMutation.mutate(payload)
+  }
+
+  const {isLoading:isEditing} = nameMutation 
+
+  const readOnly = (
+    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+      <Text>{`${state.street}, ${state.country}, ${state.city}`}</Text>
+      <Button type="link" onClick={toggleEdit}>Edit</Button>
+    </div>
+)
+
+  const editable = (
+    <Form
+     style={{ marginTop:'.5rem' }}
+     name="editableAddress"
+     initialValues={selectedOrg}
+     onFinish={onFinish}
+     form={form}
+     >
+      <Row>
+        <Col span={16} style={{height:'100%'}}>
+        <Form.Item 
+            name="address"
+            rules={[{ required: true, message: 'Please input a valid address!' }]}
+        >
+            {/* <TextArea rows={3} placeholder='Apt. 235 30B NorthPointsettia Street, Syracuse'/> */}
+            <Input ref={(c) => {
+                // @ts-ignore
+                antInputRef.current = c;
+                // @ts-ignore
+                if (c) antRef.current = c.input;
+                }} 
+                placeholder="Syracuse, United states" 
+                />
+        </Form.Item>
+
+        </Col>
+        <Col span={4}>
+          <Form.Item style={{ width:'100%'}}>
+              <Space >
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                      Cancel
+                  </Button>
+                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                      Apply changes
+                  </Button>
+              </Space>
+                        
+          </Form.Item>
+        </Col>
+      </Row>
+           
+    </Form>
+  )
+  return(
+    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>Address</Text>
     {isEditMode?editable:readOnly}
     </div>
   )
@@ -756,6 +909,7 @@ function EditableLogoImage({selectedOrg}:EditableProp){
 
   const [isEditMode, setIsEditMode] = useState(false)
   const [isHashingImage, setIsHashingImage] = useState(false)
+  const [updatedLogoImageHash, setUpdatedLogoImageHash] = useState(selectedOrg.logoImageHash)
 
   const queryClient = useQueryClient()
 
@@ -766,8 +920,8 @@ function EditableLogoImage({selectedOrg}:EditableProp){
   }
 
   const readOnly = (
-      <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Image style={{width:'200px', height:'200px', borderRadius:'50%'}} alt='Logo image for organization' src={`NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL/${selectedOrg.logoImageHash}`}/>
+      <div style={{width:'100%', marginTop:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+        <Image style={{width:'170px', height:'170px', border:'1px solid #f2f2f2', borderRadius:'50%'}} alt='Logo image for organization' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedLogoImageHash}`}/>
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
   )
@@ -805,6 +959,7 @@ function EditableLogoImage({selectedOrg}:EditableProp){
       value: logoHash,
       orgId: selectedOrg.orgId
     }
+    setUpdatedLogoImageHash(logoHash)
     mutation.mutate(payload)
   }
 
@@ -861,6 +1016,121 @@ function EditableLogoImage({selectedOrg}:EditableProp){
   return(
     <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
       <Text type="secondary" style={{ marginRight: '2rem',}}>Logo</Text>
+      {isEditMode?editable:readOnly}
+    </div>
+  )
+}
+function EditableCoverImage({selectedOrg}:EditableProp){
+
+  const [isEditMode, setIsEditMode] = useState(false)
+  const [isHashingImage, setIsHashingImage] = useState(false)
+  const [updatedCoverImageHash, setUpdatedCoverImageHash] = useState(selectedOrg.logoImageHash)
+
+  const queryClient = useQueryClient()
+
+  const {paseto} = useAuthContext()
+
+  function toggleEdit(){
+    setIsEditMode(!isEditMode)
+  }
+
+  const readOnly = (
+      <div style={{width:'100%', marginTop:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+        <Image style={{width:'500px', height:'200px', objectFit:'cover', border:'1px solid #f2f2f2'}} alt='cover image for organization' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedCoverImageHash}`}/>
+        <Button type="link" onClick={toggleEdit}>Edit</Button>
+      </div>
+  )
+
+  const mutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
+      headers:{
+          //@ts-ignore
+          "Authorization": paseto
+      }
+    })
+      return data;
+  }
+  const mutation = useMutation({
+    mutationKey:['logoImage'],
+    mutationFn: mutationHandler,
+    onSuccess:()=>{
+      toggleEdit()
+    }
+  })
+
+  async function onFinish(field:any){
+
+    // hash it first
+    const coverImageRes = await field.coverImage
+
+    setIsHashingImage(true)
+    const coverImageHash = await asyncStore(coverImageRes[0].originFileObj)
+    setIsHashingImage(false)
+
+    console.log(coverImageHash)
+
+    const payload = {
+      key:'cover_image_hash',
+      value: coverImageHash,
+      orgId: selectedOrg.orgId
+    }
+    setUpdatedCoverImageHash(coverImageHash)
+    mutation.mutate(payload)
+  }
+
+  const {isLoading:isEditing} = mutation
+
+  const extractCoverImage = async(e: any) => {
+    console.log('Upload event:', e);
+    if (Array.isArray(e)) {
+    return e;
+    }
+
+   return e?.fileList;
+};
+
+
+  const editable = (
+    <Form
+     style={{ marginTop:'.5rem' }}
+     name="editableCoverImage"
+     initialValues={selectedOrg}
+     onFinish={onFinish}
+     >
+      <Row>
+        <Col span={10}>
+          <Form.Item
+              name="coverImage"
+              valuePropName="coverImage"
+              getValueFromEvent={extractCoverImage}
+              rules={[{ required: true, message: 'Please input a valid zip code' }]}
+          >
+              
+              <Upload name="coverImageHash" listType="picture" multiple={false}>
+                   <Button size='small' disabled={isHashingImage} type='link'>Upload cover image</Button>
+              </Upload>
+          </Form.Item>
+        </Col>
+        <Col span={4}>
+          <Form.Item style={{ width:'100%'}}>
+              <Space >
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                      Cancel
+                  </Button>
+                  <Button shape="round" loading={isEditing||isHashingImage} type="link" size="small"  htmlType="submit" >
+                      Apply changes
+                  </Button>
+              </Space>
+                        
+          </Form.Item>
+        </Col>
+      </Row>
+           
+    </Form>
+  )
+  return(
+    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>Cover Image</Text>
       {isEditMode?editable:readOnly}
     </div>
   )

@@ -1,6 +1,6 @@
 import { Card, List, Avatar, Typography, Tag } from "antd";
 import {Button} from 'antd'
-import { Org } from "../../../types/OrganisationTypes";
+import { NewOrg, Org } from "../../../types/OrganisationTypes";
 import {PlusCircleOutlined} from '@ant-design/icons'
 import { useEffect, useState } from "react";
 import { useOrgContext } from "../../../context/OrgContext";
@@ -57,11 +57,11 @@ export default function OrganizationList({}:OrganizationListProps) {
 }) 
 
 
-    const orgs: Org[] = data && data.payload;
-    const uniqueOrgs: Org[] = orgs?.filter((item, i) => orgs.findIndex((org)=>item.id===org.id)===i); 
+    const orgs: NewOrg[] = data && data.payload;
+    const uniqueOrgs: NewOrg[] = orgs?.filter((item, i) => orgs.findIndex((org)=>item.id===org.id)===i); 
 
 
-    const navigateToApp = (org:Org)=>{
+    const navigateToApp = (org:NewOrg)=>{
         // save selected org to local storage
         
         setSelectedOrg(org.id)
@@ -80,16 +80,15 @@ export default function OrganizationList({}:OrganizationListProps) {
             bordered={false}
             loading={isLoadingOrgs}
             dataSource={uniqueOrgs}
-            renderItem={item => <List.Item
-                actions={[<Button key={item.id} shape='round' disabled={!item.approved} type='primary' loading={item.id === selectedOrg ? isNavigatingToOrgs : false} onClick={() => navigateToApp(item)}>{item.approved ? `Go to organization` : 'Organization in review'}</Button>]}
+            renderItem={(item:NewOrg) => <List.Item
+                actions={[<Button key={item.id} shape='round'  type='primary' loading={item.id === selectedOrg ? isNavigatingToOrgs : false} onClick={() => navigateToApp(item)}>{item.status ? `Go to organization` : 'Organization in review'}</Button>]}
                 style={{ border: 'none', backgroundColor: '#f9f9f9', marginBottom: '.5em', padding: '1em', borderRadius: '4px' }}
                 key={item.id}
             >
                 <List.Item.Meta
-                    avatar={<Avatar src={`https://nftstorage.link/ipfs/${item.imageHash}`} />}
+                    avatar={<Avatar src={`https://nftstorage.link/ipfs/${item.logoImageHash}`} />}
                     title={<div style={{ display: 'flex' }}>
                         <Typography.Text style={{ marginRight: '1em' }}>{item.name}</Typography.Text>
-                        <Tag>{item.role === 'STAFF' ? 'Employee' : item.role}</Tag>
                     </div>} />
 
             </List.Item>} />

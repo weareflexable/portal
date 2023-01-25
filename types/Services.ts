@@ -32,15 +32,11 @@ export type ServicePayload ={
 export type ServiceItem = {
     id:string,
     name: string,
-    price: number,
-    logoImageHash: Array<any>,
-    ticketsPerDay: number,
-    serviceType: string,
+    imageHash: Array<any>,
+    serviceItemType: string,
     description: string,
-    startDate:  string,
-    endDate: string,
-    startTime: string,
-    rangeTime: number
+    updatedAt: string,
+    createdAt: string,
 }
 
 export type ServiceItemReqPaylod = {

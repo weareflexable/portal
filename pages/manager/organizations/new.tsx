@@ -225,7 +225,7 @@ export default function NewOrg(){
                         label='Phone number'
                         // rules={[{ required: true, message: 'Please input a valid email!' }]}
                     >
-                        <Input size="large" placeholder="+234802323493" />
+                        <Input size="large" placeholder="+23802323493" />
                     </Form.Item>
 
                     <Form.Item 
