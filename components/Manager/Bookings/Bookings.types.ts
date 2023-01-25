@@ -16,4 +16,6 @@ export interface ManagerOrder {
     hash: string,
     currency: string,
     endTime: string,
+    createdAt: string,
+
   }

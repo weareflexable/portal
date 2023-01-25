@@ -100,21 +100,21 @@ export default function ManagerOrgsView(){
 
     function deActivateOrgHandler(org:NewOrg){
         // setSelelectedOrg(org.orgId)
-        changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'0'})
+        changeStatusMutation.mutate({orgId:org.id, statusNumber:'0'})
     }
 
     function reviewHandler(org:NewOrg){
         // setSelelectedOrg(org.orgId)
-        changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'2'})
+        changeStatusMutation.mutate({orgId:org.id, statusNumber:'2'})
     }
 
     function rejectOrgHandler(org:NewOrg){
-        changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'4'})
+        changeStatusMutation.mutate({orgId:org.id, statusNumber:'4'})
     }
 
     function acceptOrgHandler(org:NewOrg){
         // setSelelectedOrg(org.orgId)
-        changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'1'})
+        changeStatusMutation.mutate({orgId:org.id, statusNumber:'1'})
     }
 
     const orgQuery = useQuery({queryKey:['organizations', currentStatus], queryFn:fetchOrgs, enabled:paseto !== ''})
@@ -520,7 +520,7 @@ function EditableName({selectedOrg}:EditableProp){
     const payload = {
       key:'name',
       value: updatedItem.name,
-      orgId: selectedOrg.orgId
+      orgId: selectedOrg.id
     }
     const updatedOrg = {
       ...selectedOrg,
@@ -659,7 +659,7 @@ function EditableAddress({selectedOrg}:EditableProp){
     const payload = {
       key:'country',
       value: updatedItem.country,
-      orgId: selectedOrg.orgId
+      orgId: selectedOrg.id
     }
     const updatedOrg = {
       ...selectedOrg,
@@ -769,7 +769,7 @@ function EditablePhone({selectedOrg}:EditableProp){
     const payload = {
       key:'phone',
       value: field.phone,
-      orgId: selectedOrg.orgId
+      orgId: selectedOrg.id
     }
     console.log(payload)
     nameMutation.mutate(payload)
@@ -858,7 +858,7 @@ function EditableZipCode({selectedOrg}:EditableProp){
     const payload = {
       key:'zip_code',
       value: field.zipCode,
-      orgId: selectedOrg.orgId
+      orgId: selectedOrg.id
     }
     mutation.mutate(payload)
   }
@@ -957,7 +957,7 @@ function EditableLogoImage({selectedOrg}:EditableProp){
     const payload = {
       key:'logo_image_hash',
       value: logoHash,
-      orgId: selectedOrg.orgId
+      orgId: selectedOrg.id
     }
     setUpdatedLogoImageHash(logoHash)
     mutation.mutate(payload)
@@ -1072,7 +1072,7 @@ function EditableCoverImage({selectedOrg}:EditableProp){
     const payload = {
       key:'cover_image_hash',
       value: coverImageHash,
-      orgId: selectedOrg.orgId
+      orgId: selectedOrg.id
     }
     setUpdatedCoverImageHash(coverImageHash)
     mutation.mutate(payload)

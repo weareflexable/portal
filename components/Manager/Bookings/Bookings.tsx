@@ -1,397 +1,607 @@
-import { SearchOutlined } from '@ant-design/icons';
-import type { FilterConfirmProps } from 'antd/es/table/interface';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import useOrgs from "../../../hooks/useOrgs";
+const {Text} = Typography
 import React, { useRef, useState } from 'react'
-import {Typography,Button,Avatar, Tag, InputRef, Input, Space, DatePicker} from 'antd'
+import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge} from 'antd'
 import { useRouter } from 'next/router'
-import Table, { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
-import Highlighter from 'react-highlight-words'
-import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import {ClearOutlined} from '@ant-design/icons'
+import {MoreOutlined,ReloadOutlined} from '@ant-design/icons'
 import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
-import {ManagerOrder } from './Bookings.types';
-import moment from 'moment';
-import {ReloadOutlined} from '@ant-design/icons'
-import { DatePickRef } from 'antd/lib/date-picker/generatePicker/interface';
+
+import { useAuthContext } from '../../../context/AuthContext';
+import { useServicesContext } from '../../../context/ServicesContext';
+import {PlusOutlined} from '@ant-design/icons'
 import dayjs from 'dayjs'
+import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
+import { useOrgContext } from "../../../context/OrgContext";
+import { asyncStore } from "../../../utils/nftStorage";
+import { ServiceItem } from "../../../types/Services";
+import { ManagerOrder } from "./Bookings.types";
+const {TextArea} = Input
 
 
-const {Title,Text} = Typography
+const mockServiceItems:ServiceItem[]=[
+  {
+     id:"dfadfafd",
+    name: "Classic Line skip",
+    imageHash: '',
+    serviceItemType: "line-skip",
+    description: "Best bar in the middle of new york",
+    updatedAt: "Jan 22, 2022",
+    createdAt: "Jan 24, 2022",
+},
+  {
+     id:"dfadfafd",
+    name: "Bottle service rosto",
+    imageHash: '',
+    serviceItemType: "line-skip",
+    description: "Best bar in the middle of new york",
+    updatedAt: "Jan 22, 2022",
+    createdAt: "Jan 24, 2022",
+},
+]
 
 
-  type DataIndex = keyof ManagerOrder;
+export default function ServiceItemsView(){
 
-// const bookings: ManagerOrder[] = [
-//     {
-//       id: '1',
-//       currency: 'USD',
-//       serviceName:'Benhamins',
-//       endTime: 'dfadfad',
-//       userId:'mbappai',
-//       ticketDate:'Jan 22, 2022',
-//       name: 'Avery pro line skip',
-//       quantity: 4,
-//       ticketStatus: 'Redeemed',
-//       ManagerManagerOrderStatus: 'Paid',
-//       userTicketId:'dfadre364ikji',
-//       unitPrice: 2500,
-//       uniqueCode: '34u12y',
-//       paymentStatus: 'PAYMENT_PAID',
-//       paymentIntentId: 'fakdfa93343',
-//       orgServiceItemId:'bc6aaa35-e50e-40d5-a0ff-5e7fd20fe4b5',
-//       hash: ''
-//     },
-    
-//   ];
+    const {paseto} = useAuthContext()
+    const queryClient = useQueryClient()
+    const router = useRouter()
+    const {switchOrg} = useOrgs()
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  
+    // const isFilterEmpty = Object.keys(filteredInfo).length === 0;
 
+    type DataIndex = keyof ServiceItem;
 
+    const [selectedServiceItem, setSelectedServiceItem] = useState<any|ServiceItem>({})
+    const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Approved'})
 
-export default function ManagerBookingsView(){
+    async function fetchBookings(){
+    const res = await axios({
+            method:'get',
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/bookings?pageNumber=0&pageSize=10`,
+            headers:{
+                "Authorization": paseto
+            }
+        })
 
-  const router = useRouter()
-
-
-  const [searchText, setSearchText] = useState('');
-  const [filteredInfo, setFilteredInfo] = useState<Record<string, FilterValue | null>>({});
-  const [searchedDate, setSearchedDate] = useState('');
-  const [searchedColumn, setSearchedColumn] = useState('');
-  const searchInput = useRef<InputRef>(null);
-  const ticketSearchRef = useRef(null)
-
-  const isFilterEmpty = Object.keys(filteredInfo).length === 0;
-
-  const handleSearch = (
-    selectedKeys: string[],
-    confirm: (param?: FilterConfirmProps) => void,
-    dataIndex: DataIndex,
-  ) => {
-    confirm();
-    setSearchText(selectedKeys[0]);
-    setSearchedColumn(dataIndex);
-  };
-
-  const handleDateSearch = (
-    selectedKeys: string[],
-    confirm: (param?: FilterConfirmProps) => void,
-    dataIndex: DataIndex,
-  ) => {
-    confirm();
-    setSearchedDate(selectedKeys[0]);
-    setSearchedColumn(dataIndex);
-  };
-
-  const clearFilters = () => {
-    setFilteredInfo({});
-  };
-
-  const clearDateSearch = ()=>{
-    setSearchedDate('') // convert to filter
-  }
-
-
-  const handleReset = (clearFilters: () => void) => {
-    clearFilters();
-    setSearchText('');
-  };
-
-  const handleDateReset = () => {
-    clearDateSearch();
-    setSearchedDate('');
-  };
-
-  const handleChange: TableProps<ManagerOrder>['onChange'] = (pagination, filters, sorter) => {
-    console.log('Various parameters', pagination, filters, sorter);
-    setFilteredInfo(filters);
-  };
-
-  const getColumnSearchProps = (dataIndex: DataIndex): ColumnType<ManagerOrder> => ({
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters}) => (
-      <div style={{ padding: 8 }} onKeyDown={e => e.stopPropagation()}>
-        <Input
-          ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
-          value={selectedKeys[0]}
-          onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-          onPressEnter={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
-          style={{ marginBottom: 8, display: 'block' }}
-        />
-        <Space>
-          <Button
-            type="primary"
-            onClick={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
-            icon={<SearchOutlined />}
-            size="small"
-            shape='round'
-            style={{ width: 90, display:'flex',alignItems:'center' }}
-          >
-            Search
-          </Button>
-          
-          <Button
-            onClick={() => clearFilters && handleReset(clearFilters)}
-            size="small"
-            shape='round'
-            style={{ width: 90 }}
-          >
-            Reset
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              confirm({ closeDropdown: false });
-              setSearchText((selectedKeys as string[])[0]);
-              setSearchedColumn(dataIndex);
-            }}
-          >
-            Filter
-          </Button>
-          <Button
-            type='link'
-            danger
-            size="small"
-            onClick={() => {
-              confirm({closeDropdown:true})
-            }}
-          >
-            close
-          </Button>
-        </Space>
-      </div>
-    ),
-    filterIcon: (filtered: boolean) => (
-      <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
-    ),
-    onFilter: (value, record) =>
-      record[dataIndex]
-        .toString()
-        .toLowerCase()
-        .includes((value as string).toLowerCase()),
-    onFilterDropdownOpenChange: visible => {
-      if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100);
-      }
-    },
-    render: text =>{
-      console.log('text',text)
-      console.log('dataIndex',dataIndex)
-      return searchedColumn === dataIndex ? (
-        <Highlighter
-          highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-          searchWords={[searchText]}
-          autoEscape
-          textToHighlight={text ? text.toString() : ''}
-        />
-      ) : (
-        text
-      )
+        return res.data;
+   
     }
-  });
 
-  const getTicketDateColumnSearchProps = (dataIndex: DataIndex): ColumnType<ManagerOrder> =>({
-    filterDropdown:({ setSelectedKeys, selectedKeys, confirm, clearFilters})=>(
-      <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
-        <DatePicker 
-          value={dayjs(selectedKeys[0])}
-          onChange={e => setSelectedKeys([dayjs(e).format('MMM DD, YYYY')] )}  
-          style={{ marginBottom: 8, display: 'block' }} 
-          ref={ticketSearchRef}
-          />
+   
 
-        <Space>
-          <Button
-            type="primary"
-            onClick={() => handleDateSearch(selectedKeys as string[], confirm, dataIndex)}
-            icon={<SearchOutlined />}
-            size="small"
-            shape='round'
-            style={{ width: 90, display:'flex',alignItems:'center' }}
-          >
-            Search
-          </Button>
-          <Button
-            onClick={() => handleDateReset()}
-            size="small"
-            shape='round'
-            style={{ width: 90 }}
-          >
-            Reset
-          </Button>
-      
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              confirm({closeDropdown:true})
-            }}
-          >
-            close
-          </Button>
-        </Space>
-      </div>
-  ),
-  filterIcon: (filtered: boolean) => (
-    <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
-  ),
-  render: date =>{
-    // console.log('searchedDate',searchedDate)
-    // console.log('dataIndex',dataIndex)
-     return searchedColumn === dataIndex ? (
-        <Highlighter
-          highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-          searchWords={[searchedDate]}
-          autoEscape
-          textToHighlight={date ? dayjs(date).format('MMM DD, YYYY') : ''}
-        />
-      ) : (
-        moment(date).format('MMM DD, YYYY')
-      )
-  }
-  })
+    async function changeServiceItemStatus({serviceItemId, statusNumber}:{serviceItemId:string, statusNumber: string}){
+        const res = await axios({
+            method:'patch',
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,
+            data:{
+                key:'status',
+                value: statusNumber, // 0 means de-activated in db
+                serviceItemId: serviceItemId 
+            },
+            headers:{
+                "Authorization": paseto
+            }
+        })
+        return res; 
+    }
 
-  const columns: ColumnsType<ManagerOrder> = [
-    {
-      title: 'Service',
-      dataIndex: 'name',
-      key: 'name',
-      ...getColumnSearchProps('name'),
-    },
-    {
-      title: 'UserId',
-      dataIndex: 'userId',
-      key: 'userId',
-      ...getColumnSearchProps('userId'),
-    },
     
-    {
-      title: 'Payment Status',
-      dataIndex: 'paymentStatus',
-      key: 'paymentStatus',
-      render: paymentIntentStatus=>{
-        let color = 'blue'
-        if(paymentIntentStatus==='PAID') color='green'
-        if(paymentIntentStatus==='PAYMENT_INITIATED') color='blue'
-        return(
-          <Tag color={color}>{paymentIntentStatus}</Tag>
+
+    const changeStatusMutation = useMutation(['data'],{
+        mutationFn: changeServiceItemStatus,
+        onSuccess:(data:any)=>{
+            queryClient.invalidateQueries({queryKey:['serviceItems',currentFilter]})
+        },
+        onError:()=>{
+            console.log('Error changing status')
+        }
+    })
+
+
+    function inActiveItemsHandler(serviceItem:ManagerOrder){
+        changeStatusMutation.mutate({serviceItemId:serviceItem.id, statusNumber:'0'})
+    }
+
+    function activeItemsHandler(serviceItem:ManagerOrder){
+        changeStatusMutation.mutate({serviceItemId:serviceItem.id, statusNumber:'2'})
+    }
+
+
+    const bookingsQuery = useQuery({queryKey:['managerBookings'], queryFn:fetchBookings, enabled:paseto !== ''})
+    const data = bookingsQuery.data && bookingsQuery.data.data
+
+
+    
+
+  
+  
+    const handleChange: TableProps<ManagerOrder>['onChange'] = (pagination, filters, sorter) => {
+      console.log('Various parameters', pagination, filters, sorter);
+      // setFilteredInfo(filters);
+    };
+  
+  
+    function getTableRecordActions(){
+        switch(currentFilter.id){
+            // 1 = approved
+            case '1': return activeItemActions 
+            // 2 = inReview
+            case '2': return inActiveItemActions 
+        }
+    }
+
+    function viewOrgDetails(serviceItem:ManagerOrder){
+      // set state
+      setSelectedServiceItem(serviceItem)
+      // opne drawer
+      setIsDrawerOpen(true)
+
+    }
+  
+    
+      const onMenuClick=(e:any, record:ManagerOrder) => {
+        const event = e.key
+        switch(event){
+          case 'inActive': inActiveItemsHandler(record);
+          break;
+          case 'active': activeItemsHandler(record)
+          break;
+          case 'viewDetails': viewOrgDetails(record)
+        }
+      };
+      
+  
+    const columns: ColumnsType<ManagerOrder> = [
+      {
+        title: 'Name',
+        dataIndex: 'name',
+        key: 'name',
+        render:(_,record)=>{
+            return(
+                <div style={{display:'flex',alignItems:'center'}}>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={'/favicon.ico'}/>
+                    <div style={{display:'flex',flexDirection:'column'}}>
+                        <Text>{record.name}</Text>  
+                        <Text type="secondary">{record.serviceName}</Text>  
+                    </div>
+                </div>
+            )
+        },
+      },
+      {
+        title: 'Unit price',
+        dataIndex: 'unitPrice',
+        key: 'unitPrice',
+        render: (unitPrice)=>(
+          <div>
+            <Text type="secondary">$</Text>
+            <Text> {unitPrice/100}</Text>
+          </div>
         )
       },
-      filters: [
-        { text: 'Paid', value: 'PAID' },
-        { text: 'Initiated', value: 'PAYMENT_INITIATED' },
-      ], 
-      filteredValue: filteredInfo.paymentIntentStatus || null,
-      //@ts-ignore
-      onFilter: (value: string, record) => record.paymentIntentStatus.includes(value),
-    },
-    {
-      title: 'Unit Price',
-      dataIndex: 'unitPrice',
-      key: 'unitPrice',
-      render: (unitPrice)=>{
-        return(
-          <Text>${unitPrice/100}</Text>
+      {
+        title: 'Quantity',
+        dataIndex: 'quantity',
+        key: 'quantity',
+        render:(quantity)=>(
+          <div>
+            <Text type="secondary">x</Text>
+            <Text> {quantity}</Text>
+          </div>
         )
+      },
+      {
+        title: 'Total price',
+        // dataIndex: 'totalPrice',
+        key: 'totalPrice',
+        render: (_,record)=>{
+          const total = record.quantity * (record.unitPrice/100)
+          return(
+            <div>
+            <Text type="secondary">$</Text>
+            <Text> {total}</Text>
+          </div>
+          )
+        }
+      },
+      {
+        title: 'Type',
+        dataIndex: 'serviceItemType',
+        key: 'serviceItemType',
+      },
+      
+      {
+        title: 'Order Status',
+        dataIndex: 'orderStatus',
+        key: 'orderStatus',
+        render: (status)=>{
+          const statusText = status === '1'? 'Complete': 'In-complete'
+          return <Badge status="success" text={statusText} />
+        }
+      },
+      {
+          title: 'CreatedAt',
+          dataIndex: 'createdAt',
+          key: 'createdAt',
+          render: (_,record)=>{
+              const date = dayjs(record.createdAt).format('MMM DD, YYYY')
+              return(
+            <Text>{date}</Text>
+            )
+        },
+    },
+
+    {
+      dataIndex: 'actions', 
+      key: 'actions',
+      render:(_,record)=>{
+        const items = getTableRecordActions()
+        return (<Dropdown.Button menu={{ items , onClick: (e)=>onMenuClick(e,record) }}>Actions</Dropdown.Button>)
+      }
     }
-    },
-    {
-      title: 'Quantity',
-      dataIndex: 'quantity',
-      key: 'quantity',
-    },
-    {
-      title: 'Total',
-      dataIndex: 'total',
-      key: 'total',
-      render: (_,record)=>{
-        const total = record.quantity * (record.unitPrice/100)
-        return(
-          <Text>${total}</Text>
-        )
-    }
-    },
-    {
-      title: 'TicketDate',
-      dataIndex: 'startTime',
-      key: 'startTime',
-      render: (_,record)=>{
-        const date = dayjs(record.startTime).format('MMM DD, YYYY')
-        return(
-          <Text>{date}</Text>
-        )
-    },
-    ...getTicketDateColumnSearchProps('startTime')
-  }
-  ];
+    ];
 
+        return (
+            <div>
+                <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+                {/* <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
+                    {serviceItemsFilters.map(filter=>(
+                        <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
+                     )
+                    )}
+                </Radio.Group> */}
+                <div style={{width: "20%",display:'flex', marginTop:'2rem', justifyContent:'space-between', alignItems:'center'}}>
+                  <Button type='link' loading={bookingsQuery.isRefetching} onClick={()=>bookingsQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                </div>
 
-
-    return(
-    <div style={{marginBottom:'.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
-        {!isFilterEmpty? <Button type='link' icon={<ClearOutlined />} style={{marginBottom:'.5em', display:'flex',alignItems:'center'}} onClick={clearFilters}>Clear filters</Button>:null}
-        <Table style={{width:'100%'}} columns={columns} onChange={handleChange} dataSource={managerBookings} />
-      </div>
+                </div>
+                <Table style={{width:'100%'}} key='dfadfe' loading={bookingsQuery.isLoading||bookingsQuery.isRefetching} columns={columns} onChange={handleChange} dataSource={data} />
+                {
+                  isDrawerOpen
+                  ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedServiceItem={selectedServiceItem}/>
+                  :null
+                }
+            </div>
     )
+
+
+
+}
+
+interface DrawerProps{
+  selectedServiceItem: ServiceItem,
+  isDrawerOpen: boolean,
+  closeDrawer: (value:boolean)=>void
+}
+function DetailDrawer({selectedServiceItem,isDrawerOpen,closeDrawer}:DrawerProps){
+
+const queryClient = useQueryClient()
+
+function closeDrawerHandler(){
+  queryClient.invalidateQueries(['serviceItems'])
+  closeDrawer(!isDrawerOpen)
+}
+
+return( 
+<Drawer title="Organization Details" width={640} placement="right" closable={true} onClose={closeDrawerHandler} open={isDrawerOpen}>
+  
+  <EditableName selectedServiceItem={selectedServiceItem}/>
+  <EditableDescription selectedServiceItem={selectedServiceItem}/>
+
+  <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
+    <Divider/>
+    <Button danger type="link">De-activate service-item</Button>
+    <Divider/>
+  </div>
+
+</Drawer>
+)
+}
+
+
+interface EditableProp{
+  selectedServiceItem: ServiceItem
+}
+
+function EditableName({selectedServiceItem}:EditableProp){
+
+  const [state, setState] = useState(selectedServiceItem)
+
+  const [isEditMode, setIsEditMode] = useState(false)
+
+  const {paseto} = useAuthContext()
+
+  const queryClient = useQueryClient()
+
+  function toggleEdit(){
+    setIsEditMode(!isEditMode)
+  }
+
+
+  const nameMutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/serviceItem`,updatedItem,{
+      headers:{
+          //@ts-ignore
+          "Authorization": paseto
+      }
+    })
+      return data;
+  }
+  const nameMutation = useMutation({
+    mutationKey:['name'],
+    mutationFn: nameMutationHandler,
+    onSuccess:()=>{
+      toggleEdit()
+    }
+  })
+
+  function onFinish(updatedItem:any){
+    const payload = {
+      key:'name',
+      value: updatedItem.name,
+      serviceItemId: selectedServiceItem.id
+    }
+    const updatedOrg = {
+      ...selectedServiceItem,
+      name: updatedItem.name
+    }
+    setState(updatedOrg)
+    nameMutation.mutate(payload)
+  }
+
+  const {isLoading:isEditing} = nameMutation;
+
+  const readOnly = (
+    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+      <Text>{state.name}</Text>
+      <Button type="link" onClick={toggleEdit}>Edit</Button>
+    </div>
+)
+
+  const editable = (
+    <Form
+     style={{ marginTop:'.5rem' }}
+     name="editableName"
+     initialValues={selectedServiceItem}
+     onFinish={onFinish}
+     >
+      <Row>
+        <Col span={16} style={{height:'100%'}}>
+          <Form.Item
+              name="name"
+              rules={[{ required: true, message: 'Please input a valid service name' }]}
+          >
+              <Input  disabled={isEditing} placeholder="Flexable serviceItem" />
+          </Form.Item>
+        </Col>
+        <Col span={4}>
+          <Form.Item style={{ width:'100%'}}>
+              <Space >
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                      Cancel
+                  </Button>
+                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                      Apply changes
+                  </Button>
+              </Space>
+                        
+          </Form.Item>
+        </Col>
+      </Row>
+           
+    </Form>
+  )
+  return(
+    <div style={{width:'100%', display:'flex', flexDirection:'column'}}>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>Name</Text>
+    {isEditMode?editable:readOnly}
+    </div>
+  )
+}
+function EditableDescription({selectedServiceItem}:EditableProp){
+
+  const [state, setState] = useState(selectedServiceItem)
+
+  const [isEditMode, setIsEditMode] = useState(false)
+
+  const {paseto} = useAuthContext()
+
+
+  function toggleEdit(){
+    setIsEditMode(!isEditMode)
+  }
+
+  const [form]  = Form.useForm()
+
+ 
+
+
+  const nameMutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/serviceItem`,updatedItem,{
+      headers:{
+          //@ts-ignore
+          "Authorization": paseto
+      }
+    })
+      return data;
+  }
+  const nameMutation = useMutation({
+    mutationKey:['description'],
+    mutationFn: nameMutationHandler,
+    onSuccess:()=>{
+      toggleEdit()
+    }
+  })
+
+  function onFinish(updatedItem:any){
+    const payload = {
+      key:'country',
+      value: updatedItem.country,
+      serviceItemId: selectedServiceItem.id
+    }
+    const updatedOrg = {
+      ...selectedServiceItem,
+      name: updatedItem.country
+    }
+    setState(updatedOrg)
+    nameMutation.mutate(payload)
+  }
+
+  const {isLoading:isEditing} = nameMutation 
+
+  const readOnly = (
+    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+      <Text>{state.description}</Text>
+      <Button type="link" onClick={toggleEdit}>Edit</Button>
+    </div>
+)
+
+  const editable = (
+    <Form
+     style={{ marginTop:'.5rem' }}
+     name="editableAddress"
+     initialValues={selectedServiceItem}
+     onFinish={onFinish}
+     form={form}
+     >
+      <Row>
+        <Col span={16} style={{height:'100%'}}>
+        <Form.Item 
+            name="description"
+            rules={[{ required: true, message: 'Please input a description for service item!' }]}
+        >
+            <TextArea rows={3} placeholder='Best bars in syracuse'/>
+
+        </Form.Item>
+
+        </Col>
+        <Col span={4}>
+          <Form.Item style={{ width:'100%'}}>
+              <Space >
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                      Cancel
+                  </Button>
+                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                      Apply changes
+                  </Button>
+              </Space>
+                        
+          </Form.Item>
+        </Col>
+      </Row>
+           
+    </Form>
+  )
+  return(
+    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>Address</Text>
+    {isEditMode?editable:readOnly}
+    </div>
+  )
 }
 
 
 
 
-const managerBookings:ManagerOrder[] = [
-    {
-        id: '34343',
-        serviceName: 'Benjamins On Franklin',
-        quantity: 4,
-        unitPrice: 3499,
-        ticketStatus: '',
-        paymentIntentId: 'erefdfa',
-        paymentIntentStatus: 'PAID',
-        userId: 'ninja3@flexable.com',
-        orgServiceItemId: 'dfadeir32',
-        hash:'',
-        currency: 'USD',
-        startTime: 'Jan 23, 2022',
-        endTime: 'Dec 27, 2023',
-        uniqueCode: 'dfadf23',
-        userTicketId: 'dfadf9375',
-        name: 'Line Skip + cover',
-        orderStatus: ''    
-    },
-    {
-        id: '34343',
-        serviceName: 'Benjamins On Franklin',
-        quantity: 4,
-        unitPrice: 2000,
-        ticketStatus: '',
-        paymentIntentId: 'erefdfa',
-        paymentIntentStatus: 'PAID',
-        userId: 'dynamoboy@yahoo.com',
-        orgServiceItemId: 'dfadeir32',
-        hash:'', 
-        currency: 'USD',
-        startTime: 'Jan 23, 2022',
-        endTime: 'Dec 27, 2023',
-        uniqueCode: 'dfadf23',
-        userTicketId: 'dfadf9375',
-        name: 'Bottle service',
-        orderStatus: ''    
-    },
-    {
-        id: '34343',
-        serviceName: 'Benjamins On Franklin',
-        quantity: 4,
-        unitPrice: 3532,
-        ticketStatus: '',
-        paymentIntentId: 'erefdfa',
-        paymentIntentStatus: 'PAID',
-        userId: 'mujahid.bappai@yahoo.com',
-        orgServiceItemId: 'dfadeir32',
-        hash:'',
-        currency: 'USD',
-        startTime: 'Jan 23, 2022',
-        endTime: 'Dec 27, 2023',
-        uniqueCode: 'dfadf23',
-        userTicketId: 'dfadf9375',
-        name: 'Line Skip + cover',
-        orderStatus: ''    
-    }
+
+const serviceItemsFilters = [
+  {
+      id: '1',
+      name: 'Active'
+  },
+  {
+      id: '2',
+      name: 'In-active'
+  },
 ]
+
+const inActiveItemActions = [
+    {
+        key: 'accept',
+        label: 'Accept'
+    },
+    {
+        key: 'reject',
+        label: 'Reject'
+    },
+    {
+        key: 'viewDetails',
+        label: 'View details'
+    },
+
+]
+const activeItemActions = [
+    {
+        key: 'review',
+        label: 'Review'
+    },
+    {
+        key: 'viewDetails',
+        label: 'View details'
+    },
+
+]
+
+
+// const managerBookings:ManagerOrder[] = [
+//     {
+//         id: '34343',
+//         serviceName: 'Benjamins On Franklin',
+//         quantity: 4,
+//         unitPrice: 3499,
+//         ticketStatus: '',
+//         paymentIntentId: 'erefdfa',
+//         paymentIntentStatus: 'PAID',
+//         userId: 'ninja3@flexable.com',
+//         orgServiceItemId: 'dfadeir32',
+//         hash:'',
+//         currency: 'USD',
+//         startTime: 'Jan 23, 2022',
+//         endTime: 'Dec 27, 2023',
+//         uniqueCode: 'dfadf23',
+//         userTicketId: 'dfadf9375',
+//         name: 'Line Skip + cover',
+//         orderStatus: ''    
+//     },
+//     {
+//         id: '34343',
+//         serviceName: 'Benjamins On Franklin',
+//         quantity: 4,
+//         unitPrice: 2000,
+//         ticketStatus: '',
+//         paymentIntentId: 'erefdfa',
+//         paymentIntentStatus: 'PAID',
+//         userId: 'dynamoboy@yahoo.com',
+//         orgServiceItemId: 'dfadeir32',
+//         hash:'', 
+//         currency: 'USD',
+//         startTime: 'Jan 23, 2022',
+//         endTime: 'Dec 27, 2023',
+//         uniqueCode: 'dfadf23',
+//         userTicketId: 'dfadf9375',
+//         name: 'Bottle service',
+//         orderStatus: ''    
+//     },
+//     {
+//         id: '34343',
+//         serviceName: 'Benjamins On Franklin',
+//         quantity: 4,
+//         unitPrice: 3532,
+//         ticketStatus: '',
+//         paymentIntentId: 'erefdfa',
+//         paymentIntentStatus: 'PAID',
+//         userId: 'mujahid.bappai@yahoo.com',
+//         orgServiceItemId: 'dfadeir32',
+//         hash:'',
+//         currency: 'USD',
+//         startTime: 'Jan 23, 2022',
+//         endTime: 'Dec 27, 2023',
+//         uniqueCode: 'dfadf23',
+//         userTicketId: 'dfadf9375',
+//         name: 'Line Skip + cover',
+//         orderStatus: ''    
+//     }
+// ]

@@ -14,12 +14,10 @@ export default function AdminStaff(){
         <ManagerLayout>
             <Row>
                 <Col offset={1} span={22}>
-                    <Title style={{marginLeft: '1em', marginTop:'1em'}} level={3}>Organization bookings</Title>
+                    {/* <Title style={{marginLeft: '1em', marginTop:'1em'}} level={3}>Organization bookings</Title> */}
                     <Content
                         style={{
-                        padding: '1em',
                         margin:'1em',
-                        background:'white' ,
                         width:`98%`,
                         maxWidth:'100%',
                         }}
