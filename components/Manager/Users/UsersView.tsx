@@ -30,6 +30,8 @@ export default function UsersView(){
     const router = useRouter()
     const {switchOrg} = useOrgs()
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+
+    const [pageNumber, setPageNumber] = useState(0)
   
     // const isFilterEmpty = Object.keys(filteredInfo).length === 0;
 
@@ -41,7 +43,7 @@ export default function UsersView(){
     async function fetchUsers(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/super-admin/users-list?&pageNumber=0&pageSize=10`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/super-admin/users-list?&pageNumber=${pageNumber}&pageSize=10`,
             headers:{
                 "Authorization": paseto
             }
@@ -49,6 +51,19 @@ export default function UsersView(){
 
         return res.data;
    
+    }
+
+    function nextPage(){
+      setPageNumber(pageNumber+1)
+    }
+
+    function prevPage(){
+      setPageNumber(pageNumber-1)
+    }
+
+    
+    function jumpToPage(pageNumber:number){
+      setPageNumber(pageNumber)
     }
 
    
