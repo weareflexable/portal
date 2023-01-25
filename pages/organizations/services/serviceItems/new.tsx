@@ -3,7 +3,7 @@ import {Card,Form, Input,InputNumber, DatePicker,Upload,Button,notification, Spa
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
 const {Text,Title} = Typography;
-import {UploadOutlined,ArrowLeftOutlined} from '@ant-design/icons'
+import {UploadOutlined,ArrowLeftOutlined,MinusCircleOutlined,PlusOutlined} from '@ant-design/icons'
 
 import {v4 as uuidv4} from 'uuid'
 
@@ -205,61 +205,73 @@ function AvailabilityForm(){
 
     return(
         <Form
-            name="serviceItemForm"
+            name="serviceItemAvailability"
             initialValues={{ remember: false }}
             layout='vertical'
             form={form}
             style={{marginTop:'2rem'}}
             onFinish={onFinish}
             >
-            <Form.Item
-                name="name"
-                label="Name"
-                rules={[{ required: true, message: 'Please input a valid service name' }]}
-             >
-                <Input placeholder="Bill Cage Line Skip" />
-            </Form.Item>
 
-            <Form.Item
-                name="price"
-                label='Price'
-                rules={[{ required: true, message: 'Please input a valid price!' }]}
-            >
-                <InputNumber width={'30%'} prefix="$"  placeholder="0.00" />
-            </Form.Item>
+            
 
-            <Form.Item
-                name="ticketsPerDay"
-                label='Tickets per day'
-                rules={[{ required: true, message: 'Please input a valid number!' }]}
-            >
-                <InputNumber width={'30%'}   placeholder="20" />
-            </Form.Item>
 
-           
-                <div style={{display:'flex', alignItems:'center'}}>
+            <Form.List name="availabilty">
+                {(fields, { add, remove }) => (
+                    <>
+                    {fields.map(({ key, name, ...restField }) => (
+                        <Space key={key} style={{ display: 'flex', marginBottom: 8, alignItems:'center' }} >
+                        <Form.Item
+                            name="price"
+                            label='Price'
+                            style={{width:'100%'}}
+                            rules={[{ required: true, message: 'Please input a valid price!' }]}
+                        >
+                            <InputNumber   prefix="$"  placeholder="0.00" /> 
+                        </Form.Item> 
 
-                    <Form.Item
-                        rules={[{ required: true, message: 'Please select a date!' }]}
-                        name='startDate' 
-                        label="Start date">
-                        <DatePicker />
+                        <Form.Item
+                            name="ticketsPerDay"
+                            label='Tickets per day'
+                            style={{width:'100%'}}
+                            rules={[{ required: true, message: 'Please input a valid number!' }]}
+                            >
+                            <InputNumber    placeholder="20" />
+                        </Form.Item>
+
+                            <Form.Item
+                                rules={[{ required: true, message: 'Please select a date!' }]}
+                                name='date' 
+                                label="Date"
+                                style={{width:'100%'}}
+                                >
+
+                                <DatePicker />
+                            </Form.Item>
+                            <div style={{marginLeft:'.5rem'}}>
+                                <MinusCircleOutlined onClick={() => remove(name)} />
+                                <Button type='link'>Save</Button>
+                            </div>
+                        </Space>
+                    ))}
+                    <Form.Item>
+                        <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                        Add availability
+                        </Button>
                     </Form.Item>
-
-                </div>
-            <div style={{display:'flex', marginBottom:'1em', alignItems:'center'}}>
-
-            </div>
+                    </>
+                )}
+            </Form.List>
 
 
             <Form.Item style={{marginTop:'2rem'}}>
                 <Space>
-                    <Button shape='round'  type='ghost'>
+                    {/* <Button shape='round'  type='ghost'>
                         Cancel
-                    </Button>
+                    </Button> */}
 
                     <Button shape='round'  type="primary"  htmlType="submit" >
-                         Add availability
+                         Create service item
                     </Button>
                 </Space>
                 
