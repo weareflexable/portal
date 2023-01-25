@@ -77,6 +77,7 @@ const {Text} = Typography
                   <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`/manager/organizations`} ><a style={{color:`${selectedRoute==='organizations'?'#1890ff':'black'}`}}>Organizations</a></Link> </div>
                   <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`/manager/bookings`} ><a style={{color:`${selectedRoute==='bookings'?'#1890ff':'black'}`}}>Bookings</a></Link> </div> 
                   <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`/manager/users`} ><a style={{color:`${selectedRoute==='users'?'#1890ff':'black'}`}}>Users</a></Link> </div> 
+                  <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`/manager/banks`} ><a style={{color:`${selectedRoute==='users'?'#1890ff':'black'}`}}>Banks</a></Link> </div> 
                 </div>
 
                 <div style={{display:'flex', justifyContent:'flex-end'}}>
@@ -89,7 +90,17 @@ const {Text} = Typography
             </Col>
 
                 </Header> 
-                    
+              
+              {/* <Sider width={200}>
+                <Menu
+                  mode="inline"
+                  defaultSelectedKeys={['1']}
+                  defaultOpenKeys={['sub1']}
+                  style={{ height: '100%' }}
+                  items={items2}
+                />
+            </Sider>
+                     */}
               
             </Row>
               <Layout style={{width:'100%',height:'100%'}}>

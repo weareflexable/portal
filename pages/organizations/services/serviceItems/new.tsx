@@ -46,7 +46,7 @@ export default function ServiceItemForm({ onTriggerFormAction,isCreatingServiceI
           content: <BasicForm nextStep={next}/>,
         },
         {
-          title: 'Item Availabilty',
+          title: 'Customize',
           content: <AvailabilityForm/>,
         },
       ];
@@ -148,6 +148,37 @@ function BasicForm({nextStep}:BasicInfoProps){
             <TextArea maxLength={150} showCount  placeholder='Best coffee shop in the entire world with the most beautiful scenary' rows={3} />
         </Form.Item>
 
+        <Form.Item
+            name="price"
+            label='Price'
+            style={{width:'100%'}}
+            rules={[{ required: true, message: 'Please input a valid price!' }]}
+        >
+            <InputNumber   prefix="$"  placeholder="0.00" /> 
+        </Form.Item> 
+
+        <Form.Item
+            name="ticketsPerDay"
+            label='Tickets per day'
+            style={{width:'100%'}}
+            rules={[{ required: true, message: 'Please input a valid number!' }]}
+            >
+            <InputNumber    placeholder="20" />
+        </Form.Item>
+
+        <Form.Item
+            name="imageHash"
+            label="Logo"
+            valuePropName="fileList"
+            getValueFromEvent={normFile}
+            extra="Upload file upto 2MB"
+            rules={[{ required: true, message: 'Please upload an image' }]}
+        >
+            <Upload name="logo" action="" listType="picture">
+            <Button icon={<UploadOutlined />}>Upload service logo</Button>
+            </Upload>
+        </Form.Item>
+
 
         {/* <Form.Item
             name="serviceType"
@@ -213,8 +244,6 @@ function AvailabilityForm(){
             onFinish={onFinish}
             >
 
-            
-
 
             <Form.List name="availabilty">
                 {(fields, { add, remove }) => (
@@ -250,13 +279,12 @@ function AvailabilityForm(){
                             </Form.Item>
                             <div style={{marginLeft:'.5rem'}}>
                                 <MinusCircleOutlined onClick={() => remove(name)} />
-                                <Button type='link'>Save</Button>
                             </div>
                         </Space>
                     ))}
                     <Form.Item>
                         <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
-                        Add availability
+                        Add custom availability
                         </Button>
                     </Form.Item>
                     </>
@@ -266,12 +294,12 @@ function AvailabilityForm(){
 
             <Form.Item style={{marginTop:'2rem'}}>
                 <Space>
-                    {/* <Button shape='round'  type='ghost'>
-                        Cancel
-                    </Button> */}
+                    <Button shape='round'  type='ghost'>
+                        Skip for now
+                    </Button>
 
-                    <Button shape='round'  type="primary"  htmlType="submit" >
-                         Create service item
+                    <Button shape='round'    htmlType="submit" >
+                         Confirm
                     </Button>
                 </Space>
                 
