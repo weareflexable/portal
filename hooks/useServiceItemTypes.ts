@@ -1,14 +1,23 @@
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import { useAuthContext } from '../context/AuthContext'
 import { useServicesContext } from '../context/ServicesContext'
 
-export default function useServiceTypes(){
+export default function useServiceItemTypes(){
     const {paseto} = useAuthContext()
     const {currentService} = useServicesContext()
+    // console.log('currenService', currentService.serviceType[0])
     // @ts-ignore
-    const serviceTypeId = currentService.serviceType[0].id
+    // const [hydrated,setHydrated] = useState(false)
+    // const [serviceTypeId, setServiceTypeId] = useState('')
+
+    const serviceTypeId = currentService.serviceTypeId
+
+    // useEffect(() => {
+    //     setServiceTypeId(currentService.serviceType[0].id) 
+    // }, [currentService.serviceType, hydrated])
+
 
     const fetchServiceItemTypes = async()=>{
         const {data} = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-item-types?pageNumber=0&pageSize=10&key=service_type_id&value=${serviceTypeId}`,{
@@ -20,12 +29,14 @@ export default function useServiceTypes(){
         return data?.data
     }
 
-    const {data:serviceTypes} = useQuery(['serviceItemTypes'],fetchServiceItemTypes)
+    const {data:serviceItemTypes} = useQuery(['serviceItemTypes'],fetchServiceItemTypes)
 
-    const menuItems = serviceTypes && serviceTypes.map((service:any)=>({
+    const menuItems = serviceItemTypes && serviceItemTypes.map((service:any)=>({
             label: service.name,
             value: service.id
     }))
+
+    console.log('menu',menuItems) 
 
     return menuItems
 }

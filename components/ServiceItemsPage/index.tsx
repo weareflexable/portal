@@ -10,14 +10,35 @@ import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/i
 
 import { useAuthContext } from '../../context/AuthContext';
 import { useServicesContext } from '../../context/ServicesContext';
-
+import {PlusOutlined} from '@ant-design/icons'
 import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { useOrgContext } from "../../context/OrgContext";
 import { asyncStore } from "../../utils/nftStorage";
-import { usePlacesWidget } from "react-google-autocomplete";
 import { ServiceItem } from "../../types/Services";
 const {TextArea} = Input
+
+
+const mockServiceItems:ServiceItem[]=[
+  {
+     id:"dfadfafd",
+    name: "Classic Line skip",
+    imageHash: '',
+    serviceItemType: "line-skip",
+    description: "Best bar in the middle of new york",
+    updatedAt: "Jan 22, 2022",
+    createdAt: "Jan 24, 2022",
+},
+  {
+     id:"dfadfafd",
+    name: "Bottle service rosto",
+    imageHash: '',
+    serviceItemType: "line-skip",
+    description: "Best bar in the middle of new york",
+    updatedAt: "Jan 22, 2022",
+    createdAt: "Jan 24, 2022",
+},
+]
 
 
 export default function ServiceItemsView(){
@@ -98,12 +119,10 @@ export default function ServiceItemsView(){
   
     const handleChange: TableProps<ServiceItem>['onChange'] = (pagination, filters, sorter) => {
       console.log('Various parameters', pagination, filters, sorter);
-      setFilteredInfo(filters);
+      // setFilteredInfo(filters);
     };
   
   
-   
-
     function getTableRecordActions(){
         switch(currentFilter.id){
             // 1 = approved
@@ -206,10 +225,13 @@ export default function ServiceItemsView(){
                      )
                     )}
                 </Radio.Group>
-                <Button type='link' loading={serviceItemsQuery.isRefetching} onClick={()=>serviceItemsQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                <div style={{width: "20%",display:'flex', marginTop:'2rem', justifyContent:'space-between', alignItems:'center'}}>
+                  <Button type='link' loading={serviceItemsQuery.isRefetching} onClick={()=>serviceItemsQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                  <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/services/serviceItems/new')}>New service-item</Button>
+                </div>
 
                 </div>
-                <Table style={{width:'100%'}} key='dfadfe' loading={serviceItemsQuery.isLoading||serviceItemsQuery.isRefetching} columns={columns} onChange={handleChange} dataSource={data} />
+                <Table style={{width:'100%'}} key='dfadfe' loading={serviceItemsQuery.isLoading||serviceItemsQuery.isRefetching} columns={columns} onChange={handleChange} dataSource={mockServiceItems} />
                 {
                   isDrawerOpen
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedServiceItem={selectedServiceItem}/>
@@ -232,7 +254,7 @@ function DetailDrawer({selectedServiceItem,isDrawerOpen,closeDrawer}:DrawerProps
 const queryClient = useQueryClient()
 
 function closeDrawerHandler(){
-  queryClient.invalidateQueries(['serviceItemanizations'])
+  queryClient.invalidateQueries(['serviceItems'])
   closeDrawer(!isDrawerOpen)
 }
 
@@ -241,7 +263,7 @@ return(
   
   <EditableName selectedServiceItem={selectedServiceItem}/>
   <EditableDescription selectedServiceItem={selectedServiceItem}/>
-  <EditableCoverImage selectedServiceItem={selectedServiceItem}/>
+  {/* <EditableCoverImage selectedServiceItem={selectedServiceItem}/> */}
 
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
     <Divider/>
@@ -257,6 +279,7 @@ return(
 interface EditableProp{
   selectedServiceItem: ServiceItem
 }
+
 function EditableName({selectedServiceItem}:EditableProp){
 
   const [state, setState] = useState(selectedServiceItem)
@@ -294,7 +317,7 @@ function EditableName({selectedServiceItem}:EditableProp){
     const payload = {
       key:'name',
       value: updatedItem.name,
-      serviceItemId: selectedServiceItem.serviceItemId
+      serviceItemId: selectedServiceItem.id
     }
     const updatedOrg = {
       ...selectedServiceItem,
@@ -392,7 +415,7 @@ function EditableDescription({selectedServiceItem}:EditableProp){
     const payload = {
       key:'country',
       value: updatedItem.country,
-      serviceItemId: selectedServiceItem.serviceItemId
+      serviceItemId: selectedServiceItem.id
     }
     const updatedOrg = {
       ...selectedServiceItem,
@@ -406,7 +429,7 @@ function EditableDescription({selectedServiceItem}:EditableProp){
 
   const readOnly = (
     <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Text>{`${state.street}, ${state.country}, ${state.city}`}</Text>
+      <Text>{state.description}</Text>
       <Button type="link" onClick={toggleEdit}>Edit</Button>
     </div>
 )
@@ -456,121 +479,121 @@ function EditableDescription({selectedServiceItem}:EditableProp){
 }
 
 
-function EditableCoverImage({selectedServiceItem}:EditableProp){
+// function EditableCoverImage({selectedServiceItem}:EditableProp){
 
-  const [isEditMode, setIsEditMode] = useState(false)
-  const [isHashingImage, setIsHashingImage] = useState(false)
-  const [updatedCoverImageHash, setUpdatedCoverImageHash] = useState(selectedServiceItem.logoImageHash)
+//   const [isEditMode, setIsEditMode] = useState(false) 
+//   const [isHashingImage, setIsHashingImage] = useState(false)
+//   const [updatedCoverImageHash, setUpdatedCoverImageHash] = useState(selectedServiceItem.imageHash)
 
-  const queryClient = useQueryClient()
+//   const queryClient = useQueryClient()
 
-  const {paseto} = useAuthContext()
+//   const {paseto} = useAuthContext()
 
-  function toggleEdit(){
-    setIsEditMode(!isEditMode)
-  }
+//   function toggleEdit(){
+//     setIsEditMode(!isEditMode)
+//   }
 
-  const readOnly = (
-      <div style={{width:'100%', marginTop:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Image style={{width:'500px', height:'200px', objectFit:'cover', border:'1px solid #f2f2f2'}} alt='cover image for serviceItemanization' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedCoverImageHash}`}/>
-        <Button type="link" onClick={toggleEdit}>Edit</Button>
-      </div>
-  )
+//   const readOnly = (
+//       <div style={{width:'100%', marginTop:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+//         <Image style={{width:'500px', height:'200px', objectFit:'cover', border:'1px solid #f2f2f2'}} alt='cover image for serviceItemanization' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedCoverImageHash}`}/>
+//         <Button type="link" onClick={toggleEdit}>Edit</Button>
+//       </div>
+//   )
 
-  const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/serviceItem`,updatedItem,{
-      headers:{
-          //@ts-ignore
-          "Authorization": paseto
-      }
-    })
-      return data;
-  }
-  const mutation = useMutation({
-    mutationKey:['logoImage'],
-    mutationFn: mutationHandler,
-    onSuccess:()=>{
-      toggleEdit()
-    }
-  })
+//   const mutationHandler = async(updatedItem:any)=>{
+//     const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/serviceItem`,updatedItem,{
+//       headers:{
+//           //@ts-ignore
+//           "Authorization": paseto
+//       }
+//     })
+//       return data;
+//   }
+//   const mutation = useMutation({
+//     mutationKey:['logoImage'],
+//     mutationFn: mutationHandler,
+//     onSuccess:()=>{
+//       toggleEdit()
+//     }
+//   })
 
-  async function onFinish(field:any){
+//   async function onFinish(field:any){
 
-    // hash it first
-    const coverImageRes = await field.coverImage
+//     // hash it first
+//     const coverImageRes = await field.coverImage
 
-    setIsHashingImage(true)
-    const coverImageHash = await asyncStore(coverImageRes[0].originFileObj)
-    setIsHashingImage(false)
+//     setIsHashingImage(true)
+//     const coverImageHash = await asyncStore(coverImageRes[0].originFileObj)
+//     setIsHashingImage(false)
 
-    console.log(coverImageHash)
+//     console.log(coverImageHash)
 
-    const payload = {
-      key:'cover_image_hash',
-      value: coverImageHash,
-      serviceItemId: selectedServiceItem.serviceItemId
-    }
-    setUpdatedCoverImageHash(coverImageHash)
-    mutation.mutate(payload)
-  }
+//     const payload = {
+//       key:'cover_image_hash',
+//       value: coverImageHash,
+//       serviceItemId: selectedServiceItem.id
+//     }
+//     setUpdatedCoverImageHash(coverImageHash)
+//     mutation.mutate(payload)
+//   }
 
-  const {isLoading:isEditing} = mutation
+//   const {isLoading:isEditing} = mutation
 
-  const extractCoverImage = async(e: any) => {
-    console.log('Upload event:', e);
-    if (Array.isArray(e)) {
-    return e;
-    }
+//   const extractCoverImage = async(e: any) => {
+//     console.log('Upload event:', e);
+//     if (Array.isArray(e)) {
+//     return e;
+//     }
 
-   return e?.fileList;
-};
+//    return e?.fileList;
+// };
 
 
-  const editable = (
-    <Form
-     style={{ marginTop:'.5rem' }}
-     name="editableCoverImage"
-     initialValues={selectedServiceItem}
-     onFinish={onFinish}
-     >
-      <Row>
-        <Col span={10}>
-          <Form.Item
-              name="coverImage"
-              valuePropName="coverImage"
-              getValueFromEvent={extractCoverImage}
-              rules={[{ required: true, message: 'Please input a valid zip code' }]}
-          >
+//   const editable = (
+//     <Form
+//      style={{ marginTop:'.5rem' }}
+//      name="editableCoverImage"
+//      initialValues={selectedServiceItem}
+//      onFinish={onFinish}
+//      >
+//       <Row>
+//         <Col span={10}>
+//           <Form.Item
+//               name="coverImage"
+//               valuePropName="coverImage"
+//               getValueFromEvent={extractCoverImage}
+//               rules={[{ required: true, message: 'Please input a valid zip code' }]}
+//           >
               
-              <Upload name="coverImageHash" listType="picture" multiple={false}>
-                   <Button size='small' disabled={isHashingImage} type='link'>Upload cover image</Button>
-              </Upload>
-          </Form.Item>
-        </Col>
-        <Col span={4}>
-          <Form.Item style={{ width:'100%'}}>
-              <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
-                      Cancel
-                  </Button>
-                  <Button shape="round" loading={isEditing||isHashingImage} type="link" size="small"  htmlType="submit" >
-                      Apply changes
-                  </Button>
-              </Space>
+//               <Upload name="coverImageHash" listType="picture" multiple={false}>
+//                    <Button size='small' disabled={isHashingImage} type='link'>Upload cover image</Button>
+//               </Upload>
+//           </Form.Item>
+//         </Col>
+//         <Col span={4}>
+//           <Form.Item style={{ width:'100%'}}>
+//               <Space >
+//                   <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+//                       Cancel
+//                   </Button>
+//                   <Button shape="round" loading={isEditing||isHashingImage} type="link" size="small"  htmlType="submit" >
+//                       Apply changes
+//                   </Button>
+//               </Space>
                         
-          </Form.Item>
-        </Col>
-      </Row>
+//           </Form.Item>
+//         </Col>
+//       </Row>
            
-    </Form>
-  )
-  return(
-    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>Cover Image</Text>
-      {isEditMode?editable:readOnly}
-    </div>
-  )
-}
+//     </Form>
+//   )
+//   return(
+//     <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+//       <Text type="secondary" style={{ marginRight: '2rem',}}>Cover Image</Text>
+//       {isEditMode?editable:readOnly}
+//     </div>
+//   )
+// }
 
 
 

@@ -5,9 +5,13 @@ export type Service ={
     city:string,
     country: string,
     state: string,
+    currency: 'USD',
+    serviceType: Array<any>,
+    timeZone: 'UTC',
+    serviceTypeId: string,
     serviceTypeName: string,
-    logoImageHash: Array<any> ,
-    coverImageHash: Array<any>,
+    logoImageHash: string ,
+    coverImageHash: string,
     id: string
 }
 
@@ -32,7 +36,7 @@ export type ServicePayload ={
 export type ServiceItem = {
     id:string,
     name: string,
-    imageHash: Array<any>,
+    imageHash: string,
     serviceItemType: string,
     description: string,
     updatedAt: string,
