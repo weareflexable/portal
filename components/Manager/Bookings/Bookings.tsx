@@ -223,6 +223,15 @@ export default function ServiceItemsView(){
         }
       },
       {
+        title: 'Ticket Status',
+        dataIndex: 'ticketStatus',
+        key: 'ticketStatus',
+        render: (status)=>{
+          const statusText = status === '1'? 'Redeemed': 'Confirmed'
+          return <Badge status="success" text={statusText} />
+        }
+      },
+      {
           title: 'CreatedAt',
           dataIndex: 'createdAt',
           key: 'createdAt',
