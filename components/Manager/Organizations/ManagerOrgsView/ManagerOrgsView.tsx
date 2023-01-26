@@ -77,14 +77,7 @@ export default function ManagerOrgsView(){
         return res; 
     }
 
-    // function gotoServices(org:NewOrg){
-    //     console.log(org)
-    //     // switch org
-    //     switchOrg(org)
-    //     // navigate user to services page
-    //     router.push('/organizations/services/')
-    // }
-
+   
     
 
     const changeStatusMutation = useMutation(['orgs'],{
@@ -453,14 +446,32 @@ interface DrawerProps{
 function DetailDrawer({selectedOrg,isDrawerOpen,closeDrawer}:DrawerProps){
 
 const queryClient = useQueryClient()
+const router = useRouter()
+const {switchOrg} = useOrgContext()
 
 function closeDrawerHandler(){
   queryClient.invalidateQueries(['organizations'])
   closeDrawer(!isDrawerOpen)
 }
 
+function gotoServices(org:NewOrg){
+  console.log(org)
+  // switch org
+  switchOrg(org)
+  // navigate user to services page
+  router.push('/organizations/services/')
+}
+
+
 return( 
-<Drawer title="Organization Details" width={640} placement="right" closable={true} onClose={closeDrawerHandler} open={isDrawerOpen}>
+<Drawer 
+  title="Organization Details" 
+  width={640} placement="right" 
+  extra={<Button size='large' onClick={()=>gotoServices(selectedOrg)}>Visit organization</Button>}
+  closable={true} 
+  onClose={closeDrawerHandler} 
+  open={isDrawerOpen}
+>
   
   <EditableName selectedOrg={selectedOrg}/>
   <EditableAddress selectedOrg={selectedOrg}/>

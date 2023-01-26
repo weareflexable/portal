@@ -72,12 +72,12 @@ const {Text} = Typography
           <Row>
             <Header style={{lineHeight:'1.4',background:'white', width:'100%', display:'flex', flex: '3', justifyContent:'space-between', alignItems:'center'}}>
             <Col style={{display:'flex', justifyContent:'space-between',alignItems:'center'}} offset={1} span={22}>
-                <div style={{display:'flex', width:'350px',  height:'100%', justifyContent:'space-between'}}>
+                <div style={{display:'flex', width:'450px',  height:'100%', justifyContent:'space-between'}}>
                   <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`/manager/dashboard`} ><a style={{color:`${selectedRoute==='dashboard'?'#1890ff':'black'}`}}>Dashboard</a></Link> </div>
                   <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`/manager/organizations`} ><a style={{color:`${selectedRoute==='organizations'?'#1890ff':'black'}`}}>Organizations</a></Link> </div>
                   <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`/manager/bookings`} ><a style={{color:`${selectedRoute==='bookings'?'#1890ff':'black'}`}}>Bookings</a></Link> </div> 
                   <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`/manager/users`} ><a style={{color:`${selectedRoute==='users'?'#1890ff':'black'}`}}>Users</a></Link> </div> 
-                  <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`/manager/banks`} ><a style={{color:`${selectedRoute==='users'?'#1890ff':'black'}`}}>Banks</a></Link> </div> 
+                  <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`/manager/banks`} ><a style={{color:`${selectedRoute==='banks'?'#1890ff':'black'}`}}>Banks</a></Link> </div> 
                 </div>
 
                 <div style={{display:'flex', justifyContent:'flex-end'}}>
