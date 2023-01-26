@@ -183,11 +183,7 @@ export default function ManagerOrgsView(){
       key: 'actions',
       width:'70px',
       render:(_,record)=>{
-        return (
-        <Dropdown menu={{ onClick: ()=>onMenuClick(record) }}>
-           <Button type="text" icon={<MoreOutlined/>}/> 
-            </Dropdown>
-            )
+        return (<Button onClick= {()=>onMenuClick(record)} type="text" icon={<MoreOutlined/>}/> )
       }
     }
     ];
@@ -220,13 +216,13 @@ export default function ManagerOrgsView(){
                         )
                         )}
                     </Radio.Group>
-                    <div style={{width: "20%",display:'flex', marginTop:'2rem', justifyContent:'space-between', alignItems:'center'}}>
-                        <Button type='link' loading={servicesQuery.isRefetching} onClick={()=>servicesQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                    <div style={{display:'flex',  justifyContent:'space-between', alignItems:'center'}}>
+                        <Button type='link' loading={servicesQuery.isRefetching} onClick={()=>servicesQuery.refetch()} icon={<ReloadOutlined />}>{servicesQuery.isRefetching? 'Refreshing...':'Refresh'}</Button>
                         <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/services/new')}>Launch new service</Button>
                     </div>
                 </div>
                 
-                <Table style={{width:'100%'}} size='large' key='dfadfe' loading={servicesQuery.isLoading||servicesQuery.isRefetching} columns={columns} dataSource={data} />
+                <Table style={{width:'100%'}} size='large' key='dfadfe' loading={servicesQuery.isLoading} columns={columns} dataSource={data} />
                 {
                   isDrawerOpen
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedRecord={selectedRecord}/>
@@ -282,8 +278,8 @@ return(
   <EditableAddress selectedRecord={selectedRecord}/>
   <EditablePhone selectedRecord={selectedRecord}/>
 
-  <EditableLogoImage selectedRecord={selectedRecord}/>
-  <EditableCoverImage selectedRecord={selectedRecord}/>
+  {/* <EditableLogoImage selectedRecord={selectedRecord}/> */}
+  {/* <EditableCoverImage selectedRecord={selectedRecord}/> */}
 
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
     <Divider/>
