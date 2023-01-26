@@ -1,14 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useOrgs from "../../../hooks/useOrgs";
 const {Text} = Typography
-import { SearchOutlined } from '@ant-design/icons';
-import type { FilterConfirmProps } from 'antd/es/table/interface';
 import React, { useRef, useState } from 'react'
-import {Typography,Button,Avatar, Upload, Badge, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form} from 'antd'
+import {Typography,Button,Avatar, Upload,Skeleton, Badge, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form} from 'antd'
 import { useRouter } from 'next/router'
-import Highlighter from 'react-highlight-words'
 import axios from 'axios';
-import {MoreOutlined,ReloadOutlined} from '@ant-design/icons'
+import { MoreOutlined, ReloadOutlined, ArrowLeftOutlined, PlusOutlined} from '@ant-design/icons'
 import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
 
 import { useAuthContext } from '../../../context/AuthContext';
@@ -32,6 +29,7 @@ export default function ManagerOrgsView(){
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   
+    console.log('org',currentOrg)  
     // const isFilterEmpty = Object.keys(filteredInfo).length === 0;
 
     type DataIndex = keyof Service;
@@ -42,7 +40,7 @@ export default function ManagerOrgsView(){
     async function fetchServices(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/services?key=org_id&value=${currentOrg.id}&pageNumber=0&pageSize=10`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/services?key=org_id&value=${currentOrg.orgId}&pageNumber=0&pageSize=10`,
             headers:{
                 "Authorization": paseto
             }
@@ -90,26 +88,12 @@ export default function ManagerOrgsView(){
     }
 
 
-    const servicesQuery = useQuery({queryKey:['services', currentStatus], queryFn:fetchServices, enabled:paseto !== ''})
+    const servicesQuery = useQuery({queryKey:['services', currentStatus], queryFn:fetchServices, enabled: paseto !== ''})
     const data = servicesQuery.data && servicesQuery.data.data
 
 
     
   
-  
-
-    // function getCurrentStatusActionItems(){
-    //     switch(currentStatus.id){
-    //         // 1 = approved
-    //         case '1': return approvedOrgsActions 
-    //         // 2 = inReview
-    //         case '2': return inReviewOrgsActions 
-    //         // 4 = rejected
-    //         case '4': return rejectedOrgsActions 
-    //         // 0 = deActivated
-    //         case '0': return deActivatedOrgsActions 
-    //     }
-    // }
 
     function viewServiceDetails(service:Service){
       // set state
@@ -141,7 +125,6 @@ export default function ManagerOrgsView(){
                 </div>
             )
         },
-        // ...getColumnSearchProps('name'),
       },
       {
         title: 'Country',
@@ -158,24 +141,27 @@ export default function ManagerOrgsView(){
         title: 'Timezone',
         dataIndex: 'timeZone',
         key: 'timeZone',
+
       },
       {
         title: 'Currency',
         dataIndex: 'currency',
         key: 'currency',
+        width:'70px',
       },
-      {
-        title: 'Type',
-        dataIndex: 'serviceType',
-        key: 'serviceType',
-        // render: (serviceType)=>{
-        //     return <Text>{serviceType[0].name}</Text>
-        // }
-      },
+    //   {
+    //     title: 'Type',
+    //     dataIndex: 'serviceType',
+    //     key: 'serviceType',
+    //     // render: (serviceType)=>{
+    //     //     return <Text>{serviceType[0].name}</Text>
+    //     // }
+    //   },
       {
         title: 'Status',
         dataIndex: 'status',
         key: 'status',
+        width:'100px',
         render:(status)=>{
             const statusText = status? 'Active': 'Stale' 
             return <Badge status={status?'processing':'warning'} text={statusText} />
@@ -195,6 +181,7 @@ export default function ManagerOrgsView(){
     {
       dataIndex: 'actions', 
       key: 'actions',
+      width:'70px',
       render:(_,record)=>{
         return (
         <Dropdown menu={{ onClick: ()=>onMenuClick(record) }}>
@@ -206,23 +193,49 @@ export default function ManagerOrgsView(){
     ];
 
         return (
-            <div>
-                <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
-                <Radio.Group defaultValue={currentStatus.id} buttonStyle="solid">
-                    {servicesFilter.map(status=>(
-                        <Radio.Button key={status.id} onClick={()=>setCurrentStatus(status)} value={status.id}>{status.name}</Radio.Button>
-                     )
-                    )}
-                </Radio.Group>
-                <Button type='link' loading={servicesQuery.isRefetching} onClick={()=>servicesQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+            <div style={{background:'#f7f7f7', minHeight:'100vh'}}>
+                <Row style={{marginTop:'.5em'}} gutter={[16,46]}>
+               <header style={{width:'100%', background:'#ffffff'}}>
+                   <Col style={{display:'flex', justifyContent:'space-between'}} offset={2} span={20}>
+                       <div style={{display:'flex', flex:'7', flexDirection:'column'}}> 
+                           <Button style={{display:'flex', padding: '0', margin:'0', alignItems:'center', textAlign:'left'}} onClick={()=>router.replace('/')} icon={<ArrowLeftOutlined />} type='link'>Back to organizations</Button>
+                           {/* {orgName === ''? <Skeleton.Input active size='large' />:<Title level={4}>{orgName}</Title> } */}
+                       </div>
 
+                       <div style={{display:'flex', flex:'3', justifyContent:'space-between', alignItems:'center'}}>
+                           {/* <CurrentUser /> */}
+                           <div style={{padding:'.7em', cursor:'pointer', display:'flex', justifyContent:'center', alignItems:'center', borderRadius:'50px', background:'#f4f4f4'}}>
+                               {/* <SettingOutlined style={{fontSize:'1.4em'}}/> */}
+                           </div>
+                       </div>
+                   </Col>
+               </header>
+
+               <Col offset={2} span={20}>
+                   {/* <Title style={{marginBottom:'1em'}} level={2}>Services</Title> */}
+                   <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+                    <Radio.Group defaultValue={currentStatus.id} buttonStyle="solid">
+                        {servicesFilter.map(filter=>(
+                            <Radio.Button key={filter.id} onClick={()=>setCurrentStatus(filter)} value={filter.id}>{filter.name}</Radio.Button>
+                        )
+                        )}
+                    </Radio.Group>
+                    <div style={{width: "20%",display:'flex', marginTop:'2rem', justifyContent:'space-between', alignItems:'center'}}>
+                        <Button type='link' loading={servicesQuery.isRefetching} onClick={()=>servicesQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                        <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/services/new')}>Launch new service</Button>
+                    </div>
                 </div>
-                <Table style={{width:'100%'}} key='dfadfe' loading={servicesQuery.isLoading||servicesQuery.isRefetching} columns={columns} dataSource={data} />
+                
+                <Table style={{width:'100%'}} size='large' key='dfadfe' loading={servicesQuery.isLoading||servicesQuery.isRefetching} columns={columns} dataSource={data} />
                 {
                   isDrawerOpen
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedRecord={selectedRecord}/>
                   :null
-                }
+                }  
+
+               </Col> 
+           </Row>
+                
             </div>
     )
 
@@ -865,6 +878,9 @@ const servicesFilter = [
       name: 'Stale'
   },
 ]
+
+
+
 
 
 
