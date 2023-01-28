@@ -1,7 +1,9 @@
 import {
-
     UserOutlined,
-    VideoCameraOutlined,
+    BankOutlined,
+    BranchesOutlined,
+    PieChartOutlined,
+    BookOutlined
   } from '@ant-design/icons';
   import {  Menu, Breadcrumb, Typography ,Button, Layout, MenuProps, Spin, Col, Row} from 'antd';
 import Link from 'next/link';
@@ -39,11 +41,9 @@ const {Text} = Typography
     const [showOrgSwitcher, setShowOrgSwitcher] = useState(false) 
     const [pageRoutes, setPageRoutes] = useState<PageRoute>({basePath:'',selectedRoute:'dashboard'})
 
-    
-    // console.log('from layout',asPath)
+  
 
     const splittedRoutes = asPath.split('/')
-    console.log(splittedRoutes)
     const selectedRoute = splittedRoutes && splittedRoutes[2]
     splittedRoutes.pop()
     
@@ -70,7 +70,7 @@ const {Text} = Typography
    <ErrorBoundary name={`Layout for ${pageRoutes.basePath}`} >
       <Layout style={{minHeight:'100vh',height:'100%'}}>
           <Row>
-            <Header style={{lineHeight:'1.4',background:'white', width:'100%', display:'flex', flex: '3', justifyContent:'space-between', alignItems:'center'}}>
+            {/* <Header style={{lineHeight:'1.4',background:'white', width:'100%', display:'flex', flex: '3', justifyContent:'space-between', alignItems:'center'}}>
             <Col style={{display:'flex', justifyContent:'space-between',alignItems:'center'}} offset={1} span={22}>
                 <div style={{display:'flex', width:'450px',  height:'100%', justifyContent:'space-between'}}>
                   <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`/manager/dashboard`} ><a style={{color:`${selectedRoute==='dashboard'?'#1890ff':'black'}`}}>Dashboard</a></Link> </div>
@@ -89,18 +89,19 @@ const {Text} = Typography
                     
             </Col>
 
-                </Header> 
+                </Header>  */}
               
-              {/* <Sider width={200}>
+            <Sider collapsible width={200}>
                 <Menu
-                  mode="inline"
+
+                  // mode="inline"
                   defaultSelectedKeys={['1']}
                   defaultOpenKeys={['sub1']}
                   style={{ height: '100%' }}
-                  items={items2}
+                  items={navItems}
                 />
             </Sider>
-                     */}
+                     
               
             </Row>
               <Layout style={{width:'100%',height:'100%'}}>
@@ -113,3 +114,31 @@ const {Text} = Typography
 
 export default ManagerLayout
 
+
+const navItems=[
+  {
+    key:'dashboard',
+    label: <Link href='/manager/dashboard'>Dashboard</Link>,
+    icon:<PieChartOutlined />
+  },
+  {
+    key:'organizations',
+    label:<Link href='/manager/organizations'>Organizations</Link>,
+    icon: <BranchesOutlined />
+  },
+  {
+    key:'bookings',
+    label:<Link href='/manager/bookings'>Bookings</Link>,
+    icon: <BookOutlined />
+  },
+  {
+    key:'users',
+    label:<Link href='/manager/users'>Users</Link>,
+    icon: <UserOutlined />
+  },
+  {
+    key:'banks',
+    label:<Link href='/manager/banks'>Banks</Link>,
+    icon: <BankOutlined />
+  },
+]
