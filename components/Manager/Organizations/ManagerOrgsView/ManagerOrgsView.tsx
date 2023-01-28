@@ -403,12 +403,25 @@ export default function ManagerOrgsView(){
             )
         },
     },
+      {
+          title: 'UpdatedAt',
+          dataIndex: 'updatedAt',
+          key: 'updatedAt',
+          render: (_,record)=>{
+              const date = dayjs(record.updatedAt).format('MMM DD, YYYY')
+              return(
+            <Text>{date}</Text>
+            )
+        },
+    },
     {
       dataIndex: 'actions', 
       key: 'actions',
       render:(_,record)=>{
         const items = getCurrentStatusActionItems()
-        return (<Dropdown.Button menu={{ items , onClick: (e)=>onMenuClick(e,record) }}>Actions</Dropdown.Button>)
+        return (<Dropdown menu={{ items , onClick: (e)=>onMenuClick(e,record) }}>
+          <Button type='text' icon={<MoreOutlined/>}/>
+        </Dropdown>)
       }
     }
     ];

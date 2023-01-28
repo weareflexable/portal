@@ -20,14 +20,14 @@ export default function ManagerOrganizations(){
     return(
         <ManagerLayout>
             <Row>
-                <Col offset={1} span={21}>
+                <Col offset={1} span={22}>
                     <div style={{width:'100%', display:'flex', marginTop:'2rem', justifyContent:'space-between', alignItems:'center'}}>
                         <Title style={{marginLeft: '1em'}} level={3}>Organizations</Title>
                         <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/manager/organizations/new')}>New organization</Button>
                     </div>
                     <Content
                         style={{
-                        padding: '1em',
+                        // padding: '1em',
                         margin:'1em',
                         // background:'white' ,
                         width:`98%`,

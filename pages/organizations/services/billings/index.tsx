@@ -2,20 +2,20 @@ import { Content } from 'antd/lib/layout/layout'
 import { Typography, Row, Col } from 'antd'
 const {Title} = Typography
 import React from 'react'
-import BillingsView from '../../../components/BillingsPage'
-import AppLayout from '../../../components/shared/Layout/layout'
+import BillingsView from '../../../../components/BillingsPage'
+import AppLayout from '../../../../components/shared/Layout/layout'
 
 export default function Billings(){
     return(
         <AppLayout>
              <Row>
-                <Col offset={1} span={15}>
+                <Col offset={1} span={22}>
                     <Title style={{marginLeft: '1em', marginTop:'1em'}} level={3}>Billings</Title>
                     <Content
                         style={{
-                        padding: '1em',
+                        // padding: '1em',
                         margin:'1em',
-                        background:'white' ,
+                        // background:'#f7f7f7' ,
                         // width:`98%`,
                         maxWidth:'100%',
                         // height: '100%',

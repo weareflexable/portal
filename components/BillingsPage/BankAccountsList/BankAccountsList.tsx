@@ -4,7 +4,6 @@ import {PlusCircleOutlined} from '@ant-design/icons'
 import { useRouter } from 'next/router'
 import { BankAccount } from '../../../types/BankAccount'
 import { useOrgContext } from '../../../context/OrgContext'
-import moment from 'moment'
 
 const {Title,Text} = Typography
 

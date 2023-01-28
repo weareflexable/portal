@@ -15,7 +15,7 @@ import { usePlacesWidget } from "react-google-autocomplete";
 const {TextArea} = Input
 
 
-export default function ManagerOrgsView(){
+export default function BankView(){
 
     const {paseto} = useAuthContext()
     const queryClient = useQueryClient()
@@ -26,7 +26,7 @@ export default function ManagerOrgsView(){
     type DataIndex = keyof Bank;
 
     const [selectedBank, setSelelectedOrg] = useState<any|Bank>({})
-    const [currentFilter, setCurrentStatus] = useState({id:'1',name: 'Approved'})
+    const [currentFilter, setCurrentStatus] = useState({id:'1',name: 'Verified'})
 
     async function fetchBanks(){
     const res = await axios({
@@ -63,7 +63,7 @@ export default function ManagerOrgsView(){
     const changeStatusMutation = useMutation(['data'],{
         mutationFn: changeOrgStatus,
         onSuccess:(data:any)=>{
-            queryClient.invalidateQueries({queryKey:['organizations',currentFilter]})
+            queryClient.invalidateQueries({queryKey:['manager-banks',currentFilter]})
         },
         onError:()=>{
             console.log('Error changing status')
@@ -86,7 +86,7 @@ export default function ManagerOrgsView(){
     }
 
 
-    const banksQuery = useQuery({queryKey:['organizations', currentFilter], queryFn:fetchBanks, enabled:paseto !== ''})
+    const banksQuery = useQuery({queryKey:['manager-banks', currentFilter], queryFn:fetchBanks, enabled:paseto !== ''})
     const data = banksQuery.data && banksQuery.data.data
 
 
@@ -140,7 +140,7 @@ export default function ManagerOrgsView(){
                     <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={'/favicon.ico'}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{record.bankName}</Text>  
-                        <Text type="secondary">{record.accountType}</Text>
+                        <Text type="secondary">{record.beneficiaryName}</Text>
                     </div>
                 </div>
             )
@@ -153,9 +153,9 @@ export default function ManagerOrgsView(){
       },
       
       {
-        title: 'Account Name',
-        dataIndex: 'beneficiaryName',
-        key: 'beneficiaryName'
+        title: 'Account Type',
+        dataIndex: 'accountType',
+        key: 'accountType'
       },
       {
         title: 'Currency',
@@ -237,11 +237,13 @@ function closeDrawerHandler(){
 }
 
 return( 
-<Drawer title="Organization Details" width={640} placement="right" closable={true} onClose={closeDrawerHandler} open={isDrawerOpen}>
+<Drawer title="Bank Details" width={640} placement="right" closable={true} onClose={closeDrawerHandler} open={isDrawerOpen}>
   
   <EditableName selectedBank={selectedBank}/>
   <EditableAddress selectedBank={selectedBank}/>
-  <EditablePhone selectedBank={selectedBank}/>
+  <EditableAccountNo selectedBank={selectedBank}/>
+  <EditableCurrency selectedBank={selectedBank}/>
+  <EditableAccountType selectedBank={selectedBank}/>
 
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
     <Divider/>
@@ -273,8 +275,8 @@ function EditableName({selectedBank}:EditableProp){
 
  
 
-  const nameMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
+  const mutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org-bank`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -282,29 +284,29 @@ function EditableName({selectedBank}:EditableProp){
     })
       return data;
   }
-  const nameMutation = useMutation({
-    mutationKey:['name'],
-    mutationFn: nameMutationHandler,
+  const mutation = useMutation({
+    mutationKey:['bankName'],
+    mutationFn: mutationHandler,
     onSuccess:()=>{
       toggleEdit()
     }
   })
 
-  function onFinish(updatedItem:any){
+  function onFinish(updatedItem:Bank){
     const payload = {
-      key:'name',
-      value: updatedItem.name,
-      orgId: selectedBank.id
+      key:'bank_name',
+      value: updatedItem.bankName,
+      id: selectedBank.id
     }
-    const updatedOrg = {
+    const updatedRecord = {
       ...selectedBank,
-      name: updatedItem.name
+      bankName: updatedItem.bankName
     }
-    setState(updatedOrg)
-    nameMutation.mutate(payload)
+    setState(updatedRecord)
+    mutation.mutate(payload)
   }
 
-  const {isLoading:isEditing} = nameMutation ;
+  const {isLoading:isEditing} = mutation ;
 
   const readOnly = (
     <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
@@ -323,10 +325,10 @@ function EditableName({selectedBank}:EditableProp){
       <Row>
         <Col span={16} style={{height:'100%'}}>
           <Form.Item
-              name="name"
+              name="bankName"
               rules={[{ required: true, message: 'Please input a valid service name' }]}
           >
-              <Input  disabled={isEditing} placeholder="Flexable org" />
+              <Input  disabled={isEditing} placeholder="Chase Bank" />
           </Form.Item>
         </Col>
         <Col span={4}>
@@ -348,7 +350,197 @@ function EditableName({selectedBank}:EditableProp){
   )
   return(
     <div style={{width:'100%', display:'flex', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>Name</Text>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>Bank Name</Text>
+    {isEditMode?editable:readOnly}
+    </div>
+  )
+}
+function EditableAccountNo({selectedBank}:EditableProp){
+
+  const [state, setState] = useState(selectedBank)
+
+  const [isEditMode, setIsEditMode] = useState(false)
+
+  const {paseto} = useAuthContext()
+
+
+  function toggleEdit(){
+    setIsEditMode(!isEditMode)
+  }
+
+ 
+
+  const mutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org-bank`,updatedItem,{
+      headers:{
+          //@ts-ignore
+          "Authorization": paseto
+      }
+    })
+      return data;
+  }
+  const mutation = useMutation({
+    mutationKey:['accountNo'],
+    mutationFn: mutationHandler,
+    onSuccess:()=>{
+      toggleEdit()
+    }
+  })
+
+  function onFinish(updatedItem:Bank){
+    const payload = {
+      key:'account_no',
+      value: updatedItem.accountNo,
+      id: selectedBank.id
+    }
+    const updatedRecord = {
+      ...selectedBank,
+      accountNo: updatedItem.accountNo
+    }
+    setState(updatedRecord)
+    mutation.mutate(payload)
+  }
+
+  const {isLoading:isEditing} = mutation ;
+
+  const readOnly = (
+    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+      <Text>{state.accountNo}</Text>
+      <Button type="link" onClick={toggleEdit}>Edit</Button>
+    </div>
+)
+
+  const editable = (
+    <Form
+     style={{ marginTop:'.5rem' }}
+     name="editableAccountNo"
+     initialValues={selectedBank}
+     onFinish={onFinish}
+     >
+      <Row>
+        <Col span={16} style={{height:'100%'}}>
+          <Form.Item
+              name="accountNo"
+              rules={[{ required: true, message: 'Please input a valid accountNo' }]}
+          >
+              <Input  disabled={isEditing} placeholder="6238689845" />
+          </Form.Item>
+        </Col>
+        <Col span={4}>
+          <Form.Item style={{ width:'100%'}}>
+              <Space >
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                      Cancel
+                  </Button>
+                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                      Apply changes
+                  </Button>
+              </Space>
+                        
+          </Form.Item>
+        </Col>
+      </Row>
+           
+    </Form>
+  )
+  return(
+    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>Account No</Text>
+    {isEditMode?editable:readOnly}
+    </div>
+  )
+}
+function EditableCurrency({selectedBank}:EditableProp){
+
+  const [state, setState] = useState(selectedBank)
+
+  const [isEditMode, setIsEditMode] = useState(false)
+
+  const {paseto} = useAuthContext()
+
+
+  function toggleEdit(){
+    setIsEditMode(!isEditMode)
+  }
+
+ 
+
+  const mutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org-bank`,updatedItem,{
+      headers:{
+          //@ts-ignore
+          "Authorization": paseto
+      }
+    })
+      return data;
+  }
+  const mutation = useMutation({
+    mutationKey:['currency'],
+    mutationFn: mutationHandler,
+    onSuccess:()=>{
+      toggleEdit()
+    }
+  })
+
+  function onFinish(updatedItem:Bank){
+    const payload = {
+      key:'currency',
+      value: updatedItem.currency,
+      id: selectedBank.id
+    }
+    const updatedRecord = {
+      ...selectedBank,
+      currency: updatedItem.currency
+    }
+    setState(updatedRecord)
+    mutation.mutate(payload)
+  }
+
+  const {isLoading:isEditing} = mutation ;
+
+  const readOnly = (
+    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+      <Text>{state.currency}</Text>
+      <Button type="link" onClick={toggleEdit}>Edit</Button>
+    </div>
+)
+
+  const editable = (
+    <Form
+     style={{ marginTop:'.5rem' }}
+     name="editableCurrency"
+     initialValues={selectedBank}
+     onFinish={onFinish}
+     >
+      <Row>
+        <Col span={16} style={{height:'100%'}}>
+          <Form.Item
+              name="currency"
+              rules={[{ required: true, message: 'Please input a valid accountNo' }]}
+          >
+              <Input  disabled={isEditing} placeholder="USD" />
+          </Form.Item>
+        </Col>
+        <Col span={4}>
+          <Form.Item style={{ width:'100%'}}>
+              <Space >
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                      Cancel
+                  </Button>
+                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                      Apply changes
+                  </Button>
+              </Space>
+                        
+          </Form.Item>
+        </Col>
+      </Row>
+           
+    </Form>
+  )
+  return(
+    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>Currency</Text>
     {isEditMode?editable:readOnly}
     </div>
   )
@@ -412,7 +604,7 @@ function EditableAddress({selectedBank}:EditableProp){
   });
 
 
-  const nameMutationHandler = async(updatedItem:any)=>{
+  const mutationHandler = async(updatedItem:any)=>{
     const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
       headers:{
           //@ts-ignore
@@ -421,9 +613,9 @@ function EditableAddress({selectedBank}:EditableProp){
     })
       return data;
   }
-  const nameMutation = useMutation({
+  const mutation = useMutation({
     mutationKey:['address'],
-    mutationFn: nameMutationHandler,
+    mutationFn: mutationHandler,
     onSuccess:()=>{
       toggleEdit()
     }
@@ -435,15 +627,15 @@ function EditableAddress({selectedBank}:EditableProp){
       value: updatedItem.country,
       orgId: selectedBank.id
     }
-    const updatedOrg = {
+    const updatedRecord = {
       ...selectedBank,
       name: updatedItem.country
     }
-    setState(updatedOrg)
-    nameMutation.mutate(payload)
+    setState(updatedRecord)
+    mutation.mutate(payload)
   }
 
-  const {isLoading:isEditing} = nameMutation 
+  const {isLoading:isEditing} = mutation 
 
   const readOnly = (
     <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
@@ -502,7 +694,7 @@ function EditableAddress({selectedBank}:EditableProp){
     </div>
   )
 }
-function EditablePhone({selectedBank}:EditableProp){
+function EditableAccountType({selectedBank}:EditableProp){
 
   const [isEditMode, setIsEditMode] = useState(false)
 
@@ -516,12 +708,12 @@ function EditablePhone({selectedBank}:EditableProp){
 
   const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{selectedBank.beneficiaryPhoneNumber}</Text>
+        <Text>{selectedBank.accountType}</Text>
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
   )
 
-  const nameMutationHandler = async(updatedItem:any)=>{
+  const mutationHandler = async(updatedItem:any)=>{
     const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org-bank`,updatedItem,{
       headers:{
           //@ts-ignore
@@ -530,41 +722,43 @@ function EditablePhone({selectedBank}:EditableProp){
     })
       return data;
   }
-  const nameMutation = useMutation({
-    mutationKey:['phone'],
-    mutationFn: nameMutationHandler,
+  const mutation = useMutation({
+    mutationKey:['accountType'],
+    mutationFn: mutationHandler,
     onSuccess:()=>{
       toggleEdit()
-      queryClient.invalidateQueries(['banks'])
+      queryClient.invalidateQueries(['manager-banks'])
     }
   })
 
   function onFinish(field:any){
     const payload = {
-      key:'phone',
-      value: field.phone,
-      orgId: selectedBank.id
+      key:'account_type',
+      value: field.accountType,
+      id: selectedBank.id
     }
-    console.log(payload)
-    nameMutation.mutate(payload)
+    mutation.mutate(payload)
   }
 
-  const {isLoading:isEditing} = nameMutation 
+  const {isLoading:isEditing} = mutation 
 
   const editable = (
     <Form
      style={{ marginTop:'.5rem' }}
-     name="editablePhone"
+     name="editableAccountType"
      initialValues={selectedBank}
      onFinish={onFinish}
      >
       <Row>
         <Col span={16}>
           <Form.Item
-              name="phone"
+              name="accountType"
               rules={[{ required: true, message: 'Please input a valid phone number' }]}
           >
-              <Input disabled={isEditing} placeholder="09023234857" />
+               <Radio.Group>
+                <Radio value="Savings">Savings</Radio>
+                <Radio value="Current">Current</Radio>
+              </Radio.Group>
           </Form.Item>
         </Col>
         <Col span={4}>
@@ -586,7 +780,7 @@ function EditablePhone({selectedBank}:EditableProp){
   )
   return(
     <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>Phone</Text>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>Account Type</Text>
       {isEditMode?editable:readOnly}
     </div>
   )

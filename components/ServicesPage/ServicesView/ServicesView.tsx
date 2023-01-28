@@ -40,6 +40,7 @@ export default function ManagerOrgsView(){
     async function fetchServices(){
     const res = await axios({
             method:'get',
+            //@ts-ignore
             url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/services?key=org_id&value=${currentOrg.orgId}&pageNumber=0&pageSize=10`,
             headers:{
                 "Authorization": paseto

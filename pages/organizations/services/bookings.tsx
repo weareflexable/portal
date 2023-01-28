@@ -15,9 +15,7 @@ export default function Bookings(){
                     <Title style={{marginLeft: '1em', marginTop:'1em'}} level={3}>Bookings</Title>
                     <Content
                         style={{
-                        padding: '1em',
                         margin:'1em',
-                        background:'white' ,
                         width:`98%`,
                         maxWidth:'100%',
                         // height: '100%',
