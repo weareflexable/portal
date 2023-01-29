@@ -18,6 +18,9 @@ import { usePlacesWidget } from "react-google-autocomplete";
 import { Service } from "../Services.types";
 const {TextArea} = Input
 
+var relativeTime = require('dayjs/plugin/relativeTime')
+dayjs.extend(relativeTime)
+
 
 export default function ManagerOrgsView(){
 
@@ -165,7 +168,7 @@ export default function ManagerOrgsView(){
         width:'100px',
         render:(status)=>{
             const statusText = status? 'Active': 'Stale' 
-            return <Badge status={status?'processing':'warning'} text={statusText} />
+            return <Badge status={status?'processing':'warning'} text={statusText} /> 
         }
       },
       {
@@ -174,6 +177,18 @@ export default function ManagerOrgsView(){
           key: 'createdAt',
           render: (_,record)=>{
               const date = dayjs(record.createdAt).format('MMM DD, YYYY')
+              return(
+            <Text>{date}</Text>
+            )
+        },
+    },
+      {
+          title: 'UpdatedAt',
+          dataIndex: 'updatedAt',
+          key: 'updatedAt',
+          render: (_,record)=>{
+            // @ts-ignore
+              const date = dayjs().to(dayjs(record.updatedAt))
               return(
             <Text>{date}</Text>
             )
@@ -278,9 +293,9 @@ return(
   <EditableName selectedRecord={selectedRecord}/>
   <EditableAddress selectedRecord={selectedRecord}/>
   <EditablePhone selectedRecord={selectedRecord}/>
-
-  {/* <EditableLogoImage selectedRecord={selectedRecord}/> */}
-  {/* <EditableCoverImage selectedRecord={selectedRecord}/> */}
+  <EditableCurrency selectedRecord={selectedRecord}/>
+  <EditableLogoImage selectedRecord={selectedRecord}/>
+  <EditableCoverImage selectedRecord={selectedRecord}/>
 
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
     <Divider/>
@@ -313,7 +328,7 @@ function EditableName({selectedRecord}:EditableProp){
  
 
   const nameMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/services`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -322,24 +337,24 @@ function EditableName({selectedRecord}:EditableProp){
       return data;
   }
   const nameMutation = useMutation({
-    mutationKey:['name'],
+    mutationKey:['serviceName'],
     mutationFn: nameMutationHandler,
     onSuccess:()=>{
       toggleEdit()
     }
   })
 
-  function onFinish(updatedItem:any){
+  function onFinish(updatedItem:Service){
     const payload = {
       key:'name',
       value: updatedItem.name,
-      orgId: selectedRecord.id
+      id: selectedRecord.id
     }
-    const updatedOrg = {
+    const updatedRecord = {
       ...selectedRecord,
       name: updatedItem.name
     }
-    setState(updatedOrg)
+    setState(updatedRecord)
     nameMutation.mutate(payload)
   }
 
@@ -365,7 +380,7 @@ function EditableName({selectedRecord}:EditableProp){
               name="name"
               rules={[{ required: true, message: 'Please input a valid service name' }]}
           >
-              <Input  disabled={isEditing} placeholder="Flexable org" />
+              <Input  disabled={isEditing} placeholder="Benjamins On Franklin Bar" />
           </Form.Item>
         </Col>
         <Col span={4}>
@@ -474,11 +489,11 @@ function EditableAddress({selectedRecord}:EditableProp){
       value: updatedItem.country,
       orgId: selectedRecord.id
     }
-    const updatedOrg = {
+    const updatedRecord = {
       ...selectedRecord,
       name: updatedItem.country
     }
-    setState(updatedOrg)
+    setState(updatedRecord)
     nameMutation.mutate(payload)
   }
 
@@ -631,6 +646,102 @@ function EditablePhone({selectedRecord}:EditableProp){
   )
 }
 
+function EditableCurrency({selectedRecord}:EditableProp){
+
+  const [state, setState] = useState(selectedRecord)
+
+  const [isEditMode, setIsEditMode] = useState(false)
+
+  const {paseto} = useAuthContext()
+
+
+  function toggleEdit(){
+    setIsEditMode(!isEditMode)
+  }
+
+ 
+
+  const mutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/services`,updatedItem,{
+      headers:{
+          //@ts-ignore
+          "Authorization": paseto
+      }
+    })
+      return data;
+  }
+  const mutation = useMutation({
+    mutationKey:['currency'],
+    mutationFn: mutationHandler,
+    onSuccess:()=>{
+      toggleEdit()
+    }
+  })
+
+  function onFinish(updatedItem:Service){
+    const payload = {
+      key:'currency',
+      value: updatedItem.currency,
+      id: selectedRecord.id
+    }
+    const updatedRecord = {
+      ...selectedRecord,
+      currency: updatedItem.currency
+    }
+    setState(updatedRecord)
+    mutation.mutate(payload)
+  }
+
+  const {isLoading:isEditing} = mutation ;
+
+  const readOnly = (
+    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+      <Text>{state.currency}</Text>
+      <Button type="link" onClick={toggleEdit}>Edit</Button>
+    </div>
+)
+
+  const editable = (
+    <Form
+     style={{ marginTop:'.5rem' }}
+     name="editableCurrency"
+     initialValues={selectedRecord}
+     onFinish={onFinish}
+     >
+      <Row>
+        <Col span={16} style={{height:'100%'}}>
+          <Form.Item
+              name="currency"
+              rules={[{ required: true, message: 'Please input a valid accountNo' }]}
+          >
+              <Input  disabled={isEditing} placeholder="USD" />
+          </Form.Item>
+        </Col>
+        <Col span={4}>
+          <Form.Item style={{ width:'100%'}}>
+              <Space >
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                      Cancel
+                  </Button>
+                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                      Apply changes
+                  </Button>
+              </Space>
+                        
+          </Form.Item>
+        </Col>
+      </Row>
+           
+    </Form>
+  )
+  return(
+    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>Currency</Text>
+    {isEditMode?editable:readOnly}
+    </div>
+  )
+}
+
 function EditableLogoImage({selectedRecord}:EditableProp){
 
   const [isEditMode, setIsEditMode] = useState(false)
@@ -653,7 +764,7 @@ function EditableLogoImage({selectedRecord}:EditableProp){
   )
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/services`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -768,7 +879,7 @@ function EditableCoverImage({selectedRecord}:EditableProp){
   )
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/services`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto

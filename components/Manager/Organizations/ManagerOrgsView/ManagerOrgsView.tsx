@@ -23,6 +23,9 @@ import { asyncStore } from "../../../../utils/nftStorage";
 import { usePlacesWidget } from "react-google-autocomplete";
 const {TextArea} = Input
 
+var relativeTime = require('dayjs/plugin/relativeTime')
+dayjs.extend(relativeTime) 
+
 
 export default function ManagerOrgsView(){
 
@@ -408,9 +411,10 @@ export default function ManagerOrgsView(){
           dataIndex: 'updatedAt',
           key: 'updatedAt',
           render: (_,record)=>{
-              const date = dayjs(record.updatedAt).format('MMM DD, YYYY')
+            //@ts-ignore
+              const date = dayjs().from(dayjs(record.updatedAt),true)
               return(
-            <Text>{date}</Text>
+            <Text>{date} ago</Text>
             )
         },
     },
