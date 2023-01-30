@@ -510,7 +510,7 @@ function EditableDescription({selectedServiceItem}:EditableProp){
 //   )
 
 //   const mutationHandler = async(updatedItem:any)=>{
-//     const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/serviceItem`,updatedItem,{
+//     const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/user`,updatedItem,{
 //       headers:{
 //           //@ts-ignore
 //           "Authorization": paseto
