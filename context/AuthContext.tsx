@@ -72,7 +72,7 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
                 "Authorization": paseto
             }
         })
-        console.log(res)
+        console.log('hell0',res)
         return res && res.data.data[0]; 
     }
 

@@ -13,6 +13,7 @@ export default function useServiceItemTypes(){
     // const [serviceTypeId, setServiceTypeId] = useState('')
 
     const serviceTypeId = currentService.serviceTypeId
+    console.log(serviceTypeId)
 
     // useEffect(() => {
     //     setServiceTypeId(currentService.serviceType[0].id) 
@@ -29,7 +30,8 @@ export default function useServiceItemTypes(){
         return data?.data
     }
 
-    const {data:serviceItemTypes} = useQuery(['serviceItemTypes'],fetchServiceItemTypes)
+    const {data:serviceItemTypes} = useQuery({queryKey:['serviceItemTypes'],queryFn:fetchServiceItemTypes,enabled:serviceTypeId!==''||undefined})
+    console.log(serviceItemTypes)
 
     const menuItems = serviceItemTypes && serviceItemTypes.map((service:any)=>({
             label: service.name,
@@ -38,5 +40,5 @@ export default function useServiceItemTypes(){
 
     console.log('menu',menuItems) 
 
-    return menuItems
+    return menuItems || []
 }

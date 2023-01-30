@@ -32,28 +32,35 @@ export type ServicePayload ={
     coverImageHash: string | undefined | any[],
 }
 
+type CustomTime = {
+    price: string,
+    ticketsPerDay: string,
+    date: string
+}
+
+export type Availability = CustomTime[]
 
 export type ServiceItem = {
     id:string,
     name: string,
-    imageHash: string,
-    serviceItemType: string,
+    ticketsPerDay: string,
+    price: string,
+    logoImageHash: string,
+    serviceItemTypeId: string,
     description: string,
+    availability: Availability
     updatedAt: string,
-    createdAt: string,
+    createdAt: string
 }
 
 export type ServiceItemReqPaylod = {
     name: string,
-    price: number
-    ticketsPerDay: number,
+    price: string
+    availability: Availability
+    ticketsPerDay: string,
     description:string,
     orgServiceId: string,
-    startDate: string,
-    endDate: string,
-    startTime: string,
-    rangeTime: string,
     logoImageHash?: string,
-    serviceItemId: string
+    // serviceItemId: string
     serviceItemTypeId?: string
 }

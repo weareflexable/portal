@@ -1,10 +1,10 @@
 import {useEffect, useState} from 'react'
-import {Form,Input,Col, Image, Row, Select, Upload, Button, Layout, Typography, Avatar, Spin} from 'antd'
+import {Form,Input,Col, Image, Row, Select, Upload, Button, Layout, Typography, Avatar, Spin, Space} from 'antd'
 import {UploadOutlined, ArrowLeftOutlined} from '@ant-design/icons'
-import {useQuery} from '@tanstack/react-query';
+import {useMutation, useQuery} from '@tanstack/react-query';
 
 const {Option} = Select
-const {Title} = Typography;
+const {Title,Text} = Typography;
 const {Content} = Layout
 
 const countryList = require('country-list')
@@ -12,6 +12,7 @@ import codes from 'country-calling-code';
 import { useRouter } from 'next/router';
 import { useAuthContext } from '../context/AuthContext';
 import CurrentUser from '../components/Header/CurrentUser/CurrentUser';
+import axios from 'axios';
 
 
 
@@ -233,3 +234,98 @@ function getPrefixSelector(userCountry:any){
 // const prefixSelector = (
    
 //   );
+
+function EditableName({selectedRecord}:EditableProp){
+
+    const [state, setState] = useState(selectedRecord)
+  
+    const [isEditMode, setIsEditMode] = useState(false)
+  
+    const {paseto} = useAuthContext()
+  
+    function toggleEdit(){
+      setIsEditMode(!isEditMode)
+    }
+  
+   
+  
+    const nameMutationHandler = async(updatedItem:any)=>{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,updatedItem,{
+        headers:{
+            //@ts-ignore
+            "Authorization": paseto
+        }
+      })
+        return data;
+    }
+    const nameMutation = useMutation({
+      mutationKey:['name'],
+      mutationFn: nameMutationHandler,
+      onSuccess:()=>{
+        toggleEdit()
+      }
+    })
+  
+    function onFinish(updatedItem:any){
+      const payload = {
+        key:'name',
+        value: updatedItem.name,
+        id: selectedRecord.id
+      }
+      const updatedRecord = {
+        ...selectedRecord,
+        name: updatedItem.name
+      }
+      setState(updatedRecord)
+      nameMutation.mutate(payload)
+    }
+  
+    const {isLoading:isEditing} = nameMutation ;
+  
+    const readOnly = (
+      <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+        <Text>{state.name}</Text>
+        <Button type="link" onClick={toggleEdit}>Edit</Button>
+      </div>
+  )
+  
+    const editable = (
+      <Form
+       style={{ marginTop:'.5rem' }}
+       name="editableName"
+       initialValues={selectedRecord}
+       onFinish={onFinish}
+       >
+        <Row>
+          <Col span={16} style={{height:'100%'}}>
+            <Form.Item
+                name="name"
+                rules={[{ required: true, message: 'Please input a valid service name' }]}
+            >
+                <Input  disabled={isEditing} placeholder="Flexable serviceItem" />
+            </Form.Item>
+          </Col>
+          <Col span={4}>
+            <Form.Item style={{ width:'100%'}}>
+                <Space >
+                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                        Cancel
+                    </Button>
+                    <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                        Apply changes
+                    </Button>
+                </Space>
+                          
+            </Form.Item>
+          </Col>
+        </Row>
+             
+      </Form>
+    )
+    return(
+      <div style={{width:'100%', display:'flex', flexDirection:'column'}}>
+        <Text type="secondary" style={{ marginRight: '2rem',}}>Name</Text>
+      {isEditMode?editable:readOnly}
+      </div>
+    )
+  }

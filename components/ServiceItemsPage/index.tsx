@@ -19,31 +19,32 @@ import { ServiceItem } from "../../types/Services";
 const {TextArea} = Input
 
 
-const mockServiceItems:ServiceItem[]=[
-  {
-     id:"dfadfafd",
-    name: "Classic Line skip",
-    imageHash: '',
-    serviceItemType: "line-skip",
-    description: "Best bar in the middle of new york",
-    updatedAt: "Jan 22, 2022",
-    createdAt: "Jan 24, 2022",
-},
-  {
-     id:"dfadfafd",
-    name: "Bottle service rosto",
-    imageHash: '',
-    serviceItemType: "line-skip",
-    description: "Best bar in the middle of new york",
-    updatedAt: "Jan 22, 2022",
-    createdAt: "Jan 24, 2022",
-},
-]
+// const mockServiceItems:ServiceItem[]=[
+//   {
+//      id:"dfadfafd",
+//     name: "Classic Line skip",
+//     imageHash: '',
+//     serviceItemType: "line-skip",
+//     description: "Best bar in the middle of new york",
+//     updatedAt: "Jan 22, 2022",
+//     createdAt: "Jan 24, 2022",
+// },
+//   {
+//      id:"dfadfafd",
+//     name: "Bottle service rosto",
+//     imageHash: '',
+//     serviceItemType: "line-skip",
+//     description: "Best bar in the middle of new york",
+//     updatedAt: "Jan 22, 2022",
+//     createdAt: "Jan 24, 2022",
+// },
+// ]
 
 
 export default function ServiceItemsView(){
 
     const {paseto} = useAuthContext()
+    const {currentService} = useServicesContext()
     const queryClient = useQueryClient()
     const router = useRouter()
     const {switchOrg} = useOrgs()
@@ -54,12 +55,13 @@ export default function ServiceItemsView(){
     type DataIndex = keyof ServiceItem;
 
     const [selectedServiceItem, setSelectedServiceItem] = useState<any|ServiceItem>({})
-    const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Approved'})
+    const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Active'})
+    const [pageNumber, setPageNumber] = useState<number|undefined>(0)
 
     async function fetchServiceItems(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items?key=status&value=${currentFilter.id}&pageNumber=0&pageSize=10`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items?key=org_service_id&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=10`,
             headers:{
                 "Authorization": paseto
             }
@@ -70,7 +72,6 @@ export default function ServiceItemsView(){
     }
 
    
-
     async function changeServiceItemStatus({serviceItemId, statusNumber}:{serviceItemId:string, statusNumber: string}){
         const res = await axios({
             method:'patch',
@@ -88,11 +89,10 @@ export default function ServiceItemsView(){
     }
 
     
-
     const changeStatusMutation = useMutation(['data'],{
         mutationFn: changeServiceItemStatus,
         onSuccess:(data:any)=>{
-            queryClient.invalidateQueries({queryKey:['serviceItems',currentFilter]})
+            queryClient.invalidateQueries({queryKey:['serviceItems']})
         },
         onError:()=>{
             console.log('Error changing status')
@@ -109,17 +109,17 @@ export default function ServiceItemsView(){
     }
 
 
-    const serviceItemsQuery = useQuery({queryKey:['serviceItems', currentFilter], queryFn:fetchServiceItems, enabled:paseto !== ''})
-    const data = serviceItemsQuery.data && serviceItemsQuery.data.data
+    const serviceItemsQuery = useQuery({queryKey:['serviceItems', {currentFilter,pageNumber:pageNumber}], queryFn:fetchServiceItems, enabled:paseto !== ''})
+    const res = serviceItemsQuery.data && serviceItemsQuery.data;
+    const servicesData = res && res.data
+    const totalLength = res && res.dataLength;
 
-
-    
 
   
-  
-    const handleChange: TableProps<ServiceItem>['onChange'] = (pagination, filters, sorter) => {
-      console.log('Various parameters', pagination, filters, sorter);
-      // setFilteredInfo(filters);
+    const handleChange: TableProps<ServiceItem>['onChange'] = (data) => {
+      console.log(data.current)
+      //@ts-ignore
+      setPageNumber(data.current-1); // Subtracting 1 because pageSize param in url starts counting from 0
     };
   
   
@@ -169,11 +169,11 @@ export default function ServiceItemsView(){
             )
         },
       },
-      {
-        title: 'Type',
-        dataIndex: 'serviceItemType',
-        key: 'serviceItemType',
-      },
+      // {
+      //   title: 'Type',
+      //   dataIndex: 'serviceItemType',
+      //   key: 'serviceItemType',
+      // },
       
       {
         title: 'Status',
@@ -231,7 +231,18 @@ export default function ServiceItemsView(){
                 </div>
 
                 </div>
-                <Table style={{width:'100%'}} key='dfadfe' loading={serviceItemsQuery.isLoading||serviceItemsQuery.isRefetching} columns={columns} onChange={handleChange} dataSource={mockServiceItems} />
+                <Table 
+                  style={{width:'100%'}} 
+                  key='dfadfe' 
+                  pagination={{
+                    total:totalLength,  
+                    showTotal:(total) => `Total ${total} items`,
+                  }} 
+                  loading={serviceItemsQuery.isLoading || serviceItemsQuery.isRefetching} 
+                  columns={columns} 
+                  onChange={handleChange} 
+                  dataSource={servicesData} 
+                />
                 {
                   isDrawerOpen
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedServiceItem={selectedServiceItem}/>
@@ -297,7 +308,7 @@ function EditableName({selectedServiceItem}:EditableProp){
  
 
   const nameMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/serviceItem`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -317,13 +328,13 @@ function EditableName({selectedServiceItem}:EditableProp){
     const payload = {
       key:'name',
       value: updatedItem.name,
-      serviceItemId: selectedServiceItem.id
+      id: selectedServiceItem.id
     }
-    const updatedOrg = {
+    const updatedRecord = {
       ...selectedServiceItem,
       name: updatedItem.name
     }
-    setState(updatedOrg)
+    setState(updatedRecord)
     nameMutation.mutate(payload)
   }
 
@@ -376,6 +387,7 @@ function EditableName({selectedServiceItem}:EditableProp){
     </div>
   )
 }
+
 function EditableDescription({selectedServiceItem}:EditableProp){
 
   const [state, setState] = useState(selectedServiceItem)
@@ -384,18 +396,14 @@ function EditableDescription({selectedServiceItem}:EditableProp){
 
   const {paseto} = useAuthContext()
 
-
   function toggleEdit(){
     setIsEditMode(!isEditMode)
   }
 
   const [form]  = Form.useForm()
 
- 
-
-
   const nameMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/serviceItem`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -403,6 +411,7 @@ function EditableDescription({selectedServiceItem}:EditableProp){
     })
       return data;
   }
+
   const nameMutation = useMutation({
     mutationKey:['description'],
     mutationFn: nameMutationHandler,
@@ -413,15 +422,15 @@ function EditableDescription({selectedServiceItem}:EditableProp){
 
   function onFinish(updatedItem:any){
     const payload = {
-      key:'country',
-      value: updatedItem.country,
-      serviceItemId: selectedServiceItem.id
+      key:'description',
+      value: updatedItem.description,
+      id: selectedServiceItem.id
     }
-    const updatedOrg = {
+    const updatedRecord = {
       ...selectedServiceItem,
-      name: updatedItem.country
+      name: updatedItem.description
     }
-    setState(updatedOrg)
+    setState(updatedRecord)
     nameMutation.mutate(payload)
   }
 
@@ -437,7 +446,7 @@ function EditableDescription({selectedServiceItem}:EditableProp){
   const editable = (
     <Form
      style={{ marginTop:'.5rem' }}
-     name="editableAddress"
+     name="editableDescription"
      initialValues={selectedServiceItem}
      onFinish={onFinish}
      form={form}
@@ -448,7 +457,7 @@ function EditableDescription({selectedServiceItem}:EditableProp){
             name="description"
             rules={[{ required: true, message: 'Please input a description for service item!' }]}
         >
-            <TextArea rows={3} placeholder='Best bars in syracuse'/>
+            <TextArea rows={3} placeholder='Description...'/>
 
         </Form.Item>
 
@@ -472,7 +481,7 @@ function EditableDescription({selectedServiceItem}:EditableProp){
   )
   return(
     <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>Address</Text>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>Description</Text>
     {isEditMode?editable:readOnly}
     </div>
   )

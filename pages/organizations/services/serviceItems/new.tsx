@@ -8,12 +8,15 @@ import {UploadOutlined,ArrowLeftOutlined,MinusCircleOutlined,PlusOutlined} from 
 import {v4 as uuidv4} from 'uuid'
 
 import { useRouter } from 'next/router';
-import { ServiceItem, ServiceItemReqPaylod } from '../../../../types/Services';
+import { Availability, ServiceItem, ServiceItemReqPaylod } from '../../../../types/Services';
 import dayjs from 'dayjs'
 import { useServicesContext } from '../../../../context/ServicesContext';
 import useServiceTypes from '../../../../hooks/useServiceTypes';
 import useServiceItemTypes from '../../../../hooks/useServiceItemTypes';
 import { asyncStore } from '../../../../utils/nftStorage';
+import axios from 'axios';
+import { useAuthContext } from '../../../../context/AuthContext';
+import { useMutation } from '@tanstack/react-query';
 
 
 
@@ -71,9 +74,9 @@ export default function ServiceItemForm({ onTriggerFormAction,isCreatingServiceI
             </div>
            <Row > 
                 <Col offset={5} span={10}>
-                <Steps current={currentStep} items={items} />
-                    {/* {currentStep === 0?<BasicForm nextStep={next}/>:<AvailabilityForm/>} */}
-                    {steps[currentStep].content}
+                {/* <Steps current={currentStep} items={items} /> */}
+                    <BasicForm nextStep={next}/>
+                    {/* {steps[currentStep].content} */}
                 </Col>
            </Row>
         </div>
@@ -88,35 +91,87 @@ interface BasicInfoProps{
 function BasicForm({nextStep}:BasicInfoProps){
 
      // TODO: set field for editing
-    //  const menuItems = useServiceItemTypes()
+     const menuItems = useServiceItemTypes()
+     console.log(menuItems)
+
+     const [isHashingImage, setIsHashingImage] = useState(false)
+     const {currentService} = useServicesContext()
+     const {paseto} = useAuthContext()
+     const router = useRouter()
     
+     // This functions takes in custom availability array and
+     // changes the format of the date field of every item in the array.
+     function convertDates(customDates:Availability){
+       const res = customDates.map(date=>{
+            const updatedDate = {
+                ...date,
+                date: dayjs(date.date).format('MMM DD, YYYY')
+            }
+            return updatedDate
+        })
+
+        return res;
+     }
      const onFinish = async (formData:ServiceItem)=>{
 
-        // setIsHashingAssets(true)
-        // const imageHash = await asyncStore(formData.logoImageHash[0].originFileObj) 
-        // setIsHashingAssets(false)
-        // // call function to create stor
-        // // only generate key if it's a new service
-        //     const formObject: ServiceItemReqPaylod = {
-        //         name: formData.name,
-        //         price: formData.price * 100,
-        //         // ticketsPerDay: formData.ticketsPerDay,
-        //         // description:formData.description,
-        //         // orgServiceId: currentService.id,
-        //         // startDate: dayjs(formData.startDate).format('YYYY-MMM-DD'), // convert to dayjs
-        //         // endDate: dayjs(formData.endDate).format('YYYY-MMM-DD'),
-        //         // startTime: dayjs(formData.startTime).format('HH:mm:ss'), // convert time to seconds
-        //         // rangeTime: `${formData.rangeTime}:0:0`, // convert time to seconds
-        //         serviceItemId: '2',// TODO: replace with form value,
-        //         logoImageHash: imageHash
-        //     }
-        //     console.log(formObject)
+        // availability should return empty array whenever user decides not to add custom dates
+        const transformedAvailability = formData.availability?convertDates(formData.availability):[]
 
-        nextStep()
+
+        setIsHashingImage(true)
+        //@ts-ignore
+        const imageHash = await asyncStore(formData.logoImageHash[0].originFileObj) 
+        setIsHashingImage(false)
+
+        // // only generate key if it's a new service
+            const formObject: ServiceItemReqPaylod = {
+                name: formData.name,
+                price: String(Number(formData.price) * 100),
+                ticketsPerDay: String(formData.ticketsPerDay),
+                description:formData.description,
+                orgServiceId: currentService.id,
+                // serviceItemTypeId: formData.serviceItemTypeId,// TODO: replace with form value,
+                serviceItemTypeId: "1",// TODO: replace with form value,
+                availability: transformedAvailability,
+                logoImageHash: imageHash
+            }
+            console.log(formObject)
+
+            createData.mutate(formObject)
 
 
     }
     const [form] = Form.useForm()
+
+
+    const createDataHandler = async(newItem:ServiceItemReqPaylod)=>{
+        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`, newItem,{
+            headers:{
+                "Authorization": paseto
+            },
+        })
+        return data
+    }
+
+    const createData = useMutation(createDataHandler,{
+       onSuccess:()=>{
+        form.resetFields()
+        notification['success']({
+            message: 'Successfully created new service item!'
+        })
+        // setInterval(()=>{
+            router.replace('/organizations/services/serviceItems')
+        // },2000)
+       },
+        onError:()=>{
+            notification['error']({
+                message: 'Encountered an error while creating record',
+              });
+            // leave modal open
+        } 
+    })
+
+    const {isError, isLoading:isCreatingData, isSuccess:isDataCreated, data:createdData} = createData
 
 
     const normFile = (e: any) => {
@@ -163,10 +218,10 @@ function BasicForm({nextStep}:BasicInfoProps){
             style={{width:'100%'}}
             rules={[{ required: true, message: 'Please input a valid number!' }]}
             >
-            <InputNumber    placeholder="20" />
+            <InputNumber placeholder="20" />
         </Form.Item>
 
-        <Form.Item
+        {/* <Form.Item
             name="imageHash"
             label="Logo"
             valuePropName="fileList"
@@ -177,19 +232,19 @@ function BasicForm({nextStep}:BasicInfoProps){
             <Upload name="logo" action="" listType="picture">
             <Button icon={<UploadOutlined />}>Upload service logo</Button>
             </Upload>
-        </Form.Item>
+        </Form.Item> */}
 
 
-        {/* <Form.Item
-            name="serviceType"
+         {/* <Form.Item
+            name="serviceItemTypeId"
             label='Service type'
-            rules={[{ required: true, message: 'Please input a valid address!' }]}
-        >
+            rules={[{ required: true, message: 'Please select a service-item type!' }]}
+            >
             <Radio.Group>
                 {menuItems.map((item:any)=><Radio.Button value={item.value} key={item.value}>{item.label}</Radio.Button>)}
             </Radio.Group>
-        </Form.Item> */}
-{/* 
+        </Form.Item>  */}
+        
         <Form.Item
             name="logoImageHash"
             label="Cover image"
@@ -201,7 +256,57 @@ function BasicForm({nextStep}:BasicInfoProps){
             <Upload name="logo" action="" listType="picture">
             <Button icon={<UploadOutlined />}>Upload service item cover image</Button>
             </Upload>
-        </Form.Item> */}
+        </Form.Item> 
+
+
+        <Form.List name="availability">
+                {(fields, { add, remove }) => (
+                    <>
+                    {fields.map(({ key, name, ...restField }) => (
+                        <Space key={key} style={{ display: 'flex', marginBottom: 8, alignItems:'center' }} >
+                        <Form.Item
+                            name={[name, 'price']}
+                            label='Price'
+                            {...restField}
+                            style={{width:'100%'}}
+                            rules={[{ required: true, message: 'Please input a valid price!' }]}
+                        >
+                            <InputNumber prefix="$"  placeholder="0.00" /> 
+                        </Form.Item> 
+
+                        <Form.Item
+                            {...restField}
+                            name={[name, 'ticketsPerDay']}
+                            label='Tickets per day'
+                            style={{width:'100%'}}
+                            rules={[{ required: true, message: 'Please input a valid number!' }]}
+                            >
+                            <InputNumber placeholder="20" />
+                        </Form.Item>
+
+                            <Form.Item
+                                {...restField}
+                                rules={[{ required: true, message: 'Please select a date!' }]}
+                                name={[name, 'date']}
+                                label="Date"
+                                style={{width:'100%'}}
+                                >
+                                <DatePicker format={['MMM DD, YYYY']} />
+                            </Form.Item>
+                            <div style={{marginLeft:'.5rem'}}>
+                                <MinusCircleOutlined onClick={() => remove(name)} />
+                            </div>
+                        </Space>
+                    ))}
+                    <Form.Item>
+                        <Button type="dashed" onClick={() => add()}  block icon={<PlusOutlined />}>
+                        Add custom availability
+                        </Button>
+                    </Form.Item>
+                    </>
+                )}
+            </Form.List>
+
 
       
 
@@ -212,7 +317,7 @@ function BasicForm({nextStep}:BasicInfoProps){
                     Cancel
                 </Button>
 
-                <Button shape='round'  type="primary"  htmlType="submit" >
+                <Button shape='round' loading={isHashingImage||isCreatingData} type="primary"  htmlType="submit" >
                  Create service item
                 </Button>
 

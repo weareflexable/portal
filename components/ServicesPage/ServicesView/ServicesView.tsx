@@ -358,7 +358,7 @@ function EditableName({selectedRecord}:EditableProp){
     nameMutation.mutate(payload)
   }
 
-  const {isLoading:isEditing} = nameMutation ;
+  const {isLoading:isEditing} = nameMutation;
 
   const readOnly = (
     <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
@@ -819,6 +819,7 @@ function EditableLogoImage({selectedRecord}:EditableProp){
      initialValues={selectedRecord}
      onFinish={onFinish}
      >
+
       <Row>
         <Col span={10}>
           <Form.Item
@@ -850,6 +851,7 @@ function EditableLogoImage({selectedRecord}:EditableProp){
            
     </Form>
   )
+
   return(
     <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
       <Text type="secondary" style={{ marginRight: '2rem',}}>Logo</Text>

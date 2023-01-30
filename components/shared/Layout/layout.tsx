@@ -31,9 +31,9 @@ const {Text} = Typography
     selectedRoute: string
   }
   
-  const AppLayout: React.FC<LayoutProps> = ({children,width=80}) => {
+  const AppLayout: React.FC<LayoutProps> = ({children}) => {
     
-    const {asPath,push,query,isReady} = useRouter()  
+    const {asPath, isReady} = useRouter()  
     const {isAuthenticated} = useAuthContext()
     const [showSwitcherModal, setSwitcherModal] = useState(false) 
     const [showOrgSwitcher, setShowOrgSwitcher] = useState(false) 
@@ -43,10 +43,11 @@ const {Text} = Typography
     // console.log('from layout',asPath)
 
     const splittedRoutes = asPath.split('/')
-    console.log(splittedRoutes)
+    console.log(splittedRoutes) 
+    // console.log('is re-rendering layout')
     const selectedRoute = splittedRoutes && splittedRoutes[3]
-    splittedRoutes.pop()
-    
+    splittedRoutes.pop() 
+
 
     useEffect(() => {
       if(isReady){
@@ -55,7 +56,7 @@ const {Text} = Typography
             basePath:basePath,
             selectedRoute:selectedRoute,
           })
-        }
+        } 
     }, [isReady])
 
 
