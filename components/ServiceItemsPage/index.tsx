@@ -54,7 +54,7 @@ export default function ServiceItemsView(){
 
     type DataIndex = keyof ServiceItem;
 
-    const [selectedServiceItem, setSelectedServiceItem] = useState<any|ServiceItem>({})
+    const [selectedRecord, setSelectedServiceItem] = useState<any|ServiceItem>({})
     const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Active'})
     const [pageNumber, setPageNumber] = useState<number|undefined>(0)
 
@@ -122,17 +122,8 @@ export default function ServiceItemsView(){
       setPageNumber(data.current-1); // Subtracting 1 because pageSize param in url starts counting from 0
     };
   
-  
-    function getTableRecordActions(){
-        switch(currentFilter.id){
-            // 1 = approved
-            case '1': return activeItemActions 
-            // 2 = inReview
-            case '2': return inActiveItemActions 
-        }
-    }
-
-    function viewOrgDetails(serviceItem:ServiceItem){
+ 
+    function viewDetails(serviceItem:ServiceItem){
       // set state
       setSelectedServiceItem(serviceItem)
       // opne drawer
@@ -148,7 +139,7 @@ export default function ServiceItemsView(){
           break;
           case 'active': activeItemsHandler(record)
           break;
-          case 'viewDetails': viewOrgDetails(record)
+          case 'viewDetails': viewDetails(record)
         }
       };
       
@@ -174,13 +165,31 @@ export default function ServiceItemsView(){
       //   dataIndex: 'serviceItemType',
       //   key: 'serviceItemType',
       // },
+      {
+        title: 'Tickets Per Day',
+        dataIndex: 'ticketsPerDay',
+        key: 'ticketsPerDay',
+        align: 'right'
+      },
+      {
+        title: 'Price',
+        dataIndex: 'price',
+        key: 'price',
+        align:'right',
+        render: (price)=>(
+          <div>
+            <Text type="secondary">$</Text>
+            <Text>{price/100}</Text>
+          </div>
+        )
+      },
       
       {
         title: 'Status',
         dataIndex: 'status',
         key: 'status',
         render: (status)=>{
-          const statusText = status === '1'? 'Active': 'InActive'
+          const statusText = status ? 'Active': 'InActive'
           return <Badge status="processing" text={statusText} />
         }
       },
@@ -210,8 +219,10 @@ export default function ServiceItemsView(){
       dataIndex: 'actions', 
       key: 'actions',
       render:(_,record)=>{
-        const items = getTableRecordActions()
-        return (<Dropdown.Button menu={{ items , onClick: (e)=>onMenuClick(e,record) }}>Actions</Dropdown.Button>)
+        // const items = getTableRecordActions()
+        return (
+          <Button type="text" onClick={()=>viewDetails(record)} icon={<MoreOutlined/>}/>
+        )
       }
     }
     ];
@@ -245,7 +256,7 @@ export default function ServiceItemsView(){
                 />
                 {
                   isDrawerOpen
-                  ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedServiceItem={selectedServiceItem}/>
+                  ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedRecord={selectedRecord}/>
                   :null
                 }
             </div>
@@ -256,11 +267,11 @@ export default function ServiceItemsView(){
 }
 
 interface DrawerProps{
-  selectedServiceItem: ServiceItem,
+  selectedRecord: ServiceItem,
   isDrawerOpen: boolean,
   closeDrawer: (value:boolean)=>void
 }
-function DetailDrawer({selectedServiceItem,isDrawerOpen,closeDrawer}:DrawerProps){
+function DetailDrawer({selectedRecord,isDrawerOpen,closeDrawer}:DrawerProps){
 
 const queryClient = useQueryClient()
 
@@ -272,9 +283,11 @@ function closeDrawerHandler(){
 return( 
 <Drawer title="Organization Details" width={640} placement="right" closable={true} onClose={closeDrawerHandler} open={isDrawerOpen}>
   
-  <EditableName selectedServiceItem={selectedServiceItem}/>
-  <EditableDescription selectedServiceItem={selectedServiceItem}/>
-  {/* <EditableCoverImage selectedServiceItem={selectedServiceItem}/> */}
+  <EditableName selectedRecord={selectedRecord}/>
+  <EditableDescription selectedRecord={selectedRecord}/>
+  <EditablePrice selectedRecord={selectedRecord}/>
+  <EditableTicketsPerDay selectedRecord={selectedRecord}/>
+  <EditableCoverImage selectedRecord={selectedRecord}/>
 
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
     <Divider/>
@@ -288,12 +301,12 @@ return(
 
 
 interface EditableProp{
-  selectedServiceItem: ServiceItem
+  selectedRecord: ServiceItem
 }
 
-function EditableName({selectedServiceItem}:EditableProp){
+function EditableName({selectedRecord}:EditableProp){
 
-  const [state, setState] = useState(selectedServiceItem)
+  const [state, setState] = useState(selectedRecord)
 
   const [isEditMode, setIsEditMode] = useState(false)
 
@@ -307,7 +320,7 @@ function EditableName({selectedServiceItem}:EditableProp){
 
  
 
-  const nameMutationHandler = async(updatedItem:any)=>{
+  const recordMutationHandler = async(updatedItem:any)=>{
     const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,updatedItem,{
       headers:{
           //@ts-ignore
@@ -316,9 +329,9 @@ function EditableName({selectedServiceItem}:EditableProp){
     })
       return data;
   }
-  const nameMutation = useMutation({
+  const recordMutation = useMutation({
     mutationKey:['name'],
-    mutationFn: nameMutationHandler,
+    mutationFn: recordMutationHandler,
     onSuccess:()=>{
       toggleEdit()
     }
@@ -328,17 +341,17 @@ function EditableName({selectedServiceItem}:EditableProp){
     const payload = {
       key:'name',
       value: updatedItem.name,
-      id: selectedServiceItem.id
+      id: selectedRecord.id
     }
     const updatedRecord = {
-      ...selectedServiceItem,
+      ...selectedRecord,
       name: updatedItem.name
     }
     setState(updatedRecord)
-    nameMutation.mutate(payload)
+    recordMutation.mutate(payload)
   }
 
-  const {isLoading:isEditing} = nameMutation ;
+  const {isLoading:isEditing} = recordMutation ;
 
   const readOnly = (
     <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
@@ -351,7 +364,7 @@ function EditableName({selectedServiceItem}:EditableProp){
     <Form
      style={{ marginTop:'.5rem' }}
      name="editableName"
-     initialValues={selectedServiceItem}
+     initialValues={selectedRecord}
      onFinish={onFinish}
      >
       <Row>
@@ -387,10 +400,198 @@ function EditableName({selectedServiceItem}:EditableProp){
     </div>
   )
 }
+function EditablePrice({selectedRecord}:EditableProp){
 
-function EditableDescription({selectedServiceItem}:EditableProp){
+  const [state, setState] = useState(selectedRecord)
 
-  const [state, setState] = useState(selectedServiceItem)
+  const [isEditMode, setIsEditMode] = useState(false)
+
+  const {paseto} = useAuthContext()
+
+  function toggleEdit(){
+    setIsEditMode(!isEditMode)
+  }
+
+ 
+
+  const recordMutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,updatedItem,{
+      headers:{
+          //@ts-ignore
+          "Authorization": paseto
+      }
+    })
+      return data;
+  }
+  const recordMutation = useMutation({
+    mutationKey:['price'],
+    mutationFn: recordMutationHandler,
+    onSuccess:()=>{
+      toggleEdit()
+    }
+  })
+
+  function onFinish(updatedItem:any){
+    const payload = {
+      key:'price',
+      value: updatedItem.price,
+      id: selectedRecord.id
+    }
+    const updatedRecord = {
+      ...selectedRecord,
+      price: updatedItem.price
+    }
+    setState(updatedRecord)
+    recordMutation.mutate(payload)
+  }
+
+  const {isLoading:isEditing} = recordMutation ;
+
+  const readOnly = (
+    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+      <Text>{state.price}</Text>
+      <Button type="link" onClick={toggleEdit}>Edit</Button>
+    </div>
+)
+
+  const editable = (
+    <Form
+     style={{ marginTop:'.5rem' }}
+     name="editablePrice"
+     initialValues={selectedRecord}
+     onFinish={onFinish}
+     >
+      <Row>
+        <Col span={16} style={{height:'100%'}}>
+          <Form.Item
+              name="price"
+              rules={[{ required: true, message: 'Please input a valid price' }]}
+          >
+              <Input   disabled={isEditing} />
+          </Form.Item>
+        </Col>
+        <Col span={4}>
+          <Form.Item style={{ width:'100%'}}>
+              <Space >
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                      Cancel
+                  </Button>
+                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                      Apply changes
+                  </Button>
+              </Space>
+                        
+          </Form.Item>
+        </Col>
+      </Row>
+           
+    </Form>
+  )
+  return(
+    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>Price</Text>
+    {isEditMode?editable:readOnly}
+    </div>
+  )
+}
+function EditableTicketsPerDay({selectedRecord}:EditableProp){
+
+  const [state, setState] = useState(selectedRecord)
+
+  const [isEditMode, setIsEditMode] = useState(false)
+
+  const {paseto} = useAuthContext()
+
+  function toggleEdit(){
+    setIsEditMode(!isEditMode)
+  }
+
+ 
+
+  const recordMutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,updatedItem,{
+      headers:{
+          //@ts-ignore
+          "Authorization": paseto
+      }
+    })
+      return data;
+  }
+  const recordMutation = useMutation({
+    mutationKey:['ticketsPerDay'],
+    mutationFn: recordMutationHandler,
+    onSuccess:()=>{
+      toggleEdit()
+    }
+  })
+
+  function onFinish(updatedItem:any){
+    const payload = {
+      key:'tickets_per_day',
+      value: updatedItem.ticketsPerDay,
+      id: selectedRecord.id
+    }
+    const updatedRecord = {
+      ...selectedRecord,
+      ticketsPerDay: updatedItem.ticketsPerDay
+    }
+    setState(updatedRecord)
+    recordMutation.mutate(payload)
+  }
+
+  const {isLoading:isEditing} = recordMutation ;
+
+  const readOnly = (
+    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+      <Text>{state.ticketsPerDay}</Text>
+      <Button type="link" onClick={toggleEdit}>Edit</Button>
+    </div>
+)
+
+  const editable = (
+    <Form
+     style={{ marginTop:'.5rem' }}
+     name="editableTicketsPerDay"
+     initialValues={selectedRecord}
+     onFinish={onFinish}
+     >
+      <Row>
+        <Col span={16} style={{height:'100%'}}>
+          <Form.Item
+              name="ticketsPerDay"
+              rules={[{ required: true, message: 'Please specify max number of tickets available for selected date' }]}
+          >
+              <Input  disabled={isEditing} />
+          </Form.Item>
+        </Col>
+        <Col span={4}>
+          <Form.Item style={{ width:'100%'}}>
+              <Space >
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                      Cancel
+                  </Button>
+                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                      Apply changes
+                  </Button>
+              </Space>
+                        
+          </Form.Item>
+        </Col>
+      </Row>
+           
+    </Form>
+  )
+  return(
+    <div style={{width:'100%', display:'flex',  marginTop:'1rem', flexDirection:'column'}}>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>Tickets Per Day</Text>
+    {isEditMode?editable:readOnly}
+    </div>
+  )
+}
+
+function EditableDescription({selectedRecord}:EditableProp){
+
+  const [state, setState] = useState(selectedRecord)
 
   const [isEditMode, setIsEditMode] = useState(false)
 
@@ -402,7 +603,7 @@ function EditableDescription({selectedServiceItem}:EditableProp){
 
   const [form]  = Form.useForm()
 
-  const nameMutationHandler = async(updatedItem:any)=>{
+  const recordMutationHandler = async(updatedItem:any)=>{
     const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,updatedItem,{
       headers:{
           //@ts-ignore
@@ -412,9 +613,9 @@ function EditableDescription({selectedServiceItem}:EditableProp){
       return data;
   }
 
-  const nameMutation = useMutation({
+  const recordMutation = useMutation({
     mutationKey:['description'],
-    mutationFn: nameMutationHandler,
+    mutationFn: recordMutationHandler,
     onSuccess:()=>{
       toggleEdit()
     }
@@ -424,17 +625,17 @@ function EditableDescription({selectedServiceItem}:EditableProp){
     const payload = {
       key:'description',
       value: updatedItem.description,
-      id: selectedServiceItem.id
+      id: selectedRecord.id
     }
     const updatedRecord = {
-      ...selectedServiceItem,
-      name: updatedItem.description
+      ...selectedRecord,
+      description: updatedItem.description
     }
     setState(updatedRecord)
-    nameMutation.mutate(payload)
+    recordMutation.mutate(payload)
   }
 
-  const {isLoading:isEditing} = nameMutation 
+  const {isLoading:isEditing} = recordMutation 
 
   const readOnly = (
     <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
@@ -447,7 +648,7 @@ function EditableDescription({selectedServiceItem}:EditableProp){
     <Form
      style={{ marginTop:'.5rem' }}
      name="editableDescription"
-     initialValues={selectedServiceItem}
+     initialValues={selectedRecord}
      onFinish={onFinish}
      form={form}
      >
@@ -487,122 +688,118 @@ function EditableDescription({selectedServiceItem}:EditableProp){
   )
 }
 
+function EditableCoverImage({selectedRecord}:EditableProp){
 
-// function EditableCoverImage({selectedServiceItem}:EditableProp){
+  const [isEditMode, setIsEditMode] = useState(false) 
+  const [isHashingImage, setIsHashingImage] = useState(false)
+  const [updatedCoverImageHash, setUpdatedCoverImageHash] = useState(selectedRecord.logoImageHash)
 
-//   const [isEditMode, setIsEditMode] = useState(false) 
-//   const [isHashingImage, setIsHashingImage] = useState(false)
-//   const [updatedCoverImageHash, setUpdatedCoverImageHash] = useState(selectedServiceItem.imageHash)
+  const {paseto} = useAuthContext()
 
-//   const queryClient = useQueryClient()
+  function toggleEdit(){
+    setIsEditMode(!isEditMode)
+  }
 
-//   const {paseto} = useAuthContext()
+  const readOnly = (
+      <div style={{width:'100%', marginTop:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+        <Image style={{width:'500px', height:'200px', objectFit:'cover', border:'1px solid #f2f2f2'}} alt='cover image for serviceItem' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedCoverImageHash}`}/>
+        <Button type="link" onClick={toggleEdit}>Edit</Button>
+      </div>
+  )
 
-//   function toggleEdit(){
-//     setIsEditMode(!isEditMode)
-//   }
+  const mutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,updatedItem,{
+      headers:{
+          //@ts-ignore
+          "Authorization": paseto
+      }
+    })
+      return data;
+  }
+  const mutation = useMutation({
+    mutationKey:['logoImage'],
+    mutationFn: mutationHandler,
+    onSuccess:()=>{
+      toggleEdit()
+    }
+  })
 
-//   const readOnly = (
-//       <div style={{width:'100%', marginTop:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-//         <Image style={{width:'500px', height:'200px', objectFit:'cover', border:'1px solid #f2f2f2'}} alt='cover image for serviceItemanization' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedCoverImageHash}`}/>
-//         <Button type="link" onClick={toggleEdit}>Edit</Button>
-//       </div>
-//   )
+  async function onFinish(field:ServiceItem){
 
-//   const mutationHandler = async(updatedItem:any)=>{
-//     const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/user`,updatedItem,{
-//       headers:{
-//           //@ts-ignore
-//           "Authorization": paseto
-//       }
-//     })
-//       return data;
-//   }
-//   const mutation = useMutation({
-//     mutationKey:['logoImage'],
-//     mutationFn: mutationHandler,
-//     onSuccess:()=>{
-//       toggleEdit()
-//     }
-//   })
+    // hash it first
+    const coverImageRes = await field.logoImageHash
 
-//   async function onFinish(field:any){
-
-//     // hash it first
-//     const coverImageRes = await field.coverImage
-
-//     setIsHashingImage(true)
-//     const coverImageHash = await asyncStore(coverImageRes[0].originFileObj)
-//     setIsHashingImage(false)
-
-//     console.log(coverImageHash)
-
-//     const payload = {
-//       key:'cover_image_hash',
-//       value: coverImageHash,
-//       serviceItemId: selectedServiceItem.id
-//     }
-//     setUpdatedCoverImageHash(coverImageHash)
-//     mutation.mutate(payload)
-//   }
-
-//   const {isLoading:isEditing} = mutation
-
-//   const extractCoverImage = async(e: any) => {
-//     console.log('Upload event:', e);
-//     if (Array.isArray(e)) {
-//     return e;
-//     }
-
-//    return e?.fileList;
-// };
+    setIsHashingImage(true)
+    const coverImageHash = await asyncStore(coverImageRes[0].originFileObj)
+    setIsHashingImage(false)
 
 
-//   const editable = (
-//     <Form
-//      style={{ marginTop:'.5rem' }}
-//      name="editableCoverImage"
-//      initialValues={selectedServiceItem}
-//      onFinish={onFinish}
-//      >
-//       <Row>
-//         <Col span={10}>
-//           <Form.Item
-//               name="coverImage"
-//               valuePropName="coverImage"
-//               getValueFromEvent={extractCoverImage}
-//               rules={[{ required: true, message: 'Please input a valid zip code' }]}
-//           >
+    const payload = {
+      key:'logo_image_hash',
+      value: coverImageHash,
+      id: selectedRecord.id
+    }
+    setUpdatedCoverImageHash(coverImageHash)
+    mutation.mutate(payload)
+  }
+
+  const {isLoading:isEditing} = mutation
+
+  const extractCoverImage = async(e: any) => {
+    console.log('Upload event:', e);
+    if (Array.isArray(e)) {
+    return e;
+    }
+
+   return e?.fileList;
+};
+
+
+  const editable = (
+    <Form
+     style={{ marginTop:'.5rem' }}
+     name="editableCoverImage"
+     initialValues={selectedRecord}
+     onFinish={onFinish}
+     >
+      <Row>
+        <Col span={10}>
+          <Form.Item
+              name="logoImageHash"
+              valuePropName="logoImageHash"
+              getValueFromEvent={extractCoverImage}
+              rules={[{ required: true, message: 'Please upload card image for service item' }]}
+          >
               
-//               <Upload name="coverImageHash" listType="picture" multiple={false}>
-//                    <Button size='small' disabled={isHashingImage} type='link'>Upload cover image</Button>
-//               </Upload>
-//           </Form.Item>
-//         </Col>
-//         <Col span={4}>
-//           <Form.Item style={{ width:'100%'}}>
-//               <Space >
-//                   <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
-//                       Cancel
-//                   </Button>
-//                   <Button shape="round" loading={isEditing||isHashingImage} type="link" size="small"  htmlType="submit" >
-//                       Apply changes
-//                   </Button>
-//               </Space>
+              <Upload name="logoImageHash" listType="picture" multiple={false}>
+                   <Button size='small' disabled={isHashingImage} type='link'>Upload image</Button>
+              </Upload>
+          </Form.Item>
+        </Col>
+        <Col span={4}>
+          <Form.Item style={{ width:'100%'}}>
+              <Space >
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                      Cancel
+                  </Button>
+                  <Button shape="round" loading={isEditing||isHashingImage} type="link" size="small"  htmlType="submit" >
+                      Apply changes
+                  </Button>
+              </Space>
                         
-//           </Form.Item>
-//         </Col>
-//       </Row>
+          </Form.Item>
+        </Col>
+      </Row>
            
-//     </Form>
-//   )
-//   return(
-//     <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-//       <Text type="secondary" style={{ marginRight: '2rem',}}>Cover Image</Text>
-//       {isEditMode?editable:readOnly}
-//     </div>
-//   )
-// }
+    </Form>
+  )
+  return(
+    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>Cover Image</Text>
+      {isEditMode?editable:readOnly}
+    </div>
+  )
+}
 
 
 
@@ -616,31 +813,4 @@ const serviceItemsFilters = [
       id: '2',
       name: 'In-active'
   },
-]
-
-const inActiveItemActions = [
-    {
-        key: 'accept',
-        label: 'Accept'
-    },
-    {
-        key: 'reject',
-        label: 'Reject'
-    },
-    {
-        key: 'viewDetails',
-        label: 'View details'
-    },
-
-]
-const activeItemActions = [
-    {
-        key: 'review',
-        label: 'Review'
-    },
-    {
-        key: 'viewDetails',
-        label: 'View details'
-    },
-
 ]

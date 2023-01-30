@@ -20,26 +20,26 @@ import { Order } from "./Bookings.types";
 const {TextArea} = Input
 
 
-const mockServiceItems:ServiceItem[]=[
-  {
-     id:"dfadfafd",
-    name: "Classic Line skip",
-    imageHash: '',
-    serviceItemType: "line-skip",
-    description: "Best bar in the middle of new york",
-    updatedAt: "Jan 22, 2022",
-    createdAt: "Jan 24, 2022",
-},
-  {
-     id:"dfadfafd",
-    name: "Bottle service rosto",
-    imageHash: '',
-    serviceItemType: "line-skip",
-    description: "Best bar in the middle of new york",
-    updatedAt: "Jan 22, 2022",
-    createdAt: "Jan 24, 2022",
-},
-]
+// const mockServiceItems:ServiceItem[]=[
+//   {
+//      id:"dfadfafd",
+//     name: "Classic Line skip",
+//     imageHash: '',
+//     serviceItemType: "line-skip",
+//     description: "Best bar in the middle of new york",
+//     updatedAt: "Jan 22, 2022",
+//     createdAt: "Jan 24, 2022",
+// },
+//   {
+//      id:"dfadfafd",
+//     name: "Bottle service rosto",
+//     imageHash: '',
+//     serviceItemType: "line-skip",
+//     description: "Best bar in the middle of new york",
+//     updatedAt: "Jan 22, 2022",
+//     createdAt: "Jan 24, 2022",
+// },
+// ]
 
 
 export default function ServiceItemsView(){
