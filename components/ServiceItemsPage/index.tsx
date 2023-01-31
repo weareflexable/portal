@@ -730,6 +730,7 @@ function EditableCoverImage({selectedRecord}:EditableProp){
     const coverImageRes = await field.logoImageHash
 
     setIsHashingImage(true)
+    //@ts-ignore
     const coverImageHash = await asyncStore(coverImageRes[0].originFileObj)
     setIsHashingImage(false)
 

@@ -329,6 +329,14 @@ export default function ManagerOrgsView(){
 
     }
   
+    function gotoServices(org:NewOrg){
+      console.log(org)
+      // switch org
+      switchOrg(org)
+      // navigate user to services page
+      router.push('/organizations/services/')
+    }
+    
     
       const onMenuClick=(e:any, record:NewOrg) => {
         const event = e.key
@@ -357,7 +365,7 @@ export default function ManagerOrgsView(){
                 <div style={{display:'flex',alignItems:'center'}}>
                     <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={'/favicon.ico'}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
-                        <Text>{record.name}</Text>  
+                       { record.status !==1?<Text>{record.name}</Text>:<Text style={{color:'#1677ff', cursor:'pointer'}} onClick={()=>gotoServices(record)}>{record.name}</Text> }   
                         <Text type="secondary">{record.email}</Text>
                     </div>
                 </div>
@@ -366,21 +374,17 @@ export default function ManagerOrgsView(){
         // ...getColumnSearchProps('name'),
       },
       {
-        title: 'Country',
-        dataIndex: 'country',
-        key: 'country',
+        title: 'Address',
+        // dataIndex: 'address',
+        key: 'address',
+        render:(_,record)=>(
+          <div style={{display:'flex',flexDirection:'column'}}>
+              <Text style={{textTransform:'capitalize'}}>{record.country}</Text>  
+              <Text type="secondary">{record.city}</Text>
+          </div>
+        )
       },
       
-      {
-        title: 'City',
-        dataIndex: 'city',
-        key: 'city'
-      },
-      // {
-      //   title: 'State',
-      //   dataIndex: 'state',
-      //   key: 'state'
-      // },
       {
         title: 'Zip Code',
         dataIndex: 'zipCode',
@@ -484,7 +488,7 @@ return(
 <Drawer 
   title="Organization Details" 
   width={640} placement="right" 
-  extra={<Button size='large' onClick={()=>gotoServices(selectedOrg)}>Visit organization</Button>}
+  extra={selectedOrg.status === 1?<Button size='large' onClick={()=>gotoServices(selectedOrg)}>Visit organization</Button>:null}
   closable={true} 
   onClose={closeDrawerHandler} 
   open={isDrawerOpen}

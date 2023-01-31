@@ -20,29 +20,29 @@ import { ManagerOrder } from "./Bookings.types";
 const {TextArea} = Input
 
 
-const mockServiceItems:ServiceItem[]=[
-  {
-     id:"dfadfafd",
-    name: "Classic Line skip",
-    imageHash: '',
-    serviceItemType: "line-skip",
-    description: "Best bar in the middle of new york",
-    updatedAt: "Jan 22, 2022",
-    createdAt: "Jan 24, 2022",
-},
-  {
-     id:"dfadfafd",
-    name: "Bottle service rosto",
-    imageHash: '',
-    serviceItemType: "line-skip",
-    description: "Best bar in the middle of new york",
-    updatedAt: "Jan 22, 2022",
-    createdAt: "Jan 24, 2022",
-},
-]
+// const mockServiceItems:ServiceItem[]=[
+//   {
+//      id:"dfadfafd",
+//     name: "Classic Line skip",
+//     imageHash: '',
+//     serviceItemType: "line-skip",
+//     description: "Best bar in the middle of new york",
+//     updatedAt: "Jan 22, 2022",
+//     createdAt: "Jan 24, 2022",
+// },
+//   {
+//      id:"dfadfafd",
+//     name: "Bottle service rosto",
+//     imageHash: '',
+//     serviceItemType: "line-skip",
+//     description: "Best bar in the middle of new york",
+//     updatedAt: "Jan 22, 2022",
+//     createdAt: "Jan 24, 2022",
+// },
+// ]
 
 
-export default function ServiceItemsView(){
+export default function ManagerBookingsView(){
 
     const {paseto} = useAuthContext()
     const queryClient = useQueryClient()
@@ -124,16 +124,8 @@ export default function ServiceItemsView(){
     };
   
   
-    function getTableRecordActions(){
-        switch(currentFilter.id){
-            // 1 = approved
-            case '1': return activeItemActions 
-            // 2 = inReview
-            case '2': return inActiveItemActions 
-        }
-    }
 
-    function viewOrgDetails(serviceItem:ManagerOrder){
+    function seeFullDetails(serviceItem:ManagerOrder){
       // set state
       setSelectedServiceItem(serviceItem)
       // opne drawer
@@ -142,16 +134,16 @@ export default function ServiceItemsView(){
     }
   
     
-      const onMenuClick=(e:any, record:ManagerOrder) => {
-        const event = e.key
-        switch(event){
-          case 'inActive': inActiveItemsHandler(record);
-          break;
-          case 'active': activeItemsHandler(record)
-          break;
-          case 'viewDetails': viewOrgDetails(record)
-        }
-      };
+      // const onMenuClick=(e:any, record:ManagerOrder) => {
+      //   const event = e.key
+      //   switch(event){
+      //     case 'inActive': inActiveItemsHandler(record);
+      //     break;
+      //     case 'active': activeItemsHandler(record)
+      //     break;
+      //     case 'viewDetails': seeFullDetails(record)
+      //   }
+      // };
       
   
     const columns: ColumnsType<ManagerOrder> = [
@@ -175,10 +167,11 @@ export default function ServiceItemsView(){
         title: 'Unit price',
         dataIndex: 'unitPrice',
         key: 'unitPrice',
+        align:'right',
         render: (unitPrice)=>(
           <div>
             <Text type="secondary">$</Text>
-            <Text> {unitPrice/100}</Text>
+            <Text>{unitPrice/100}</Text>
           </div>
         )
       },
@@ -186,10 +179,11 @@ export default function ServiceItemsView(){
         title: 'Quantity',
         dataIndex: 'quantity',
         key: 'quantity',
+        align:'right',
         render:(quantity)=>(
           <div>
             <Text type="secondary">x</Text>
-            <Text> {quantity}</Text>
+            <Text>{quantity}</Text>
           </div>
         )
       },
@@ -197,12 +191,13 @@ export default function ServiceItemsView(){
         title: 'Total price',
         // dataIndex: 'totalPrice',
         key: 'totalPrice',
+        align:'right',
         render: (_,record)=>{
           const total = record.quantity * (record.unitPrice/100)
           return(
             <div>
             <Text type="secondary">$</Text>
-            <Text> {total}</Text>
+            <Text>{total}</Text>
           </div>
           )
         }
@@ -243,14 +238,15 @@ export default function ServiceItemsView(){
         },
     },
 
-    {
-      dataIndex: 'actions', 
-      key: 'actions',
-      render:(_,record)=>{
-        const items = getTableRecordActions()
-        return (<Dropdown.Button menu={{ items , onClick: (e)=>onMenuClick(e,record) }}>Actions</Dropdown.Button>)
-      }
-    }
+    // {
+    //   dataIndex: 'actions', 
+    //   key: 'actions',
+    //   render:(_,record)=>{
+    //     return (
+    //       <Button onClick={()=>seeFullDetails(record)} icon={<MoreOutlined/>}/>
+    //       )
+    //   }
+    // }
     ];
 
         return (
@@ -527,32 +523,6 @@ const serviceItemsFilters = [
   },
 ]
 
-const inActiveItemActions = [
-    {
-        key: 'accept',
-        label: 'Accept'
-    },
-    {
-        key: 'reject',
-        label: 'Reject'
-    },
-    {
-        key: 'viewDetails',
-        label: 'View details'
-    },
-
-]
-const activeItemActions = [
-    {
-        key: 'review',
-        label: 'Review'
-    },
-    {
-        key: 'viewDetails',
-        label: 'View details'
-    },
-
-]
 
 
 // const managerBookings:ManagerOrder[] = [
