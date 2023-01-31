@@ -73,7 +73,9 @@ export default function NewService(){
     const onFinish = async(formData:Service)=>{
 
         setIsHashingAssets(true)
+        //@ts-ignore
         const imageHash = await asyncStore(formData.imageHash[0].originFileObj)
+        //@ts-ignore
         const coverImageHash = await asyncStore(formData.coverImageHash[0].originFileObj)
         setIsHashingAssets(false)
 
@@ -81,12 +83,12 @@ export default function NewService(){
         const formObject: ServicePayload = {
             ...formData,
             ...fullAddress,
-            imageHash: imageHash,
+            logoImageHash: imageHash,
             coverImageHash: coverImageHash,
             orgId:currentOrg.id,
-            timeZone: 'UTC',
+            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // get user timezone
         }
-        // remove address field since because we have extracted
+
         // @ts-ignore
         delete formObject.address
         createDataHandler(formObject)

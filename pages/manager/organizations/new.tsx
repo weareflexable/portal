@@ -14,6 +14,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { url } from "inspector";
 import { useAuthContext } from "../../../context/AuthContext";
+import {NewOrg, OrgPayload } from "../../../types/OrganisationTypes";
 
 
 const getBase64 = (file: any): Promise<string> => 
@@ -83,24 +84,25 @@ export default function NewOrg(){
       });
     
 
-    const onFinish = async(formData:Service)=>{
+    const onFinish = async(formData:NewOrg)=>{
 
         const logoRes = await formData.logoImageHash
         const coverImageRes = await formData.coverImageHash
 
         setIsHashingAssets(true)
+        // @ts-ignore
         const logoHash = await asyncStore(logoRes[0].originFileObj)
+        // @ts-ignore
         const coverImageHash = await asyncStore(coverImageRes[0].originFileObj)
         setIsHashingAssets(false)
 
 
-        const formObject: ServicePayload = {
+        const formObject: OrgPayload = {
             ...formData,
             ...fullAddress,
             logoImageHash: logoHash,
             coverImageHash: coverImageHash,
-            orgId:currentOrg.orgId,
-            timeZone: 'UTC',
+            // orgId:currentOrg.orgId,
         }
         // remove address field since because we have extracted
         // @ts-ignore
@@ -157,9 +159,9 @@ export default function NewOrg(){
         notification['success']({
             message: 'Successfully created new organization!'
         })
-        setInterval(()=>{
+        // setInterval(()=>{
             router.back()
-        },2000)
+        // },2000)
        },
         onError:()=>{
             notification['error']({
@@ -259,7 +261,6 @@ export default function NewOrg(){
                     <Image alt='Organization logo' src={logoImage} style={{width:'150px',height:'150px', borderRadius:'50%', border:'1px solid #e5e5e5'}}/>
                     <Form.Item
                         name="logoImageHash"
-                        // label="Logo"
                         valuePropName="logoImageHash"
                         getValueFromEvent={extractLogoImage}
                         rules={[{ required: true, message: 'Please upload an image' }]}

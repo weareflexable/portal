@@ -41,6 +41,18 @@ export interface NewOrg{
     updatedAt: string
 }
 
+export interface OrgPayload{
+    name: string,
+    email: string,
+    phone: string,
+    street: string,
+    city: string,
+    country: string,
+    zipCode: string,
+    logoImageHash: string,
+    coverImageHash: string,
+}
+
 export interface ActiveOrgs extends Org {
     isActive:boolean
 }
