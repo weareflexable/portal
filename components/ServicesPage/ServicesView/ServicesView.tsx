@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useOrgs from "../../../hooks/useOrgs";
-const {Text} = Typography
+const {Text, Title} = Typography;
 import React, { useRef, useState } from 'react'
 import {Typography,Button,Avatar, Upload,Skeleton, Badge, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form} from 'antd'
 import { useRouter } from 'next/router'
@@ -16,6 +16,7 @@ import { useOrgContext } from "../../../context/OrgContext";
 import { asyncStore } from "../../../utils/nftStorage";
 import { usePlacesWidget } from "react-google-autocomplete";
 import { Service } from "../Services.types";
+import Link from "next/link";
 const {TextArea} = Input
 
 var relativeTime = require('dayjs/plugin/relativeTime')
@@ -25,15 +26,16 @@ dayjs.extend(relativeTime)
 export default function ManagerOrgsView(){
 
     const {paseto} = useAuthContext()
-    const {currentOrg} = useOrgContext()
+    const {currentOrg} = useOrgContext() // coming from local storage
     const queryClient = useQueryClient()
     const router = useRouter()
     const {switchOrg} = useOrgs()
 
+    const {switchService} = useServicesContext()
+
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   
     console.log('org',currentOrg)  
-    // const isFilterEmpty = Object.keys(filteredInfo).length === 0;
 
     type DataIndex = keyof Service;
 
@@ -54,8 +56,6 @@ export default function ManagerOrgsView(){
    
     }
 
-   
-
     async function changeOrgStatus({serviceId, statusNumber}:{serviceId:string, statusNumber: string}){
         const res = await axios({
             method:'patch',
@@ -72,9 +72,6 @@ export default function ManagerOrgsView(){
         return res; 
     }
 
-   
-    
-
     const changeStatusMutation = useMutation(['services'],{
         mutationFn: changeOrgStatus,
         onSuccess:(data:any)=>{
@@ -84,7 +81,6 @@ export default function ManagerOrgsView(){
             console.log('Error changing status')
         }
     })
-
 
     function deActivateRecordHandler(service:Service){
         // setSelectedRecord(org.orgId)
@@ -96,8 +92,18 @@ export default function ManagerOrgsView(){
     const data = servicesQuery.data && servicesQuery.data.data
 
 
-    
-  
+    function gotoBillingsPage(){
+      router.push('/organizations/services/billings')
+    }
+
+   
+function gotoDashboard(service:Service){
+  // switch org
+  switchService(service)
+  // navigate user to services page
+  router.push('/organizations/services/bookings') // redirect to dashboard later
+}
+
 
     function viewServiceDetails(service:Service){
       // set state
@@ -124,22 +130,22 @@ export default function ManagerOrgsView(){
                 <div style={{display:'flex',alignItems:'center'}}>
                     <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={'/favicon.ico'}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
-                        <Text>{record.name}</Text>  
+                        <Button onClick={()=>gotoDashboard(record)} type='link'>{record.name}</Button>  
                     </div>
                 </div>
             )
         },
       },
       {
-        title: 'Country',
-        dataIndex: 'country',
-        key: 'country',
-      },
-      
-      {
-        title: 'City',
-        dataIndex: 'city',
-        key: 'city'
+        title: 'Address',
+        // dataIndex: 'address',
+        key: 'address',
+        render:(_,record)=>(
+          <div style={{display:'flex',flexDirection:'column'}}>
+              <Text style={{textTransform:'capitalize'}}>{record.country}</Text>  
+              <Text style={{textTransform:'capitalize'}} type='secondary'>{record.city}</Text>  
+          </div>
+        )
       },
       {
         title: 'Timezone',
@@ -182,7 +188,7 @@ export default function ManagerOrgsView(){
             )
         },
     },
-      {
+    {
           title: 'UpdatedAt',
           dataIndex: 'updatedAt',
           key: 'updatedAt',
@@ -211,14 +217,12 @@ export default function ManagerOrgsView(){
                    <Col style={{display:'flex', justifyContent:'space-between'}} offset={2} span={20}>
                        <div style={{display:'flex', flex:'7', flexDirection:'column'}}> 
                            <Button style={{display:'flex', padding: '0', margin:'0', alignItems:'center', textAlign:'left'}} onClick={()=>router.replace('/')} icon={<ArrowLeftOutlined />} type='link'>Back to organizations</Button>
-                           {/* {orgName === ''? <Skeleton.Input active size='large' />:<Title level={4}>{orgName}</Title> } */}
+                           {currentOrg.name === ''? <Skeleton.Input active size='large' />:<Title level={4}>{currentOrg.name}</Title> } 
                        </div>
-
-                       <div style={{display:'flex', flex:'3', justifyContent:'space-between', alignItems:'center'}}>
-                           {/* <CurrentUser /> */}
-                           <div style={{padding:'.7em', cursor:'pointer', display:'flex', justifyContent:'center', alignItems:'center', borderRadius:'50px', background:'#f4f4f4'}}>
-                               {/* <SettingOutlined style={{fontSize:'1.4em'}}/> */}
-                           </div>
+ 
+                       <div style={{display:'flex', flex:'3', justifyContent:'flex-end', alignItems:'center'}}>
+                            {/* <Link href='/organizations/services/billings'>Billing</Link> */}
+                            <Button type="link" onClick={gotoBillingsPage} >Billings</Button>
                        </div>
                    </Col>
                </header>
@@ -260,6 +264,7 @@ interface DrawerProps{
   isDrawerOpen: boolean,
   closeDrawer: (value:boolean)=>void
 }
+
 function DetailDrawer({selectedRecord,isDrawerOpen,closeDrawer}:DrawerProps){
 
 const queryClient = useQueryClient()
