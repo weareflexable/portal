@@ -70,7 +70,7 @@ const {Text} = Typography
    <ErrorBoundary name={`Layout for ${pageRoutes.basePath}`} >
       <Layout style={{minHeight:'100vh',height:'100%'}}>
           <Row>
-            {/* <Header style={{lineHeight:'1.4',background:'white', width:'100%', display:'flex', flex: '3', justifyContent:'space-between', alignItems:'center'}}>
+            <Header style={{lineHeight:'1.4',background:'white', width:'100%', display:'flex', flex: '3', justifyContent:'space-between', alignItems:'center'}}>
             <Col style={{display:'flex', justifyContent:'space-between',alignItems:'center'}} offset={1} span={22}>
                 <div style={{display:'flex', width:'450px',  height:'100%', justifyContent:'space-between'}}>
                   <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`/manager/dashboard`} ><a style={{color:`${selectedRoute==='dashboard'?'#1890ff':'black'}`}}>Dashboard</a></Link> </div>
@@ -89,9 +89,9 @@ const {Text} = Typography
                     
             </Col>
 
-                </Header>  */}
+                </Header> 
               
-            <Sider collapsible width={200}>
+            {/* <Sider collapsible width={200}>
                 <Menu
 
                   // mode="inline"
@@ -100,7 +100,7 @@ const {Text} = Typography
                   style={{ height: '100%' }}
                   items={navItems}
                 />
-            </Sider>
+            </Sider> */}
                      
               
             </Row>

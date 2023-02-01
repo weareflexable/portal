@@ -122,8 +122,7 @@ function BasicForm({nextStep}:BasicInfoProps){
                 ticketsPerDay: String(formData.ticketsPerDay),
                 description:formData.description,
                 orgServiceId: currentService.id,
-                // serviceItemTypeId: formData.serviceItemTypeId,// TODO: replace with form value,
-                serviceItemTypeId: "1",// TODO: replace with form value,
+                serviceItemTypeId: formData.serviceItemTypeId, // TODO: replace with form value,
                 logoImageHash: imageHash
             }
             console.log(formObject)

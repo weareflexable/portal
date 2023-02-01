@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useOrgs from "../../hooks/useOrgs";
-const {Text} = Typography
+const {Text,Title} = Typography
 import React, { useRef, useState } from 'react'
-import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge} from 'antd'
+import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Skeleton} from 'antd'
 import { useRouter } from 'next/router'
 import axios from 'axios';
 import {MoreOutlined,ReloadOutlined} from '@ant-design/icons'
@@ -204,17 +204,7 @@ export default function ServiceItemsView(){
             )
         },
     },
-      {
-          title: 'UpdatedAt',
-          dataIndex: 'updatedAt',
-          key: 'updatedAt',
-          render: (_,record)=>{
-              const date = dayjs(record.updatedAt).format('MMM DD, YYYY')
-              return(
-            <Text>{date}</Text>
-            )
-        },
-    },
+      
     {
       dataIndex: 'actions', 
       key: 'actions',
@@ -275,6 +265,24 @@ function DetailDrawer({selectedRecord,isDrawerOpen,closeDrawer}:DrawerProps){
 
 const queryClient = useQueryClient()
 
+const {paseto} = useAuthContext()
+
+async function fetchItemAvailability(){
+ const res = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items/availability?key=service_item_id&value=${selectedRecord.id}&pageNumber=0&pageSize=10`,{
+  headers:{
+    "Authorization":paseto
+  }
+})
+return res.data.data
+}
+
+const {data, isLoading} = useQuery({queryKey:['availability',selectedRecord.id], queryFn:fetchItemAvailability})
+
+const availabilityData = data && data
+
+console.log(availabilityData)
+
+
 function closeDrawerHandler(){
   queryClient.invalidateQueries(['serviceItems'])
   closeDrawer(!isDrawerOpen)
@@ -292,20 +300,19 @@ return(
   {/* <Text>CUSTOM AVALABILITY</Text> */}
   <div style={{marginTop:'6rem'}}>
     <div style={{width:'100%', display:'flex', marginBottom:'1rem', justifyContent:'space-between'}}>
-  <Text>CUSTOM AVAILABILITY</Text>
+  <Title level={3}>Custom Availability</Title>
   <Button type="link">Edit</Button>
     </div>
-  {
-    mockAvailabilty.map((availability:CustomDate,index)=>(
-      <ReadOnlyAvailability
-      key={index}
-      ticketsPerDay={availability.ticketsPerDay}
-      price={availability.price}
-      date={availability.date}
-      />
-      ))
-    }
-    
+      { isLoading ?<Skeleton active />
+        :availabilityData.map((availability:CustomDate,index:any)=>(
+            <ReadOnlyAvailability
+              key={index}
+              ticketsPerDay={availability.ticketsPerDay}
+              price={availability.price}
+              date={availability.date}
+            />
+          ))
+      }  
     </div>
 
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
@@ -313,8 +320,8 @@ return(
     <Button danger type="link">De-activate service-item</Button>
     <Divider/>
   </div>
-
 </Drawer>
+
 )
 }
 
@@ -404,8 +411,7 @@ function EditableName({selectedRecord}:EditableProp){
                   <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
                       Apply changes
                   </Button>
-              </Space>
-                        
+              </Space>           
           </Form.Item>
         </Col>
       </Row>
