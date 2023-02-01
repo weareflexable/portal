@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react'
-import ServiceItemPageView from '../../../../components/ServiceItemsPage'
+import ServiceItemPageView from '../../../../components/Manager/ServiceItemsPage'
 import AppLayout from '../../../../components/shared/Layout/layout' 
 import { Content } from 'antd/lib/layout/layout'
 import {PlusOutlined} from "@ant-design/icons"

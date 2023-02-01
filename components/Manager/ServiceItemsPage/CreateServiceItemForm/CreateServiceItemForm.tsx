@@ -8,12 +8,12 @@ import {UploadOutlined} from '@ant-design/icons'
 import {v4 as uuidv4} from 'uuid'
 
 import { useRouter } from 'next/router';
-import { ServiceItem, ServiceItemReqPaylod } from '../../../types/Services';
+import { ServiceItem, ServiceItemReqPaylod } from '../../../../types/Services';
 import dayjs from 'dayjs'
-import { useServicesContext } from '../../../context/ServicesContext';
-import useServiceTypes from '../../../hooks/useServiceTypes';
-import useServiceItemTypes from '../../../hooks/useServiceItemTypes';
-import { asyncStore } from '../../../utils/nftStorage';
+import { useServicesContext } from '../../../../context/ServicesContext';
+import useServiceTypes from '../../../../hooks/useServiceTypes';
+import useServiceItemTypes from '../../../../hooks/useServiceItemTypes';
+import { asyncStore } from '../../../../utils/nftStorage';
 
 
 

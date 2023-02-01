@@ -7,12 +7,10 @@ const {TextArea} = Input
 import { useRouter } from 'next/router';
 import {usePlacesWidget} from 'react-google-autocomplete'
 import { asyncStore} from "../../../utils/nftStorage";
-import { Service, ServicePayload } from "../../../types/Services";
 import { useOrgContext } from "../../../context/OrgContext";
 import useServiceTypes from "../../../hooks/useServiceTypes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { url } from "inspector";
 import { useAuthContext } from "../../../context/AuthContext";
 import {NewOrg, OrgPayload } from "../../../types/OrganisationTypes";
 
@@ -27,17 +25,14 @@ reader.onerror = (error) => reject(error);
 
 const PLACEHOLDER_IMAGE = '/placeholder.png'
 
-export default function NewOrg(){
+export default function NewOrgForm(){
 
-    const queryClient = useQueryClient()
 
     const menuItems = useServiceTypes()
     const {paseto} = useAuthContext()
     const {currentOrg} = useOrgContext()
     const [form]=Form.useForm()
     const [fullAddress, setFullAddress] = useState({
-        latitude:0,
-        longitude:0,
         state: '',
         country:'',
         city:''
@@ -55,8 +50,6 @@ export default function NewOrg(){
                 state:'',
                 country:'',
                 city:'',
-                latitude:place.geometry.location.lat(),
-                longitude:place.geometry.location.lng()
             };
             addressComponents.forEach((address:any)=>{
                 const type = address.types[0]
@@ -105,8 +98,10 @@ export default function NewOrg(){
             // orgId:currentOrg.orgId,
         }
         // remove address field since because we have extracted
+
         // @ts-ignore
         delete formObject.address
+        console.log(formObject)
         createData.mutate(formObject)
     }
 
@@ -159,9 +154,7 @@ export default function NewOrg(){
         notification['success']({
             message: 'Successfully created new organization!'
         })
-        // setInterval(()=>{
             router.back()
-        // },2000)
        },
         onError:()=>{
             notification['error']({
@@ -173,15 +166,6 @@ export default function NewOrg(){
 
     const {isError, isLoading:isCreatingData, isSuccess:isDataCreated, data:createdData} = createData
 
-    console.log('data is created:', isDataCreated)
-    
-    // if(isDataCreated){
-    //     notification['success']({
-    //         message: 'Created record succesfully!',
-    //       });
-    //       // navigate back to services page
-    //       router.replace('/manager/organizations/')
-    // }
 
     return (
         <div style={{background:'#ffffff', minHeight:'100vh'}}>

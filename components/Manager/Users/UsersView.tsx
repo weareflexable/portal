@@ -43,7 +43,7 @@ export default function UsersView(){
     async function fetchUsers(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/super-admin/users-list?&pageNumber=${pageNumber}&pageSize=10`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/users-list?key=status&value=1&pageNumber=${pageNumber}&pageSize=10`,
             headers:{
                 "Authorization": paseto
             }

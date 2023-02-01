@@ -32,13 +32,13 @@ export type ServicePayload ={
     coverImageHash: string | undefined | any[],
 }
 
-type CustomTime = {
+export type CustomDate = {
     price: string,
     ticketsPerDay: string,
     date: string
 }
 
-export type Availability = CustomTime[]
+export type Availability = CustomDate[]
 
 export type ServiceItem = {
     id:string,

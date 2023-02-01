@@ -177,29 +177,29 @@ function gotoDashboard(service:Service){
             return <Badge status={status?'processing':'warning'} text={statusText} /> 
         }
       },
-      {
-          title: 'CreatedAt',
-          dataIndex: 'createdAt',
-          key: 'createdAt',
-          render: (_,record)=>{
-              const date = dayjs(record.createdAt).format('MMM DD, YYYY')
-              return(
-            <Text>{date}</Text>
-            )
-        },
-    },
-    {
-          title: 'UpdatedAt',
-          dataIndex: 'updatedAt',
-          key: 'updatedAt',
-          render: (_,record)=>{
-            // @ts-ignore
-              const date = dayjs().to(dayjs(record.updatedAt))
-              return(
-            <Text>{date}</Text>
-            )
-        },
-    },
+    //   {
+    //       title: 'CreatedAt',
+    //       dataIndex: 'createdAt',
+    //       key: 'createdAt',
+    //       render: (_,record)=>{
+    //           const date = dayjs(record.createdAt).format('MMM DD, YYYY')
+    //           return(
+    //         <Text>{date}</Text>
+    //         )
+    //     },
+    // },
+    // {
+    //       title: 'UpdatedAt',
+    //       dataIndex: 'updatedAt',
+    //       key: 'updatedAt',
+    //       render: (_,record)=>{
+    //         // @ts-ignore
+    //           const date = dayjs().to(dayjs(record.updatedAt))
+    //           return(
+    //         <Text>{date}</Text>
+    //         )
+    //     },
+    // },
     {
       dataIndex: 'actions', 
       key: 'actions',

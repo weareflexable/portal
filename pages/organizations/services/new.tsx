@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import {Form, Row, Col, Input,Upload,Button,notification, Typography, Space, Select} from 'antd';
 import {UploadOutlined} from '@ant-design/icons'
 const {Title} = Typography
+const {TextArea} = Input
 
 import { useRouter } from 'next/router';
 import {usePlacesWidget} from 'react-google-autocomplete'
@@ -112,7 +113,12 @@ export default function NewService(){
     }
 
     const createData = useMutation(createDataHandler,{
-       
+       onSuccess:()=>{
+        notification['success']({
+            message: 'Success creating record',
+          });
+          router.back()
+       },
         onError:()=>{
             notification['error']({
                 message: 'Encountered an error while creating record',
@@ -164,14 +170,16 @@ export default function NewService(){
                         label='Address'
                         rules={[{ required: true, message: 'Please input a valid address!' }]}
                     >
-                        <Input ref={(c) => {
+                        {/* <Input ref={(c) => {
                             // @ts-ignore
                             antInputRef.current = c;
                             // @ts-ignore
                             if (c) antRef.current = c.input;
                             }} 
                             placeholder="Syracuse, United states" 
-                            />
+                            /> */}
+                            {/* <TextArea></TextArea> */}
+                            <TextArea rows={3} placeholder='Apt. 235 30B NorthPointsettia Street, Syracuse'/>
                     </Form.Item>
 
 
@@ -200,12 +208,12 @@ export default function NewService(){
                     <Form.Item
                         name="imageHash"
                         label="Logo"
-                        valuePropName="fileList"
+                        valuePropName="imageHash"
                         getValueFromEvent={normFile}
                         extra="Upload file upto 2MB"
                         rules={[{ required: true, message: 'Please upload an image' }]}
                     >
-                        <Upload name="logo" action="" listType="picture">
+                        <Upload name="imageHash" action="" listType="picture">
                         <Button icon={<UploadOutlined />}>Upload service logo</Button>
                         </Upload>
                     </Form.Item>
@@ -213,12 +221,12 @@ export default function NewService(){
                     <Form.Item
                         name="coverImageHash"
                         label="Cover image"
-                        valuePropName="fileList"
+                        valuePropName="coverImageHash"
                         getValueFromEvent={normFile}
                         extra="Upload file upto 2MB"
                         rules={[{ required: true, message: 'Please upload an image' }]}
                     >
-                        <Upload name="logo" action="" listType="picture">
+                        <Upload name="coverImageHash" action="" listType="picture">
                         <Button icon={<UploadOutlined />}>Upload service cover image</Button>
                         </Upload>
                     </Form.Item>

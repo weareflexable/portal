@@ -243,14 +243,14 @@ export default function ServiceItemsView(){
         },
     },
 
-    {
-      dataIndex: 'actions', 
-      key: 'actions',
-      render:(_,record)=>{
-        const items = getTableRecordActions()
-        return (<Dropdown.Button menu={{ items , onClick: (e)=>onMenuClick(e,record) }}>Actions</Dropdown.Button>)
-      }
-    }
+    // { 
+    //   dataIndex: 'actions', 
+    //   key: 'actions',
+    //   render:(_,record)=>{
+    //     const items = getTableRecordActions()
+    //     return (<Dropdown.Button menu={{ items , onClick: (e)=>onMenuClick(e,record) }}>Actions</Dropdown.Button>)
+    //   }
+    // }
     ];
 
         return (

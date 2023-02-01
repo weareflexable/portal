@@ -7,10 +7,10 @@ const {Text} = Typography;
 import {v4 as uuidv4} from 'uuid'
 
 import { useRouter } from 'next/router';
-import { ServiceItem } from '../../../types/Services';
+import { ServiceItem } from '../../../../types/Services';
 import moment from 'moment';
-import { useOrgContext } from '../../../context/OrgContext';
-import { useServicesContext } from '../../../context/ServicesContext';
+import { useOrgContext } from '../../../../context/OrgContext';
+import { useServicesContext } from '../../../../context/ServicesContext';
 
 
 interface ServiceItemFormProps{

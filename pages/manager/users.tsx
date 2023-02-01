@@ -15,6 +15,7 @@ export default function AdminStaff(){
         <ManagerLayout>
             <Row>
                 <Col offset={1} span={22}>
+                <Title style={{marginLeft: '1em', marginTop:'1em'}} level={2}>Users</Title>
                     <Content
                         style={{
                         margin:'1em',

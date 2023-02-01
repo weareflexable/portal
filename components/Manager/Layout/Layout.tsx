@@ -137,8 +137,8 @@ const navItems=[
     icon: <UserOutlined />
   },
   {
-    key:'banks',
-    label:<Link href='/manager/banks'>Banks</Link>,
+    key:'platform',
+    label:<Link href='/manager/platform'>Platform</Link>,
     icon: <BankOutlined />
   },
 ]

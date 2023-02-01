@@ -65,6 +65,7 @@ export default function ManagerOrgsView(){
    
 
     async function changeOrgStatus({orgId, statusNumber}:{orgId:string, statusNumber: string}){
+      console.log(orgId)
         const res = await axios({
             method:'patch',
             url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,
@@ -96,21 +97,22 @@ export default function ManagerOrgsView(){
 
     function deActivateOrgHandler(org:NewOrg){
         // setSelelectedOrg(org.orgId)
-        changeStatusMutation.mutate({orgId:org.id, statusNumber:'0'})
+        changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'0'})
     }
 
     function reviewHandler(org:NewOrg){
         // setSelelectedOrg(org.orgId)
-        changeStatusMutation.mutate({orgId:org.id, statusNumber:'2'})
+        changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'2'})
     }
 
     function rejectOrgHandler(org:NewOrg){
-        changeStatusMutation.mutate({orgId:org.id, statusNumber:'4'})
+        changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'4'})
     }
 
     function acceptOrgHandler(org:NewOrg){
         // setSelelectedOrg(org.orgId)
-        changeStatusMutation.mutate({orgId:org.id, statusNumber:'1'})
+        console.log(org) 
+        changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'1'})
     }
 
     const orgQuery = useQuery({queryKey:['organizations', currentStatus], queryFn:fetchOrgs, enabled:paseto !== ''})
@@ -552,7 +554,8 @@ function EditableName({selectedOrg}:EditableProp){
     const payload = {
       key:'name',
       value: updatedItem.name,
-      orgId: selectedOrg.id
+      //@ts-ignore
+      orgId: selectedOrg.orgId
     }
     const updatedOrg = {
       ...selectedOrg,

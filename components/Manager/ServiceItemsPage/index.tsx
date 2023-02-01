@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import useOrgs from "../../hooks/useOrgs";
+import useOrgs from "../../../hooks/useOrgs";
 const {Text} = Typography
 import React, { useRef, useState } from 'react'
 import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge} from 'antd'
@@ -8,14 +8,14 @@ import axios from 'axios';
 import {MoreOutlined,ReloadOutlined} from '@ant-design/icons'
 import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
 
-import { useAuthContext } from '../../context/AuthContext';
-import { useServicesContext } from '../../context/ServicesContext';
+import { useAuthContext } from '../../../context/AuthContext';
+import { useServicesContext } from '../../../context/ServicesContext';
 import {PlusOutlined} from '@ant-design/icons'
 import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
-import { useOrgContext } from "../../context/OrgContext";
-import { asyncStore } from "../../utils/nftStorage";
-import { ServiceItem } from "../../types/Services";
+import { useOrgContext } from "../../../context/OrgContext";
+import { asyncStore } from "../../../utils/nftStorage";
+import { Availability, CustomDate, ServiceItem } from "../../../types/Services";
 const {TextArea} = Input
 
 
@@ -281,13 +281,32 @@ function closeDrawerHandler(){
 }
 
 return( 
-<Drawer title="Organization Details" width={640} placement="right" closable={true} onClose={closeDrawerHandler} open={isDrawerOpen}>
+<Drawer title="Service-item Details" width={640} placement="right" closable={true} onClose={closeDrawerHandler} open={isDrawerOpen}>
   
   <EditableName selectedRecord={selectedRecord}/>
   <EditableDescription selectedRecord={selectedRecord}/>
   <EditablePrice selectedRecord={selectedRecord}/>
   <EditableTicketsPerDay selectedRecord={selectedRecord}/>
   <EditableCoverImage selectedRecord={selectedRecord}/>
+
+  {/* <Text>CUSTOM AVALABILITY</Text> */}
+  <div style={{marginTop:'6rem'}}>
+    <div style={{width:'100%', display:'flex', marginBottom:'1rem', justifyContent:'space-between'}}>
+  <Text>CUSTOM AVAILABILITY</Text>
+  <Button type="link">Edit</Button>
+    </div>
+  {
+    mockAvailabilty.map((availability:CustomDate,index)=>(
+      <ReadOnlyAvailability
+      key={index}
+      ticketsPerDay={availability.ticketsPerDay}
+      price={availability.price}
+      date={availability.date}
+      />
+      ))
+    }
+    
+    </div>
 
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
     <Divider/>
@@ -813,5 +832,41 @@ const serviceItemsFilters = [
   {
       id: '2',
       name: 'In-active'
+  },
+]
+
+
+
+function ReadOnlyAvailability({price, ticketsPerDay, date}:CustomDate){
+  return(
+    <div style={{width:'100%', display:'flex', flexDirection:'column'}}>
+      <Divider orientation="center">{date}</Divider>
+      <div style={{width:"100%", display:'flex', marginBottom:'.2rem', marginTop:'.2rem'}}>
+        <Text>{ticketsPerDay}</Text>
+        <Text style={{marginLeft:'.3rem'}} type="secondary">Tickets per day</Text>
+      </div>
+      <div style={{width:"100%", display:'flex', marginBottom:'.2rem', marginTop:'.2rem'}}>
+        <Text>${price} </Text>
+        <Text style={{marginLeft:'.3rem'}} type="secondary">Per ticket</Text>
+      </div>
+    </div>
+  )
+}
+
+const mockAvailabilty: Availability = [
+  {
+    date: 'Jan 22, 2022',
+    ticketsPerDay: '455',
+    price: '23'
+  },
+  {
+    date: 'Feb 21, 2023',
+    ticketsPerDay: '455',
+    price: '637'
+  },
+  {
+    date: 'Mar 15, 2023',
+    ticketsPerDay: '1445',
+    price: '123'
   },
 ]
