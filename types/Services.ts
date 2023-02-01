@@ -53,10 +53,14 @@ export type ServiceItem = {
     createdAt: string
 }
 
+export type AvailabilityPayload = {
+    serviceItemId: string,
+    availability: Availability
+}
+
 export type ServiceItemReqPaylod = {
     name: string,
     price: string
-    availability: Availability
     ticketsPerDay: string,
     description:string,
     orgServiceId: string,

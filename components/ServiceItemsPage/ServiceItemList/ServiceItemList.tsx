@@ -2,8 +2,8 @@ import React from 'react'
 import {Card,List,Typography,Button,Avatar, Descriptions} from 'antd'
 import {PlusCircleOutlined} from '@ant-design/icons'
 import { useRouter } from 'next/router'
-import { ServiceItem } from '../../../../types/Services'
-import { useOrgContext } from '../../../../context/OrgContext'
+import { ServiceItem } from '../../../types/Services'
+import { useOrgContext } from '../../../context/OrgContext'
 import dayjs from 'dayjs'
 
 const {Title,Text} = Typography

@@ -8,7 +8,7 @@ import {UploadOutlined,ArrowLeftOutlined,MinusCircleOutlined,PlusOutlined} from 
 import {v4 as uuidv4} from 'uuid'
 
 import { useRouter } from 'next/router';
-import { Availability, ServiceItem, ServiceItemReqPaylod } from '../../../../types/Services';
+import { Availability, AvailabilityPayload, ServiceItem, ServiceItemReqPaylod } from '../../../../types/Services';
 import dayjs from 'dayjs'
 import { useServicesContext } from '../../../../context/ServicesContext';
 import useServiceTypes from '../../../../hooks/useServiceTypes';
@@ -34,8 +34,13 @@ export default function ServiceItemForm({ onTriggerFormAction,isCreatingServiceI
 
     const router = useRouter()
     const [currentStep, setCurrentStep] = useState(0);
+    // State to hold the id of the service item that will get created in the
+    // first form.
+    const [createdItemId, setCreatedItemId] = useState('')
     
-          const next = () => {
+          const next = (data:any) => {
+            const serviceItemId = data[0].id // extract id of newly created service item
+            setCreatedItemId(serviceItemId)
             setCurrentStep(currentStep + 1);
           };
         
@@ -43,21 +48,19 @@ export default function ServiceItemForm({ onTriggerFormAction,isCreatingServiceI
             setCurrentStep(currentStep - 1);
           };
 
-    const steps = [
-        {
-          title: 'Basic Info',
-          content: <BasicForm nextStep={next}/>,
-        },
-        {
-          title: 'Customize',
-          content: <AvailabilityForm/>,
-        },
-      ];
+        const steps = [
+            {
+            title: 'Basic Info',
+            content: <BasicForm nextStep={next}/>,
+            },
+            {
+            title: 'Customize',
+            content: <AvailabilityForm serviceItemId={createdItemId} />,
+            },
+        ];
 
 
       const items = steps.map((item) => ({ key: item.title, title: item.title }));
-
-    
 
 
     return (
@@ -74,9 +77,9 @@ export default function ServiceItemForm({ onTriggerFormAction,isCreatingServiceI
             </div>
            <Row > 
                 <Col offset={5} span={10}>
-                {/* <Steps current={currentStep} items={items} /> */}
-                    <BasicForm nextStep={next}/>
-                    {/* {steps[currentStep].content} */}
+                <Steps current={currentStep} items={items} />
+                    {/* <BasicForm nextStep={next}/> */}
+                    {steps[currentStep].content}
                 </Col>
            </Row>
         </div>
@@ -85,7 +88,7 @@ export default function ServiceItemForm({ onTriggerFormAction,isCreatingServiceI
 }
 
 interface BasicInfoProps{
-    nextStep: ()=>void
+    nextStep: (data:any)=>void
 }
 
 function BasicForm({nextStep}:BasicInfoProps){
@@ -99,23 +102,12 @@ function BasicForm({nextStep}:BasicInfoProps){
      const {paseto} = useAuthContext()
      const router = useRouter()
     
-     // This functions takes in custom availability array and
-     // changes the format of the date field of every item in the array.
-     function convertDates(customDates:Availability){
-       const res = customDates.map(date=>{
-            const updatedDate = {
-                ...date,
-                date: dayjs(date.date).format('MMM DD, YYYY')
-            }
-            return updatedDate
-        })
+   
 
-        return res;
-     }
      const onFinish = async (formData:ServiceItem)=>{
 
         // availability should return empty array whenever user decides not to add custom dates
-        const transformedAvailability = formData.availability?convertDates(formData.availability):[]
+        // const transformedAvailability = formData.availability?convertDates(formData.availability):[]
 
 
         setIsHashingImage(true)
@@ -132,7 +124,6 @@ function BasicForm({nextStep}:BasicInfoProps){
                 orgServiceId: currentService.id,
                 // serviceItemTypeId: formData.serviceItemTypeId,// TODO: replace with form value,
                 serviceItemTypeId: "1",// TODO: replace with form value,
-                availability: transformedAvailability,
                 logoImageHash: imageHash
             }
             console.log(formObject)
@@ -145,6 +136,7 @@ function BasicForm({nextStep}:BasicInfoProps){
 
 
     const createDataHandler = async(newItem:ServiceItemReqPaylod)=>{
+
         const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`, newItem,{
             headers:{
                 "Authorization": paseto
@@ -154,18 +146,19 @@ function BasicForm({nextStep}:BasicInfoProps){
     }
 
     const createData = useMutation(createDataHandler,{
-       onSuccess:()=>{
+       onSuccess:(data)=>{
         form.resetFields()
         notification['success']({
             message: 'Successfully created new service item!'
         })
-        // setInterval(()=>{
-            router.replace('/organizations/services/serviceItems')
-        // },2000)
+            console.log(data)
+            nextStep(data.data)
+            
        },
-        onError:()=>{
+        onError:(err)=>{
+            console.log(err)
             notification['error']({
-                message: 'Encountered an error while creating record',
+                message: 'Encountered an error while creating service itme',
               });
             // leave modal open
         } 
@@ -235,7 +228,7 @@ function BasicForm({nextStep}:BasicInfoProps){
         </Form.Item> */}
 
 
-         {/* <Form.Item
+         <Form.Item
             name="serviceItemTypeId"
             label='Service type'
             rules={[{ required: true, message: 'Please select a service-item type!' }]}
@@ -243,7 +236,7 @@ function BasicForm({nextStep}:BasicInfoProps){
             <Radio.Group>
                 {menuItems.map((item:any)=><Radio.Button value={item.value} key={item.value}>{item.label}</Radio.Button>)}
             </Radio.Group>
-        </Form.Item>  */}
+        </Form.Item> 
         
         <Form.Item
             name="logoImageHash"
@@ -259,7 +252,7 @@ function BasicForm({nextStep}:BasicInfoProps){
         </Form.Item> 
 
 
-        <Form.List name="availability">
+        {/* <Form.List name="availability">
                 {(fields, { add, remove }) => (
                     <>
                     {fields.map(({ key, name, ...restField }) => (
@@ -305,7 +298,7 @@ function BasicForm({nextStep}:BasicInfoProps){
                     </Form.Item>
                     </>
                 )}
-            </Form.List>
+            </Form.List> */}
 
 
       
@@ -313,7 +306,7 @@ function BasicForm({nextStep}:BasicInfoProps){
 
         <Form.Item style={{marginTop:'4rem'}}>
             <Space>
-                <Button shape='round'  type='ghost'>
+                <Button shape='round' onClick={()=>router.back()}  type='ghost'>
                     Cancel
                 </Button>
 
@@ -331,13 +324,77 @@ function BasicForm({nextStep}:BasicInfoProps){
 
 
 
-function AvailabilityForm(){
+interface AvailabilityProp{
+    serviceItemId: string,
+}
+function AvailabilityForm({serviceItemId}:AvailabilityProp){
 
     const [form] = Form.useForm()
+    const router = useRouter()
 
-    async function onFinish(e:any){
-        console.log(e)
+    const {paseto} = useAuthContext()
+    // This functions takes in custom availability array and
+   // changes the format of the date field of every item in the array.
+   function convertDates(customDates:Availability){
+    console.log(customDates)
+     const res = customDates.map(date=>{
+          const updatedDate = {
+              ...date,
+              date: dayjs(date.date).format('MMM DD, YYYY'),
+              ticketsPerDay: String(date.ticketsPerDay),
+              price: String(date.price)
+          }
+          return updatedDate
+      })
+
+      return res;
+   }
+
+    async function onFinish(formData:any){
+        console.log('form data',formData.availability)
+        const transformedDates = convertDates(formData.availability)
+        const reqPayload = {
+            serviceItemId: serviceItemId,
+            availability: transformedDates
+        }
+
+        createData.mutate(reqPayload)
     }
+
+
+    const createDataHandler = async(newItem:AvailabilityPayload)=>{ 
+        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items/availability`, newItem,{
+            headers:{
+                "Authorization": paseto
+            },
+        })
+        return data
+    }
+
+    const createData = useMutation(createDataHandler,{
+       onSuccess:(data)=>{
+        form.resetFields()
+        notification['success']({
+            message: 'Successfully created custom availabilties!'
+        })
+            console.log(data)
+            router.back()
+            // nextStep(data.data)
+            
+       },
+        onError:(err)=>{
+            console.log(err)
+            notification['error']({
+                message: 'Encountered an error while creating custom custom dates',
+              });
+            // leave modal open
+        } 
+    })
+
+    const {isError, isLoading:isCreatingData, isSuccess:isDataCreated, data:createdData} = createData
+
+
+
 
     return(
         <Form
@@ -350,38 +407,41 @@ function AvailabilityForm(){
             >
 
 
-            <Form.List name="availabilty">
+            <Form.List name="availability">
                 {(fields, { add, remove }) => (
                     <>
                     {fields.map(({ key, name, ...restField }) => (
                         <Space key={key} style={{ display: 'flex', marginBottom: 8, alignItems:'center' }} >
                         <Form.Item
-                            name="price"
+                            name={[name, 'price']}
                             label='Price'
+                            {...restField}
                             style={{width:'100%'}}
                             rules={[{ required: true, message: 'Please input a valid price!' }]}
                         >
-                            <InputNumber   prefix="$"  placeholder="0.00" /> 
+                            <InputNumber prefix="$" placeholder="0.00" /> 
                         </Form.Item> 
 
                         <Form.Item
-                            name="ticketsPerDay"
-                            label='Tickets per day'
+                              {...restField}
+                              name={[name, 'ticketsPerDay']}
+                              label='Tickets per day'
                             style={{width:'100%'}}
                             rules={[{ required: true, message: 'Please input a valid number!' }]}
                             >
-                            <InputNumber    placeholder="20" />
+                            <InputNumber placeholder="20" />
                         </Form.Item>
 
                             <Form.Item
-                                rules={[{ required: true, message: 'Please select a date!' }]}
-                                name='date' 
-                                label="Date"
+                                 {...restField}
+                                 rules={[{ required: true, message: 'Please select a date!' }]}
+                                 name={[name, 'date']}
+                                 label="Date"
                                 style={{width:'100%'}}
                                 >
-
                                 <DatePicker />
                             </Form.Item>
+
                             <div style={{marginLeft:'.5rem'}}>
                                 <MinusCircleOutlined onClick={() => remove(name)} />
                             </div>
@@ -399,12 +459,12 @@ function AvailabilityForm(){
 
             <Form.Item style={{marginTop:'2rem'}}>
                 <Space>
-                    <Button shape='round'  type='ghost'>
+                    <Button shape='round' onClick={()=>router.back()} type='ghost'>
                         Skip for now
                     </Button>
 
-                    <Button shape='round'    htmlType="submit" >
-                         Confirm
+                    <Button shape='round' loading={isCreatingData} type='primary' htmlType="submit" >
+                         Create custom availability
                     </Button>
                 </Space>
                 
