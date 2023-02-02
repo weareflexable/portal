@@ -433,7 +433,7 @@ function ReadOnlyAvailability({availabilities, isLoading}:ReadOnlyProps){
     <div>
       { isLoading? <Skeleton active />: availabilities!.map((availability:CustomDate, index:any)=>(
         <div key={index} style={{width:'100%', display:'flex', flexDirection:'column'}}>
-          <Divider orientation="center">{availability.date}</Divider>
+          <Divider orientation="center">{availability.name}</Divider>
           <div style={{width:"100%", display:'flex', marginBottom:'.2rem', marginTop:'.2rem'}}>
             <Text>{availability.ticketsPerDay}</Text>
             <Text style={{marginLeft:'.3rem'}} type="secondary">Tickets per day</Text>
@@ -441,6 +441,9 @@ function ReadOnlyAvailability({availabilities, isLoading}:ReadOnlyProps){
           <div style={{width:"100%", display:'flex', marginBottom:'.2rem', marginTop:'.2rem'}}>
             <Text>${availability.price} </Text>
             <Text style={{marginLeft:'.3rem'}} type="secondary">Per ticket</Text>
+          </div>
+          <div style={{width:"100%", display:'flex', marginBottom:'.2rem', marginTop:'.2rem'}}>
+            <Text>{dayjs(availability.date).format('MMM DD, YYYY')}</Text>
           </div>
         </div>  
       ))
@@ -504,7 +507,7 @@ function EditAvailabilities({availabilities, selectedRecord, onToggleEditMode}:E
             // serviceItemId: serviceItemId,
             availability: transformedDates
         }
-        createData.mutate(reqPayload)
+        updateData.mutate(reqPayload)
     }
 
 
@@ -537,7 +540,7 @@ function EditAvailabilities({availabilities, selectedRecord, onToggleEditMode}:E
             // leave modal open
         } 
     })
-    const createDataHandler = async(newItem:AvailabilityPayload)=>{ 
+    const updateDataHandler = async(newItem:AvailabilityPayload)=>{ 
         const {data} = await axios.put(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items/availability`, newItem,{
             headers:{
                 "Authorization": paseto
@@ -546,7 +549,7 @@ function EditAvailabilities({availabilities, selectedRecord, onToggleEditMode}:E
         return data
     }
 
-    const createData = useMutation(createDataHandler,{
+    const updateData = useMutation(updateDataHandler,{
        onSuccess:(data)=>{
         form.resetFields()
         notification['success']({
@@ -574,7 +577,7 @@ function EditAvailabilities({availabilities, selectedRecord, onToggleEditMode}:E
       })
     }
 
-    const {isError, isLoading:isCreatingData, isSuccess:isDataCreated, data:createdData} = createData
+    const {isError, isLoading:isCreatingData, isSuccess:isDataCreated, data:createdData} = updateData
     const {isLoading:isDeletingRecord} = deleteData
 
     const transformedAvailabilities = transformDates(availabilities)
@@ -625,6 +628,16 @@ function EditAvailabilities({availabilities, selectedRecord, onToggleEditMode}:E
                               <DatePicker />
                           </Form.Item>
 
+                          <Form.Item
+                                 {...restField}
+                                 rules={[{ required: true, message: 'Please select a date!' }]}
+                                 name={[name, 'name']}
+                                //  label="Name"
+                                style={{width:'100%'}}
+                                >
+                                <Input placeholder='label: Thanks giving' />
+                          </Form.Item>
+
                           <div style={{marginLeft:'.5rem'}}>
                               {/* <MinusCircleOutlined onClick={() => remove(name)} /> */}
                               <Button type="text" danger loading={isDeletingRecord} onClick={()=>deleteRecordHandler(restField,()=>remove(name))}>Delete</Button>
@@ -653,7 +666,7 @@ function EditAvailabilities({availabilities, selectedRecord, onToggleEditMode}:E
                 </Space>  
             </Form.Item>
 
-            </Form>
+        </Form>
     )
 }
 
