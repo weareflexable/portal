@@ -2,21 +2,17 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useOrgs from "../../hooks/useOrgs";
 const {Text,Title} = Typography
 import React, { useRef, useState } from 'react'
-import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Skeleton} from 'antd'
+import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Skeleton, InputNumber, notification} from 'antd'
 import { useRouter } from 'next/router'
 import axios from 'axios';
-import {MoreOutlined,ReloadOutlined} from '@ant-design/icons'
-import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
+import {MoreOutlined,ReloadOutlined,MinusCircleOutlined,PlusOutlined} from '@ant-design/icons'
 
 import { useAuthContext } from '../../context/AuthContext';
 import { useServicesContext } from '../../context/ServicesContext';
-import {PlusOutlined} from '@ant-design/icons'
 import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
-import { useOrgContext } from "../../context/OrgContext";
-import { asyncStore } from "../../utils/nftStorage";
-import { Availability, CustomDate, ServiceItem } from "../../types/Services";
-const {TextArea} = Input
+import { Availability, AvailabilityPayload, CustomDate, ServiceItem } from "../../types/Services";
+import { EditableCoverImage, EditableDescription, EditableName, EditablePrice, EditableTicketsPerDay } from "./EditServiceForm/EditServiceForm";
 
 
 // const mockServiceItems:ServiceItem[]=[
@@ -57,6 +53,7 @@ export default function ServiceItemsView(){
     const [selectedRecord, setSelectedServiceItem] = useState<any|ServiceItem>({})
     const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Active'})
     const [pageNumber, setPageNumber] = useState<number|undefined>(0)
+
 
     async function fetchServiceItems(){
     const res = await axios({
@@ -267,6 +264,8 @@ const queryClient = useQueryClient()
 
 const {paseto} = useAuthContext()
 
+ const [isEditAvailability, setIsEditAvailability] = useState(false)
+
 async function fetchItemAvailability(){
  const res = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items/availability?key=service_item_id&value=${selectedRecord.id}&pageNumber=0&pageSize=10`,{
   headers:{
@@ -301,17 +300,18 @@ return(
   <div style={{marginTop:'6rem'}}>
     <div style={{width:'100%', display:'flex', marginBottom:'1rem', justifyContent:'space-between'}}>
   <Title level={3}>Custom Availability</Title>
-  <Button type="link">Edit</Button>
+  {isEditAvailability?null:<Button onClick={()=>setIsEditAvailability(!isEditAvailability)} type="link">Edit</Button>}
     </div>
-      { isLoading ?<Skeleton active />
-        :availabilityData.map((availability:CustomDate,index:any)=>(
-            <ReadOnlyAvailability
-              key={index}
-              ticketsPerDay={availability.ticketsPerDay}
-              price={availability.price}
-              date={availability.date}
-            />
-          ))
+      { isEditAvailability
+        ?<EditAvailabilities
+          onToggleEditMode={()=>setIsEditAvailability(!isEditAvailability)}
+          availabilities={availabilityData} 
+          selectedRecord = {selectedRecord}
+        />
+        :<ReadOnlyAvailability
+          isLoading = {isLoading}
+          availabilities={availabilityData}
+        />
       }  
     </div>
 
@@ -326,506 +326,6 @@ return(
 }
 
 
-interface EditableProp{
-  selectedRecord: ServiceItem
-}
-
-function EditableName({selectedRecord}:EditableProp){
-
-  const [state, setState] = useState(selectedRecord)
-
-  const [isEditMode, setIsEditMode] = useState(false)
-
-  const {paseto} = useAuthContext()
-
-  const queryClient = useQueryClient()
-
-  function toggleEdit(){
-    setIsEditMode(!isEditMode)
-  }
-
- 
-
-  const recordMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,updatedItem,{
-      headers:{
-          //@ts-ignore
-          "Authorization": paseto
-      }
-    })
-      return data;
-  }
-  const recordMutation = useMutation({
-    mutationKey:['name'],
-    mutationFn: recordMutationHandler,
-    onSuccess:()=>{
-      toggleEdit()
-    }
-  })
-
-  function onFinish(updatedItem:any){
-    const payload = {
-      key:'name',
-      value: updatedItem.name,
-      id: selectedRecord.id
-    }
-    const updatedRecord = {
-      ...selectedRecord,
-      name: updatedItem.name
-    }
-    setState(updatedRecord)
-    recordMutation.mutate(payload)
-  }
-
-  const {isLoading:isEditing} = recordMutation ;
-
-  const readOnly = (
-    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Text>{state.name}</Text>
-      <Button type="link" onClick={toggleEdit}>Edit</Button>
-    </div>
-)
-
-  const editable = (
-    <Form
-     style={{ marginTop:'.5rem' }}
-     name="editableName"
-     initialValues={selectedRecord}
-     onFinish={onFinish}
-     >
-      <Row>
-        <Col span={16} style={{height:'100%'}}>
-          <Form.Item
-              name="name"
-              rules={[{ required: true, message: 'Please input a valid service name' }]}
-          >
-              <Input  disabled={isEditing} placeholder="Flexable serviceItem" />
-          </Form.Item>
-        </Col>
-        <Col span={4}>
-          <Form.Item style={{ width:'100%'}}>
-              <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
-                      Cancel
-                  </Button>
-                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
-                      Apply changes
-                  </Button>
-              </Space>           
-          </Form.Item>
-        </Col>
-      </Row>
-           
-    </Form>
-  )
-  return(
-    <div style={{width:'100%', display:'flex', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>Name</Text>
-    {isEditMode?editable:readOnly}
-    </div>
-  )
-}
-function EditablePrice({selectedRecord}:EditableProp){
-
-  const [state, setState] = useState(selectedRecord)
-
-  const [isEditMode, setIsEditMode] = useState(false)
-
-  const {paseto} = useAuthContext()
-
-  function toggleEdit(){
-    setIsEditMode(!isEditMode)
-  }
-
- 
-
-  const recordMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,updatedItem,{
-      headers:{
-          //@ts-ignore
-          "Authorization": paseto
-      }
-    })
-      return data;
-  }
-  const recordMutation = useMutation({
-    mutationKey:['price'],
-    mutationFn: recordMutationHandler,
-    onSuccess:()=>{
-      toggleEdit()
-    }
-  })
-
-  function onFinish(updatedItem:any){
-    const payload = {
-      key:'price',
-      value: updatedItem.price,
-      id: selectedRecord.id
-    }
-    const updatedRecord = {
-      ...selectedRecord,
-      price: updatedItem.price
-    }
-    setState(updatedRecord)
-    recordMutation.mutate(payload)
-  }
-
-  const {isLoading:isEditing} = recordMutation ;
-
-  const readOnly = (
-    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Text>{state.price}</Text>
-      <Button type="link" onClick={toggleEdit}>Edit</Button>
-    </div>
-)
-
-  const editable = (
-    <Form
-     style={{ marginTop:'.5rem' }}
-     name="editablePrice"
-     initialValues={selectedRecord}
-     onFinish={onFinish}
-     >
-      <Row>
-        <Col span={16} style={{height:'100%'}}>
-          <Form.Item
-              name="price"
-              rules={[{ required: true, message: 'Please input a valid price' }]}
-          >
-              <Input   disabled={isEditing} />
-          </Form.Item>
-        </Col>
-        <Col span={4}>
-          <Form.Item style={{ width:'100%'}}>
-              <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
-                      Cancel
-                  </Button>
-                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
-                      Apply changes
-                  </Button>
-              </Space>
-                        
-          </Form.Item>
-        </Col>
-      </Row>
-           
-    </Form>
-  )
-  return(
-    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>Price</Text>
-    {isEditMode?editable:readOnly}
-    </div>
-  )
-}
-function EditableTicketsPerDay({selectedRecord}:EditableProp){
-
-  const [state, setState] = useState(selectedRecord)
-
-  const [isEditMode, setIsEditMode] = useState(false)
-
-  const {paseto} = useAuthContext()
-
-  function toggleEdit(){
-    setIsEditMode(!isEditMode)
-  }
-
- 
-
-  const recordMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,updatedItem,{
-      headers:{
-          //@ts-ignore
-          "Authorization": paseto
-      }
-    })
-      return data;
-  }
-  const recordMutation = useMutation({
-    mutationKey:['ticketsPerDay'],
-    mutationFn: recordMutationHandler,
-    onSuccess:()=>{
-      toggleEdit()
-    }
-  })
-
-  function onFinish(updatedItem:any){
-    const payload = {
-      key:'tickets_per_day',
-      value: updatedItem.ticketsPerDay,
-      id: selectedRecord.id
-    }
-    const updatedRecord = {
-      ...selectedRecord,
-      ticketsPerDay: updatedItem.ticketsPerDay
-    }
-    setState(updatedRecord)
-    recordMutation.mutate(payload)
-  }
-
-  const {isLoading:isEditing} = recordMutation ;
-
-  const readOnly = (
-    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Text>{state.ticketsPerDay}</Text>
-      <Button type="link" onClick={toggleEdit}>Edit</Button>
-    </div>
-)
-
-  const editable = (
-    <Form
-     style={{ marginTop:'.5rem' }}
-     name="editableTicketsPerDay"
-     initialValues={selectedRecord}
-     onFinish={onFinish}
-     >
-      <Row>
-        <Col span={16} style={{height:'100%'}}>
-          <Form.Item
-              name="ticketsPerDay"
-              rules={[{ required: true, message: 'Please specify max number of tickets available for selected date' }]}
-          >
-              <Input  disabled={isEditing} />
-          </Form.Item>
-        </Col>
-        <Col span={4}>
-          <Form.Item style={{ width:'100%'}}>
-              <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
-                      Cancel
-                  </Button>
-                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
-                      Apply changes
-                  </Button>
-              </Space>
-                        
-          </Form.Item>
-        </Col>
-      </Row>
-           
-    </Form>
-  )
-  return(
-    <div style={{width:'100%', display:'flex',  marginTop:'1rem', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>Tickets Per Day</Text>
-    {isEditMode?editable:readOnly}
-    </div>
-  )
-}
-
-function EditableDescription({selectedRecord}:EditableProp){
-
-  const [state, setState] = useState(selectedRecord)
-
-  const [isEditMode, setIsEditMode] = useState(false)
-
-  const {paseto} = useAuthContext()
-
-  function toggleEdit(){
-    setIsEditMode(!isEditMode)
-  }
-
-  const [form]  = Form.useForm()
-
-  const recordMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,updatedItem,{
-      headers:{
-          //@ts-ignore
-          "Authorization": paseto
-      }
-    })
-      return data;
-  }
-
-  const recordMutation = useMutation({
-    mutationKey:['description'],
-    mutationFn: recordMutationHandler,
-    onSuccess:()=>{
-      toggleEdit()
-    }
-  })
-
-  function onFinish(updatedItem:any){
-    const payload = {
-      key:'description',
-      value: updatedItem.description,
-      id: selectedRecord.id
-    }
-    const updatedRecord = {
-      ...selectedRecord,
-      description: updatedItem.description
-    }
-    setState(updatedRecord)
-    recordMutation.mutate(payload)
-  }
-
-  const {isLoading:isEditing} = recordMutation 
-
-  const readOnly = (
-    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Text>{state.description}</Text>
-      <Button type="link" onClick={toggleEdit}>Edit</Button>
-    </div>
-)
-
-  const editable = (
-    <Form
-     style={{ marginTop:'.5rem' }}
-     name="editableDescription"
-     initialValues={selectedRecord}
-     onFinish={onFinish}
-     form={form}
-     >
-      <Row>
-        <Col span={16} style={{height:'100%'}}>
-        <Form.Item 
-            name="description"
-            rules={[{ required: true, message: 'Please input a description for service item!' }]}
-        >
-            <TextArea rows={3} placeholder='Description...'/>
-
-        </Form.Item>
-
-        </Col>
-        <Col span={4}>
-          <Form.Item style={{ width:'100%'}}>
-              <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
-                      Cancel
-                  </Button>
-                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
-                      Apply changes
-                  </Button>
-              </Space>
-                        
-          </Form.Item>
-        </Col>
-      </Row>
-           
-    </Form>
-  )
-  return(
-    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>Description</Text>
-    {isEditMode?editable:readOnly}
-    </div>
-  )
-}
-
-function EditableCoverImage({selectedRecord}:EditableProp){
-
-  const [isEditMode, setIsEditMode] = useState(false) 
-  const [isHashingImage, setIsHashingImage] = useState(false)
-  const [updatedCoverImageHash, setUpdatedCoverImageHash] = useState(selectedRecord.logoImageHash)
-
-  const {paseto} = useAuthContext()
-
-  function toggleEdit(){
-    setIsEditMode(!isEditMode)
-  }
-
-  const readOnly = (
-      <div style={{width:'100%', marginTop:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Image style={{width:'500px', height:'200px', objectFit:'cover', border:'1px solid #f2f2f2'}} alt='cover image for serviceItem' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedCoverImageHash}`}/>
-        <Button type="link" onClick={toggleEdit}>Edit</Button>
-      </div>
-  )
-
-  const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,updatedItem,{
-      headers:{
-          //@ts-ignore
-          "Authorization": paseto
-      }
-    })
-      return data;
-  }
-  const mutation = useMutation({
-    mutationKey:['logoImage'],
-    mutationFn: mutationHandler,
-    onSuccess:()=>{
-      toggleEdit()
-    }
-  })
-
-  async function onFinish(field:ServiceItem){
-
-    // hash it first
-    const coverImageRes = await field.logoImageHash
-
-    setIsHashingImage(true)
-    //@ts-ignore
-    const coverImageHash = await asyncStore(coverImageRes[0].originFileObj)
-    setIsHashingImage(false)
-
-
-    const payload = {
-      key:'logo_image_hash',
-      value: coverImageHash,
-      id: selectedRecord.id
-    }
-    setUpdatedCoverImageHash(coverImageHash)
-    mutation.mutate(payload)
-  }
-
-  const {isLoading:isEditing} = mutation
-
-  const extractCoverImage = async(e: any) => {
-    console.log('Upload event:', e);
-    if (Array.isArray(e)) {
-    return e;
-    }
-
-   return e?.fileList;
-};
-
-
-  const editable = (
-    <Form
-     style={{ marginTop:'.5rem' }}
-     name="editableCoverImage"
-     initialValues={selectedRecord}
-     onFinish={onFinish}
-     >
-      <Row>
-        <Col span={10}>
-          <Form.Item
-              name="logoImageHash"
-              valuePropName="logoImageHash"
-              getValueFromEvent={extractCoverImage}
-              rules={[{ required: true, message: 'Please upload card image for service item' }]}
-          >
-              
-              <Upload name="logoImageHash" listType="picture" multiple={false}>
-                   <Button size='small' disabled={isHashingImage} type='link'>Upload image</Button>
-              </Upload>
-          </Form.Item>
-        </Col>
-        <Col span={4}>
-          <Form.Item style={{ width:'100%'}}>
-              <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
-                      Cancel
-                  </Button>
-                  <Button shape="round" loading={isEditing||isHashingImage} type="link" size="small"  htmlType="submit" >
-                      Apply changes
-                  </Button>
-              </Space>
-                        
-          </Form.Item>
-        </Col>
-      </Row>
-           
-    </Form>
-  )
-  return(
-    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>Cover Image</Text>
-      {isEditMode?editable:readOnly}
-    </div>
-  )
-}
 
 
 
@@ -842,22 +342,240 @@ const serviceItemsFilters = [
 ]
 
 
+interface ReadOnlyProps{
+  availabilities: Availability,
+  isLoading: boolean,
+  
+}
 
-function ReadOnlyAvailability({price, ticketsPerDay, date}:CustomDate){
+function ReadOnlyAvailability({availabilities, isLoading}:ReadOnlyProps){
   return(
-    <div style={{width:'100%', display:'flex', flexDirection:'column'}}>
-      <Divider orientation="center">{date}</Divider>
-      <div style={{width:"100%", display:'flex', marginBottom:'.2rem', marginTop:'.2rem'}}>
-        <Text>{ticketsPerDay}</Text>
-        <Text style={{marginLeft:'.3rem'}} type="secondary">Tickets per day</Text>
-      </div>
-      <div style={{width:"100%", display:'flex', marginBottom:'.2rem', marginTop:'.2rem'}}>
-        <Text>${price} </Text>
-        <Text style={{marginLeft:'.3rem'}} type="secondary">Per ticket</Text>
-      </div>
-    </div>
+    <div>
+      { isLoading? <Skeleton active />: availabilities!.map((availability:CustomDate, index:any)=>(
+        <div key={index} style={{width:'100%', display:'flex', flexDirection:'column'}}>
+          <Divider orientation="center">{availability.date}</Divider>
+          <div style={{width:"100%", display:'flex', marginBottom:'.2rem', marginTop:'.2rem'}}>
+            <Text>{availability.ticketsPerDay}</Text>
+            <Text style={{marginLeft:'.3rem'}} type="secondary">Tickets per day</Text>
+          </div>
+          <div style={{width:"100%", display:'flex', marginBottom:'.2rem', marginTop:'.2rem'}}>
+            <Text>${availability.price} </Text>
+            <Text style={{marginLeft:'.3rem'}} type="secondary">Per ticket</Text>
+          </div>
+        </div>  
+      ))
+    }
+  </div>
   )
 }
+
+
+interface EditProps{
+  availabilities: Availability,
+  onToggleEditMode: ()=>void,
+  selectedRecord: ServiceItem 
+}
+
+
+function EditAvailabilities({availabilities, selectedRecord, onToggleEditMode}:EditProps){
+    const [form] = Form.useForm()
+
+    const {paseto} = useAuthContext()
+
+    const [state,setState] = useState(availabilities)
+
+    // This functions takes in custom availability array and
+   // changes the format of the date field of every item in the array.
+   function convertDates(customDates:Availability){
+     const res = customDates.map(date=>{
+          const updatedDate = {
+              ...date,
+              date: dayjs(date.date).format('MMM DD, YYYY'),
+              ticketsPerDay: String(date.ticketsPerDay),
+              price: String(date.price)
+          }
+          return updatedDate
+      })
+
+      return res;
+   }
+
+   function transformDates(customDates:Availability){
+    const res = customDates.map(date=>{
+         const updatedDate = {
+             ...date,
+             date: dayjs(date.date),
+             ticketsPerDay: String(date.ticketsPerDay),
+             price: String(date.price)
+         }
+         return updatedDate
+     })
+
+     return res;
+  }
+
+    async function onFinish(formData:any){
+        console.log('form data',formData.availability)
+        const transformedDates = convertDates(formData.availability)
+        const reqPayload = {
+          serviceItemId: selectedRecord.id,
+            // serviceItemId: serviceItemId,
+            availability: transformedDates
+        }
+        createData.mutate(reqPayload)
+    }
+
+
+    const deleteDataHandler = async(recordId:string)=>{ 
+      
+        const {data} = await axios({
+          method:'delete',
+          url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items/availability`,
+          data: {id:recordId},
+          headers:{
+                "Authorization": paseto
+        }})
+        return data
+    }
+
+    const deleteData = useMutation(deleteDataHandler,{
+       onSuccess:(data)=>{
+        form.resetFields()
+        notification['success']({
+            message: 'Successfully deleted record!'
+        })
+          // remove from list  
+       },
+        onError:(err)=>{
+            console.log(err)
+            notification['error']({
+                message: 'Encountered an error while creating custom custom dates',
+              });
+            // leave modal open
+        } 
+    })
+    const createDataHandler = async(newItem:AvailabilityPayload)=>{ 
+        const {data} = await axios.put(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items/availability`, newItem,{
+            headers:{
+                "Authorization": paseto
+            },
+        })
+        return data
+    }
+
+    const createData = useMutation(createDataHandler,{
+       onSuccess:(data)=>{
+        form.resetFields()
+        notification['success']({
+            message: 'Successfully created custom availabilties!'
+        })
+            onToggleEditMode()
+            
+       },
+        onError:(err)=>{
+            console.log(err)
+            notification['error']({
+                message: 'Encountered an error while creating custom custom dates',
+              });
+            // leave modal open
+        } 
+    })
+
+    function deleteRecordHandler(record:any, callback?:()=>void){
+      const targetRecord = state[record.fieldKey]
+      //@ts-ignore
+      deleteData.mutate(targetRecord.id,{
+        onSuccess:()=>{
+          callback!()
+        }
+      })
+    }
+
+    const {isError, isLoading:isCreatingData, isSuccess:isDataCreated, data:createdData} = createData
+    const {isLoading:isDeletingRecord} = deleteData
+
+    const transformedAvailabilities = transformDates(availabilities)
+
+
+    return(
+        <Form
+            name="serviceItemAvailability"
+            initialValues={{ remember: false }}
+            layout='vertical'
+            form={form}
+            style={{marginTop:'2rem'}}
+            onFinish={onFinish}
+            >
+
+            <Form.List initialValue={transformedAvailabilities} name="availability">
+                {(fields, { add, remove }) => (
+                    <>
+                    {fields.map(({ key, name, ...restField }) => (
+                        <Space key={key} style={{ display: 'flex', marginBottom: 8, alignItems:'center' }} >
+                          <Form.Item
+                              name={[name, 'price']}
+                              label='Price'
+                              {...restField}
+                              style={{width:'100%'}}
+                              rules={[{ required: true, message: 'Please input a valid price!' }]}
+                          >
+                              <InputNumber prefix="$" placeholder="0.00" /> 
+                          </Form.Item> 
+
+                          <Form.Item
+                                {...restField}
+                                name={[name, 'ticketsPerDay']}
+                                label='Tickets per day'
+                              style={{width:'100%'}}
+                              rules={[{ required: true, message: 'Please input a valid number!' }]}
+                              >
+                              <InputNumber placeholder="20" />
+                          </Form.Item>
+
+                          <Form.Item
+                                {...restField}
+                                rules={[{ required: true, message: 'Please select a date!' }]}
+                                name={[name, 'date']} 
+                                label="Date"
+                              style={{width:'100%'}}
+                              >
+                              <DatePicker />
+                          </Form.Item>
+
+                          <div style={{marginLeft:'.5rem'}}>
+                              {/* <MinusCircleOutlined onClick={() => remove(name)} /> */}
+                              <Button type="text" danger loading={isDeletingRecord} onClick={()=>deleteRecordHandler(restField,()=>remove(name))}>Delete</Button>
+                          </div>
+                        </Space>
+                    ))}
+                    <Form.Item>
+                        <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                           Add custom availability
+                        </Button>
+                    </Form.Item>
+                    </>
+                )}
+            </Form.List>
+
+
+            <Form.Item style={{marginTop:'2rem'}}>
+                <Space>
+                    <Button shape='round' onClick={()=>onToggleEditMode()} type='ghost'>
+                        Cancel
+                    </Button>
+
+                    <Button shape='round' loading={isCreatingData} type='primary' htmlType="submit" >
+                         Apply changes
+                    </Button>
+                </Space>  
+            </Form.Item>
+
+            </Form>
+    )
+}
+
+
+
 
 const mockAvailabilty: Availability = [
   {
