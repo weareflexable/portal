@@ -1,19 +1,12 @@
-import React,{useState} from 'react';
-import {Form, Input,Radio,Button,notification, Space, Typography} from 'antd';
+import { Row, Col, Button, Form, Input, Space, Typography, notification } from "antd";
+const {Title, Text} = Typography
+import router from "next/router";
+import { useServicesContext } from "../../../../context/ServicesContext";
+import { Staff } from "../../../../types/Staff";
+import {ArrowLeftOutlined} from '@ant-design/icons'
 
 
-import { useRouter } from 'next/router';
-import { Staff, StaffReqPayload } from '../../../types/Staff';
-import { useServicesContext } from '../../../context/ServicesContext';
-
-
-interface StoreFormProps{
-    onCreateStaff: (formData:StaffReqPayload)=>void
-    onCloseForm: ()=>void,
-    isCreatingStaff: boolean
-}
-export default function CreateStaffForm({onCreateStaff, isCreatingStaff, onCloseForm}:StoreFormProps){
-
+export default function NewStaffForm(){
 
     const {currentService} = useServicesContext()
 
@@ -26,7 +19,6 @@ export default function CreateStaffForm({onCreateStaff, isCreatingStaff, onClose
         }
         // console.log(payload)
 
-        onCreateStaff(payload)
         // showStoreCreationNotification()
     }
 
@@ -35,10 +27,23 @@ export default function CreateStaffForm({onCreateStaff, isCreatingStaff, onClose
           message: 'Staff created succesfully',
         });
       };
-      
 
-    return (
-            <Form
+    return(
+        <div style={{background:'#ffffff', height:'100%', minHeight:'100vh'}}>
+            <div style={{marginBottom:'3rem', padding: '1rem', borderBottom:'1px solid #e5e5e5',}}>
+                <Row>
+                    <Col offset={1}> 
+                        <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
+                            <Button shape='round' style={{marginRight:'1rem'}} type='text' onClick={()=>router.back()} icon={<ArrowLeftOutlined/>}/>
+                            <Title style={{margin:'0'}} level={3}>Add staff to service</Title>
+                        </div>
+                    </Col>
+                </Row>
+            </div>
+            
+            <Row>
+                <Col offset={5} span={10}>
+                <Form
             name="staffForm"
             initialValues={{ remember: true }}
             layout='vertical'
@@ -68,11 +73,11 @@ export default function CreateStaffForm({onCreateStaff, isCreatingStaff, onClose
 
             <Form.Item>
                 <Space>
-                    <Button shape='round' size='small' onClick={onCloseForm} type='ghost'>
+                    <Button shape='round' size='small' onClick={()=>router.back()} type='ghost'>
                         Cancel
                     </Button>
 
-                    <Button loading={isCreatingStaff} shape='round' size='small' type="primary"  htmlType="submit" >
+                    <Button loading={false} shape='round' size='small' type="primary"  htmlType="submit" >
                         Add
                     </Button>
                 </Space>
@@ -80,5 +85,10 @@ export default function CreateStaffForm({onCreateStaff, isCreatingStaff, onClose
             </Form.Item>
 
             </Form>
+                </Col>
+            </Row>
+            
+
+        </div>
     )
 }

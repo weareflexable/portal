@@ -53,7 +53,7 @@ export interface OrgPayload{
     coverImageHash: string,
 }
 
-export interface ActiveOrgs extends Org {
+export interface ActiveOrgs extends NewOrg {
     isActive:boolean
 }
 
