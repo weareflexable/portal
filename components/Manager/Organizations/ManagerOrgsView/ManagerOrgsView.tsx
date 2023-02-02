@@ -13,15 +13,12 @@ import {MoreOutlined,ReloadOutlined} from '@ant-design/icons'
 import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
 
 import { useAuthContext } from '../../../../context/AuthContext';
-import { useServicesContext } from '../../../../context/ServicesContext';
-import { DatePickRef } from 'antd/lib/date-picker/generatePicker/interface';
 import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
-import EditOrganizationForm from "../EditOrganizationForm/EditOrganizationForm";
 import { useOrgContext } from "../../../../context/OrgContext";
 import { asyncStore } from "../../../../utils/nftStorage";
 import { usePlacesWidget } from "react-google-autocomplete";
-const {TextArea} = Input
+
 
 var relativeTime = require('dayjs/plugin/relativeTime')
 dayjs.extend(relativeTime) 
@@ -97,21 +94,25 @@ export default function ManagerOrgsView(){
 
     function deActivateOrgHandler(org:NewOrg){
         // setSelelectedOrg(org.orgId)
+        // @ts-ignore
         changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'0'})
-    }
-
-    function reviewHandler(org:NewOrg){
+      }
+      
+      function reviewHandler(org:NewOrg){
         // setSelelectedOrg(org.orgId)
+        // @ts-ignore
         changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'2'})
+      }
+      
+      function rejectOrgHandler(org:NewOrg){
+      // @ts-ignore
+      changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'4'})
     }
-
-    function rejectOrgHandler(org:NewOrg){
-        changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'4'})
-    }
-
+    
     function acceptOrgHandler(org:NewOrg){
-        // setSelelectedOrg(org.orgId)
-        console.log(org) 
+      // setSelelectedOrg(org.orgId)
+
+      // @ts-ignore
         changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'1'})
     }
 
