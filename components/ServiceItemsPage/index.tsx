@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useOrgs from "../../hooks/useOrgs";
 const {Text,Title} = Typography
 import React, { useRef, useState } from 'react'
-import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Skeleton, InputNumber, notification} from 'antd'
+import {Typography,Button,Avatar, Upload, Tag, Alert, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Skeleton, InputNumber, notification, Modal} from 'antd'
 import { useRouter } from 'next/router'
 import axios from 'axios';
 import {MoreOutlined,ReloadOutlined,MinusCircleOutlined,PlusOutlined} from '@ant-design/icons'
@@ -246,6 +246,7 @@ export default function ServiceItemsView(){
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedRecord={selectedRecord}/>
                   :null
                 }
+               
             </div>
     )
 
@@ -263,6 +264,8 @@ function DetailDrawer({selectedRecord,isDrawerOpen,closeDrawer}:DrawerProps){
 const queryClient = useQueryClient()
 
 const {paseto} = useAuthContext()
+
+const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
  const [isEditAvailability, setIsEditAvailability] = useState(false)
 
@@ -287,6 +290,51 @@ function closeDrawerHandler(){
   closeDrawer(!isDrawerOpen)
 }
 
+function toggleDeleteModal(){
+  setIsDeleteModalOpen(!isDeleteModalOpen)
+}
+
+function deleteServiceItem(){ 
+  console.log(selectedRecord.id)
+  // mutate record
+  deleteData.mutate()
+  toggleDeleteModal()
+  closeDrawerHandler()
+}
+
+const deleteDataHandler = async()=>{      
+  const {data} = await axios({
+    method:'patch',
+    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,
+    data: {
+        id:selectedRecord.id,
+        key:'status',
+        value: false
+      },
+    headers:{
+          "Authorization": paseto
+  }})
+  return data
+}
+
+const deleteData = useMutation(deleteDataHandler,{
+ onSuccess:(data)=>{
+  notification['success']({
+      message: 'Successfully deleted record!'
+  })
+    // remove from list  
+ },
+  onError:(err)=>{
+      console.log(err)
+      notification['error']({
+          message: 'Encountered an error while deleting record custom custom dates',
+        });
+      // leave modal open
+  } 
+})
+
+const{isLoading:isDeletingItem} = deleteData
+
 return( 
 <Drawer title="Service-item Details" width={640} placement="right" closable={true} onClose={closeDrawerHandler} open={isDrawerOpen}>
   
@@ -297,36 +345,20 @@ return(
   <EditableCoverImage selectedRecord={selectedRecord}/>
 
   {/* <Text>CUSTOM AVALABILITY</Text> */}
-  <div style={{marginTop:'6rem'}}>
-    <div style={{width:'100%', display:'flex', marginBottom:'1rem', justifyContent:'space-between'}}>
-  <Title level={3}>Custom Availability</Title>
-  {isEditAvailability?null:<Button onClick={()=>setIsEditAvailability(!isEditAvailability)} type="link">Edit</Button>}
-    </div>
-      { isEditAvailability
-        ?<EditAvailabilities
-          onToggleEditMode={()=>setIsEditAvailability(!isEditAvailability)}
-          availabilities={availabilityData} 
-          selectedRecord = {selectedRecord}
-        />
-        :<ReadOnlyAvailability
-          isLoading = {isLoading}
-          availabilities={availabilityData}
-        />
-      }  
-    </div>
-
+  <AvailabilitySection selectedServiceItem={selectedRecord}/>
+  
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
-    <Divider/>
-    <Button danger type="link">De-activate service-item</Button>
-    <Divider/>
+    <Title level={3}>Danger zone</Title>
+    <Button danger onClick={toggleDeleteModal} style={{width:'30%'}} type="link">De-activate service-item</Button>
   </div>
+
+  <DeleteRecordModal isDeletingItem={isDeletingItem} onCloseModal={toggleDeleteModal} onDeleteRecord={deleteServiceItem} isOpen={isDeleteModalOpen} selectedRecord={selectedRecord}/>
+
+  
 </Drawer>
 
 )
 }
-
-
-
 
 
 
@@ -340,6 +372,55 @@ const serviceItemsFilters = [
       name: 'In-active'
   },
 ]
+
+interface AvailabilitySectionProp{
+  customAvailability: Availability,
+  selectedServiceItem: ServiceItem
+}
+
+function AvailabilitySection({customAvailability,selectedServiceItem}:AvailabilitySectionProp){
+
+  const {paseto} = useAuthContext()
+
+  const [isEditMode, setIsEditMode] = useState(false)
+  // const [state, setState] = useState(customAvailability)
+
+  async function fetchItemAvailability(){
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items/availability?key=service_item_id&value=${selectedServiceItem.id}&pageNumber=0&pageSize=10`,{
+     headers:{
+       "Authorization":paseto
+     }
+   })
+   return res.data.data
+   }
+   
+   const {data, isLoading} = useQuery({queryKey:['availability',selectedServiceItem.id], queryFn:fetchItemAvailability})
+   
+   const availabilityData = data && data
+
+  return(
+    <div style={{marginTop:'6rem'}}>
+      <div style={{width:'100%', display:'flex', marginBottom:'1rem', justifyContent:'space-between'}}>
+       <Title level={3}>Custom Availability</Title>
+        {isEditMode?null:<Button onClick={()=>setIsEditMode(!isEditMode)} type="link">Edit</Button>}
+      </div>
+
+
+        { isEditMode
+          ?<EditAvailabilities
+            onToggleEditMode={()=>setIsEditMode(!isEditMode)}
+            availabilities={availabilityData} 
+            selectedRecord = {selectedServiceItem}
+          />
+          :<ReadOnlyAvailability
+            isLoading = {isLoading}
+            availabilities={availabilityData}
+          />
+        } 
+       
+    </div>
+  )
+}
 
 
 interface ReadOnlyProps{
@@ -383,6 +464,8 @@ function EditAvailabilities({availabilities, selectedRecord, onToggleEditMode}:E
     const {paseto} = useAuthContext()
 
     const [state,setState] = useState(availabilities)
+
+    const queryClient = useQueryClient()
 
     // This functions takes in custom availability array and
    // changes the format of the date field of every item in the array.
@@ -444,6 +527,7 @@ function EditAvailabilities({availabilities, selectedRecord, onToggleEditMode}:E
         notification['success']({
             message: 'Successfully deleted record!'
         })
+        queryClient.invalidateQueries({queryKey:['availability', selectedRecord.id]})
           // remove from list  
        },
         onError:(err)=>{
@@ -574,6 +658,73 @@ function EditAvailabilities({availabilities, selectedRecord, onToggleEditMode}:E
     )
 }
 
+
+interface DeleteProp{
+  selectedRecord: ServiceItem
+  isOpen: boolean
+  onCloseModal: ()=>void
+  onDeleteRecord: ()=>void
+  isDeletingItem: boolean
+}
+
+function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteRecord, onCloseModal}:DeleteProp){
+
+  function onFinish(){
+    // call mutate function to delete record
+  }
+
+  const [form] = Form.useForm()
+
+  return(
+    <Modal title="Are you absolutely sure?" footer={null} open={isOpen} onOk={()=>{}} onCancel={onCloseModal}>
+      <Alert style={{marginBottom:'.5rem'}} showIcon message="Bad things will happen if you don't read this!" type="warning" />
+      <Text >
+        {`This action cannot be undone. This will permanently delete the ${selectedRecord.name} service item, custom dates, prices, descriptions, coverImages, ticketsPerDay and remove from listing on marketplace 
+        `}
+      </Text>
+
+      <Form 
+      form={form} 
+      style={{marginTop:'1rem'}}
+      name="deleteServiceItemForm" 
+      layout='vertical'
+      onFinish={onFinish}>
+      <Form.Item
+        name="name"
+        style={{marginBottom:'.6rem'}}
+        label={`Please type "${selectedRecord.name}" to confirm`}
+        rules={[{ required: true, message: 'Please type correct service item name!' }]}
+      >
+        <Input disabled={isDeletingItem} />
+      </Form.Item>
+
+      <Form.Item
+        style={{marginBottom:'0'}}
+        shouldUpdate
+       >
+          {() => (
+          <Button
+            style={{width:'100%'}}
+            danger
+            loading={isDeletingItem}
+            htmlType="submit"
+            onClick={onDeleteRecord}
+            disabled={
+              // !form.isFieldTouched('name') &&
+              form.getFieldValue('name') !== selectedRecord.name
+              // !!form.getFieldsError().filter(({ errors }) => errors.length).length
+            }
+          >
+           I understand the consequences, delete permanently
+          </Button>
+        )}
+      </Form.Item>
+
+    </Form>
+
+  </Modal>
+  )
+}
 
 
 
