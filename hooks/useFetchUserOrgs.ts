@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import {useState, useEffect}  from 'react'
 import { useAuthContext } from '../context/AuthContext'
-import { ActiveOrgs, Org } from '../types/OrganisationTypes';
+import { ActiveOrgs, NewOrg, Org } from '../types/OrganisationTypes';
 import useOrgs from './useOrgs';
 
 // const initOrgs: Org[] = [
@@ -28,13 +28,13 @@ export default function useFetchUserOrgs(){
 
     console.log(data)
 
-    const orgs: Org[] = data ? data?.payload :[]
+    const orgs: NewOrg[] = data ? data?.payload :[]
 
 
     // use react query to fetch all orgs 
 
-    const determineCurrentOrg = (orgs:Org[])=>{
-        return orgs.map((org:Org):ActiveOrgs =>(
+    const determineCurrentOrg = (orgs:NewOrg[])=>{
+        return orgs.map((org:NewOrg):ActiveOrgs =>(
              {
                 ...org,
                 isActive: org.id == currentOrg.id? true:false

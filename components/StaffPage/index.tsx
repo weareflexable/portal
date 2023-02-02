@@ -1,10 +1,8 @@
 import React,{useState} from 'react'
 import {Card,Button,Typography,Alert,Space,Modal} from 'antd'
 import {PlusCircleOutlined} from '@ant-design/icons'
-import StaffList from './StaffList/StaffList';
 
 import { Staff } from '../../types/Staff';
-import CreateStaffForm from './CreateStaffForm/CreateStaffForm';
 import EditStaffForm from './EditStaffForm/EditStaffForm';
 import { useOrgContext } from '../../context/OrgContext';
 import useCrudDB from '../../hooks/useCrudDB';
@@ -49,21 +47,21 @@ export default function StaffView({}:StaffViewProps){
     return(
         <div>
            
-            <StaffList 
+            {/* <StaffList 
                 showCreateForm={openCreateForm}
                 onSelectStaffToEdit={selectItemToEdit} 
                 onDeleteStaff={deleteItem} 
                 staff={staff}
                 isFetchingStaff = {isFetchingStaff}
-            />
+            /> */}
             
         {/* } */}
         <Modal title="Add new employee" open={showCreateForm} footer={null} onCancel={closeCreateForm}>
-            <CreateStaffForm 
+            {/* <CreateStaffForm 
                 isCreatingStaff={isCreatingStaff}
                 onCloseForm={closeCreateForm} 
                 onCreateStaff={createItem}
-            />
+            /> */}
         </Modal>
 
         <Modal 

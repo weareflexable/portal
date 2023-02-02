@@ -2,12 +2,7 @@ import { Content } from 'antd/lib/layout/layout'
 import React from 'react'
 import { Typography,Col, Row, Button, Tabs } from 'antd'
 
-// import AdminOrgs from '../components/AdminOrgs'
-import TabPane from 'antd/lib/tabs/TabPane'
-// import AwaitingOrgs from '../components/AdminOrgs/AwaitingOrgsTable'
 import ManagerLayout from '../../../components/Manager/Layout/Layout'
-import ManagerOrgsLayout from '../../../components/Manager/Organizations/Layout'
-import ApprovedOrgs from '../../../components/Manager/Organizations/ManagerOrgsView/ManagerOrgsView'
 import { useRouter } from 'next/router'
 import ManagerOrgsView from '../../../components/Manager/Organizations/ManagerOrgsView/ManagerOrgsView'
 const {Title} = Typography;

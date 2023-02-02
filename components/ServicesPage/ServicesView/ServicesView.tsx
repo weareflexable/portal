@@ -229,7 +229,7 @@ function gotoDashboard(service:Service){
                </header>
 
                <Col offset={2} span={20}>
-                   {/* <Title style={{marginBottom:'1em'}} level={2}>Services</Title> */}
+                   <Title style={{marginBottom:'1em'}} level={2}>Services</Title>
                    <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                     <Radio.Group defaultValue={currentStatus.id} buttonStyle="solid">
                         {servicesFilter.map(filter=>(
