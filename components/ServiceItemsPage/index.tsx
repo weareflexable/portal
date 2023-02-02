@@ -374,11 +374,10 @@ const serviceItemsFilters = [
 ]
 
 interface AvailabilitySectionProp{
-  customAvailability: Availability,
   selectedServiceItem: ServiceItem
 }
 
-function AvailabilitySection({customAvailability,selectedServiceItem}:AvailabilitySectionProp){
+function AvailabilitySection({selectedServiceItem}:AvailabilitySectionProp){
 
   const {paseto} = useAuthContext()
 
@@ -728,20 +727,20 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
 
 
 
-const mockAvailabilty: Availability = [
-  {
-    date: 'Jan 22, 2022',
-    ticketsPerDay: '455',
-    price: '23'
-  },
-  {
-    date: 'Feb 21, 2023',
-    ticketsPerDay: '455',
-    price: '637'
-  },
-  {
-    date: 'Mar 15, 2023',
-    ticketsPerDay: '1445',
-    price: '123'
-  },
-]
+// const mockAvailabilty: Availability = [
+//   {
+//     date: 'Jan 22, 2022',
+//     ticketsPerDay: '455',
+//     price: '23'
+//   },
+//   {
+//     date: 'Feb 21, 2023',
+//     ticketsPerDay: '455',
+//     price: '637'
+//   },
+//   {
+//     date: 'Mar 15, 2023',
+//     ticketsPerDay: '1445',
+//     price: '123'
+//   },
+// ]

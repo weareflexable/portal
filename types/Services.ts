@@ -35,7 +35,8 @@ export type ServicePayload ={
 export type CustomDate = {
     price: string,
     ticketsPerDay: string,
-    date: string
+    date: string,
+    name: string
 }
 
 export type Availability = CustomDate[]

@@ -242,65 +242,13 @@ function BasicForm({nextStep}:BasicInfoProps){
             label="Cover image"
             valuePropName="fileList"
             getValueFromEvent={normFile}
-            extra="Upload file upto 2MB"
+            extra="This cover image will be used for DAT NFT"
             rules={[{ required: true, message: 'Please upload an image' }]}
         >
             <Upload name="logo" action="" listType="picture">
             <Button icon={<UploadOutlined />}>Upload service item cover image</Button>
             </Upload>
         </Form.Item> 
-
-
-        {/* <Form.List name="availability">
-                {(fields, { add, remove }) => (
-                    <>
-                    {fields.map(({ key, name, ...restField }) => (
-                        <Space key={key} style={{ display: 'flex', marginBottom: 8, alignItems:'center' }} >
-                        <Form.Item
-                            name={[name, 'price']}
-                            label='Price'
-                            {...restField}
-                            style={{width:'100%'}}
-                            rules={[{ required: true, message: 'Please input a valid price!' }]}
-                        >
-                            <InputNumber prefix="$"  placeholder="0.00" /> 
-                        </Form.Item> 
-
-                        <Form.Item
-                            {...restField}
-                            name={[name, 'ticketsPerDay']}
-                            label='Tickets per day'
-                            style={{width:'100%'}}
-                            rules={[{ required: true, message: 'Please input a valid number!' }]}
-                            >
-                            <InputNumber placeholder="20" />
-                        </Form.Item>
-
-                            <Form.Item
-                                {...restField}
-                                rules={[{ required: true, message: 'Please select a date!' }]}
-                                name={[name, 'date']}
-                                label="Date"
-                                style={{width:'100%'}}
-                                >
-                                <DatePicker format={['MMM DD, YYYY']} />
-                            </Form.Item>
-                            <div style={{marginLeft:'.5rem'}}>
-                                <MinusCircleOutlined onClick={() => remove(name)} />
-                            </div>
-                        </Space>
-                    ))}
-                    <Form.Item>
-                        <Button type="dashed" onClick={() => add()}  block icon={<PlusOutlined />}>
-                        Add custom availability
-                        </Button>
-                    </Form.Item>
-                    </>
-                )}
-            </Form.List> */}
-
-
-      
 
 
         <Form.Item style={{marginTop:'4rem'}}>
@@ -439,6 +387,16 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
                                 style={{width:'100%'}}
                                 >
                                 <DatePicker />
+                            </Form.Item>
+
+                            <Form.Item
+                                 {...restField}
+                                 rules={[{ required: true, message: 'Please select a date!' }]}
+                                 name={[name, 'name']}
+                                //  label="Name"
+                                style={{width:'100%'}}
+                                >
+                                <Input placeholder='label: Thanks giving' />
                             </Form.Item>
 
                             <div style={{marginLeft:'.5rem'}}>
