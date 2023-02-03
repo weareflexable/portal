@@ -151,6 +151,15 @@ function gotoDashboard(service:Service){
           </div>
         )
       },
+        {
+          title: 'Type',
+          dataIndex: 'serviceType',
+          key: 'serviceType',
+          render: (_,record)=>{
+            const type = record.serviceType[0]
+              return <Text>{type.name}</Text>
+          }
+        },
       {
         title: 'Timezone',
         dataIndex: 'timeZone',
@@ -163,14 +172,6 @@ function gotoDashboard(service:Service){
         key: 'currency',
         width:'70px',
       },
-    //   {
-    //     title: 'Type',
-    //     dataIndex: 'serviceType',
-    //     key: 'serviceType',
-    //     // render: (serviceType)=>{
-    //     //     return <Text>{serviceType[0].name}</Text>
-    //     // }
-    //   },
       {
         title: 'Status',
         dataIndex: 'status',
@@ -279,7 +280,7 @@ const {switchService} = useServicesContext()
 const {paseto} = useAuthContext()
 
 function closeDrawerHandler(){
-  queryClient.invalidateQueries(['organizations'])
+  queryClient.invalidateQueries(['services']) 
   closeDrawer(!isDrawerOpen)
 }
 
@@ -348,7 +349,6 @@ return(
   
   <EditableName selectedRecord={selectedRecord}/>
   <EditableAddress selectedRecord={selectedRecord}/>
-  <EditablePhone selectedRecord={selectedRecord}/>
   <EditableCurrency selectedRecord={selectedRecord}/>
   <EditableLogoImage selectedRecord={selectedRecord}/>
   <EditableCoverImage selectedRecord={selectedRecord}/>

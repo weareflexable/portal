@@ -28,7 +28,6 @@ export default function NewService(){
         latitude:0,
         longitude:0,
         state: '',
-        street: '',
         country:'',
         city:''
     })
@@ -64,18 +63,16 @@ export default function NewService(){
             fields: ['address_components','geometry','formatted_address','name']
         },
         onPlaceSelected: (place) => {
-            console.log(place)
             // console.log(antInputRef.current.input)
             form.setFieldValue('address',place?.formatted_address)
             
             const fullAddress = extractFullAddress(place)
             // add street address
-            const addressWithStreet={
-                ...fullAddress,
-                street: place?.formatted_address
-            }
-            console.log(addressWithStreet)
-            setFullAddress(addressWithStreet)
+            // const addressWithStreet={
+            //     ...fullAddress,
+            //     street: place?.formatted_address
+            // }
+            setFullAddress(fullAddress)
 
             //@ts-ignore
           antInputRef.current.input.value = place?.formatted_address
@@ -88,7 +85,7 @@ export default function NewService(){
 
         setIsHashingAssets(true)
         //@ts-ignore
-        const imageHash = await asyncStore(formData.imageHash[0].originFileObj)
+        const imageHash = await asyncStore(formData.logoImageHash[0].originFileObj)
         //@ts-ignore
         const coverImageHash = await asyncStore(formData.coverImageHash[0].originFileObj)
         setIsHashingAssets(false)
@@ -99,7 +96,10 @@ export default function NewService(){
             ...fullAddress,
             logoImageHash: imageHash,
             coverImageHash: coverImageHash,
-            orgId:currentOrg.id,
+            latitude:String(fullAddress.latitude),
+            longitude:String(fullAddress.longitude),
+            //@ts-ignore
+            orgId:currentOrg.orgId,
             timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // get user timezone
         }
 
@@ -130,7 +130,7 @@ export default function NewService(){
         notification['success']({
             message: 'Success creating record',
           });
-          router.back()
+          router.replace('/organizations/services')
        },
         onError:()=>{
             notification['error']({
@@ -142,13 +142,6 @@ export default function NewService(){
 
     const {isError, isLoading:isCreatingData, isSuccess:isDataCreated, data:createdData} = createData
     
-    if(isDataCreated){
-        notification['success']({
-            message: 'Created record succesfully!',
-          });
-          // navigate back to services page
-          router.replace('/organisation')
-    }
 
     return (
         <div style={{background:'#ffffff', minHeight:'100vh'}}>
@@ -166,7 +159,7 @@ export default function NewService(){
                 <Col offset={3} span={8}>
                     
                     <Form
-                    name="storeForm"
+                    name="serviceForm"
                     initialValues={{ remember: true }}
                     layout='vertical'
                     onFinish={onFinish}
@@ -199,10 +192,10 @@ export default function NewService(){
 
 
                     <Form.Item
-                        name="serviceId"
+                        name="serviceTypeId"
                         label='Service type'
                         initialValue={'Bar'}
-                        rules={[{ required: true, message: 'Please input a valid address!' }]}
+                        rules={[{ required: true, message: 'Please select a service type!' }]}
                     >
                         <Select
                             style={{ width: 120 }}
@@ -211,7 +204,7 @@ export default function NewService(){
                     </Form.Item>
 
                     <Form.Item
-                        name="currencyCode"
+                        name="currency"
                         label='Currency'
                         rules={[{ required: true, message: 'Please input a valid code!' }]}
                     >
@@ -221,14 +214,14 @@ export default function NewService(){
 
 
                     <Form.Item
-                        name="imageHash"
+                        name="logoImageHash"
                         label="Logo"
-                        valuePropName="imageHash"
+                        valuePropName="logoImageHash"
                         getValueFromEvent={normFile}
                         extra="Upload file upto 2MB"
                         rules={[{ required: true, message: 'Please upload an image' }]}
                     >
-                        <Upload name="imageHash" action="" listType="picture">
+                        <Upload name="logoImageHash" action="" listType="picture">
                         <Button icon={<UploadOutlined />}>Upload service logo</Button>
                         </Upload>
                     </Form.Item>

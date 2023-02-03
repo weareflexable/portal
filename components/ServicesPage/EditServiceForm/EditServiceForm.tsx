@@ -114,6 +114,7 @@ interface EditableProp{
   
     const [isEditMode, setIsEditMode] = useState(false)
     const antInputRef = useRef();
+    const [focused, setFocused] = useState(false)
     const [fullAddress, setFullAddress] = useState({
       latitude:0,
       longitude:0,
@@ -150,23 +151,38 @@ interface EditableProp{
           return addressObj
   }
   
-    const { ref: antRef } = usePlacesWidget({
-      apiKey: `${process.env.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API}`, // move this key to env
-      // apiKey: `AIzaSyB7ZUkMcIXpOKYU4r4iBMM9BFjCL5OpeeE`, // move this key to env
-      onPlaceSelected: (place) => {
-          // console.log(antInputRef.current.input)
-          form.setFieldValue('address',place?.formatted_address)
-          
-          const fullAddress = extractFullAddress(place)
-          setFullAddress(fullAddress)
+  const { ref: antRef } = usePlacesWidget({
+    apiKey: 'AIzaSyAxBDdnJsmCX-zQa-cO9iy-v5pn53vXEFA', // move this key to env
+    options:{
+        componentRestrictions:{country:'us'},
+        types: ['address'],
+        fields: ['address_components','geometry','formatted_address','name']
+    },
+    onPlaceSelected: (place) => {
+        // console.log(antInputRef.current.input)
+        form.setFieldValue('address',place?.formatted_address)
+
+        console.log(place)  
+        
+        const fullAddress = extractFullAddress(place)
+        // add street address
+        // const addressWithStreet={
+        //     ...fullAddress,
+        //     street: place?.formatted_address
+        // }
+        setFullAddress(fullAddress)
+
+        //@ts-ignore
+      antInputRef.current.input.value = place?.formatted_address
+
+    },
+  });
   
-          //@ts-ignore
-        antInputRef.current.input.value = place?.formatted_address
+  function focusHandler(){
+    setFocused(true)
+  }
   
-      },
-    });
-  
-  
+  console.log('focused nput', focus)
     const nameMutationHandler = async(updatedItem:any)=>{
       const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
         headers:{
@@ -221,15 +237,15 @@ interface EditableProp{
               name="address"
               rules={[{ required: true, message: 'Please input a valid address!' }]}
           >
-              {/* <TextArea rows={3} placeholder='Apt. 235 30B NorthPointsettia Street, Syracuse'/> */}
-              <Input ref={(c) => {
+             <Input onFocus={focusHandler} ref={(c) => {
                   // @ts-ignore
                   antInputRef.current = c;
+              
                   // @ts-ignore
                   if (c) antRef.current = c.input;
                   }} 
                   placeholder="Syracuse, United states" 
-                  />
+              />
           </Form.Item>
   
           </Col>
@@ -257,95 +273,7 @@ interface EditableProp{
       </div>
     )
   }
-  export function EditablePhone({selectedRecord}:EditableProp){
-  
-    const [isEditMode, setIsEditMode] = useState(false)
-  
-    const {paseto} = useAuthContext()
-  
-    const queryClient = useQueryClient()
-  
-    function toggleEdit(){
-      setIsEditMode(!isEditMode)
-    }
-  
-    const readOnly = (
-        <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-          <Text>{selectedRecord.currency}</Text>
-          <Button type="link" onClick={toggleEdit}>Edit</Button>
-        </div>
-    )
-  
-    const nameMutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
-        headers:{
-            //@ts-ignore
-            "Authorization": paseto
-        }
-      })
-        return data;
-    }
-    const nameMutation = useMutation({
-      mutationKey:['phone'],
-      mutationFn: nameMutationHandler,
-      onSuccess:()=>{
-        toggleEdit()
-        queryClient.invalidateQueries(['organizations'])
-      }
-    })
-  
-    function onFinish(field:any){
-      const payload = {
-        key:'phone',
-        value: field.phone,
-        orgId: selectedRecord.id
-      }
-      console.log(payload)
-      nameMutation.mutate(payload)
-    }
-  
-    const {isLoading:isEditing} = nameMutation 
-  
-    const editable = (
-      <Form
-       style={{ marginTop:'.5rem' }}
-       name="editablePhone"
-       initialValues={selectedRecord}
-       onFinish={onFinish}
-       >
-        <Row>
-          <Col span={16}>
-            <Form.Item
-                name="phone"
-                rules={[{ required: true, message: 'Please input a valid phone number' }]}
-            >
-                <Input disabled={isEditing} placeholder="09023234857" />
-            </Form.Item>
-          </Col>
-          <Col span={4}>
-            <Form.Item style={{ width:'100%'}}>
-                <Space >
-                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
-                        Cancel
-                    </Button>
-                    <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
-                        Apply changes
-                    </Button>
-                </Space>
-                          
-            </Form.Item>
-          </Col>
-        </Row>
-             
-      </Form>
-    )
-    return(
-      <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-        <Text type="secondary" style={{ marginRight: '2rem',}}>Phone</Text>
-        {isEditMode?editable:readOnly}
-      </div>
-    )
-  }
+
   
   export function EditableCurrency({selectedRecord}:EditableProp){
   
