@@ -20,15 +20,12 @@ export default function Staffs(){
     return(
         <AppLayout>
                 <Row>
-                    <Col offset={1} span={20}>
-                    {/* <div style={{width:'100%', display:'flex', marginTop:'2rem', marginBottom:'3rem', justifyContent:'flex-end', alignItems:'center'}}> */}
-                        {/* <Title style={{marginLeft: '1em'}} level={3}>Organizations</Title> */}
-                        {/* <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/services/serviceItems/new')}>New service-item</Button> */}
-                    {/* </div> */}
+                    <Col offset={1} span={22}>
+                    <div style={{width:'100%', display:'flex', marginTop:'1rem', marginBottom:'1rem', justifyContent:'space-between', alignItems:'center'}}> 
+                        <Title  level={2}>Service Items</Title> 
+                     </div>
                         <Content
                             style={{
-
-                            margin:'1em',
                             // background:'white' ,
                             // width:`98%`,
                             maxWidth:'100%',

@@ -33,8 +33,12 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
    }
   
 
-  const items: MenuProps['items'] = [
-    {label:<Text onClick={navigateBackToServices}  >Back to services</Text>, key:'servicesPage'},
+
+  const items: MenuProps['items'] = currentUser.role == 1 ? getManagerMenu() :getAdminMenu()
+
+  function getAdminMenu(){
+    return[
+      {label:<Text onClick={navigateBackToServices}  >Back to services</Text>, key:'servicesPage'},
     {label:<Text onClick={navigateBackToOrgs} >Back to organizations</Text>, key:'organizationsPage'},
     {type:'divider', key:'divider0'},
     {label:<Text onClick={openOrgSwitcher}  >Switch organization</Text>, key:'switchOrganizations'},
@@ -42,7 +46,19 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
     {label:<Text onClick={navigateToProfile}  >Profile</Text>, key:'profile'},
     {type:'divider', key:'divider2'},
     {label:<Button onClick={logout} danger type='link'>Logout</Button>, key:'logout'},
-  ];
+    ]
+  }
+
+  function getManagerMenu(){
+    return[
+    {label:<Text onClick={navigateBackToServices}>Back to services</Text>, key:'servicesPage'},
+    {label:<Text onClick={()=>router.push('/manager/organizations')} >Back to organizations</Text>, key:'organizationsPage'},
+    {type:'divider', key:'divider0'},
+    {label:<Text onClick={navigateToProfile}  >Profile</Text>, key:'profile'},
+    {type:'divider', key:'divider2'},
+    {label:<Button onClick={logout} danger type='link'>Logout</Button>, key:'logout'},
+    ]
+  }
 
 
     return(

@@ -149,7 +149,7 @@ export default function ServiceItemsView(){
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={'/favicon.ico'}/>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.logoImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{record.name}</Text>  
                     </div>
@@ -220,14 +220,15 @@ export default function ServiceItemsView(){
 
         return (
             <div>
-                <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+                <div style={{marginBottom:'2em', marginTop:'2.5rem', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                 <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
                     {serviceItemsFilters.map(filter=>(
                         <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
                      )
                     )}
                 </Radio.Group>
-                <div style={{width: "20%",display:'flex', marginTop:'2rem', justifyContent:'space-between', alignItems:'center'}}>
+
+                <div style={{width: "20%",display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                   <Button type='link' loading={serviceItemsQuery.isRefetching} onClick={()=>serviceItemsQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
                   <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/services/serviceItems/new')}>New service-item</Button>
                 </div>
