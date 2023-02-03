@@ -10,7 +10,7 @@ import { useRouter } from 'next/router'
 
 interface CurrentUserProps{
     user?: {email:string, role:string}
-    openOrgSwitcher: ()=>void
+    openOrgSwitcher?: ()=>void
 }
 
 

@@ -2,99 +2,70 @@
 import {useState} from 'react'
 import type { NextPage } from 'next'
 
-import { Button,Typography,Modal} from 'antd';
+import { Button,Typography,Modal, Row, Layout, Col} from 'antd';
+
 const {Title} = Typography; 
 import { useAuthContext } from '../../context/AuthContext';
 import {OrgFormData } from '../../types/OrganisationTypes';
 import { nftStorageClient } from '../../utils/nftStorage';
 import RegisterOrgForm from '../../components/LoungePage/RegisterOrgForm/RegisterOrgForm';
-import {PlusCircleOutlined} from '@ant-design/icons'
+import {PlusCircleOutlined,PlusOutlined} from '@ant-design/icons'
 import dynamic from 'next/dynamic';
 import useMutateData from '../../hooks/useMutateData';
+import { useRouter } from 'next/router';
+import { Content } from 'antd/lib/layout/layout';
+import CurrentUser from '../../components/Header/CurrentUser/CurrentUser';
 
-const DynamicOrgs = dynamic(()=>import('../../components/OrganizationsPage/OrganizationList/OrganizationList'),{
+const DynamicOrgs = dynamic(()=>import('../../components/OrganizationsPage/OrganizationList/OrganizationView'),{
     ssr:false,
 })
 
 
 const Organizations: NextPage = () => {
 
-
-    const [isRegisteringOrg, setIsRegisteringOrg] = useState(false)
     const [showOrgForm, setShowOrgForm] = useState(false)
     
 
     const {logout} = useAuthContext()
- 
-    const {createItem} = useMutateData('org/user/create')
-    
-
-    // Function to request for organisations
-    const registerOrg = (formData:OrgFormData)=>{
-        // call image hashing function here
-        console.log(formData)
-        setIsRegisteringOrg(true)
-        const imageBlob = formData.imageFile
-        // TODO: fix this this type issue later
-        nftStorageClient.storeBlob(imageBlob as unknown as Blob).then(cid=>{
-            
-            const reqPayload = {  
-                name:formData.name,
-                emailId: formData.emailId,
-                address: formData.address,
-                phoneNumber: formData.phoneNumber,
-                imageHash: cid
-            }
-            // createNewOrg.mutate()
-            createItem(reqPayload)
-
-            setIsRegisteringOrg(false)
-
-        }).catch(err=>{
-            setIsRegisteringOrg(false)
-            console.log('something went wrong',err) 
-        })
-
-       
-    }
+    const router = useRouter()
 
 
     return(
         <>
-        {/* <Button type='primary'>Button</Button> */}
-        <div style={{
-            width: '100vw',
-            minHeight:'100vh',
-            background: '#f7f7f7',
-            height: '100%',
-            display:'flex',
-            flexDirection:'column',
-            alignItems:'flex-start',
-            paddingLeft:'4rem',
-            paddingTop:'2rem'
-        }}>
-
-                <div style={{display:'flex', justifyContent:'space-between',alignItems:'center',width:'90%'}}>
-                        <Title level={1}>Welcome to the lounge</Title>
-                        <Button danger onClick={logout}>Logout</Button>
-                </div>
+       
+                <Row style={{background: '#fffff'}}>
+                    <Col offset={1} span={22}>
+                        <div style={{display:'flex', padding:'1rem 0', justifyContent:'space-between',alignItems:'center',width:'100%'}}>
+                            <Title style={{margin:'0'}} level={3}>Welcome to the lounge</Title>
+                            {/* <Button danger onClick={logout}>Logout</Button> */}
+                            <CurrentUser/> 
+                        </div>
+                    </Col>
+                </Row>
             
-                <div style={{display:'flex', marginTop:'4em', flexDirection:'column', width:'60%'}} > 
-                             <Title style={{marginBottom:'0'}} level={4}>My organizations</Title>
-                                <Button type='link' style={{ marginTop:'1.5em', display: 'flex', alignItems: 'center' }} icon={<PlusCircleOutlined />} onClick={()=>setShowOrgForm(true)}>Register new organisation</Button>
+            <Row style={{background: '#f4f4f4',height:'100%',minHeight:'100vh'}}>
+                <Col offset={1} span={22}>
+                    <div style={{width:'100%', display:'flex', marginTop:'2rem', marginBottom:'2rem', justifyContent:'space-between', alignItems:'center'}}>
+                        <Title style={{margin:'0'}} level={2}>My organizations</Title>
+                        <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/manager/organizations/new')}>New organization</Button>
+                    </div>
+                    <Content 
+                        style={{
+                        // padding: '1em',
+                        // margin:'1em',
+                        // background:'white' ,
+                        width:`98%`,
+                        maxWidth:'100%', 
+                        }}
+                    > 
                                 <DynamicOrgs/>
-                    </div> 
+                                </Content>
+                </Col>
+            </Row>
 
 
-
-           { showOrgForm? <Modal  title="Create organization" open={showOrgForm} footer={null} onCancel={()=>setShowOrgForm(false)}>
-                <RegisterOrgForm
-                    onRegisterNewOrg={registerOrg}
-                    isRegisteringOrg={isRegisteringOrg}
-                />
-            </Modal>: null}
             
-        </div>
+        {/* </div> */}
         </>
     )
 }

@@ -19,6 +19,7 @@ export default function Login(){
 
     useEffect(() => {
       if(isAuthenticated && currentUser.id){
+        console.log(currentUser)
         // check users currrent role
         // navigate user accordingly
         // if user is manager, navigate to manager page
