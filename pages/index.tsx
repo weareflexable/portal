@@ -19,7 +19,6 @@ export default function Login(){
 
     useEffect(() => {
       if(isAuthenticated && currentUser.id){
-        console.log(typeof currentUser.role)
         if(currentUser.role == 1){
             replace('/manager/organizations')
         }else(
