@@ -6,10 +6,11 @@ import axios from "axios"
 import { useState } from "react"
 import { useAuthContext } from "../../../context/AuthContext"
 import { ServiceItem } from "../../../types/Services"
+import { asyncStore } from "../../../utils/nftStorage"
 
 interface EditableProp{
     selectedRecord: ServiceItem
-  }
+  } 
   
   export function EditableName({selectedRecord}:EditableProp){
   
