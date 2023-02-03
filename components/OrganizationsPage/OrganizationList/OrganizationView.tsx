@@ -413,18 +413,18 @@ export default function AdminOrgsView(){
             )
         },
     },
-      {
-          title: 'UpdatedAt',
-          dataIndex: 'updatedAt',
-          key: 'updatedAt',
-          render: (_,record)=>{
-            //@ts-ignore
-              const date = dayjs().from(dayjs(record.updatedAt),true)
-              return(
-            <Text>{date} ago</Text>
-            )
-        },
-    },
+    //   {
+    //       title: 'UpdatedAt',
+    //       dataIndex: 'updatedAt',
+    //       key: 'updatedAt',
+    //       render: (_,record)=>{
+    //         //@ts-ignore
+    //           const date = dayjs().from(dayjs(record.updatedAt),true)
+    //           return(
+    //         <Text>{date} ago</Text>
+    //         )
+    //     },
+    // },
     {
         ...getTableActions()
     }

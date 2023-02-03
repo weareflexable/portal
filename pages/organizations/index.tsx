@@ -1,8 +1,8 @@
 
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import type { NextPage } from 'next'
 
-import { Button,Typography,Modal, Row, Layout, Col} from 'antd';
+import { Button,Typography,Modal, Row, Layout, Col, Skeleton} from 'antd';
 
 const {Title} = Typography; 
 import { useAuthContext } from '../../context/AuthContext';
@@ -23,22 +23,26 @@ const DynamicOrgs = dynamic(()=>import('../../components/OrganizationsPage/Organ
 
 const Organizations: NextPage = () => {
 
-    const [showOrgForm, setShowOrgForm] = useState(false)
-    
+    const [isHydrated, setIsHydrated] = useState(false)    
 
     const {logout} = useAuthContext()
     const router = useRouter()
+
+    useEffect(() => {
+        setIsHydrated(true)
+    }, [])
 
 
     return(
         <>
        
-                <Row style={{background: '#fffff'}}>
+                <Row style={{background: '#ffffff'}}>
                     <Col offset={1} span={22}>
                         <div style={{display:'flex', padding:'1rem 0', justifyContent:'space-between',alignItems:'center',width:'100%'}}>
                             <Title style={{margin:'0'}} level={3}>Welcome to the lounge</Title>
                             {/* <Button danger onClick={logout}>Logout</Button> */}
-                            <CurrentUser/> 
+                            {/* <CurrentUser/>  */}
+                            {isHydrated?<CurrentUser/>: <Skeleton.Input active={true} size={'default'} />}
                         </div>
                     </Col>
                 </Row>
