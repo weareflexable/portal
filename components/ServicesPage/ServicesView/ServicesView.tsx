@@ -34,6 +34,7 @@ export default function ManagerOrgsView(){
     const {switchService} = useServicesContext()
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+    const [pageNumber, setPageNumber] = useState<number|undefined>(0)
    
 
     type DataIndex = keyof Service;
@@ -94,12 +95,23 @@ export default function ManagerOrgsView(){
 
     const servicesQuery = useQuery({queryKey:['services', currentStatus], queryFn:fetchServices, enabled: paseto !== ''})
     const data = servicesQuery.data && servicesQuery.data.data
+    const servicesData = data && data.data
+    const totalLength = data && data.dataLength;
+
+
 
 
     function gotoBillingsPage(){
       router.push('/organizations/services/billings')
     }
 
+
+    const handleChange: TableProps<Service>['onChange'] = (data) => {
+      console.log(data.current)
+      //@ts-ignore
+      setPageNumber(data.current-1); // Subtracting 1 because pageSize param in url starts counting from 0
+    };
+  
    
 function gotoDashboard(service:Service){
   // switch org
@@ -247,7 +259,18 @@ function gotoDashboard(service:Service){
                     </div>
                 </div>
                 
-                <Table style={{width:'100%'}} size='large' key='dfadfe' loading={servicesQuery.isLoading} columns={columns} dataSource={data} />
+                <Table 
+                  style={{width:'100%'}} 
+                  size='large' key='dfadfe' 
+                  onChange={handleChange} 
+                  loading={servicesQuery.isLoading} 
+                  columns={columns} 
+                  dataSource={data}
+                  pagination={{
+                    total:totalLength,  
+                    showTotal:(total) => `Total: ${total} items`,
+                  }} 
+                   />
                 {
                   isDrawerOpen
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedRecord={selectedRecord}/>
