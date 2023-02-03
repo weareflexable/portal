@@ -504,7 +504,7 @@ return(
   <EditableLogoImage selectedOrg={selectedOrg}/>
   <EditableCoverImage selectedOrg={selectedOrg}/>
 
- <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
+  <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
     <Divider/>
     <Button danger type="link">De-activate organization</Button>
     <Divider/>

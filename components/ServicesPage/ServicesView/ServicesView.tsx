@@ -2,22 +2,21 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useOrgs from "../../../hooks/useOrgs";
 const {Text, Title} = Typography;
 import React, { useEffect, useRef, useState } from 'react'
-import {Typography,Button,Avatar, Upload,Skeleton, Badge, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form} from 'antd'
+import {Typography,Button,Avatar, Upload,Skeleton, Badge, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Modal, Alert, notification} from 'antd'
 import { useRouter } from 'next/router'
 import axios from 'axios';
 import { MoreOutlined, ReloadOutlined, ArrowLeftOutlined, PlusOutlined} from '@ant-design/icons'
-import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
 
 import { useAuthContext } from '../../../context/AuthContext';
 import { useServicesContext } from '../../../context/ServicesContext';
 import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { useOrgContext } from "../../../context/OrgContext";
-import { asyncStore } from "../../../utils/nftStorage";
 import { usePlacesWidget } from "react-google-autocomplete";
 import { Service } from "../Services.types";
 import Link from "next/link";
 import { EditableAddress, EditableCoverImage, EditableCurrency, EditableLogoImage, EditableName, EditablePhone } from "../EditServiceForm/EditServiceForm";
+import CurrentUser from "../../Header/CurrentUser/CurrentUser";
 const {TextArea} = Input
 
 var relativeTime = require('dayjs/plugin/relativeTime')
@@ -35,8 +34,7 @@ export default function ManagerOrgsView(){
     const {switchService} = useServicesContext()
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-  
-    console.log('org',currentOrg)  
+   
 
     type DataIndex = keyof Service;
 
@@ -52,7 +50,7 @@ export default function ManagerOrgsView(){
     const res = await axios({
             method:'get',
             //@ts-ignore
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/services?key=org_id&value=${currentOrg.orgId}&pageNumber=0&pageSize=10`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/services?key=org_id&value=${currentOrg.orgId}&pageNumber=0&pageSize=10&key2=status&value2=1`,
             headers:{
                 "Authorization": paseto
             }
@@ -218,17 +216,18 @@ function gotoDashboard(service:Service){
 
         return (
             <div style={{background:'#f7f7f7', minHeight:'100vh'}}>
-                <Row style={{marginTop:'.5em'}} gutter={[16,46]}>
-               <header style={{width:'100%', background:'#ffffff'}}>
-                   <Col style={{display:'flex', justifyContent:'space-between'}} offset={2} span={20}>
+                <Row style={{marginTop:'.5em'}} gutter={[16,16]}>
+               <header style={{width:'100%', padding:'.2rem 0' , background:'#ffffff'}}>
+                   <Col style={{display:'flex', justifyContent:'space-between'}} offset={2} span={22}>
                        <div style={{display:'flex', flex:'7', flexDirection:'column'}}> 
                            <Button style={{display:'flex', padding: '0', margin:'0', alignItems:'center', textAlign:'left'}} onClick={()=>router.replace('/')} icon={<ArrowLeftOutlined />} type='link'>Back to organizations</Button>
                            {isHydrated ? <Title level={4}>{currentOrg.name}</Title>:<Skeleton.Input active size='default' /> } 
                        </div>
- 
-                       <div style={{display:'flex', flex:'3', justifyContent:'flex-end', alignItems:'center'}}>
-                          <Button type="link" onClick={gotoBillingsPage} >Billings</Button>
-                       </div>
+
+                       {isHydrated?<div style={{ display:'flex', flex:'3', justifyContent:'space-end', alignItems:'center'}}>
+                          <Button type="link" style={{marginRight:'2rem'}} onClick={gotoBillingsPage} >Billings</Button>
+                          <CurrentUser/>
+                       </div>: <Skeleton.Input active size='default'/>}
                    </Col>
                </header>
 
@@ -274,8 +273,10 @@ function DetailDrawer({selectedRecord,isDrawerOpen,closeDrawer}:DrawerProps){
 
 const queryClient = useQueryClient()
 const router = useRouter()
+const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 // const {swi} = useOrgContext()
 const {switchService} = useServicesContext()
+const {paseto} = useAuthContext()
 
 function closeDrawerHandler(){
   queryClient.invalidateQueries(['organizations'])
@@ -288,6 +289,51 @@ function gotoServices(service:Service){
   // navigate user to services page
   router.push('/organizations/services/bookings') // redirect to dashboard later
 }
+
+function toggleDeleteModal(){
+  setIsDeleteModalOpen(!isDeleteModalOpen)
+}
+
+function deleteService(){ 
+  console.log(selectedRecord.id)
+  // mutate record
+  deleteData.mutate(selectedRecord,{
+    onSuccess:()=>{
+      notification['success']({
+        message: 'Successfully deleted record!'
+      })
+      toggleDeleteModal()
+      closeDrawerHandler()
+
+    },
+    onError:(err)=>{
+        console.log(err)
+        notification['error']({
+            message: 'Encountered an error while deleting record custom custom dates',
+          });
+        // leave modal open
+    }
+  })
+}
+
+const deleteDataHandler = async(record:Service)=>{      
+  const {data} = await axios({
+    method:'patch',
+    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/services`,
+    data: {
+        id:record.id,
+        key:'status',
+        value: "0"
+      },
+    headers:{
+          "Authorization": paseto 
+  }})
+  return data
+}
+
+const deleteData = useMutation(deleteDataHandler)
+
+const{isLoading:isDeletingItem} = deleteData
 
 
 return( 
@@ -306,16 +352,90 @@ return(
   <EditableCurrency selectedRecord={selectedRecord}/>
   <EditableLogoImage selectedRecord={selectedRecord}/>
   <EditableCoverImage selectedRecord={selectedRecord}/>
-
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
-    <Divider/>
-    <Button danger type="link">De-activate service</Button>
-    <Divider/>
+    <Title level={3}>Danger zone</Title>
+    <Button danger onClick={toggleDeleteModal} style={{width:'30%'}} type="link">De-activate service</Button>
   </div>
+
+  <DeleteRecordModal 
+  isDeletingItem={isDeletingItem} 
+  onCloseModal={toggleDeleteModal} 
+  onDeleteRecord={deleteService} 
+  isOpen={isDeleteModalOpen} 
+  selectedRecord={selectedRecord}
+  />
 
 </Drawer>
 )
 }
+
+interface DeleteProp{
+  selectedRecord: Service
+  isOpen: boolean
+  onCloseModal: ()=>void
+  onDeleteRecord: ()=>void
+  isDeletingItem: boolean
+}
+
+function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteRecord, onCloseModal}:DeleteProp){
+
+  function onFinish(){
+    // call mutate function to delete record
+    onDeleteRecord()
+  }
+
+  const [form] = Form.useForm()
+
+  return(
+    <Modal title="Are you absolutely sure?" footer={null} open={isOpen} onOk={()=>{}} onCancel={onCloseModal}>
+      <Alert style={{marginBottom:'.5rem'}} showIcon message="Bad things will happen if you don't read this!" type="warning" />
+      <Text >
+        {`This action cannot be undone. This will permanently delete the ${selectedRecord.name} service item, staff, bookings, and remove from listing on marketplace 
+        `}
+      </Text>
+
+      <Form 
+      form={form} 
+      style={{marginTop:'1rem'}}
+      name="deleteServiceForm" 
+      layout='vertical'
+      onFinish={onFinish}>
+      <Form.Item
+        name="name"
+        style={{marginBottom:'.6rem'}}
+        label={`Please type "${selectedRecord.name}" to confirm`}
+        rules={[{ required: true, message: 'Please type correct service item name!' }]}
+      >
+        <Input disabled={isDeletingItem} />
+      </Form.Item>
+
+      <Form.Item
+        style={{marginBottom:'0'}}
+        shouldUpdate
+       >
+          {() => (
+          <Button
+            style={{width:'100%'}}
+            danger
+            loading={isDeletingItem}
+            htmlType="submit"
+            disabled={
+              // !form.isFieldTouched('name') &&
+              form.getFieldValue('name') !== selectedRecord.name
+              // !!form.getFieldsError().filter(({ errors }) => errors.length).length
+            }
+          >
+           I understand the consequences, delete permanently
+          </Button>
+        )}
+      </Form.Item>
+
+    </Form>
+
+  </Modal>
+  )
+}
+
 
 
 

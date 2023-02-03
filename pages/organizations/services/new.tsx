@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import {Form, Row, Col, Input,Upload,Button,notification, Typography, Space, Select} from 'antd';
-import {UploadOutlined} from '@ant-design/icons'
+import {UploadOutlined, ArrowLeftOutlined} from '@ant-design/icons'
 const {Title} = Typography
 const {TextArea} = Input
 
@@ -28,6 +28,7 @@ export default function NewService(){
         latitude:0,
         longitude:0,
         state: '',
+        street: '',
         country:'',
         city:''
     })
@@ -56,13 +57,25 @@ export default function NewService(){
     }
 
       const { ref: antRef } = usePlacesWidget({
-        apiKey: 'AIzaSyB7ZUkMcIXpOKYU4r4iBMM9BFjCL5OpeeE', // move this key to env
+        apiKey: 'AIzaSyAxBDdnJsmCX-zQa-cO9iy-v5pn53vXEFA', // move this key to env
+        options:{
+            componentRestrictions:{country:'us'},
+            types: ['address'],
+            fields: ['address_components','geometry','formatted_address','name']
+        },
         onPlaceSelected: (place) => {
+            console.log(place)
             // console.log(antInputRef.current.input)
             form.setFieldValue('address',place?.formatted_address)
             
             const fullAddress = extractFullAddress(place)
-            setFullAddress(fullAddress)
+            // add street address
+            const addressWithStreet={
+                ...fullAddress,
+                street: place?.formatted_address
+            }
+            console.log(addressWithStreet)
+            setFullAddress(addressWithStreet)
 
             //@ts-ignore
           antInputRef.current.input.value = place?.formatted_address
@@ -92,7 +105,7 @@ export default function NewService(){
 
         // @ts-ignore
         delete formObject.address
-        createDataHandler(formObject)
+        createData.mutate(formObject)
     }
 
     const normFile = (e: any) => {
@@ -104,7 +117,7 @@ export default function NewService(){
       };
 
       const createDataHandler = async(newItem:any)=>{
-        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/services/orgadmin/org-service`, newItem,{
+        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/services`, newItem,{
             headers:{
                 "Authorization": paseto
             },
@@ -141,8 +154,11 @@ export default function NewService(){
         <div style={{background:'#ffffff', minHeight:'100vh'}}>
             <div style={{marginBottom:'3rem', padding: '1rem', borderBottom:'1px solid #e5e5e5',}}>
                 <Row>
-                    <Col offset={3}> 
-                        <Title style={{marginTop:'0'}} level={3}>Create new service</Title>
+                    <Col offset={1}> 
+                         <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
+                            <Button shape='round' style={{marginRight:'1rem'}} type='text' onClick={()=>router.back()} icon={<ArrowLeftOutlined/>}/>
+                            <Title style={{margin:'0'}} level={3}>Create new service</Title>
+                        </div>
                     </Col>
                 </Row>
             </div>
@@ -170,16 +186,15 @@ export default function NewService(){
                         label='Address'
                         rules={[{ required: true, message: 'Please input a valid address!' }]}
                     >
-                        {/* <Input ref={(c) => {
+                        <Input ref={(c) => {
                             // @ts-ignore
                             antInputRef.current = c;
                             // @ts-ignore
                             if (c) antRef.current = c.input;
                             }} 
                             placeholder="Syracuse, United states" 
-                            /> */}
-                            {/* <TextArea></TextArea> */}
-                            <TextArea rows={3} placeholder='Apt. 235 30B NorthPointsettia Street, Syracuse'/>
+                            />
+                            {/* <TextArea rows={3} placeholder='Apt. 235 30B NorthPointsettia Street, Syracuse'/> */}
                     </Form.Item>
 
 
