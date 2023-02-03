@@ -229,7 +229,7 @@ function BasicForm({nextStep}:BasicInfoProps){
 
          <Form.Item
             name="serviceItemTypeId"
-            label='Service type'
+            label='Service item type'
             rules={[{ required: true, message: 'Please select a service-item type!' }]}
             >
             <Radio.Group>

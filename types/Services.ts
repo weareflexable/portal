@@ -47,6 +47,7 @@ export type ServiceItem = {
     ticketsPerDay: string,
     price: string,
     logoImageHash: string,
+    serviceItemType: any[],
     serviceItemTypeId: string,
     description: string,
     availability: Availability

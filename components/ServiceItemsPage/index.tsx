@@ -157,11 +157,15 @@ export default function ServiceItemsView(){
             )
         },
       },
-      // {
-      //   title: 'Type',
-      //   dataIndex: 'serviceItemType',
-      //   key: 'serviceItemType',
-      // },
+      {
+        title: 'Type',
+        dataIndex: 'serviceItemType',
+        key: 'serviceItemType',
+        render:(_,record)=>{
+          const type = record.serviceItemType[0]
+          return <Text>{type.name}</Text>
+        }
+      },
       {
         title: 'Tickets Per Day',
         dataIndex: 'ticketsPerDay',
