@@ -15,7 +15,7 @@ import { useOrgContext } from "../../../context/OrgContext";
 import { usePlacesWidget } from "react-google-autocomplete";
 import { Service } from "../Services.types";
 import Link from "next/link";
-import { EditableAddress, EditableCoverImage, EditableCurrency, EditableLogoImage, EditableName, EditablePhone } from "../EditServiceForm/EditServiceForm";
+import { EditableAddress, EditableCoverImage, EditableCurrency, EditableLogoImage, EditableName } from "../EditServiceForm/EditServiceForm";
 import CurrentUser from "../../Header/CurrentUser/CurrentUser";
 const {TextArea} = Input
 
@@ -218,11 +218,11 @@ function gotoDashboard(service:Service){
         return (
             <div style={{background:'#f7f7f7', minHeight:'100vh'}}>
                 <Row style={{marginTop:'.5em'}} gutter={[16,16]}>
-               <header style={{width:'100%', padding:'.2rem 0' , background:'#ffffff'}}>
+               <header style={{width:'100%', padding:'.5rem 0' , background:'#ffffff'}}>
                    <Col style={{display:'flex', justifyContent:'space-between'}} offset={2} span={22}>
-                       <div style={{display:'flex', flex:'7', flexDirection:'column'}}> 
-                           <Button style={{display:'flex', padding: '0', margin:'0', alignItems:'center', textAlign:'left'}} onClick={()=>router.replace('/')} icon={<ArrowLeftOutlined />} type='link'>Back to organizations</Button>
-                           {isHydrated ? <Title level={4}>{currentOrg.name}</Title>:<Skeleton.Input active size='default' /> } 
+                       <div style={{display:'flex', flex:'7',alignItems:'center'}}> 
+                           <Button style={{display:'flex', padding: '0', margin:'0', alignItems:'center', textAlign:'left'}} onClick={()=>router.replace('/')} icon={<ArrowLeftOutlined />} type='link'/>
+                           {isHydrated ? <Title style={{margin:'0'}} level={4}>{currentOrg.name}</Title>:<Skeleton.Input active size='default' /> } 
                        </div>
 
                        {isHydrated?<div style={{ display:'flex', flex:'3', justifyContent:'space-end', alignItems:'center'}}>

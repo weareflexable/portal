@@ -62,7 +62,7 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
           <Avatar src={''}/>
           <div style={{display:'flex', marginLeft:'.4rem', flexDirection:'column'}}>
             <Text ellipsis  style={{width:'100%', marginTop:'0', marginLeft:'.3em'}}>{currentUser.name}</Text>
-            <Text type='secondary' ellipsis style={{width:'150px', marginBottom:'0', marginRight:'.5em', marginLeft:'.3em'}}>{currentUser.email}</Text>
+            <Text type='secondary' ellipsis style={{width:'150px', marginBottom:'0', marginTop:'0', marginRight:'.5em', marginLeft:'.3em'}}>{currentUser.email}</Text>
           </div>
      </div>
     </Dropdown>
