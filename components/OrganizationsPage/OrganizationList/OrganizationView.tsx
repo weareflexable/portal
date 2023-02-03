@@ -426,16 +426,24 @@ export default function AdminOrgsView(){
         },
     },
     {
-      dataIndex: 'actions', 
-      key: 'actions',
-      render:(_,record)=>{
-        const items = getCurrentStatusActionItems()
-        return (<Dropdown menu={{ items , onClick: (e)=>onMenuClick(e,record) }}>
-          <Button type='text' icon={<MoreOutlined/>}/>
-        </Dropdown>)
-      }
+        ...getTableActions()
     }
     ];
+
+    function getTableActions(){
+        if(currentStatus.name === 'Approved'){
+            return {
+                dataIndex: 'actions', 
+                key: 'actions',
+                //@ts-ignore
+                render:(_,record:NewOrg)=>{
+                  const items = getCurrentStatusActionItems()
+                  return (<Button type='text' onClick={()=>viewOrgDetails(record)} icon={<MoreOutlined/>}/>)
+                }
+              }
+        }
+        return {}
+    }
 
         return (
             <div>
@@ -450,7 +458,7 @@ export default function AdminOrgsView(){
                 </div>
                 <Table style={{width:'100%'}} key='dfadfe' loading={orgQuery.isLoading||orgQuery.isRefetching} columns={columns} onChange={handleChange} dataSource={orgs} />
                 {
-                  isDrawerOpen
+                  isDrawerOpen && currentStatus.name === 'Approved'
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedOrg={selectedOrg}/>
                   :null
                 }
@@ -1195,20 +1203,12 @@ const orgStatus = [
 
 const approvedOrgsActions = [
     {
-        key: 'deActivate',
-        label: 'De-activate'
-    },
-    {
         key: 'viewDetails',
         label: 'View details'
     },
 
 ]
 const deActivatedOrgsActions = [
-    {
-        key: 'review',
-        label: 'Review'
-    },
     {
         key: 'viewDetails',
         label: 'View details'
@@ -1217,24 +1217,12 @@ const deActivatedOrgsActions = [
 ]
 const inReviewOrgsActions = [
     {
-        key: 'accept',
-        label: 'Accept'
-    },
-    {
-        key: 'reject',
-        label: 'Reject'
-    },
-    {
         key: 'viewDetails',
         label: 'View details'
     },
 
 ]
 const rejectedOrgsActions = [
-    {
-        key: 'review',
-        label: 'Review'
-    },
     {
         key: 'viewDetails',
         label: 'View details'

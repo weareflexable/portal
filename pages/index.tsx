@@ -19,12 +19,15 @@ export default function Login(){
 
     useEffect(() => {
       if(isAuthenticated && currentUser.id){
-        console.log(currentUser)
+        console.log(currentUser.role)
+        if(currentUser.role === "1"){
+            replace('/manager/organizations')
+        }
+        replace('/organizations')
         // check users currrent role
         // navigate user accordingly
         // if user is manager, navigate to manager page
         // if user is admin, navigate to organizations page
-          replace('/manager/organizations')
       }
     }, [isAuthenticated, currentUser, replace]) 
 
