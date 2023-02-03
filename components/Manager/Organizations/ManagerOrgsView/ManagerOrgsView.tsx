@@ -413,18 +413,18 @@ export default function ManagerOrgsView(){
             )
         },
     },
-      {
-          title: 'UpdatedAt',
-          dataIndex: 'updatedAt',
-          key: 'updatedAt',
-          render: (_,record)=>{
-            //@ts-ignore
-              const date = dayjs().from(dayjs(record.updatedAt),true)
-              return(
-            <Text>{date} ago</Text>
-            )
-        },
-    },
+    //   {
+    //       title: 'UpdatedAt',
+    //       dataIndex: 'updatedAt',
+    //       key: 'updatedAt',
+    //       render: (_,record)=>{
+    //         //@ts-ignore
+    //           const date = dayjs().from(dayjs(record.updatedAt),true)
+    //           return(
+    //         <Text>{date} ago</Text>
+    //         )
+    //     },
+    // },
     {
       dataIndex: 'actions', 
       key: 'actions',
@@ -504,7 +504,7 @@ return(
   <EditableLogoImage selectedOrg={selectedOrg}/>
   <EditableCoverImage selectedOrg={selectedOrg}/>
 
-  <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
+ <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
     <Divider/>
     <Button danger type="link">De-activate organization</Button>
     <Divider/>
@@ -993,7 +993,8 @@ function EditableLogoImage({selectedOrg}:EditableProp){
     const payload = {
       key:'logo_image_hash',
       value: logoHash,
-      orgId: selectedOrg.id
+      //@ts-ignore
+      orgId: selectedOrg.orgId
     }
     setUpdatedLogoImageHash(logoHash)
     mutation.mutate(payload)

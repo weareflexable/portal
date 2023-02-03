@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useOrgs from "../../../hooks/useOrgs";
 const {Text, Title} = Typography;
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {Typography,Button,Avatar, Upload,Skeleton, Badge, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form} from 'antd'
 import { useRouter } from 'next/router'
 import axios from 'axios';
@@ -42,6 +42,11 @@ export default function ManagerOrgsView(){
 
     const [selectedRecord, setSelectedRecord] = useState<any|Service>({})
     const [currentStatus, setCurrentStatus] = useState({id:'1',name: 'Active'})
+    const [isHydrated, setIsHydrated] = useState(false)
+
+    useEffect(() => {
+      setIsHydrated(true)
+    }, [])
 
     async function fetchServices(){
     const res = await axios({
@@ -218,12 +223,11 @@ function gotoDashboard(service:Service){
                    <Col style={{display:'flex', justifyContent:'space-between'}} offset={2} span={20}>
                        <div style={{display:'flex', flex:'7', flexDirection:'column'}}> 
                            <Button style={{display:'flex', padding: '0', margin:'0', alignItems:'center', textAlign:'left'}} onClick={()=>router.replace('/')} icon={<ArrowLeftOutlined />} type='link'>Back to organizations</Button>
-                           {currentOrg.name === ''? <Skeleton.Input active size='large' />:<Title level={4}>{currentOrg.name}</Title> } 
+                           {isHydrated ? <Title level={4}>{currentOrg.name}</Title>:<Skeleton.Input active size='default' /> } 
                        </div>
  
                        <div style={{display:'flex', flex:'3', justifyContent:'flex-end', alignItems:'center'}}>
-                            {/* <Link href='/organizations/services/billings'>Billing</Link> */}
-                            <Button type="link" onClick={gotoBillingsPage} >Billings</Button>
+                          <Button type="link" onClick={gotoBillingsPage} >Billings</Button>
                        </div>
                    </Col>
                </header>
