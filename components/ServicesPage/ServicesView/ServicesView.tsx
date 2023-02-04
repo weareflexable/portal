@@ -140,6 +140,8 @@ function gotoDashboard(service:Service){
         viewServiceDetails(record)
         console.log('click', record);
       };
+
+      console.log('filters',servicesFilter)
       
   
     const columns: ColumnsType<Service> = [
@@ -253,12 +255,12 @@ function gotoDashboard(service:Service){
                <Col offset={2} span={20}>
                    <Title style={{marginBottom:'1em'}} level={2}>Services</Title>
                    <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
-                    <Radio.Group defaultValue={currentStatus.id} buttonStyle="solid">
+                    {/* <Radio.Group defaultValue={currentStatus.id} buttonStyle="solid">
                         {servicesFilter.map(filter=>(
                             <Radio.Button key={filter.id} onClick={()=>setCurrentStatus(filter)} value={filter.id}>{filter.name}</Radio.Button>
                         )
                         )}
-                    </Radio.Group>
+                    </Radio.Group> */} 
                     <div style={{display:'flex',  justifyContent:'space-between', alignItems:'center'}}>
                         <Button type='link' loading={servicesQuery.isRefetching} onClick={()=>servicesQuery.refetch()} icon={<ReloadOutlined />}>{servicesQuery.isRefetching? 'Refreshing...':'Refresh'}</Button>
                         <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/services/new')}>Launch new service</Button>
@@ -268,7 +270,7 @@ function gotoDashboard(service:Service){
                 <Table 
                   style={{width:'100%'}} 
                   size='large' 
-                  key='dfadfe' 
+                  rowKey={(record)=>record.id}
                   onChange={handleChange} 
                   loading={servicesQuery.isLoading} 
                   columns={columns} 
