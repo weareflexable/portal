@@ -272,17 +272,17 @@ function gotoDashboard(service:Service){
                   onChange={handleChange} 
                   loading={servicesQuery.isLoading} 
                   columns={columns} 
-                  dataSource={data}
+                  dataSource={servicesData}
                   pagination={{
                     total:totalLength,  
                     showTotal:(total) => `Total: ${total} items`,
                   }} 
                    />
-                {/* {
+                {
                   isDrawerOpen
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedRecord={selectedRecord}/>
                   :null
-                }   */}
+                }  
 
                </Col> 
            </Row>
