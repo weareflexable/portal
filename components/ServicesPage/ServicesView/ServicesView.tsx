@@ -52,7 +52,8 @@ export default function ManagerOrgsView(){
             method:'get',
             //@ts-ignore
             // url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services?key=org_id&value=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=10&key2=status&value2=1`,
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/services?key=org_id&value=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=10&key2=status&value2=1`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/services?key=org_id&value=14&pageNumber=${pageNumber}&pageSize=10&key2=status&value2=1`,
+            // url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/services?key=org_id&value=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=10&key2=status&value2=1`,
             headers:{
                 "Authorization": paseto
             }
