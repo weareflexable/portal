@@ -51,7 +51,8 @@ export default function ManagerOrgsView(){
     const res = await axios({
             method:'get',
             //@ts-ignore
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services?key=org_id&value=${currentOrg.orgId}&pageNumber=0&pageSize=10&key2=status&value2=1`,
+            // url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services?key=org_id&value=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=10&key2=status&value2=1`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/services?key=org_id&value=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=10&key2=status&value2=1`,
             headers:{
                 "Authorization": paseto
             }
@@ -94,10 +95,10 @@ export default function ManagerOrgsView(){
 
     const shouldFetch = paseto !== '' && urlPrefix != undefined
 
-    console.log('prefix',urlPrefix)
-    console.log('shouldfetch',shouldFetch)
+    // console.log('prefix',urlPrefix)
+    // console.log('shouldfetch',shouldFetch)
 
-    const servicesQuery = useQuery({queryKey:['services', urlPrefix, currentStatus.name], queryFn:fetchServices, enabled: shouldFetch})
+    const servicesQuery = useQuery({queryKey:['services', urlPrefix, currentStatus.name, pageNumber], queryFn:fetchServices, enabled: paseto !== ''})
     const data = servicesQuery.data && servicesQuery.data.data
     const servicesData = data && data.data
     const totalLength = data && data.dataLength;
