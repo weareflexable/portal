@@ -101,11 +101,11 @@ export default function ManagerOrgsView(){
 
     const servicesQuery = useQuery({queryKey:['services', currentStatus.name, pageNumber], queryFn:fetchServices, enabled: paseto !== ''})
     const data = servicesQuery.data && servicesQuery.data.data
-    const servicesData = data && data.data
     const totalLength = data && data.dataLength;
 
 
-
+   console.log(data || [])
+  //  console.log(servicesData)
 
     function gotoBillingsPage(){
       router.push('/organizations/services/billings')
@@ -272,7 +272,7 @@ function gotoDashboard(service:Service){
                   onChange={handleChange} 
                   loading={servicesQuery.isLoading} 
                   columns={columns} 
-                  dataSource={servicesData}
+                  dataSource={data||[]}
                   pagination={{
                     total:totalLength,  
                     showTotal:(total) => `Total: ${total} items`,
