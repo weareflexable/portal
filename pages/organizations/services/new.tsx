@@ -60,11 +60,12 @@ export default function NewService(){
         options:{
             componentRestrictions:{country:'us'},
             types: ['address'],
-            fields: ['address_components','geometry','formatted_address','name']
+            fields: ['address_components','geometry','formatted_address']
         },
         onPlaceSelected: (place) => {
             // console.log(antInputRef.current.input)
             form.setFieldValue('address',place?.formatted_address)
+            console.log(place)
             
             const fullAddress = extractFullAddress(place)
             // add street address
@@ -173,8 +174,7 @@ export default function NewService(){
                         <Input placeholder="Bill Cage coffee" />
                     </Form.Item>
 
-                    <Form.Item
-                        
+                    <Form.Item  
                         name="address"
                         label='Address'
                         rules={[{ required: true, message: 'Please input a valid address!' }]}
@@ -187,9 +187,15 @@ export default function NewService(){
                             }} 
                             placeholder="Syracuse, United states" 
                             />
-                            {/* <TextArea rows={3} placeholder='Apt. 235 30B NorthPointsettia Street, Syracuse'/> */}
                     </Form.Item>
 
+                    {/* <Form.Item
+                        name="phone"
+                        label="Contact"
+                        rules={[{ required: true, message: 'Please input a valid phone number' }]}
+                    >
+                        <Input placeholder="" />
+                    </Form.Item> */}
 
                     <Form.Item
                         name="serviceTypeId"
