@@ -45,7 +45,7 @@ export default function ManagerOrgsView(){
       setIsHydrated(true)
     }, [])
 
-    const urlPrefix = currentUser.role == 1 ? 'manager': 'admin'
+    // const urlPrefix = currentUser.role == 1 ? 'manager': 'admin'
 
     async function fetchServices(){
     const res = await axios({
@@ -93,12 +93,12 @@ export default function ManagerOrgsView(){
         changeStatusMutation.mutate({serviceId:service.id, statusNumber:'0'})
     }
 
-    const shouldFetch = paseto !== '' && urlPrefix != undefined
+    // const shouldFetch = paseto !== '' && urlPrefix != undefined
 
     // console.log('prefix',urlPrefix)
     // console.log('shouldfetch',shouldFetch)
 
-    const servicesQuery = useQuery({queryKey:['services', urlPrefix, currentStatus.name, pageNumber], queryFn:fetchServices, enabled: paseto !== ''})
+    const servicesQuery = useQuery({queryKey:['services', currentStatus.name, pageNumber], queryFn:fetchServices, enabled: paseto !== ''})
     const data = servicesQuery.data && servicesQuery.data.data
     const servicesData = data && data.data
     const totalLength = data && data.dataLength;
@@ -195,21 +195,21 @@ function gotoDashboard(service:Service){
         key: 'status',
         width:'100px',
         render:(status)=>{
-            const statusText = status? 'Active': 'Stale' 
+            const statusText = status? 'Active': 'In-active' 
             return <Badge status={status?'processing':'warning'} text={statusText} /> 
         }
       },
-    //   {
-    //       title: 'CreatedAt',
-    //       dataIndex: 'createdAt',
-    //       key: 'createdAt',
-    //       render: (_,record)=>{
-    //           const date = dayjs(record.createdAt).format('MMM DD, YYYY')
-    //           return(
-    //         <Text>{date}</Text>
-    //         )
-    //     },
-    // },
+      {
+          title: 'CreatedAt',
+          dataIndex: 'createdAt',
+          key: 'createdAt',
+          render: (_,record)=>{
+              const date = dayjs(record.createdAt).format('MMM DD, YYYY')
+              return(
+            <Text>{date}</Text>
+            )
+        },
+    },
     // {
     //       title: 'UpdatedAt',
     //       dataIndex: 'updatedAt',
@@ -266,7 +266,8 @@ function gotoDashboard(service:Service){
                 
                 <Table 
                   style={{width:'100%'}} 
-                  size='large' key='dfadfe' 
+                  size='large' 
+                  key='dfadfe' 
                   onChange={handleChange} 
                   loading={servicesQuery.isLoading} 
                   columns={columns} 
@@ -380,6 +381,7 @@ return(
   <EditableCurrency selectedRecord={selectedRecord}/>
   <EditableLogoImage selectedRecord={selectedRecord}/>
   <EditableCoverImage selectedRecord={selectedRecord}/>
+
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
     <Title level={3}>Danger zone</Title>
     <Button danger onClick={toggleDeleteModal} style={{width:'30%'}} type="link">De-activate service</Button>
