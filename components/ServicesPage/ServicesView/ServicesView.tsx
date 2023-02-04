@@ -243,13 +243,13 @@ function gotoDashboard(service:Service){
                    <Col style={{display:'flex', justifyContent:'space-between'}} offset={2} span={22}>
                        <div style={{display:'flex', flex:'7',alignItems:'center'}}> 
                            <Button style={{display:'flex', padding: '0', margin:'0', alignItems:'center', textAlign:'left'}} onClick={()=>router.replace('/')} icon={<ArrowLeftOutlined />} type='link'/>
-                           {/* {isHydrated ? <Title style={{margin:'0'}} level={4}>{currentOrg.name}</Title>:<Skeleton.Input active size='default' /> }  */}
+                           {isHydrated ? <Title style={{margin:'0'}} level={4}>{currentOrg.name}</Title>:<Skeleton.Input active size='default' /> } 
                        </div>
 
-                       {/* {isHydrated?<div style={{ display:'flex', flex:'3', justifyContent:'space-end', alignItems:'center'}}>
+                       {isHydrated?<div style={{ display:'flex', flex:'3', justifyContent:'space-end', alignItems:'center'}}>
                           <Button type="link" style={{marginRight:'2rem'}} onClick={gotoBillingsPage} >Billings</Button>
                           <CurrentUser/>
-                       </div>: <Skeleton.Input active size='default'/>} */}
+                       </div>: <Skeleton.Input active size='default'/>}
                    </Col>
                </header>
 
@@ -268,7 +268,7 @@ function gotoDashboard(service:Service){
                     </div>
                 </div>
                 
-                {/* <Table 
+                <Table 
                   style={{width:'100%'}} 
                   size='large' 
                   rowKey={(record)=>record.id}
@@ -280,7 +280,7 @@ function gotoDashboard(service:Service){
                     total:totalLength,  
                     showTotal:(total) => `Total: ${total} items`,
                   }} 
-                   /> */}
+                   />
                 { 
                   isDrawerOpen
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedRecord={selectedRecord}/>
