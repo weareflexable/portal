@@ -200,12 +200,14 @@ export default function NewService(){
                     <Form.Item
                         name="serviceTypeId"
                         label='Service type'
-                        initialValue={'Bar'}
+                        // initialValue={'Bar'}
+
                         rules={[{ required: true, message: 'Please select a service type!' }]}
                     >
                         <Select
+                            placeholder={'Bar, Restaurant'}
                             size="large"
-                            style={{ width: 120 }}
+                            style={{ width: 220 }}
                             options={menuItems}
                             />
                     </Form.Item>
