@@ -255,19 +255,19 @@ function gotoDashboard(service:Service){
                <Col offset={2} span={20}>
                    <Title style={{marginBottom:'1em'}} level={2}>Services</Title>
                    <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
-                    {/* <Radio.Group defaultValue={currentStatus.id} buttonStyle="solid">
+                    <Radio.Group defaultValue={currentStatus.id} buttonStyle="solid">
                         {servicesFilter.map(filter=>(
                             <Radio.Button key={filter.id} onClick={()=>setCurrentStatus(filter)} value={filter.id}>{filter.name}</Radio.Button>
                         )
                         )}
-                    </Radio.Group> */} 
+                    </Radio.Group>
                     <div style={{display:'flex',  justifyContent:'space-between', alignItems:'center'}}>
                         <Button type='link' loading={servicesQuery.isRefetching} onClick={()=>servicesQuery.refetch()} icon={<ReloadOutlined />}>{servicesQuery.isRefetching? 'Refreshing...':'Refresh'}</Button>
                         <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/services/new')}>Launch new service</Button>
                     </div>
                 </div>
                 
-                <Table 
+                {/* <Table 
                   style={{width:'100%'}} 
                   size='large' 
                   rowKey={(record)=>record.id}
@@ -279,8 +279,8 @@ function gotoDashboard(service:Service){
                     total:totalLength,  
                     showTotal:(total) => `Total: ${total} items`,
                   }} 
-                   />
-                {
+                   /> */}
+                { 
                   isDrawerOpen
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedRecord={selectedRecord}/>
                   :null
