@@ -278,11 +278,11 @@ function gotoDashboard(service:Service){
                     showTotal:(total) => `Total: ${total} items`,
                   }} 
                    />
-                {
+                {/* {
                   isDrawerOpen
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedRecord={selectedRecord}/>
                   :null
-                }  
+                }   */}
 
                </Col> 
            </Row>
