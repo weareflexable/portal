@@ -56,7 +56,7 @@ export default function NewService(){
     }
 
       const { ref: antRef } = usePlacesWidget({
-        apiKey: 'AIzaSyAxBDdnJsmCX-zQa-cO9iy-v5pn53vXEFA', // move this key to env
+        apiKey: `${process.env.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API}`, // move this key to env
         options:{
             componentRestrictions:{country:'us'},
             types: ['address'],

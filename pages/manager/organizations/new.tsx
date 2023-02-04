@@ -50,24 +50,32 @@ export default function NewOrgForm(){
                 state:'',
                 country:'',
                 city:'',
+                zipCode:'',
             };
             addressComponents.forEach((address:any)=>{
                 const type = address.types[0]
                 if(type==='country') addressObj.country = address.long_name
                 if(type === 'locality') addressObj.state = address.short_name
                 if(type === 'administrative_area_level_1') addressObj.city = address.short_name
+                if(type === 'postal_code') addressObj.zipCode = address.short_name
             })
 
             return addressObj
     }
 
       const { ref: antRef } = usePlacesWidget({
-        apiKey: 'AIzaSyB7ZUkMcIXpOKYU4r4iBMM9BFjCL5OpeeE', // move this key to env
+        apiKey: `${process.env.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API}`,
+        options:{
+            componentRestrictions:{country:'us'},
+            types: ['address'],
+            fields: ['address_components','geometry','formatted_address']
+        },
         onPlaceSelected: (place) => {
             // console.log(antInputRef.current.input)
             form.setFieldValue('address',place?.formatted_address)
             
             const fullAddress = extractFullAddress(place)
+            console.log(fullAddress)
             setFullAddress(fullAddress)
 
             //@ts-ignore
@@ -217,28 +225,29 @@ export default function NewOrgForm(){
                     <Form.Item 
                         name="address"
                         label='Address'
+                        // hasFeedback
                         rules={[{ required: true, message: 'Please input a valid address!' }]}
                     >
-                        <TextArea rows={3} placeholder='Apt. 235 30B NorthPointsettia Street, Syracuse'/>
-                        {/* <Input ref={(c) => {
+                        {/* <TextArea rows={3} placeholder='Apt. 235 30B NorthPointsettia Street, Syracuse'/> */}
+                        <Input size="large" ref={(c) => {
                             // @ts-ignore
                             antInputRef.current = c;
                             // @ts-ignore
                             if (c) antRef.current = c.input;
                             }} 
                             placeholder="Syracuse, United states" 
-                            /> */}
+                            />
                     </Form.Item>
 
 
-                    <Form.Item
+                    {/* <Form.Item
                         name="zipCode"
                         style={{width:'100px'}}
                         label='Zip Code'
                         rules={[{ required: true, message: 'Please input a valid code!' }]}
                     >
                         <Input size="large" placeholder="374739" />
-                    </Form.Item>
+                    </Form.Item> */}
 
 
                     <Divider orientation='left'>Asset upload</Divider>
