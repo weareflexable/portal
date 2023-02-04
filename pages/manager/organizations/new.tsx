@@ -33,7 +33,6 @@ export default function NewOrgForm(){
     const {currentOrg} = useOrgContext()
     const [form]=Form.useForm()
     const [fullAddress, setFullAddress] = useState({
-        state: '',
         country:'',
         city:''
     })
@@ -47,7 +46,7 @@ export default function NewOrgForm(){
     const extractFullAddress = (place:any)=>{
         const addressComponents = place.address_components 
             let addressObj = {
-                state:'',
+                // state:'',
                 country:'',
                 city:'',
                 zipCode:'',
@@ -55,7 +54,7 @@ export default function NewOrgForm(){
             addressComponents.forEach((address:any)=>{
                 const type = address.types[0]
                 if(type==='country') addressObj.country = address.long_name
-                if(type === 'locality') addressObj.state = address.short_name
+                // if(type === 'locality') addressObj.state = address.short_name
                 if(type === 'administrative_area_level_1') addressObj.city = address.short_name
                 if(type === 'postal_code') addressObj.zipCode = address.short_name
             })
@@ -75,8 +74,12 @@ export default function NewOrgForm(){
             form.setFieldValue('address',place?.formatted_address)
             
             const fullAddress = extractFullAddress(place)
-            console.log(fullAddress)
-            setFullAddress(fullAddress)
+            const addressWithStreet={
+                ...fullAddress,
+                street: place?.formatted_address
+            }
+
+            setFullAddress(addressWithStreet)
 
             //@ts-ignore
           antInputRef.current.input.value = place?.formatted_address
@@ -114,6 +117,7 @@ export default function NewOrgForm(){
     }
 
         const extractLogoImage = async(e: any) => {
+            // e.preventDefault()
             console.log('Upload event:', e);
             if (Array.isArray(e)) {
             return e;
@@ -130,6 +134,7 @@ export default function NewOrgForm(){
       };
 
         const extractCoverImage = async(e: any) => {
+            // e.preventDefault()
             console.log('Upload event:', e);
             if (Array.isArray(e)) {
             return e;
@@ -216,7 +221,7 @@ export default function NewOrgForm(){
 
                     <Form.Item
                         name="phone"
-                        label='Phone number'
+                        label='Contact number'
                         // rules={[{ required: true, message: 'Please input a valid email!' }]}
                     >
                         <Input size="large" placeholder="+23802323493" />

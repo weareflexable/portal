@@ -25,7 +25,7 @@ dayjs.extend(relativeTime)
 
 export default function ManagerOrgsView(){
 
-    const {paseto} = useAuthContext()
+    const {paseto,currentUser} = useAuthContext()
     const {currentOrg} = useOrgContext() // coming from local storage
     const queryClient = useQueryClient()
     const router = useRouter()
@@ -35,9 +35,7 @@ export default function ManagerOrgsView(){
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const [pageNumber, setPageNumber] = useState<number|undefined>(0)
-   
-
-    type DataIndex = keyof Service;
+  
 
     const [selectedRecord, setSelectedRecord] = useState<any|Service>({})
     const [currentStatus, setCurrentStatus] = useState({id:'1',name: 'Active'})
@@ -47,11 +45,13 @@ export default function ManagerOrgsView(){
       setIsHydrated(true)
     }, [])
 
+    const urlPrefix = currentUser.role == 1 ? 'manager': 'admin'
+
     async function fetchServices(){
     const res = await axios({
             method:'get',
             //@ts-ignore
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/services?key=org_id&value=${currentOrg.orgId}&pageNumber=0&pageSize=10&key2=status&value2=1`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services?key=org_id&value=${currentOrg.orgId}&pageNumber=0&pageSize=10&key2=status&value2=1`,
             headers:{
                 "Authorization": paseto
             }
@@ -92,8 +92,12 @@ export default function ManagerOrgsView(){
         changeStatusMutation.mutate({serviceId:service.id, statusNumber:'0'})
     }
 
+    const shouldFetch = paseto !== '' && urlPrefix != undefined
 
-    const servicesQuery = useQuery({queryKey:['services', currentStatus], queryFn:fetchServices, enabled: paseto !== ''})
+    console.log('prefix',urlPrefix)
+    console.log('shouldfetch',shouldFetch)
+
+    const servicesQuery = useQuery({queryKey:['services', urlPrefix, currentStatus.name], queryFn:fetchServices, enabled: shouldFetch})
     const data = servicesQuery.data && servicesQuery.data.data
     const servicesData = data && data.data
     const totalLength = data && data.dataLength;

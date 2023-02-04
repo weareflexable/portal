@@ -551,7 +551,7 @@ return(
   <EditableName selectedOrg={selectedOrg}/>
   <EditableAddress selectedOrg={selectedOrg}/>
   <EditablePhone selectedOrg={selectedOrg}/>
-  <EditableZipCode selectedOrg={selectedOrg}/>
+  {/* <EditableZipCode selectedOrg={selectedOrg}/> */}
   <EditableLogoImage selectedOrg={selectedOrg}/>
   <EditableCoverImage selectedOrg={selectedOrg}/>
 

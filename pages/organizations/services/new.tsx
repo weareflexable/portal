@@ -64,16 +64,16 @@ export default function NewService(){
         },
         onPlaceSelected: (place) => {
             // console.log(antInputRef.current.input)
-            form.setFieldValue('address',place?.formatted_address)
             console.log(place)
+            form.setFieldValue('address',place?.formatted_address)
             
             const fullAddress = extractFullAddress(place)
             // add street address
-            // const addressWithStreet={
-            //     ...fullAddress,
-            //     street: place?.formatted_address
-            // }
-            setFullAddress(fullAddress)
+            const addressWithStreet={
+                ...fullAddress,
+                street: place?.formatted_address
+            }
+            setFullAddress(addressWithStreet)
 
             //@ts-ignore
           antInputRef.current.input.value = place?.formatted_address
@@ -171,7 +171,7 @@ export default function NewService(){
                         label="Service name"
                         rules={[{ required: true, message: 'Please input a valid service name' }]}
                     >
-                        <Input placeholder="Bill Cage coffee" />
+                        <Input size="large" placeholder="Bill Cage coffee" />
                     </Form.Item>
 
                     <Form.Item  
@@ -179,7 +179,7 @@ export default function NewService(){
                         label='Address'
                         rules={[{ required: true, message: 'Please input a valid address!' }]}
                     >
-                        <Input ref={(c) => {
+                        <Input size="large" ref={(c) => {
                             // @ts-ignore
                             antInputRef.current = c;
                             // @ts-ignore
@@ -189,13 +189,13 @@ export default function NewService(){
                             />
                     </Form.Item>
 
-                    {/* <Form.Item
+                    <Form.Item
                         name="phone"
-                        label="Contact"
+                        label="Contact phone"
                         rules={[{ required: true, message: 'Please input a valid phone number' }]}
                     >
-                        <Input placeholder="" />
-                    </Form.Item> */}
+                        <Input size="large" placeholder="+1348574934" />
+                    </Form.Item>
 
                     <Form.Item
                         name="serviceTypeId"
@@ -204,6 +204,7 @@ export default function NewService(){
                         rules={[{ required: true, message: 'Please select a service type!' }]}
                     >
                         <Select
+                            size="large"
                             style={{ width: 120 }}
                             options={menuItems}
                             />
@@ -214,7 +215,7 @@ export default function NewService(){
                         label='Currency'
                         rules={[{ required: true, message: 'Please input a valid code!' }]}
                     >
-                        <Input placeholder="USD" />
+                        <Input size="large" placeholder="USD" />
                     </Form.Item>
 
 
