@@ -150,7 +150,7 @@ function EditableName({selectedRecord}:EditableProp){
    
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,updatedItem,{
+      const {data} = await axios.put(`${process.env.NEXT_PUBLIC_NEW_API_URL}/users`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -167,17 +167,12 @@ function EditableName({selectedRecord}:EditableProp){
     })
   
     function onFinish(updatedItem:any){
-      const payload = {
-        key:'name',
-        value: updatedItem.name,
-        id: selectedRecord.id
-      }
       const updatedRecord = {
         ...selectedRecord,
         name: updatedItem.fullName
       }
       setState(updatedRecord)
-      mutation.mutate(payload)
+      mutation.mutate(updatedRecord)
     }
   
     const {isLoading:isEditing} = mutation ;
@@ -262,7 +257,7 @@ function EditablePhone({selectedRecord}:EditableProp){
   
     function onFinish(updatedItem:User){
       const payload = {
-        key:'mobleNumber',
+        key:'mobileNumber',
         value: updatedItem.mobileNumber,
         id: selectedRecord.id
       }
@@ -541,7 +536,7 @@ function EditableImage({selectedRecord}:EditableProp){
  
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/user`,updatedItem,{
+    const {data} = await axios.put(`${process.env.NEXT_PUBLIC_NEW_API_URL}/users`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -560,17 +555,16 @@ function EditableImage({selectedRecord}:EditableProp){
   async function onFinish(field:any){
 
     // hash it first
-    const coverImageRes = await field.coverImage
+    const res = await field.profilePic
 
     setIsHashingImage(true)
-    const profilePicHash = await asyncStore(coverImageRes[0].originFileObj)
+    const profilePicHash = await asyncStore(res[0].originFileObj)
     setIsHashingImage(false)
 
 
     const payload = {
-      key:'profile_pic',
-      value: profilePicHash,
-      id: selectedRecord.id
+      ...selectedRecord,
+      profilePic: profilePicHash,
     }
     setUpdatedProfilePicHash(profilePicHash)
     mutation.mutate(payload)
@@ -589,7 +583,7 @@ function EditableImage({selectedRecord}:EditableProp){
 
 const readOnly = (
     <div style={{width:'100%', marginTop:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Image style={{width:'500px', height:'200px', objectFit:'cover', border:'1px solid #f2f2f2'}} alt={`Profile pic for ${selectedRecord.name}`}  src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedCoverImageHash}`}/>
+      <Image style={{width:'150px', height:'150px', objectFit:'cover', borderRadius:'50%', border:'1px solid #f2f2f2'}} alt={`Profile pic for ${selectedRecord.name}`}  src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedCoverImageHash}`}/>
       <Button type="link" onClick={toggleEdit}>Edit</Button>
     </div>
 )

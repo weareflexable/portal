@@ -376,9 +376,9 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
                         </Form.Item> 
 
                         <Form.Item
-                              {...restField}
-                              name={[name, 'ticketsPerDay']}
-                              label='Tickets per day'
+                            {...restField}
+                            name={[name, 'ticketsPerDay']}
+                            label='Tickets per day'
                             style={{width:'100%'}}
                             rules={[{ required: true, message: 'Please input a valid number!' }]}
                             >
