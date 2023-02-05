@@ -307,7 +307,7 @@ const router = useRouter()
 const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 // const {swi} = useOrgContext()
 const {switchService} = useServicesContext()
-const {paseto} = useAuthContext()
+const {paseto,currentUser} = useAuthContext()
 
 function closeDrawerHandler(){
   queryClient.invalidateQueries(['services']) 
@@ -347,10 +347,12 @@ function deleteService(){
   })
 }
 
+const urlPrefix = currentUser.role == 1 ? 'manager': 'admin'
+
 const deleteDataHandler = async(record:Service)=>{      
   const {data} = await axios({
     method:'patch',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/services`,
+    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,
     data: {
         id:record.id,
         key:'status',

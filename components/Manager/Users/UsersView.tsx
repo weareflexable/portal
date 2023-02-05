@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useOrgs from "../../../hooks/useOrgs";
-const {Text} = Typography
+const {Text,Title} = Typography
 import React, { useRef, useState } from 'react'
-import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge} from 'antd'
+import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Modal, Alert, notification} from 'antd'
 import { useRouter } from 'next/router'
 import axios from 'axios';
 import {MoreOutlined,ReloadOutlined} from '@ant-design/icons'
@@ -37,7 +37,7 @@ export default function UsersView(){
 
     type DataIndex = keyof ServiceItem;
 
-    const [selectedServiceItem, setSelectedServiceItem] = useState<any|ServiceItem>({})
+    const [selectedUser, setSelectedServiceItem] = useState<any|ServiceItem>({})
     // const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Approved'})
 
     async function fetchUsers(){
@@ -115,7 +115,7 @@ export default function UsersView(){
     //     }
     // }
 
-    function viewOrgDetails(user:User){
+    function viewUserDetails(user:User){
       // set state
       setSelectedServiceItem(user)
       // opne drawer
@@ -128,7 +128,7 @@ export default function UsersView(){
         const event = e.key
         switch(event){
           // break;
-          case 'viewDetails': viewOrgDetails(record)
+          case 'viewDetails': viewUserDetails(record)
         }
       };
       
@@ -207,29 +207,26 @@ export default function UsersView(){
             )
         },
       },
-      {
-          title: 'UpdatedAt',
-          dataIndex: 'updatedAt',
-          key: 'updatedAt',
-          render: (_,record)=>{
-              const date = dayjs(record.updatedAt).format('MMM DD, YYYY')
-              return(
-            <Text>{date}</Text>
-            )
-        },
-    },
+    //   {
+    //       title: 'UpdatedAt',
+    //       dataIndex: 'updatedAt',
+    //       key: 'updatedAt',
+    //       render: (_,record)=>{
+    //           const date = dayjs(record.updatedAt).format('MMM DD, YYYY')
+    //           return(
+    //         <Text>{date}</Text>
+    //         )
+    //     },
+    // },
 
-    // {
-    //   dataIndex: 'actions', 
-    //   key: 'actions',
-    //   render:(_,record)=>{
-    //     // const items = getTableRecordActions()
-    //     return (
-    //     <Dropdown menu={{  onClick: (e)=>onMenuClick(e,record) }}>
-    //       <MoreOutlined />
-    //       </Dropdown>)
-    //   } 
-    // }
+    {
+      dataIndex: 'actions', 
+      key: 'actions',
+      render:(_,record)=>{
+        // const items = getTableRecordActions()
+        return (<Button icon={<MoreOutlined/>} onClick={()=>viewUserDetails(record)}/>)
+      } 
+    }
     ];
 
         return (
@@ -249,7 +246,7 @@ export default function UsersView(){
                 <Table style={{width:'100%'}} key='dfadfe' loading={bookingsQuery.isLoading||bookingsQuery.isRefetching} columns={columns}  dataSource={data} />
                 {
                   isDrawerOpen
-                  ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedServiceItem={selectedServiceItem}/>
+                  ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedUser={selectedUser}/>
                   :null
                 }
             </div>
@@ -260,30 +257,89 @@ export default function UsersView(){
 }
 
 interface DrawerProps{
-  selectedServiceItem: ServiceItem,
+  selectedUser: User,
   isDrawerOpen: boolean,
   closeDrawer: (value:boolean)=>void
 }
-function DetailDrawer({selectedServiceItem,isDrawerOpen,closeDrawer}:DrawerProps){
+function DetailDrawer({selectedUser,isDrawerOpen,closeDrawer}:DrawerProps){
 
 const queryClient = useQueryClient()
 
+const {currentUser,paseto} = useAuthContext()
+
+const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+
 function closeDrawerHandler(){
-  queryClient.invalidateQueries(['serviceItems'])
+  queryClient.invalidateQueries(['users'])
   closeDrawer(!isDrawerOpen)
 }
 
-return( 
-<Drawer title="Organization Details" width={640} placement="right" closable={true} onClose={closeDrawerHandler} open={isDrawerOpen}>
-  
-  <EditableName selectedServiceItem={selectedServiceItem}/>
-  <EditableDescription selectedServiceItem={selectedServiceItem}/>
+function toggleDeleteModal(){
+  setIsDeleteModalOpen(!isDeleteModalOpen)
+}
 
+function deleteService(){ 
+  console.log(selectedUser.id)
+  // mutate record
+  deleteData.mutate(selectedUser,{
+    onSuccess:()=>{
+      notification['success']({
+        message: 'Successfully deleted record!'
+      })
+      toggleDeleteModal()
+      closeDrawerHandler()
+
+    },
+    onError:(err)=>{
+        console.log(err)
+        notification['error']({
+            message: 'Encountered an error while deleting record custom custom dates',
+          });
+        // leave modal open
+    }
+  })
+}
+
+// const urlPrefix = currentUser.role == 1 ? 'manager': 'admin'
+
+const deleteDataHandler = async(record:User)=>{      
+  const {data} = await axios({
+    method:'patch',
+    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/users-role`,
+    data: {
+        targetUserId:record.id,
+        key:'status',
+        value: "0"
+      },
+    headers:{
+          "Authorization": paseto 
+  }})
+  return data
+}
+
+const deleteData = useMutation(deleteDataHandler)
+
+const{isLoading:isDeletingItem} = deleteData
+
+return( 
+<Drawer title={"User details"} width={640} placement="right" closable={true} onClose={closeDrawerHandler} open={isDrawerOpen}>
+  
+  {/* <EditableName selectedUser={selectedUser}/> */}
+  <EditableRole selectedUser={selectedUser}/>
+
+  
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
-    <Divider/>
-    <Button danger type="link">De-activate service-item</Button>
-    <Divider/>
+    <Title level={3}>Danger zone</Title>
+    <Button danger onClick={toggleDeleteModal} style={{width:'30%'}} type="link">Block user</Button>
   </div>
+
+  <DeleteRecordModal 
+    isDeletingItem={isDeletingItem} 
+    onCloseModal={toggleDeleteModal} 
+    onDeleteRecord={deleteService} 
+    isOpen={isDeleteModalOpen} 
+    selectedUser={selectedUser}
+  />
 
 </Drawer>
 )
@@ -291,12 +347,12 @@ return(
 
 
 interface EditableProp{
-  selectedServiceItem: ServiceItem
+  selectedUser: User
 }
 
-function EditableName({selectedServiceItem}:EditableProp){
+function EditableName({selectedUser}:EditableProp){
 
-  const [state, setState] = useState(selectedServiceItem)
+  const [state, setState] = useState(selectedUser)
 
   const [isEditMode, setIsEditMode] = useState(false)
 
@@ -309,8 +365,8 @@ function EditableName({selectedServiceItem}:EditableProp){
   }
 
 
-  const nameMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/serviceItem`,updatedItem,{
+  const mutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/users-role`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -318,29 +374,29 @@ function EditableName({selectedServiceItem}:EditableProp){
     })
       return data;
   }
-  const nameMutation = useMutation({
+  const mutation = useMutation({
     mutationKey:['name'],
-    mutationFn: nameMutationHandler,
+    mutationFn: mutationHandler,
     onSuccess:()=>{
       toggleEdit()
     }
   })
 
-  function onFinish(updatedItem:any){
+  function onFinish(updatedItem:User){
     const payload = {
       key:'name',
       value: updatedItem.name,
-      serviceItemId: selectedServiceItem.id
+      targetUserId: selectedUser.id
     }
-    const updatedOrg = {
-      ...selectedServiceItem,
+    const updatedRecord = {
+      ...selectedUser,
       name: updatedItem.name
     }
-    setState(updatedOrg)
-    nameMutation.mutate(payload)
+    setState(updatedRecord)
+    mutation.mutate(payload)
   }
 
-  const {isLoading:isEditing} = nameMutation;
+  const {isLoading:isEditing} = mutation;
 
   const readOnly = (
     <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
@@ -353,7 +409,7 @@ function EditableName({selectedServiceItem}:EditableProp){
     <Form
      style={{ marginTop:'.5rem' }}
      name="editableName"
-     initialValues={selectedServiceItem}
+     initialValues={selectedUser}
      onFinish={onFinish}
      >
       <Row>
@@ -389,9 +445,9 @@ function EditableName({selectedServiceItem}:EditableProp){
     </div>
   )
 }
-function EditableDescription({selectedServiceItem}:EditableProp){
+function EditableRole({selectedUser}:EditableProp){
 
-  const [state, setState] = useState(selectedServiceItem)
+  const [state, setState] = useState(selectedUser)
 
   const [isEditMode, setIsEditMode] = useState(false)
 
@@ -407,8 +463,8 @@ function EditableDescription({selectedServiceItem}:EditableProp){
  
 
 
-  const nameMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/serviceItem`,updatedItem,{
+  const mutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/users-role`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -416,57 +472,65 @@ function EditableDescription({selectedServiceItem}:EditableProp){
     })
       return data;
   }
-  const nameMutation = useMutation({
-    mutationKey:['description'],
-    mutationFn: nameMutationHandler,
+  const mutation = useMutation({
+    mutationKey:['role'],
+    mutationFn: mutationHandler,
     onSuccess:()=>{
       toggleEdit()
     }
   })
 
   function onFinish(updatedItem:any){
+    console.log(updatedItem)
     const payload = {
-      key:'country',
-      value: updatedItem.country,
-      serviceItemId: selectedServiceItem.id
+      key:'role',
+      value: String(updatedItem.role),
+      targetUserId: selectedUser.id
     }
-    const updatedOrg = {
-      ...selectedServiceItem,
-      name: updatedItem.country
+    const updatedRecord = {
+      ...selectedUser,
+      role: updatedItem.role
     }
-    setState(updatedOrg)
-    nameMutation.mutate(payload)
+    setState(updatedRecord)
+    mutation.mutate(payload)
   }
 
-  const {isLoading:isEditing} = nameMutation 
+  const {isLoading:isEditing} = mutation 
 
   const readOnly = (
     <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Text>{state.description}</Text>
-      <Button type="link" onClick={toggleEdit}>Edit</Button>
+      <Text>{state.userRoleName}</Text>
+      <Button type="link"
+       onClick={toggleEdit}>Edit</Button>
     </div>
 )
 
   const editable = (
     <Form
-     style={{ marginTop:'.5rem' }}
-     name="editableAddress"
-     initialValues={selectedServiceItem}
+     style={{ marginTop:'.8rem' }}
+     name="editableRole"
+     initialValues={selectedUser}
      onFinish={onFinish}
      form={form}
      >
       <Row>
         <Col span={16} style={{height:'100%'}}>
         <Form.Item 
-            name="description"
+            name="role"
             rules={[{ required: true, message: 'Please input a description for service item!' }]}
         >
-            <TextArea rows={3} placeholder='Best bars in syracuse'/>
-
+          <Radio.Group >
+            <Space direction="vertical">
+              <Radio value={1}>Manager</Radio>
+              <Radio value={2}>Admin</Radio>
+              <Radio value={3}>Supervisor</Radio>
+              <Radio value={4}>Employee</Radio>
+              <Radio value={5}>User</Radio>
+            </Space>
+          </Radio.Group>
         </Form.Item>
 
         </Col>
-        <Col span={4}>
           <Form.Item style={{ width:'100%'}}>
               <Space >
                   <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
@@ -478,7 +542,6 @@ function EditableDescription({selectedServiceItem}:EditableProp){
               </Space>
                         
           </Form.Item>
-        </Col>
       </Row>
            
     </Form>
@@ -493,30 +556,81 @@ function EditableDescription({selectedServiceItem}:EditableProp){
 
 
 
+interface DeleteProp{
+  selectedUser: User
+  isOpen: boolean
+  onCloseModal: ()=>void
+  onDeleteRecord: ()=>void
+  isDeletingItem: boolean
+}
+
+function DeleteRecordModal({selectedUser, isOpen, isDeletingItem, onDeleteRecord, onCloseModal}:DeleteProp){
+
+  function onFinish(){
+    // call mutate function to delete record
+    onDeleteRecord()
+  }
+
+  const [form] = Form.useForm()
+
+  return(
+    <Modal title="Are you absolutely sure?" footer={null} open={isOpen} onOk={()=>{}} onCancel={onCloseModal}>
+      <Alert style={{marginBottom:'.5rem'}} showIcon message="Bad things will happen if you don't read this!" type="warning" />
+      <Text >
+        {`This action cannot be undone. This will permanently delete the ${selectedUser.name} service item, staff, bookings, and remove from listing on marketplace 
+        `}
+      </Text>
+
+      <Form 
+      form={form} 
+      style={{marginTop:'1rem'}}
+      name="deleteServiceForm" 
+      layout='vertical'
+      onFinish={onFinish}>
+      <Form.Item
+        name="name"
+        style={{marginBottom:'.6rem'}}
+        label={`Please type "${selectedUser.name}" to confirm`}
+        rules={[{ required: true, message: 'Please type correct service item name!' }]}
+      >
+        <Input disabled={isDeletingItem} />
+      </Form.Item>
+
+      <Form.Item
+        style={{marginBottom:'0'}}
+        shouldUpdate
+       >
+          {() => (
+          <Button
+            style={{width:'100%'}}
+            danger
+            loading={isDeletingItem}
+            htmlType="submit"
+            disabled={
+              // !form.isFieldTouched('name') &&
+              form.getFieldValue('name') !== selectedUser.name
+              // !!form.getFieldsError().filter(({ errors }) => errors.length).length
+            }
+          >
+           I understand the consequences, block user
+          </Button>
+        )}
+      </Form.Item>
+
+    </Form>
+
+  </Modal>
+  )
+}
 
 
-// const serviceItemsFilters = [
-//   {
-//       id: '1',
-//       name: 'Active'
-//   },
-//   {
-//       id: '2',
-//       name: 'In-active'
-//   },
-// ]
 
-const activeItemActions = [
-    {
-        key: 'review',
-        label: 'Review'
-    },
-    {
-        key: 'viewDetails',
-        label: 'View details'
-    },
 
-]
+
+
+
+
+
 
 
 
