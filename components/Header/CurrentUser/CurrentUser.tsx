@@ -16,7 +16,7 @@ interface CurrentUserProps{
 
 export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
 
-    const {setIsAuthenticated,logout,currentUser} = useAuthContext()
+    const {logout,currentUser} = useAuthContext()
     const {currentService} = useServicesContext()
     const router = useRouter()
     const {orgUserRole} = useOrgContext()
@@ -32,7 +32,6 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
     router.replace('/profile')
    }
   
-
 
   const items: MenuProps['items'] = currentUser.role == 1 ? getManagerMenu() :getAdminMenu()
 

@@ -63,12 +63,6 @@ export default function Profile(){
         console.log(formData)
     }
 
-   
-    
-
-    
-
-
 
 
       if(isLoadingProfile){
@@ -86,7 +80,7 @@ export default function Profile(){
                 <Row>
                     <Col offset={1}> 
                         <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
-                            <Button shape='round' style={{marginRight:'1rem'}} type='text' onClick={()=>router.back()} icon={<ArrowLeftOutlined/>}/>
+                            <Button shape='round'  type='text' onClick={()=>router.back()} icon={<ArrowLeftOutlined/>}/>
                             <Title style={{margin:'0'}} level={3}>Update profile</Title>
                         </div>
                     </Col>
@@ -102,19 +96,14 @@ export default function Profile(){
                     background:'white' ,
                     width:`50%`,
                     maxWidth:'100%',
-                    // height: '100%',
-                    // minHeight:'70vh',
                     }}
                 > 
-
 
                    <EditableImage selectedRecord={currentUser}/>
                     <EditableName selectedRecord={currentUser}/>
                     <EditablePhone selectedRecord={currentUser}/>
                     <EditableGender selectedRecord={currentUser}/>
                     <EditableCountry selectedRecord={currentUser}/>
-
-
 
                 </Content>
             </Col>

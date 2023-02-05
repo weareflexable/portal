@@ -8,6 +8,6 @@ const DynamicServices = dynamic(()=>import('../../../components/ServicesPage/Ser
 export default function Services(){
 
     return( 
-            <DynamicServices/>
+        <DynamicServices/>
     )
 }
