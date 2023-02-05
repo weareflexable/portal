@@ -201,16 +201,22 @@ function BasicForm({nextStep}:BasicInfoProps){
             style={{width:'100%'}}
             rules={[{ required: true, message: 'Please input a valid price!' }]}
         >
-            <InputNumber   prefix="$"  placeholder="0.00" /> 
+            <div style={{display:'flex', alignItems:'center'}}>
+            <InputNumber style={{width:'200px'}} size='large'  prefix="$"  placeholder="0.00" /> 
+            <Text style={{marginLeft:'.5rem'}}>per ticket</Text>
+            </div>
         </Form.Item> 
 
         <Form.Item
             name="ticketsPerDay"
             label='Tickets per day'
-            style={{width:'100%'}}
+            
             rules={[{ required: true, message: 'Please input a valid number!' }]}
             >
-            <InputNumber placeholder="20" />
+            <div style={{display:'flex', alignItems:'center'}}>
+                <InputNumber style={{width:'200px'}} size='large' placeholder="20" />
+                <Text style={{marginLeft:'.5rem'}}>per day</Text>
+            </div>
         </Form.Item>
 
         {/* <Form.Item
