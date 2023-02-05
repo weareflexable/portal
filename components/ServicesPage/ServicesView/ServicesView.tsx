@@ -45,15 +45,14 @@ export default function ManagerOrgsView(){
       setIsHydrated(true)
     }, [])
 
-    // const urlPrefix = currentUser.role == 1 ? 'manager': 'admin'
+    const urlPrefix = currentUser.role == 1 ? 'manager': 'admin'
 
     async function fetchServices(){
     const res = await axios({
             method:'get',
             //@ts-ignore
-            // url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services?key=org_id&value=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=10&key2=status&value2=1`,
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/services?key=org_id&value=14&pageNumber=${pageNumber}&pageSize=10&key2=status&value2=1`,
-            // url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/services?key=org_id&value=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=10&key2=status&value2=1`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services?key=org_id&value=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=10&key2=status&value2=1`,
+
             headers:{
                 // "Authorization": paseto
                 "Authorization": 'v4.public.eyJhdWQiOiJmbGV4YWJsZWRhdHMuY29tIiwiZW1haWwiOiJtdWphaGlkYmFwcGFpQGdtYWlsLmNvbSIsImV4cCI6IjIwMjMtMDItMDFUMTA6Mzk6MDZaIiwiaWF0IjoiMjAyMy0wMi0wMVQwOTozOTowNloiLCJpc3MiOiJmbGV4YWJsZWRhdHMuY29tIiwianRpIjoiZmxleGFibGVkYXRzLmNvbSIsIm5iZiI6IjIwMjMtMDItMDFUMDk6Mzk6MDZaIiwic3ViIjoic3ViamVjdCIsInVzZXJfaWQiOiI0YWMyMmM4ZC04NmNkLTRjYzYtYWQwNS1jMjU1NzJmMTc4ZWEifYuMI3n4PljNRcaJVr5qabH5wzK_zKmBze_kK3wljJ9McdOZq8r0SmQP1NKB1PIXdfEtUpQU2vyc8DjAAbD3mAY'
