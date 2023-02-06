@@ -13,7 +13,7 @@ import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { Availability, AvailabilityPayload, CustomDate, ServiceItem } from "../../types/Services";
 import { EditableCoverImage, EditableDescription, EditableName, EditablePrice, EditableTicketsPerDay } from "./EditServiceItemForm/EditServiceForm";
-import { NewAvailability } from "./Availability/Availability";
+import AvailabilitySection from "./Availability/Availability";
 
 
 // const mockServiceItems:ServiceItem[]=[
@@ -351,7 +351,9 @@ return(
   <EditableCoverImage selectedRecord={selectedRecord}/>
 
   {/* <Text>CUSTOM AVALABILITY</Text> */}
-  <AvailabilitySection selectedServiceItem={selectedRecord}/>
+  <Title style={{marginTop:'3rem'}} level={3}>Custom Availability</Title>
+  <AvailabilitySection selectedServiceItem={selectedRecord} />
+  {/* <AvailabilitySection selectedServiceItem={selectedRecord}/> */}
   
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
     <Title level={3}>Danger zone</Title>
@@ -383,50 +385,48 @@ interface AvailabilitySectionProp{
   selectedServiceItem: ServiceItem
 }
 
-function AvailabilitySection({selectedServiceItem}:AvailabilitySectionProp){
+// function AvailabilitySection({selectedServiceItem}:AvailabilitySectionProp){
 
-  const {paseto} = useAuthContext()
+//   const {paseto} = useAuthContext()
 
-  const [isEditMode, setIsEditMode] = useState(false)
-  // const [state, setState] = useState(customAvailability)
+//   const [isEditMode, setIsEditMode] = useState(false)
+//   // const [state, setState] = useState(customAvailability)
 
-  async function fetchItemAvailability(){
-    const res = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items/availability?key=service_item_id&value=${selectedServiceItem.id}&pageNumber=0&pageSize=10`,{
-     headers:{
-       "Authorization":paseto
-     }
-   })
-   return res.data.data
-   }
+//   async function fetchItemAvailability(){
+//     const res = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items/availability?key=service_item_id&value=${selectedServiceItem.id}&pageNumber=0&pageSize=10`,{
+//      headers:{
+//        "Authorization":paseto
+//      }
+//    })
+//    return res.data.data
+//    }
    
-   const {data, isLoading} = useQuery({queryKey:['availability',selectedServiceItem.id], queryFn:fetchItemAvailability})
+//    const {data, isLoading} = useQuery({queryKey:['availability',selectedServiceItem.id], queryFn:fetchItemAvailability})
    
-   const availabilityData = data && data
+//    const availabilityData = data && data
 
-  return(
-    <div style={{marginTop:'6rem'}}>
-      <div style={{width:'100%', display:'flex', marginBottom:'1rem', justifyContent:'space-between'}}>
-       <Title level={3}>Custom Availability</Title>
-        {isEditMode?null:<Button onClick={()=>setIsEditMode(!isEditMode)} type="link">Edit</Button>}
-      </div>
+//   return(
+//     <div style={{marginTop:'6rem'}}>
+//       <div style={{width:'100%', display:'flex', marginBottom:'1rem', justifyContent:'space-between'}}>
+//        <Title level={3}>Custom Availability</Title>
+//         {isEditMode?null:<Button onClick={()=>setIsEditMode(!isEditMode)} type="link">Edit</Button>}
+//       </div>
 
-      <NewAvailability/>
-
-        {/* { isEditMode
-          ?<EditAvailabilities
-            onToggleEditMode={()=>setIsEditMode(!isEditMode)}
-            availabilities={availabilityData} 
-            selectedRecord = {selectedServiceItem}
-          />
-          :<ReadOnlyAvailability
-            isLoading = {isLoading}
-            availabilities={availabilityData}
-          />
-        }  */}
+//         {/* { isEditMode
+//           ?<EditAvailabilities
+//             onToggleEditMode={()=>setIsEditMode(!isEditMode)}
+//             availabilities={availabilityData} 
+//             selectedRecord = {selectedServiceItem}
+//           />
+//           :<ReadOnlyAvailability
+//             isLoading = {isLoading}
+//             availabilities={availabilityData}
+//           />
+//         }  */}
        
-    </div>
-  )
-}
+//     </div>
+//   )
+// }
 
 
 interface ReadOnlyProps{
