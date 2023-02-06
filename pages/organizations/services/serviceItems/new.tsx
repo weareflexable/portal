@@ -188,11 +188,11 @@ function BasicForm({nextStep}:BasicInfoProps){
             label="Name"
             rules={[{ required: true, message: 'Please input a valid service name' }]}
          >
-            <Input placeholder="Bill Cage Line Skip" />
+            <Input size='large' placeholder="Bill Cage Line Skip" />
         </Form.Item>
 
         <Form.Item name='description'  label="Description">
-            <TextArea maxLength={150} showCount  placeholder='Best coffee shop in the entire world with the most beautiful scenary' rows={3} />
+            <TextArea maxLength={150} size='large' showCount  placeholder='Tell us more about this service' rows={2} />
         </Form.Item>
 
         <Form.Item
@@ -372,7 +372,7 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
                             style={{width:'100%'}}
                             rules={[{ required: true, message: 'Please input a valid price!' }]}
                         >
-                            <InputNumber prefix="$" placeholder="0.00" /> 
+                            <InputNumber  prefix="$" placeholder="0.00" /> 
                         </Form.Item> 
 
                         <Form.Item

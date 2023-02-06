@@ -13,6 +13,7 @@ import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { Availability, AvailabilityPayload, CustomDate, ServiceItem } from "../../types/Services";
 import { EditableCoverImage, EditableDescription, EditableName, EditablePrice, EditableTicketsPerDay } from "./EditServiceItemForm/EditServiceForm";
+import { NewAvailability } from "./Availability/Availability";
 
 
 // const mockServiceItems:ServiceItem[]=[
@@ -409,8 +410,9 @@ function AvailabilitySection({selectedServiceItem}:AvailabilitySectionProp){
         {isEditMode?null:<Button onClick={()=>setIsEditMode(!isEditMode)} type="link">Edit</Button>}
       </div>
 
+      <NewAvailability/>
 
-        { isEditMode
+        {/* { isEditMode
           ?<EditAvailabilities
             onToggleEditMode={()=>setIsEditMode(!isEditMode)}
             availabilities={availabilityData} 
@@ -420,7 +422,7 @@ function AvailabilitySection({selectedServiceItem}:AvailabilitySectionProp){
             isLoading = {isLoading}
             availabilities={availabilityData}
           />
-        } 
+        }  */}
        
     </div>
   )
