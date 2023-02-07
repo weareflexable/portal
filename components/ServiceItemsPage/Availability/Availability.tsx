@@ -5,7 +5,7 @@ import axios from "axios"
 import { useState } from "react"
 import { useAuthContext } from "../../../context/AuthContext"
 import {PlusCircleOutlined, DeleteOutlined} from "@ant-design/icons"
-import { CustomDate, ServiceItem } from "../../../types/Services"
+import { Availability, CustomDate, ServiceItem } from "../../../types/Services"
 import dayjs from 'dayjs'
 var utc = require('dayjs/plugin/utc')
 dayjs.extend(utc)
@@ -13,7 +13,7 @@ dayjs.extend(utc)
 interface Props{
     selectedServiceItem: ServiceItem
 }
-export default function Availability({selectedServiceItem}:Props){
+export default function AvailabilitySection({selectedServiceItem}:Props){
     const {paseto} = useAuthContext()
 
   
@@ -41,7 +41,7 @@ export default function Availability({selectedServiceItem}:Props){
             ? <Skeleton active />
             : isAvailabilityEmpty? null
             : availabilityData.map((availability:CustomDate)=>(
-                 <EditAvailability key={availability.name}  availability={availability}/>
+                 <EditAvailability selectedServiceItem={selectedServiceItem} key={availability.name}  availability={availability}/>
             ))}
             <NewAvailability selectedServiceItem={selectedServiceItem} availabilities={availabilityData}/>
         </div>
@@ -50,10 +50,11 @@ export default function Availability({selectedServiceItem}:Props){
 
 
 interface EditAvailabilityProp{
-    availability: CustomDate
+    availability: CustomDate,
+    selectedServiceItem: ServiceItem
 }
 
-export function EditAvailability({availability}:EditAvailabilityProp){
+export function EditAvailability({availability, selectedServiceItem}:EditAvailabilityProp){
   
     // const [state, setState] = useState()
   
@@ -69,7 +70,7 @@ export function EditAvailability({availability}:EditAvailabilityProp){
   
    
   
-    const recordMutationHandler = async(updatedItem:any)=>{
+    const editMutationHandler = async(updatedItem:any)=>{
       const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,updatedItem,{
         headers:{
             //@ts-ignore
@@ -78,13 +79,36 @@ export function EditAvailability({availability}:EditAvailabilityProp){
       })
         return data;
     }
-    const recordMutation = useMutation({
-      mutationKey:['availability'],
-      mutationFn: recordMutationHandler,
+    const editMutation = useMutation({
+      mutationKey:['availability',selectedServiceItem.id],
+      mutationFn: editMutationHandler,
       onSuccess:()=>{
         toggleEdit()
       }
     })
+    const deleteMutationHandler = async(item:any)=>{
+      const {data} = await axios({
+        method:'delete',
+        url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items/availability`,
+        data:{id:item.id},
+        headers:{
+            //@ts-ignore
+            "Authorization": paseto    
+      }
+    })
+        return data;
+    }
+    const deleteMutation = useMutation({
+      mutationKey:['availability',selectedServiceItem.id],
+      mutationFn: deleteMutationHandler,
+      onSettled:()=>{
+        queryClient.invalidateQueries({queryKey:['availabililty',selectedServiceItem.id]})
+      }
+    })
+
+    function deleteAvailability(item:CustomDate){
+        deleteMutation.mutate(item)
+    }
   
     function onFinish(updatedItem:any){
     //   const payload = {
@@ -97,11 +121,11 @@ export function EditAvailability({availability}:EditAvailabilityProp){
     //     name: updatedItem.name
     //   }
     //   setState(updatedRecord)
-    //   recordMutation.mutate(payload)
+    //   editMutation.mutate(payload)
       // We might need optimistic updates here
     }
   
-    const {isLoading:isEditing} = recordMutation ;
+    const {isLoading:isEditing} = editMutation ;
   
     const readOnly = (
         <div  style={{width:'100%', padding:'1rem', borderRadius:'4px', marginBottom:'.5rem', background:'#f6f6f6',  display:'flex', flexDirection:'column'}}>
@@ -125,7 +149,7 @@ export function EditAvailability({availability}:EditAvailabilityProp){
                 </div>
             </Col>
             <Col span={1}>
-                <Button type="text" icon={<DeleteOutlined/>}/>
+                <Button type="text" onClick={()=>deleteAvailability(availability)} icon={<DeleteOutlined/>}/>
             </Col>
         </Row>
       </div>  
@@ -226,9 +250,7 @@ export function NewAvailability({availabilities, selectedServiceItem}:NewAvailab
       setIsEditMode(!isEditMode)
     }
   
-   
-  
-    const recordMutationHandler = async(updatedItem:any)=>{
+    const createMutaionHandler = async(updatedItem:any)=>{
       const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items/availability`,updatedItem,{
         headers:{
             //@ts-ignore
@@ -237,11 +259,31 @@ export function NewAvailability({availabilities, selectedServiceItem}:NewAvailab
       })
         return data;
     }
-    const recordMutation = useMutation({
-      mutationKey:['availability'],
-      mutationFn: recordMutationHandler,
+    const createMutation = useMutation({
+      mutationKey:['availability',selectedServiceItem.id],
+      mutationFn: createMutaionHandler,
       onSuccess:()=>{
         toggleEdit()
+      },
+      onMutate: async (newItem) => {
+        console.log(newItem)
+        const newAvailability = newItem.availability[0] 
+
+        // Cancel any outgoing refetches
+        // (so they don't overwrite our optimistic update)
+        await queryClient.cancelQueries({ queryKey: ['availabilty',selectedServiceItem.id] })
+    
+        // Snapshot the previous value
+        const previousAvailability = queryClient.getQueryData(['availabilty',selectedServiceItem.id])
+    
+        // Optimistically update to the new value
+        queryClient.setQueryData(['availabilty',selectedServiceItem.id],newAvailability )
+    
+        // Return a context with the previous and new availability
+        return { previousAvailability, newAvailability }
+      },
+      onSettled:()=>{
+        queryClient.invalidateQueries({queryKey:['availabililty',selectedServiceItem.id]})
       }
     })
   
@@ -262,22 +304,18 @@ export function NewAvailability({availabilities, selectedServiceItem}:NewAvailab
             serviceItemId: selectedServiceItem.id,
             availability: [transformedItem]
         }
+        console.log(payload)
       
     //   const updatedRecord = {
     //     ...selectedRecord,
     //     name: updatedItem.name
     //   }
     //   setState(updatedRecord)
-      recordMutation.mutate(payload,{
-        onSuccess:(data)=>{
-            console.log('success data',data)
-            // optimistic update should go heare
-        }
-      })
+      createMutation.mutate(payload)
       // We might need optimistic updates here
     }
   
-    const {isLoading:isEditing} = recordMutation ;
+    const {isLoading:isEditing} = createMutation ;
   
     const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', marginTop:'1rem', alignItems:'center'}}>
