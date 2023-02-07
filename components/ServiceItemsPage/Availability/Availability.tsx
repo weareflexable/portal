@@ -7,6 +7,8 @@ import { useAuthContext } from "../../../context/AuthContext"
 import {PlusCircleOutlined, DeleteOutlined} from "@ant-design/icons"
 import { CustomDate, ServiceItem } from "../../../types/Services"
 import dayjs from 'dayjs'
+var utc = require('dayjs/plugin/utc')
+dayjs.extend(utc)
 
 interface Props{
     selectedServiceItem: ServiceItem
@@ -26,12 +28,18 @@ export default function Availability({selectedServiceItem}:Props){
      
      const {data, isLoading} = useQuery({queryKey:['availability',selectedServiceItem.id], queryFn:fetchItemAvailability})
      
-     const availabilityData = data && data
+     const availabilityData = data && data[0].availability;
+
+     const isAvailabilityEmpty = data && data[0].availability.length == 0
+
+     console.log(availabilityData)
+
 
     return(
         <div>
             {isLoading 
             ? <Skeleton active />
+            : isAvailabilityEmpty? null
             : availabilityData.map((availability:CustomDate)=>(
                  <EditAvailability key={availability.name}  availability={availability}/>
             ))}
@@ -96,7 +104,7 @@ export function EditAvailability({availability}:EditAvailabilityProp){
     const {isLoading:isEditing} = recordMutation ;
   
     const readOnly = (
-        <div  style={{width:'100%', padding:'1rem', borderRadius:'4px', background:'#f6f6f6',  display:'flex', flexDirection:'column'}}>
+        <div  style={{width:'100%', padding:'1rem', borderRadius:'4px', marginBottom:'.5rem', background:'#f6f6f6',  display:'flex', flexDirection:'column'}}>
         <Row>
             <Col span={14}>
                 <div style={{display:'flex', flexDirection:'column'}}>
@@ -221,7 +229,7 @@ export function NewAvailability({availabilities, selectedServiceItem}:NewAvailab
    
   
     const recordMutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.put(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items/availability`,updatedItem,{
+      const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items/availability`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -241,7 +249,8 @@ export function NewAvailability({availabilities, selectedServiceItem}:NewAvailab
         // Object coming from table has to be pre-formatted to conform with the structure and type
         // of the request payload.
         const transformedItem = {
-            date: dayjs(updatedItem.date).format('MMM DD, YYYY'),
+            //@ts-ignore
+            date: dayjs.utc(updatedItem.date).format(), // provide it in utc
             name: updatedItem.name,
             price: String(updatedItem.price),
             ticketsPerDay: String(updatedItem.ticketsPerDay)
@@ -249,22 +258,22 @@ export function NewAvailability({availabilities, selectedServiceItem}:NewAvailab
         
         // Combine previous availabilities with new (transformedItem) into a single array and pass
         // in req body
-        const availabilityPayload = [
-            ...availabilities,
-            transformedItem
-        ]
         const payload = {
             serviceItemId: selectedServiceItem.id,
-            availability: availabilityPayload
+            availability: [transformedItem]
         }
-        console.log(payload)
       
     //   const updatedRecord = {
     //     ...selectedRecord,
     //     name: updatedItem.name
     //   }
     //   setState(updatedRecord)
-    //   recordMutation.mutate(payload)
+      recordMutation.mutate(payload,{
+        onSuccess:(data)=>{
+            console.log('success data',data)
+            // optimistic update should go heare
+        }
+      })
       // We might need optimistic updates here
     }
   

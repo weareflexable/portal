@@ -94,6 +94,7 @@ interface BasicInfoProps{
 function BasicForm({nextStep}:BasicInfoProps){
 
      // TODO: set field for editing
+     //@ts-ignore
      const menuItems = useServiceItemTypes()
      console.log(menuItems)
 
