@@ -5,13 +5,11 @@ const { RangePicker } = DatePicker;
 const {Text,Title} = Typography;
 import {UploadOutlined,ArrowLeftOutlined,MinusCircleOutlined,PlusOutlined} from '@ant-design/icons'
 
-import {v4 as uuidv4} from 'uuid'
 
 import { useRouter } from 'next/router';
 import { Availability, AvailabilityPayload, ServiceItem, ServiceItemReqPaylod } from '../../../../types/Services';
 import dayjs from 'dayjs'
 import { useServicesContext } from '../../../../context/ServicesContext';
-import useServiceTypes from '../../../../hooks/useServiceTypes';
 import useServiceItemTypes from '../../../../hooks/useServiceItemTypes';
 import { asyncStore } from '../../../../utils/nftStorage';
 import axios from 'axios';
@@ -25,12 +23,9 @@ import { useMutation } from '@tanstack/react-query';
 
 
 interface ServiceFormProps{
-    onTriggerFormAction: (formData:ServiceItemReqPaylod)=>void
-    onCloseForm: ()=>void,
-    isCreatingServiceItem:boolean
 }
 
-export default function ServiceItemForm({ onTriggerFormAction,isCreatingServiceItem, onCloseForm}:ServiceFormProps){
+export default function ServiceItemForm(){
 
     const router = useRouter()
     const [currentStep, setCurrentStep] = useState(0);
@@ -126,7 +121,6 @@ function BasicForm({nextStep}:BasicInfoProps){
                 serviceItemTypeId: formData.serviceItemTypeId, // TODO: replace with form value,
                 logoImageHash: imageHash
             }
-            console.log(formObject)
 
             createData.mutate(formObject)
 
@@ -184,16 +178,28 @@ function BasicForm({nextStep}:BasicInfoProps){
         style={{marginTop:'2rem'}}
         onFinish={onFinish}
         >
+
+
+         <Form.Item
+            name="serviceItemTypeId"
+            label='Service item type'
+            rules={[{ required: true, message: 'Please select a service-item type!' }]}
+            >
+            <Radio.Group size='large'>
+                {menuItems.map((item:any)=><Radio.Button value={item.value} key={item.value}>{item.label}</Radio.Button>)}
+            </Radio.Group>
+        </Form.Item> 
+
         <Form.Item
             name="name"
             label="Name"
             rules={[{ required: true, message: 'Please input a valid service name' }]}
          >
-            <Input size='large' placeholder="Bill Cage Line Skip" />
+            <Input allowClear size='large' placeholder="Bill Cage Line Skip" />
         </Form.Item>
 
         <Form.Item name='description'  label="Description">
-            <TextArea maxLength={150} size='large' showCount  placeholder='Tell us more about this service' rows={2} />
+            <TextArea allowClear maxLength={150} size='large' showCount  placeholder='Tell us more about this service' rows={2} />
         </Form.Item>
 
         <Form.Item
@@ -203,8 +209,7 @@ function BasicForm({nextStep}:BasicInfoProps){
             rules={[{ required: true, message: 'Please input a valid price!' }]}
         >
             <div style={{display:'flex', alignItems:'center'}}>
-            <InputNumber style={{width:'200px'}} size='large'  prefix="$"  placeholder="0.00" /> 
-            <Text style={{marginLeft:'.5rem'}}>per ticket</Text>
+            <Input style={{width:'400px'}} size='large' suffix='Per ticket'  prefix="$"  placeholder="0.00" /> 
             </div>
         </Form.Item> 
 
@@ -215,41 +220,19 @@ function BasicForm({nextStep}:BasicInfoProps){
             rules={[{ required: true, message: 'Please input a valid number!' }]}
             >
             <div style={{display:'flex', alignItems:'center'}}>
-                <InputNumber style={{width:'200px'}} size='large' placeholder="20" />
-                <Text style={{marginLeft:'.5rem'}}>per day</Text>
+                <Input style={{width:'400px'}} suffix='Tickets per day'  size='large' placeholder="250" />
             </div>
         </Form.Item>
 
-        {/* <Form.Item
-            name="imageHash"
-            label="Logo"
-            valuePropName="fileList"
-            getValueFromEvent={normFile}
-            extra="Upload file upto 2MB"
-            rules={[{ required: true, message: 'Please upload an image' }]}
-        >
-            <Upload name="logo" action="" listType="picture">
-            <Button icon={<UploadOutlined />}>Upload service logo</Button>
-            </Upload>
-        </Form.Item> */}
 
 
-         <Form.Item
-            name="serviceItemTypeId"
-            label='Service item type'
-            rules={[{ required: true, message: 'Please select a service-item type!' }]}
-            >
-            <Radio.Group>
-                {menuItems.map((item:any)=><Radio.Button value={item.value} key={item.value}>{item.label}</Radio.Button>)}
-            </Radio.Group>
-        </Form.Item> 
         
         <Form.Item
             name="logoImageHash"
             label="Cover image"
             valuePropName="fileList"
             getValueFromEvent={normFile}
-            extra="This cover image will be used for DAT NFT"
+            extra="This cover image will be used for listing on marketplace and Digital access token NFT"
             rules={[{ required: true, message: 'Please upload an image' }]}
         >
             <Upload name="logo" action="" listType="picture">
@@ -260,12 +243,12 @@ function BasicForm({nextStep}:BasicInfoProps){
 
         <Form.Item style={{marginTop:'4rem'}}>
             <Space>
-                <Button shape='round' onClick={()=>router.back()}  type='ghost'>
+                <Button onClick={()=>router.back()}  type='ghost'>
                     Cancel
                 </Button>
 
-                <Button shape='round' loading={isHashingImage||isCreatingData} type="primary"  htmlType="submit" >
-                 Create service item
+                <Button shape='round' size='large' loading={isHashingImage||isCreatingData} type="primary"  htmlType="submit" >
+                    Create service item
                 </Button>
 
             </Space>
@@ -351,6 +334,11 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
 
 
     return(
+        <>
+        <div style={{width:'100%', marginTop:'3rem', display:'flex',flexDirection:'column'}}>
+            <Title style={{marginBottom:'.2rem'}} level={3}>Create custom dates</Title>
+            <Text>You can add multiple custom dates on which this service will be available to be purchased on the marketplace</Text>
+        </div> 
         <Form
             name="serviceItemAvailability"
             initialValues={{ remember: false }}
@@ -360,57 +348,77 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
             onFinish={onFinish}
             >
 
-
             <Form.List name="availability">
                 {(fields, { add, remove }) => (
                     <>
                     {fields.map(({ key, name, ...restField }) => (
-                        <Space key={key} style={{ display: 'flex', marginBottom: 8, alignItems:'center' }} >
-                        <Form.Item
-                            name={[name, 'price']}
-                            label='Price'
-                            {...restField}
-                            style={{width:'100%'}}
-                            rules={[{ required: true, message: 'Please input a valid price!' }]}
-                        >
-                            <InputNumber  prefix="$" placeholder="0.00" /> 
-                        </Form.Item> 
+                        <div style={{padding:'1rem', marginBottom:'1rem', borderRadius:'4px', background:'#f8f8f8'}} key={key}>
 
-                        <Form.Item
-                            {...restField}
-                            name={[name, 'ticketsPerDay']}
-                            label='Tickets per day'
-                            style={{width:'100%'}}
-                            rules={[{ required: true, message: 'Please input a valid number!' }]}
-                            >
-                            <InputNumber placeholder="20" />
-                        </Form.Item>
-
+                            {/* label */}
                             <Form.Item
-                                 {...restField}
-                                 rules={[{ required: true, message: 'Please select a date!' }]}
-                                 name={[name, 'date']}
-                                 label="Date"
-                                style={{width:'100%'}}
+                                    {...restField}
+                                    requiredMark='optional'
+                                    // label='Label'
+                                    // rules={[{ required: true, message: 'Please provide a valid label for the date' }]}
+                                    name={[name, 'name']}
+                                    style={{width:'100%'}}
                                 >
-                                <DatePicker />
+                                <Input size='large' placeholder='Label(optional): Christmas eve' />
                             </Form.Item>
 
-                            <Form.Item
-                                 {...restField}
-                                 rules={[{ required: true, message: 'Please select a date!' }]}
-                                 name={[name, 'name']}
-                                //  label="Name"
-                                style={{width:'100%'}}
-                                >
-                                <Input placeholder='label: Thanks giving' />
-                            </Form.Item>
-
-                            <div style={{marginLeft:'.5rem'}}>
-                                <MinusCircleOutlined onClick={() => remove(name)} />
-                            </div>
-                        </Space>
+                            {/* price and tickets per day */}
+                            <Row>
+                                <Col span={11} style={{height:'100%'}}>
+                                    <Form.Item
+                                        name={[name, 'price']}
+                                        // label='Price'
+                                        {...restField}
+                                        style={{width:'100%'}}
+                                        rules={[{ required: true, message: 'Please input a valid price!' }]}
+                                    >
+                                        <Input size='large' style={{width:'100%'}} suffix='Per ticket' prefix="$" placeholder="0.00" /> 
+                                    </Form.Item> 
+                                </Col>
+                                <Col offset={1} span={12}>
+                                    <Form.Item
+                                        {...restField}
+                                        name={[name, 'ticketsPerDay']}
+                                        // label='Tickets per day'
+                                        style={{width:'100%'}}
+                                        rules={[{ required: true, message: 'Please input a valid number!' }]}
+                                        >
+                                        <Input size='large' suffix='Tickets Per day' style={{width:'100%'}} placeholder="20" />
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+            
+                                {/* date */}
+                            <Row>
+                                <Col span={11}>
+                                    <Form.Item
+                                        {...restField}
+                                        rules={[{ required: true, message: 'Please select a date!' }]}
+                                        name={[name, 'date']}
+                                        // label="Date"
+                                        style={{width:'100%'}}
+                                    >
+                                        <DatePicker size='large' style={{width:'100%'}} />
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+            
+                            
+                            {/* controls */}
+                            <Col span={4}>
+                                <Form.Item style={{marginBottom:'0', width:'100%'}}>
+                                    <Space >
+                                        <Button shape="round" icon={<MinusCircleOutlined  />} size='small'  onClick={() => remove(name)} type='text'>Remove availability</Button>
+                                    </Space>           
+                                </Form.Item>
+                            </Col>
+                         </div>
                     ))}
+
                     <Form.Item>
                         <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
                         Add custom availability
@@ -421,13 +429,13 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
             </Form.List>
 
 
-            <Form.Item style={{marginTop:'2rem'}}>
+            <Form.Item style={{marginTop:'4rem'}}>
                 <Space>
                     <Button shape='round' onClick={()=>router.back()} type='ghost'>
                         Skip for now
                     </Button>
 
-                    <Button shape='round' loading={isCreatingData} type='primary' htmlType="submit" >
+                    <Button shape='round' size='large' loading={isCreatingData} type='primary' htmlType="submit" >
                          Create custom availability
                     </Button>
                 </Space>
@@ -435,5 +443,6 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
             </Form.Item>
 
             </Form>
+        </>
     )
 }
