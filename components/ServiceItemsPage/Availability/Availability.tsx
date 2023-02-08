@@ -27,7 +27,7 @@ export default function AvailabilitySection({selectedServiceItem}:Props){
      }
      
      const {data, isLoading} = useQuery({queryKey:['availability',selectedServiceItem.id], queryFn:fetchItemAvailability})
-     
+     console.log(data)
      const availabilityData = data && data[0].availability;
 
      const isAvailabilityEmpty = data && data[0].availability.length == 0
@@ -102,7 +102,7 @@ export function EditAvailability({availability, selectedServiceItem}:EditAvailab
       mutationKey:['availability',selectedServiceItem.id],
       mutationFn: deleteMutationHandler,
       onSettled:()=>{
-        queryClient.invalidateQueries({queryKey:['availabililty',selectedServiceItem.id]})
+        queryClient.invalidateQueries({queryKey:['availability',selectedServiceItem.id]})
       }
     })
 
@@ -265,25 +265,9 @@ export function NewAvailability({availabilities, selectedServiceItem}:NewAvailab
       onSuccess:()=>{
         toggleEdit()
       },
-      onMutate: async (newItem) => {
-        console.log(newItem)
-        const newAvailability = newItem.availability[0] 
-
-        // Cancel any outgoing refetches
-        // (so they don't overwrite our optimistic update)
-        await queryClient.cancelQueries({ queryKey: ['availabilty',selectedServiceItem.id] })
-    
-        // Snapshot the previous value
-        const previousAvailability = queryClient.getQueryData(['availabilty',selectedServiceItem.id])
-    
-        // Optimistically update to the new value
-        queryClient.setQueryData(['availabilty',selectedServiceItem.id],newAvailability )
-    
-        // Return a context with the previous and new availability
-        return { previousAvailability, newAvailability }
-      },
       onSettled:()=>{
-        queryClient.invalidateQueries({queryKey:['availabililty',selectedServiceItem.id]})
+        queryClient.invalidateQueries({queryKey:['availability',selectedServiceItem.id]})
+        // queryClient.refetchQueries({queryKey:['availabililty',selectedServiceItem.id]})
       }
     })
   
