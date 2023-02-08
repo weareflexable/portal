@@ -338,7 +338,7 @@ export default function ManagerOrgsView(){
       // switch org
       switchOrg(org)
       // navigate user to services page
-      router.push('/organizations/services/')
+      router.push('/organizations/services')
     }
     
     

@@ -3,7 +3,7 @@ import {Card,Form, Input,InputNumber, DatePicker,Upload,Button,notification, Spa
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
 const {Text,Title} = Typography;
-import {UploadOutlined,ArrowLeftOutlined,MinusCircleOutlined,PlusOutlined} from '@ant-design/icons'
+import {UploadOutlined,ArrowLeftOutlined,MinusCircleOutlined,PlusCircleOutlined} from '@ant-design/icons'
 
 
 import { useRouter } from 'next/router';
@@ -64,7 +64,7 @@ export default function ServiceItemForm(){
                 <Row>
                     <Col offset={1}> 
                          <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
-                            <Button shape='round' style={{marginRight:'1rem'}} type='text' onClick={()=>router.back()} icon={<ArrowLeftOutlined/>}/>
+                            <Button  type='link' onClick={()=>router.back()} icon={<ArrowLeftOutlined/>}/>
                             <Title style={{margin:'0'}} level={3}>Create new service-item</Title>
                         </div>
                     </Col>
@@ -336,7 +336,7 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
     return(
         <>
         <div style={{width:'100%', marginTop:'3rem', display:'flex',flexDirection:'column'}}>
-            <Title style={{marginBottom:'.2rem'}} level={3}>Create custom dates</Title>
+            <Title style={{marginBottom:'.2rem'}} level={3}>Create custom availability</Title>
             <Text>You can add multiple custom dates on which this service will be available to be purchased on the marketplace</Text>
         </div> 
         <Form
@@ -352,7 +352,7 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
                 {(fields, { add, remove }) => (
                     <>
                     {fields.map(({ key, name, ...restField }) => (
-                        <div style={{padding:'1rem', marginBottom:'1rem', borderRadius:'4px', background:'#f8f8f8'}} key={key}>
+                        <div style={{padding:'1rem', marginBottom:'1rem', borderRadius:'4px', border:'1px solid #e1e1e1'}} key={key}>
 
                             {/* label */}
                             <Form.Item
@@ -420,8 +420,8 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
                     ))}
 
                     <Form.Item>
-                        <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
-                        Add custom availability
+                        <Button icon={<PlusCircleOutlined />} size='large' shape='round' onClick={() => add()}>
+                             Add custom availability
                         </Button>
                     </Form.Item>
                     </>
@@ -436,7 +436,7 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
                     </Button>
 
                     <Button shape='round' size='large' loading={isCreatingData} type='primary' htmlType="submit" >
-                         Create custom availability
+                         Create availabilities
                     </Button>
                 </Space>
                 

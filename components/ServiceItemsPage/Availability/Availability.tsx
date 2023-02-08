@@ -4,7 +4,7 @@ const {Text, Title} = Typography
 import axios from "axios"
 import { useState } from "react"
 import { useAuthContext } from "../../../context/AuthContext"
-import {PlusCircleOutlined, DeleteOutlined} from "@ant-design/icons"
+import {PlusCircleOutlined, DeleteOutlined,EditOutlined} from "@ant-design/icons"
 import { Availability, CustomDate, ServiceItem } from "../../../types/Services"
 import dayjs from 'dayjs'
 var utc = require('dayjs/plugin/utc')
@@ -41,7 +41,7 @@ export default function AvailabilitySection({selectedServiceItem}:Props){
             ? <Skeleton active />
             : isAvailabilityEmpty? null
             : availabilityData.map((availability:CustomDate)=>(
-                 <EditAvailability selectedServiceItem={selectedServiceItem} key={availability.name}  availability={availability}/>
+                 <EditableAvailability selectedServiceItem={selectedServiceItem} key={availability.name}  availability={availability}/>
             ))}
             <NewAvailability selectedServiceItem={selectedServiceItem} availabilities={availabilityData}/>
         </div>
@@ -54,7 +54,7 @@ interface EditAvailabilityProp{
     selectedServiceItem: ServiceItem
 }
 
-export function EditAvailability({availability, selectedServiceItem}:EditAvailabilityProp){
+export function EditableAvailability({availability, selectedServiceItem}:EditAvailabilityProp){
   
     // const [state, setState] = useState()
   
@@ -84,8 +84,12 @@ export function EditAvailability({availability, selectedServiceItem}:EditAvailab
       mutationFn: editMutationHandler,
       onSuccess:()=>{
         toggleEdit()
+      },
+      onSettled:()=>{
+        queryClient.invalidateQueries({queryKey:['availability',selectedServiceItem.id]})
       }
     })
+
     const deleteMutationHandler = async(item:any)=>{
       const {data} = await axios({
         method:'delete',
@@ -149,82 +153,93 @@ export function EditAvailability({availability, selectedServiceItem}:EditAvailab
                 </div>
             </Col>
             <Col span={1}>
-                <Button type="text" onClick={()=>deleteAvailability(availability)} icon={<DeleteOutlined/>}/>
+                <Button type="text" onClick={toggleEdit} icon={<EditOutlined />}/>
+                <Button type="text" danger onClick={()=>deleteAvailability(availability)} icon={<DeleteOutlined/>}/>
             </Col>
         </Row>
       </div>  
-  )
+    )
+
+    // Date field was particularly transforemd in order to be accepted by date picker
+    // as it only accepts dayjs formats.
+    const transformedAvailability={
+      ...availability,
+      date: dayjs(availability.date)
+    }
   
     const editable = (
-      <Form
-       style={{ marginTop:'.5rem' }}
-       layout='vertical'
-       name="editableName"
-       initialValues={availability}
-       onFinish={onFinish}
-       >
-        <Form.Item
-            rules={[{ required: true, message: 'Please provide a label' }]}
-            name={'name'}
-            label="Label"
-            style={{width:'100%'}}
-        >
-            <Input placeholder='label: Thanks giving' />
-        </Form.Item>
-        <Row>
-          <Col span={11} style={{height:'100%'}}>
-            <Form.Item
-                name={'price'}
-                label='Price'
-                style={{width:'100%'}}
-                rules={[{ required: true, message: 'Please input a valid price!' }]}
-            >
-                <InputNumber style={{width:'100%'}} prefix="$" placeholder="0.00" /> 
-            </Form.Item> 
-          </Col>
-        <Col offset={1} span={11}>
-            <Form.Item
-                name={'ticketsPerDay'}
-                label='Tickets per day'
-                style={{width:'100%'}}
-                rules={[{ required: true, message: 'Please input a valid number!' }]}
-                >
-                <InputNumber style={{width:'100%'}} placeholder="20" />
-            </Form.Item>
-        </Col>
-        </Row>
+      <div style={{padding:'1rem', marginBottom:'1rem', marginTop:'1rem', border:'1px solid #e1e1e1', borderRadius:'4px'}} >
+          <Title style={{marginBottom:'1rem'}} level={5}> Edit availability</Title>
+          <Form
+          style={{ marginTop:'.5rem' }}
+          layout='vertical'
+          name="editableName"
+          initialValues={transformedAvailability}
+          onFinish={onFinish}
+          >
+              <Form.Item
+                  rules={[{ required: true, message: 'Please provide a label' }]}
+                  name={'name'}
+                  // label="Label"
+                  style={{width:'100%'}}
+              >
+                  <Input placeholder='Label(optional): Thanks giving' />
+              </Form.Item>
+              <Row>
+              <Col span={11} style={{height:'100%'}}>
+                  <Form.Item
+                      name={'price'}
+                      // label='Price'
+                      style={{width:'100%'}}
+                      rules={[{ required: true, message: 'Please input a valid price!' }]}
+                  >
+                      <Input style={{width:'100%'}} suffix='Per ticket' prefix="$" placeholder="0.00" /> 
+                  </Form.Item> 
+              </Col>
+              <Col offset={1} span={12}>
+                  <Form.Item
+                      name={'ticketsPerDay'}
+                      // label='Tickets per day'
+                      style={{width:'100%'}}
+                      rules={[{ required: true, message: 'Please input a valid number!' }]}
+                      >
+                      <Input style={{width:'100%'}} suffix='Tickets per day' placeholder="20" />
+                  </Form.Item>
+              </Col>
+              </Row>
 
-        <Row>
-            <Col span={11}>
-        <Form.Item
-            rules={[{ required: true, message: 'Please select a date!' }]}
-            name={'date'}
-            label="Date"
-            style={{width:'100%'}}
-        >
-            <DatePicker style={{width:'100%'}} />
-        </Form.Item>
-            </Col>
-        </Row>
+              <Row>
+                  <Col span={11}>
+              <Form.Item
+                  rules={[{ required: true, message: 'Please select a date!' }]}
+                  name={'date'}
+                  // label="Date"
+                  style={{width:'100%'}}
+              >
+                  <DatePicker format={'MMM DD, YYYY'} style={{width:'100%'}} />
+              </Form.Item>
+                  </Col>
+              </Row>
 
-        
-          {/* </Col> */}
-          <Col span={4}>
-            <Form.Item style={{ width:'100%'}}>
-                <Space >
-                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
-                        Cancel
-                    </Button>
-                    <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
-                        Apply changes
-                    </Button>
-                </Space>           
-            </Form.Item>
-          </Col>
-        {/* </Row> */}
-             
-      </Form>
-    )
+              
+              {/* </Col> */}
+              <Col span={4}>
+                  <Form.Item style={{ marginBottom:'0', width:'100%'}}>
+                      <Space >
+                          <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                              Cancel
+                          </Button>
+                          <Button shape="round" loading={isEditing} type="primary"  htmlType="submit" >
+                              Apply changes
+                          </Button>
+                      </Space>           
+                  </Form.Item>
+              </Col>
+              {/* </Row> */}
+                  
+          </Form>
+      </div>
+  )
     return(
       <div style={{width:'100%', display:'flex', flexDirection:'column'}}>
       {isEditMode?editable:readOnly}
@@ -308,7 +323,7 @@ export function NewAvailability({availabilities, selectedServiceItem}:NewAvailab
   )
   
     const editable = (
-        <div style={{marginTop:'2rem'}}>
+        <div style={{padding:'1rem', marginBottom:'1rem', marginTop:'1rem', border:'1px solid #e1e1e1', borderRadius:'4px'}} >
             <Title style={{marginBottom:'1rem'}} level={5}> New availability</Title>
             <Form
             style={{ marginTop:'.5rem' }}
@@ -320,30 +335,30 @@ export function NewAvailability({availabilities, selectedServiceItem}:NewAvailab
                 <Form.Item
                     rules={[{ required: true, message: 'Please provide a label' }]}
                     name={'name'}
-                    label="Label"
+                    // label="Label"
                     style={{width:'100%'}}
                 >
-                    <Input placeholder='label: Thanks giving' />
+                    <Input placeholder='Label(optional): Thanks giving' />
                 </Form.Item>
                 <Row>
                 <Col span={11} style={{height:'100%'}}>
                     <Form.Item
                         name={'price'}
-                        label='Price'
+                        // label='Price'
                         style={{width:'100%'}}
                         rules={[{ required: true, message: 'Please input a valid price!' }]}
                     >
-                        <InputNumber style={{width:'100%'}} prefix="$" placeholder="0.00" /> 
+                        <Input style={{width:'100%'}} suffix='Per ticket' prefix="$" placeholder="0.00" /> 
                     </Form.Item> 
                 </Col>
-                <Col offset={1} span={11}>
+                <Col offset={1} span={12}>
                     <Form.Item
                         name={'ticketsPerDay'}
-                        label='Tickets per day'
+                        // label='Tickets per day'
                         style={{width:'100%'}}
                         rules={[{ required: true, message: 'Please input a valid number!' }]}
                         >
-                        <InputNumber style={{width:'100%'}} placeholder="20" />
+                        <Input style={{width:'100%'}} suffix='Tickets per day' placeholder="20" />
                     </Form.Item>
                 </Col>
                 </Row>
@@ -353,7 +368,7 @@ export function NewAvailability({availabilities, selectedServiceItem}:NewAvailab
                 <Form.Item
                     rules={[{ required: true, message: 'Please select a date!' }]}
                     name={'date'}
-                    label="Date"
+                    // label="Date"
                     style={{width:'100%'}}
                 >
                     <DatePicker style={{width:'100%'}} />
@@ -364,12 +379,12 @@ export function NewAvailability({availabilities, selectedServiceItem}:NewAvailab
                 
                 {/* </Col> */}
                 <Col span={4}>
-                    <Form.Item style={{ width:'100%'}}>
+                    <Form.Item style={{ marginBottom:'0', width:'100%'}}>
                         <Space >
                             <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
                                 Cancel
                             </Button>
-                            <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                            <Button shape="round" loading={isEditing} type="primary"  htmlType="submit" >
                                 Create availability
                             </Button>
                         </Space>           

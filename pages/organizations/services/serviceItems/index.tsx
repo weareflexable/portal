@@ -21,8 +21,8 @@ export default function Staffs(){
         <AppLayout>
                 <Row>
                     <Col offset={1} span={22}>
-                    <div style={{width:'100%', display:'flex', marginTop:'1rem', marginBottom:'1rem', justifyContent:'space-between', alignItems:'center'}}> 
-                        <Title  level={2}>Service Items</Title> 
+                    <div style={{width:'100%', display:'flex', marginTop:'.5rem', justifyContent:'space-between', alignItems:'center'}}> 
+                        <Title level={2}>Service Items</Title> 
                      </div>
                         <Content
                             style={{
