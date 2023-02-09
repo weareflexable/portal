@@ -71,7 +71,7 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
    
   
     const editMutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,updatedItem,{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items/availability`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -118,10 +118,10 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
     function onFinish(record:any){
       const payload = {
         ...record,
-        serviceItemID: selectedServiceItem.id, // Rename to "serviceItemId"
-        serviceItemId: availability.id, // This should be renamed to "id"
+        serviceItemId: selectedServiceItem.id, // Rename to "serviceItemId"
+        id: availability.id, // This should be renamed to "id"
         //@ts-ignore
-        date: dayjs.utc(record.date).format()
+        date: dayjs.utc(record.date).format(),
       }
       // console.log(payload)
 

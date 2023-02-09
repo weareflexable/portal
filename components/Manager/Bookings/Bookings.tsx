@@ -213,7 +213,7 @@ export default function ManagerBookingsView(){
         dataIndex: 'orderStatus',
         key: 'orderStatus',
         render: (status)=>{
-          const statusText = status === '1'? 'Complete': 'In-complete'
+          const statusText = status === '1'? 'Successful': 'In-complete'
           return <Badge status="success" text={statusText} />
         }
       },

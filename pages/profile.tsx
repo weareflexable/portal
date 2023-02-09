@@ -150,7 +150,7 @@ function EditableName({selectedRecord}:EditableProp){
    
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.put(`${process.env.NEXT_PUBLIC_NEW_API_URL}/users`,updatedItem,{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/users`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -171,8 +171,12 @@ function EditableName({selectedRecord}:EditableProp){
         ...selectedRecord,
         name: updatedItem.fullName
       }
+      const payload = {
+        key:'name',
+        value:updatedItem.fullName
+      }
       setState(updatedRecord)
-      mutation.mutate(updatedRecord)
+      mutation.mutate(payload)
     }
   
     const {isLoading:isEditing} = mutation ;
@@ -257,10 +261,10 @@ function EditablePhone({selectedRecord}:EditableProp){
   
     function onFinish(updatedItem:User){
       const payload = {
-        key:'mobileNumber',
+        key:'mobile_number',
         value: updatedItem.mobileNumber,
-        id: selectedRecord.id
       }
+
       const updatedRecord = {
         ...selectedRecord,
         name: updatedItem.mobileNumber
@@ -353,7 +357,6 @@ function EditableGender({selectedRecord}:EditableProp){
       const payload = {
         key:'gender',
         value: updatedItem.gender,
-        id: selectedRecord.id
       }
       const updatedRecord = {
         ...selectedRecord,
@@ -411,7 +414,7 @@ function EditableGender({selectedRecord}:EditableProp){
     )
     return(
       <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-        <Text type="secondary" style={{ marginRight: '2rem',}}>Mobile Number</Text>
+        <Text type="secondary" style={{ marginRight: '2rem',}}>Gender</Text>
         {isEditMode?editable:readOnly}
       </div>
     )
@@ -451,7 +454,6 @@ function EditableCountry({selectedRecord}:EditableProp){
       const payload = {
         key:'country',
         value: updatedItem.country,
-        id: selectedRecord.id
       }
       const updatedRecord = {
         ...selectedRecord,
@@ -489,7 +491,7 @@ function EditableCountry({selectedRecord}:EditableProp){
                 allowClear
                 >
                     {countryList.getData().map((country:any)=>(
-                        <Option key={country.code} value={country.code}>{country.name}</Option>
+                        <Option key={country.code} value={country.name}>{country.name}</Option>
                     ))}
                 </Select>
             </Form.Item> 

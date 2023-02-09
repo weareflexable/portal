@@ -42,7 +42,7 @@ const {TextArea} = Input
 // ]
 
 
-export default function ServiceItemsView(){
+export default function BookingsView(){
 
     const {paseto} = useAuthContext()
     const queryClient = useQueryClient()
@@ -50,17 +50,17 @@ export default function ServiceItemsView(){
     const {switchOrg} = useOrgs()
     const {currentService} = useServicesContext()
     const [isDrawerOpen, setIsDrawerOpen] = useState(false) 
+    const [pageNumber, setPageNumber] = useState<number|undefined>(0)
 
   
 
     const [selectedServiceItem, setSelectedServiceItem] = useState<any|ServiceItem>({})
-    const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Approved'})
 
     async function fetchBookings(){
     const res = await axios({
             method:'get',
             //@ts-ignore
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/bookings?key=service_id&value=${currentService.id}&pageNumber=0&pageSize=10`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/bookings?key=service_id&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=10`,
             headers:{
                 "Authorization": paseto
             } 
@@ -70,48 +70,12 @@ export default function ServiceItemsView(){
    
     }
 
-   
-
-    async function changeServiceItemStatus({serviceItemId, statusNumber}:{serviceItemId:string, statusNumber: string}){
-        const res = await axios({
-            method:'patch',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,
-            data:{
-                key:'status',
-                value: statusNumber, // 0 means de-activated in db
-                serviceItemId: serviceItemId 
-            },
-            headers:{
-                "Authorization": paseto
-            }
-        })
-        return res; 
-    }
-
-    
-
-    const changeStatusMutation = useMutation(['data'],{
-        mutationFn: changeServiceItemStatus,
-        onSuccess:(data:any)=>{
-            queryClient.invalidateQueries({queryKey:['serviceItems',currentFilter]})
-        },
-        onError:()=>{
-            console.log('Error changing status')
-        }
-    })
-
-
-    function inActiveItemsHandler(serviceItem:Order){
-        changeStatusMutation.mutate({serviceItemId:serviceItem.id, statusNumber:'0'})
-    }
-
-    function activeItemsHandler(serviceItem:Order){
-        changeStatusMutation.mutate({serviceItemId:serviceItem.id, statusNumber:'2'})
-    }
+  
 
 
     const bookingsQuery = useQuery({queryKey:['managerBookings'], queryFn:fetchBookings, enabled:paseto !== ''})
     const data = bookingsQuery.data && bookingsQuery.data.data
+    const totalLength = bookingsQuery.data && bookingsQuery.data.dataLength;
 
 
     
@@ -119,40 +83,14 @@ export default function ServiceItemsView(){
   
   
     const handleChange: TableProps<Order>['onChange'] = (pagination, filters, sorter) => {
-      console.log('Various parameters', pagination, filters, sorter);
-      // setFilteredInfo(filters);
+      console.log(data.current)
+      //@ts-ignore
+      setPageNumber(data.current-1);
     };
   
-  
-    function getTableRecordActions(){
-        switch(currentFilter.id){
-            // 1 = approved
-            case '1': return activeItemActions 
-            // 2 = inReview
-            case '2': return inActiveItemActions 
-        }
-    }
 
-    function viewOrgDetails(serviceItem:Order){
-      // set state
-      setSelectedServiceItem(serviceItem)
-      // opne drawer
-      setIsDrawerOpen(true)
-
-    }
   
-    
-      const onMenuClick=(e:any, record:Order) => {
-        const event = e.key
-        switch(event){
-          case 'inActive': inActiveItemsHandler(record);
-          break;
-          case 'active': activeItemsHandler(record)
-          break;
-          case 'viewDetails': viewOrgDetails(record)
-        }
-      };
-      
+  
   
     const columns: ColumnsType<Order> = [
       {
@@ -202,7 +140,7 @@ export default function ServiceItemsView(){
           return(
             <div>
             <Text type="secondary">$</Text>
-            <Text> {total}</Text>
+            <Text>{total}</Text>
           </div>
           )
         }
@@ -267,7 +205,17 @@ export default function ServiceItemsView(){
                 </div>
 
                 </div>
-                <Table style={{width:'100%'}} key='dfadfe' loading={bookingsQuery.isLoading||bookingsQuery.isRefetching} columns={columns} onChange={handleChange} dataSource={data} />
+                <Table 
+                style={{width:'100%'}} 
+                key='dfadfe' 
+                loading={bookingsQuery.isLoading||bookingsQuery.isRefetching} 
+                columns={columns} 
+                pagination={{
+                  total:totalLength,  
+                  showTotal:(total) => `Total ${total} items`,
+                }} 
+                onChange={handleChange} 
+                dataSource={data} />
                 {
                   isDrawerOpen
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedServiceItem={selectedServiceItem}/>
