@@ -73,7 +73,7 @@ export default function BookingsView(){
   
 
 
-    const bookingsQuery = useQuery({queryKey:['managerBookings'], queryFn:fetchBookings, enabled:paseto !== ''})
+    const bookingsQuery = useQuery({queryKey:['Bookings',pageNumber], queryFn:fetchBookings, enabled:paseto !== ''})
     const data = bookingsQuery.data && bookingsQuery.data.data
     const totalLength = bookingsQuery.data && bookingsQuery.data.dataLength;
 
@@ -82,8 +82,7 @@ export default function BookingsView(){
 
   
   
-    const handleChange: TableProps<Order>['onChange'] = (pagination, filters, sorter) => {
-      console.log(data.current)
+    const handleChange: TableProps<Order>['onChange'] = (data) => {
       //@ts-ignore
       setPageNumber(data.current-1);
     };
@@ -98,12 +97,15 @@ export default function BookingsView(){
         dataIndex: 'name',
         key: 'name',
         render:(_,record)=>{
+          const serviceItemName = record.serviceItemDetails[0].name
+          const serviceName = record.serviceDetails[0].name
+          const logoImageHash = record.serviceItemDetails[0].logoImageHash
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={'/favicon.ico'}/>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${logoImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
-                        <Text>{record.name}</Text>  
-                        <Text type="secondary">{record.serviceName}</Text>  
+                        <Text>{serviceItemName}</Text>  
+                        <Text type="secondary">{serviceName}</Text>  
                     </div>
                 </div>
             )
@@ -113,10 +115,11 @@ export default function BookingsView(){
         title: 'Unit price',
         dataIndex: 'unitPrice',
         key: 'unitPrice',
+        align:'right',
         render: (unitPrice)=>(
           <div>
             <Text type="secondary">$</Text>
-            <Text> {unitPrice/100}</Text>
+            <Text>{unitPrice/100}</Text>
           </div>
         )
       },
@@ -124,10 +127,11 @@ export default function BookingsView(){
         title: 'Quantity',
         dataIndex: 'quantity',
         key: 'quantity',
+        align:'right',
         render:(quantity)=>(
           <div>
             <Text type="secondary">x</Text>
-            <Text> {quantity}</Text>
+            <Text>{quantity}</Text>
           </div>
         )
       },
@@ -135,6 +139,7 @@ export default function BookingsView(){
         title: 'Total price',
         // dataIndex: 'totalPrice',
         key: 'totalPrice',
+        align:'right',
         render: (_,record)=>{
           const total = record.quantity * (record.unitPrice/100)
           return(
@@ -149,6 +154,12 @@ export default function BookingsView(){
         title: 'Type',
         dataIndex: 'serviceItemType',
         key: 'serviceItemType',
+        render:(_,record)=>{
+          const serviceItemType = record.serviceItemDetails[0].serviceItemType[0].name
+          return(
+            <Text>{serviceItemType}</Text>
+          )
+        }
       },
       
       {
@@ -166,7 +177,11 @@ export default function BookingsView(){
         key: 'ticketStatus',
         render: (status)=>{
           const statusText = status === '1'? 'Redeemed': 'Confirmed'
-          return <Badge status="success" text={statusText} />
+          return (
+            <div>
+              <Badge style={{border:'1px solid #e7e7e7', padding:'.15rem .6rem', borderRadius:'4px'}} status="success" text={statusText} />
+            </div>
+          )
         }
       },
       {
@@ -245,8 +260,8 @@ function closeDrawerHandler(){
 return( 
 <Drawer title="Organization Details" width={640} placement="right" closable={true} onClose={closeDrawerHandler} open={isDrawerOpen}>
   
-  <EditableName selectedServiceItem={selectedServiceItem}/>
-  <EditableDescription selectedServiceItem={selectedServiceItem}/>
+  {/* <EditableName selectedServiceItem={selectedServiceItem}/> */}
+  {/* <EditableDescription selectedServiceItem={selectedServiceItem}/> */}
 
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
     <Divider/>
@@ -259,248 +274,6 @@ return(
 }
 
 
-interface EditableProp{
-  selectedServiceItem: ServiceItem
-}
-
-function EditableName({selectedServiceItem}:EditableProp){
-
-  const [state, setState] = useState(selectedServiceItem)
-
-  const [isEditMode, setIsEditMode] = useState(false)
-
-  const {paseto} = useAuthContext()
-
-  const queryClient = useQueryClient()
-
-  function toggleEdit(){
-    setIsEditMode(!isEditMode)
-  }
-
-
-  const nameMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/serviceItem`,updatedItem,{
-      headers:{
-          //@ts-ignore
-          "Authorization": paseto
-      }
-    })
-      return data;
-  }
-  const nameMutation = useMutation({
-    mutationKey:['name'],
-    mutationFn: nameMutationHandler,
-    onSuccess:()=>{
-      toggleEdit()
-    }
-  })
-
-  function onFinish(updatedItem:any){
-    const payload = {
-      key:'name',
-      value: updatedItem.name,
-      serviceItemId: selectedServiceItem.id
-    }
-    const updatedOrg = {
-      ...selectedServiceItem,
-      name: updatedItem.name
-    }
-    setState(updatedOrg)
-    nameMutation.mutate(payload)
-  }
-
-  const {isLoading:isEditing} = nameMutation;
-
-  const readOnly = (
-    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Text>{state.name}</Text>
-      <Button type="link" onClick={toggleEdit}>Edit</Button>
-    </div>
-)
-
-  const editable = (
-    <Form
-     style={{ marginTop:'.5rem' }}
-     name="editableName"
-     initialValues={selectedServiceItem}
-     onFinish={onFinish}
-     >
-      <Row>
-        <Col span={16} style={{height:'100%'}}>
-          <Form.Item
-              name="name"
-              rules={[{ required: true, message: 'Please input a valid service name' }]}
-          >
-              <Input  disabled={isEditing} placeholder="Flexable serviceItem" />
-          </Form.Item>
-        </Col>
-        <Col span={4}>
-          <Form.Item style={{ width:'100%'}}>
-              <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
-                      Cancel
-                  </Button>
-                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
-                      Apply changes
-                  </Button>
-              </Space>
-                        
-          </Form.Item>
-        </Col>
-      </Row>
-           
-    </Form>
-  )
-  return(
-    <div style={{width:'100%', display:'flex', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>Name</Text>
-    {isEditMode?editable:readOnly}
-    </div>
-  )
-}
-function EditableDescription({selectedServiceItem}:EditableProp){
-
-  const [state, setState] = useState(selectedServiceItem)
-
-  const [isEditMode, setIsEditMode] = useState(false)
-
-  const {paseto} = useAuthContext()
-
-
-  function toggleEdit(){
-    setIsEditMode(!isEditMode)
-  }
-
-  const [form]  = Form.useForm()
-
- 
-
-
-  const nameMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/serviceItem`,updatedItem,{
-      headers:{
-          //@ts-ignore
-          "Authorization": paseto
-      }
-    })
-      return data;
-  }
-  const nameMutation = useMutation({
-    mutationKey:['description'],
-    mutationFn: nameMutationHandler,
-    onSuccess:()=>{
-      toggleEdit()
-    }
-  })
-
-  function onFinish(updatedItem:any){
-    const payload = {
-      key:'country',
-      value: updatedItem.country,
-      serviceItemId: selectedServiceItem.id
-    }
-    const updatedOrg = {
-      ...selectedServiceItem,
-      name: updatedItem.country
-    }
-    setState(updatedOrg)
-    nameMutation.mutate(payload)
-  }
-
-  const {isLoading:isEditing} = nameMutation 
-
-  const readOnly = (
-    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Text>{state.description}</Text>
-      <Button type="link" onClick={toggleEdit}>Edit</Button>
-    </div>
-)
-
-  const editable = (
-    <Form
-     style={{ marginTop:'.5rem' }}
-     name="editableAddress"
-     initialValues={selectedServiceItem}
-     onFinish={onFinish}
-     form={form}
-     >
-      <Row>
-        <Col span={16} style={{height:'100%'}}>
-        <Form.Item 
-            name="description"
-            rules={[{ required: true, message: 'Please input a description for service item!' }]}
-        >
-            <TextArea rows={3} placeholder='Best bars in syracuse'/>
-
-        </Form.Item>
-
-        </Col>
-        <Col span={4}>
-          <Form.Item style={{ width:'100%'}}>
-              <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
-                      Cancel
-                  </Button>
-                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
-                      Apply changes
-                  </Button>
-              </Space>
-                        
-          </Form.Item>
-        </Col>
-      </Row>
-           
-    </Form>
-  )
-  return(
-    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>Address</Text>
-    {isEditMode?editable:readOnly}
-    </div>
-  )
-}
-
-
-
-
-
-const serviceItemsFilters = [
-  {
-      id: '1',
-      name: 'Active'
-  },
-  {
-      id: '2',
-      name: 'In-active'
-  },
-]
-
-const inActiveItemActions = [
-    {
-        key: 'accept',
-        label: 'Accept'
-    },
-    {
-        key: 'reject',
-        label: 'Reject'
-    },
-    {
-        key: 'viewDetails',
-        label: 'View details'
-    },
-
-]
-const activeItemActions = [
-    {
-        key: 'review',
-        label: 'Review'
-    },
-    {
-        key: 'viewDetails',
-        label: 'View details'
-    },
-
-]
 
 
 // const managerBookings:Order[] = [

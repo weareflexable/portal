@@ -3,8 +3,9 @@ export interface Order {
     userId: string,
     serviceName: string;
     name: string;
+    serviceItemDetails: any[],
+    serviceDetails: any[],
     quantity: number,
-    startTime: string;
     orderStatus: string,
     ticketStatus: string,
     unitPrice:number,
@@ -13,9 +14,7 @@ export interface Order {
     paymentIntentStatus: string,
     paymentIntentId: string,
     orgServiceItemId: string,
-    hash: string,
     currency: string,
-    endTime: string,
     createdAt: string
   }
 
