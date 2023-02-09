@@ -91,22 +91,26 @@ export default function CreateBankAccountForm(){
                     onFinish={onFinish}
                     form={form}
                 >
+                <div style={{marginBottom:'2rem'}}>
+                <Title level={3}>Beneficiary info</Title>
+                </div>
 
                 <Form.Item
                     name="beneficiaryName"
-                    label='Beneficiary name'
+                    label='Name'
                     rules={[{ required: true, message: 'Please input name used on card' }]}
                 >
-                    <Input placeholder="Bill Cage" />
+                    <Input size='large' placeholder="Bill Cage" />
                 </Form.Item>
 
                 <Form.Item
-                    name="accountNo"
-                    label='Beneficiary account number'
-                    rules={[{ required: true, message: 'Please input a valid account number' }]}
+                    name="beneficiaryAddress"
+                    label='Address'
+                    rules={[{ required: true, message: 'Please enter valid address' }]}
                 >
-                    <Input type='number' placeholder="0127467382" />
+                    <Input size='large' placeholder="89, Highstreet Boston" />
                 </Form.Item>
+
 
                 <Form.Item
                     name="currency"
@@ -127,28 +131,32 @@ export default function CreateBankAccountForm(){
                     </Radio.Group>
                 </Form.Item>
 
-                <Form.Item
-                    name="beneficiaryAddress"
-                    label='Beneficiary address'
-                    rules={[{ required: true, message: 'Please enter valid address' }]}
-                >
-                    <Input placeholder="89, Highstreet Boston" />
-                </Form.Item>
+                <div style={{marginBottom:'2rem', marginTop:'3rem'}}>
+                <Title level={3}>Bank info</Title>
+                </div>
 
                 <Form.Item
                     name="bankName"
-                    label='Bank name'
+                    label='Name'
                     rules={[{ required: true, message: 'Please enter valid bank name' }]}
                 >
-                    <Input placeholder="Silvergate crest bank" />
+                    <Input size='large' placeholder="Silvergate crest bank" />
+                </Form.Item>
+
+                <Form.Item
+                    name="accountNo"
+                    label='Account number'
+                    rules={[{ required: true, message: 'Please input a valid account number' }]}
+                >
+                    <Input allowClear size='large' placeholder="0127467382" />
                 </Form.Item>
 
                 <Form.Item
                     name="bankAddress"
-                    label='Bank address'
+                    label='Address'
                     rules={[{ required: true, message: 'Please enter valid address' }]}
                 >
-                    <Input placeholder="89, Highstreet Boston" />
+                    <Input size='large' placeholder="89, Highstreet Boston" />
                 </Form.Item>
 
                 <Form.Item
@@ -156,7 +164,7 @@ export default function CreateBankAccountForm(){
                     label='Routing number'
                     rules={[{ required: true, message: 'Please input a valid routing number' }]}
                 >
-                    <Input placeholder="433354564" />
+                    <Input size='large' placeholder="433354564" />
                 </Form.Item>
 
                 <Form.Item
@@ -164,12 +172,12 @@ export default function CreateBankAccountForm(){
                     label='Swift/BIC code'
                     rules={[{ required: true, message: 'Please input a valid routing number!' }]}
                 >
-                    <Input type='number' placeholder="37567489374" />
+                    <Input size='large' type='number' placeholder="37567489374" />
                 </Form.Item>
 
 
-                <Form.Item>
-                    <Button type="primary" loading={isCreatingData} htmlType="submit">
+                <Form.Item style={{marginTop:'3rem'}}>
+                    <Button type="primary" size='large' shape='round' loading={isCreatingData} htmlType="submit">
                     { isCreatingData? 'Creating...' :'Add bank details'}
                     </Button>
                 </Form.Item>
