@@ -59,7 +59,7 @@ export default function ServiceItemsView(){
     async function fetchServiceItems(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items?key=org_service_id&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=10`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items?key=org_service_id&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=10&key2=status&value2=1`,
             headers:{
                 "Authorization": paseto
             }
@@ -158,15 +158,15 @@ export default function ServiceItemsView(){
             )
         },
       },
-      {
-        title: 'Type',
-        dataIndex: 'serviceItemType',
-        key: 'serviceItemType',
-        render:(_,record)=>{
-          const type = record.serviceItemType[0]
-          return <Text>{type.name}</Text>
-        }
-      },
+      // {
+      //   title: 'Type',
+      //   dataIndex: 'serviceItemType',
+      //   key: 'serviceItemType',
+      //   render:(_,record)=>{
+      //     const type = record.serviceItemType[0]
+      //     return <Text>{type.name}</Text>
+      //   }
+      // },
       {
         title: 'Tickets Per Day',
         dataIndex: 'ticketsPerDay',
@@ -303,19 +303,22 @@ function toggleDeleteModal(){
 function deleteServiceItem(){ 
   console.log(selectedRecord.id)
   // mutate record
-  deleteData.mutate()
-  toggleDeleteModal()
-  closeDrawerHandler()
+  deleteData.mutate(selectedRecord,{
+    onSuccess:()=>{
+      toggleDeleteModal()
+      closeDrawerHandler()
+    }
+  })
 }
 
-const deleteDataHandler = async()=>{      
+const deleteDataHandler = async(record:ServiceItem)=>{      
   const {data} = await axios({
     method:'patch',
     url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,
     data: {
-        id:selectedRecord.id,
+        id:record.id,
         key:'status',
-        value: false
+        value: '0'
       },
     headers:{
           "Authorization": paseto
@@ -402,6 +405,7 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
 
   function onFinish(){
     // call mutate function to delete record
+    onDeleteRecord()
   }
 
   const [form] = Form.useForm()
@@ -439,7 +443,6 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
             danger
             loading={isDeletingItem}
             htmlType="submit"
-            onClick={onDeleteRecord}
             disabled={
               // !form.isFieldTouched('name') &&
               form.getFieldValue('name') !== selectedRecord.name

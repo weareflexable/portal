@@ -113,19 +113,20 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
     function deleteAvailability(item:CustomDate){
         deleteMutation.mutate(item)
     }
-  
-    function onFinish(updatedItem:any){
-    //   const payload = {
-    //     key:'availability',
-    //     value: updatedItem.name,
-    //     id: selectedRecord.id
-    //   }
-    //   const updatedRecord = {
-    //     ...selectedRecord,
-    //     name: updatedItem.name
-    //   }
+
+
+    function onFinish(record:any){
+      const payload = {
+        ...record,
+        serviceItemID: selectedServiceItem.id, // Rename to "serviceItemId"
+        serviceItemId: availability.id, // This should be renamed to "id"
+        //@ts-ignore
+        date: dayjs.utc(record.date).format()
+      }
+      // console.log(payload)
+
     //   setState(updatedRecord)
-    //   editMutation.mutate(payload)
+      editMutation.mutate(payload)
       // We might need optimistic updates here
     }
   
