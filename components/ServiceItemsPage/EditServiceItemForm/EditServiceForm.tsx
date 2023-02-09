@@ -141,7 +141,7 @@ interface EditableProp{
     function onFinish(updatedItem:any){
       const payload = {
         key:'price',
-        value: updatedItem.price,
+        value: updatedItem.price*100,
         id: selectedRecord.id
       }
       const updatedRecord = {

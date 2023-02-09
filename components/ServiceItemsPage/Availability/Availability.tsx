@@ -37,13 +37,13 @@ export default function AvailabilitySection({selectedServiceItem}:Props){
 
     return(
         <div>
+          <NewAvailability selectedServiceItem={selectedServiceItem} availabilities={availabilityData}/>
             {isLoading 
             ? <Skeleton active />
             : isAvailabilityEmpty? null
             : availabilityData.map((availability:CustomDate)=>(
                  <EditableAvailability selectedServiceItem={selectedServiceItem} key={availability.name}  availability={availability}/>
             ))}
-            <NewAvailability selectedServiceItem={selectedServiceItem} availabilities={availabilityData}/>
         </div>
     )
 }
@@ -318,13 +318,13 @@ export function NewAvailability({availabilities, selectedServiceItem}:NewAvailab
     const {isLoading:isEditing} = createMutation ;
   
     const readOnly = (
-      <div style={{width:'100%', display:'flex', justifyContent:'space-between', marginTop:'1rem', alignItems:'center'}}>
+      <div style={{width:'100%', display:'flex', justifyContent:'space-between', marginTop:'1rem', marginBottom:'1rem', alignItems:'center'}}>
         <Button icon={<PlusCircleOutlined />} style={{display:'flex',alignItems:'center'}} type="link" onClick={toggleEdit}>Add custom availability</Button>
       </div>
   )
   
     const editable = (
-        <div style={{padding:'1rem', marginBottom:'1rem', marginTop:'1rem', border:'1px solid #e1e1e1', borderRadius:'4px'}} >
+        <div style={{padding:'1rem', marginBottom:'2rem', marginTop:'1rem', border:'1px solid #e1e1e1', borderRadius:'4px'}} >
             <Title style={{marginBottom:'1rem'}} level={5}> New availability</Title>
             <Form
             style={{ marginTop:'.5rem' }}

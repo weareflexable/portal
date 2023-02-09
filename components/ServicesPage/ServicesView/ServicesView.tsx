@@ -101,7 +101,8 @@ export default function ManagerOrgsView(){
 
     const servicesQuery = useQuery({queryKey:['services', currentStatus.name, pageNumber], queryFn:fetchServices, enabled: paseto !== ''})
     const data = servicesQuery.data && servicesQuery.data.data
-    const totalLength = data && data.dataLength;
+    const totalLength = servicesQuery.data && servicesQuery.data.dataLength;
+
 
 
   //  console.log(servicesData)
@@ -211,18 +212,6 @@ function gotoDashboard(service:Service){
             )
         },
     },
-    // {
-    //       title: 'UpdatedAt',
-    //       dataIndex: 'updatedAt',
-    //       key: 'updatedAt',
-    //       render: (_,record)=>{
-    //         // @ts-ignore
-    //           const date = dayjs().to(dayjs(record.updatedAt))
-    //           return(
-    //         <Text>{date}</Text>
-    //         )
-    //     },
-    // },
     {
       dataIndex: 'actions', 
       key: 'actions',
