@@ -80,7 +80,7 @@ const {Text} = Typography
         />:null}
 
           <Row>
-                <Header style={{background:'white', width:'100%', display:'flex', flex: '3', justifyContent:'space-between', alignItems:'center'}}>
+                <Header style={{background:'#f7f7f7',borderBottom:'1px solid', borderBottomColor:'#e3e3e3', width:'100%', display:'flex', flex: '3', justifyContent:'space-between', alignItems:'center'}}>
                   
             <Col offset={1} span={6}>
                 <div style={{display:'flex', width:'100%', height:'100%', justifyContent:'space-between'}}>
