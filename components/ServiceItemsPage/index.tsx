@@ -14,6 +14,7 @@ import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { Availability, AvailabilityPayload, CustomDate, ServiceItem } from "../../types/Services";
 import { EditableCoverImage, EditableDescription, EditableName, EditablePrice, EditableTicketsPerDay } from "./EditServiceItemForm/EditServiceForm";
 import AvailabilitySection from "./Availability/Availability";
+import useUrlPrefix from "../../hooks/useUrlPrefix";
 
 
 // const mockServiceItems:ServiceItem[]=[
@@ -42,6 +43,7 @@ export default function ServiceItemsView(){
 
     const {paseto} = useAuthContext()
     const {currentService} = useServicesContext()
+    const urlPrefix  = useUrlPrefix()
     const queryClient = useQueryClient()
     const router = useRouter()
     const {switchOrg} = useOrgs()
@@ -59,7 +61,7 @@ export default function ServiceItemsView(){
     async function fetchServiceItems(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items?key=org_service_id&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=10&key2=status&value2=1`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items?key=org_service_id&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=10&key2=status&value2=${currentFilter.id}`,
             headers:{
                 "Authorization": paseto
             }
@@ -73,7 +75,7 @@ export default function ServiceItemsView(){
     async function changeServiceItemStatus({serviceItemId, statusNumber}:{serviceItemId:string, statusNumber: string}){
         const res = await axios({
             method:'patch',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,
             data:{
                 key:'status',
                 value: statusNumber, // 0 means de-activated in db
@@ -130,16 +132,7 @@ export default function ServiceItemsView(){
     }
   
     
-      const onMenuClick=(e:any, record:ServiceItem) => {
-        const event = e.key
-        switch(event){
-          case 'inActive': inActiveItemsHandler(record);
-          break;
-          case 'active': activeItemsHandler(record)
-          break;
-          case 'viewDetails': viewDetails(record)
-        }
-      };
+    
       
   
     const columns: ColumnsType<ServiceItem> = [

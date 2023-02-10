@@ -34,13 +34,14 @@ const {Text} = Typography
   const AppLayout: React.FC<LayoutProps> = ({children}) => {
     
     const {asPath, isReady} = useRouter()  
-    const {isAuthenticated} = useAuthContext()
+    const {isAuthenticated, currentUser} = useAuthContext()
     const [showSwitcherModal, setSwitcherModal] = useState(false) 
     const [showOrgSwitcher, setShowOrgSwitcher] = useState(false) 
     const [pageRoutes, setPageRoutes] = useState<PageRoute>({basePath:'',selectedRoute:'dashboard'})
 
     
     // console.log('from layout',asPath)
+
 
     const splittedRoutes = asPath.split('/')
     console.log(splittedRoutes) 
@@ -92,7 +93,7 @@ const {Text} = Typography
                 </div>
             </Col>
 
-            <Col offset={2} span={10}>
+            <Col offset={3} span={8}>
                   {
                     !isAuthenticated ? <Button type='primary' onClick={()=>{location.href=`${process.env.NEXT_PUBLIC_AUTH}/login?redirect_to='portal`}}>Login</Button>
                     :(

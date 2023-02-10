@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import {Form, Row, Col, Input,Upload,Button,notification, Typography, Space, Select} from 'antd';
 import {UploadOutlined, ArrowLeftOutlined} from '@ant-design/icons'
-const {Title} = Typography
+const {Title,Text} = Typography
 const {TextArea} = Input
 
 import { useRouter } from 'next/router';
@@ -166,6 +166,31 @@ export default function NewService(){
                     onFinish={onFinish}
                     form={form}
                     >
+
+
+
+                    <Form.Item
+                        name="serviceTypeId"
+                        label='Service type'
+                        // initialValue={'Bar'}
+
+                        rules={[{ required: true, message: 'Please select a service type!' }]}
+                    >
+                        <Select
+                            placeholder={'Bar, Restaurant'}
+                            size="large"
+                            style={{ width: 220 }}
+                            options={menuItems}
+                            />
+                    </Form.Item>
+
+                <div style={{marginBottom:'2rem', marginTop:'3rem'}}>
+                    <Title level={3}>Basic info</Title>
+                    <Text>All changes here will be reflected in the marketplace</Text>
+                </div>
+
+
+                <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}> 
                     <Form.Item
                         name="name"
                         label="Service name"
@@ -198,21 +223,6 @@ export default function NewService(){
                     </Form.Item>
 
                     <Form.Item
-                        name="serviceTypeId"
-                        label='Service type'
-                        // initialValue={'Bar'}
-
-                        rules={[{ required: true, message: 'Please select a service type!' }]}
-                    >
-                        <Select
-                            placeholder={'Bar, Restaurant'}
-                            size="large"
-                            style={{ width: 220 }}
-                            options={menuItems}
-                            />
-                    </Form.Item>
-
-                    <Form.Item
                         name="currency"
                         label='Currency'
                         rules={[{ required: true, message: 'Please input a valid code!' }]}
@@ -220,33 +230,42 @@ export default function NewService(){
                         <Input size="large" placeholder="USD" />
                     </Form.Item>
 
+                </div>
 
+                    <div style={{marginBottom:'2rem', marginTop:'3rem'}}>
+                        <Title level={3}>Asset upload</Title>
+                        <Text>Please upload correct files according to proposed formats</Text>
+                    </div>
 
-                    <Form.Item
-                        name="logoImageHash"
-                        label="Logo"
-                        valuePropName="logoImageHash"
-                        getValueFromEvent={normFile}
-                        extra="Upload file upto 2MB"
-                        rules={[{ required: true, message: 'Please upload an image' }]}
-                    >
-                        <Upload name="logoImageHash" action="" listType="picture">
-                        <Button icon={<UploadOutlined />}>Upload service logo</Button>
-                        </Upload>
-                    </Form.Item>
+                    <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}> 
 
-                    <Form.Item
-                        name="coverImageHash"
-                        label="Cover image"
-                        valuePropName="coverImageHash"
-                        getValueFromEvent={normFile}
-                        extra="Upload file upto 2MB"
-                        rules={[{ required: true, message: 'Please upload an image' }]}
-                    >
-                        <Upload name="coverImageHash" action="" listType="picture">
-                        <Button icon={<UploadOutlined />}>Upload service cover image</Button>
-                        </Upload>
-                    </Form.Item>
+                        <Form.Item
+                            name="logoImageHash"
+                            label="Logo"
+                            valuePropName="logoImageHash"
+                            getValueFromEvent={normFile}
+                            extra="Upload file upto 2MB"
+                            rules={[{ required: true, message: 'Please upload an image' }]}
+                        >
+                            <Upload name="logoImageHash" action="" listType="picture">
+                            <Button icon={<UploadOutlined />}>Upload service logo</Button>
+                            </Upload>
+                        </Form.Item>
+
+                        <Form.Item
+                            name="coverImageHash"
+                            label="Cover image"
+                            valuePropName="coverImageHash"
+                            getValueFromEvent={normFile}
+                            extra="Upload file upto 2MB"
+                            rules={[{ required: true, message: 'Please upload an image' }]}
+                        >
+                            <Upload name="coverImageHash" action="" listType="picture">
+                            <Button icon={<UploadOutlined />}>Upload service cover image</Button>
+                            </Upload>
+                        </Form.Item>
+
+                    </div>
 
                     {/* onCancelFormCreation */}
                     <Form.Item style={{marginTop:'4rem'}}>
@@ -258,8 +277,7 @@ export default function NewService(){
                             <Button shape="round" type="primary" size="large" loading={isHashingAssets || isCreatingData}  htmlType="submit" >
                                 Launch service
                             </Button>
-                        </Space>
-                        
+                        </Space>     
                     </Form.Item>
 
                     </Form>

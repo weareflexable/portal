@@ -38,7 +38,7 @@ export default function ManagerOrgsView(){
   
 
     const [selectedRecord, setSelectedRecord] = useState<any|Service>({})
-    const [currentStatus, setCurrentStatus] = useState({id:'1',name: 'Active'})
+    const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Active'})
     const [isHydrated, setIsHydrated] = useState(false)
 
     useEffect(() => {
@@ -51,11 +51,10 @@ export default function ManagerOrgsView(){
     const res = await axios({
             method:'get',
             //@ts-ignore
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services?key=org_id&value=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=10&key2=status&value2=1`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services?key=org_id&value=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=10&key2=status&value2=${currentFilter.id}`,
 
             headers:{
-                // "Authorization": paseto
-                "Authorization": 'v4.public.eyJhdWQiOiJmbGV4YWJsZWRhdHMuY29tIiwiZW1haWwiOiJtdWphaGlkYmFwcGFpQGdtYWlsLmNvbSIsImV4cCI6IjIwMjMtMDItMDFUMTA6Mzk6MDZaIiwiaWF0IjoiMjAyMy0wMi0wMVQwOTozOTowNloiLCJpc3MiOiJmbGV4YWJsZWRhdHMuY29tIiwianRpIjoiZmxleGFibGVkYXRzLmNvbSIsIm5iZiI6IjIwMjMtMDItMDFUMDk6Mzk6MDZaIiwic3ViIjoic3ViamVjdCIsInVzZXJfaWQiOiI0YWMyMmM4ZC04NmNkLTRjYzYtYWQwNS1jMjU1NzJmMTc4ZWEifYuMI3n4PljNRcaJVr5qabH5wzK_zKmBze_kK3wljJ9McdOZq8r0SmQP1NKB1PIXdfEtUpQU2vyc8DjAAbD3mAY'
+                "Authorization": paseto
             }
         })
 
@@ -82,7 +81,7 @@ export default function ManagerOrgsView(){
     const changeStatusMutation = useMutation(['services'],{
         mutationFn: changeOrgStatus,
         onSuccess:(data:any)=>{
-            queryClient.invalidateQueries({queryKey:['services',currentStatus]})
+            queryClient.invalidateQueries({queryKey:['services',currentFilter]})
         },
         onError:()=>{
             console.log('Error changing status')
@@ -99,7 +98,7 @@ export default function ManagerOrgsView(){
     // console.log('prefix',urlPrefix)
     // console.log('shouldfetch',shouldFetch)
 
-    const servicesQuery = useQuery({queryKey:['services', currentStatus.name, pageNumber], queryFn:fetchServices, enabled: paseto !== ''})
+    const servicesQuery = useQuery({queryKey:['services', currentFilter.name, pageNumber], queryFn:fetchServices, enabled: paseto !== ''})
     const data = servicesQuery.data && servicesQuery.data.data
     const totalLength = servicesQuery.data && servicesQuery.data.dataLength;
 
@@ -242,9 +241,9 @@ function gotoDashboard(service:Service){
                <Col offset={2} span={20}>
                    <Title style={{marginBottom:'1em'}} level={2}>Services</Title>
                    <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
-                    <Radio.Group defaultValue={currentStatus.id} buttonStyle="solid">
+                    <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
                         {servicesFilter.map(filter=>(
-                            <Radio.Button key={filter.id} onClick={()=>setCurrentStatus(filter)} value={filter.id}>{filter.name}</Radio.Button>
+                            <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
                         )
                         )}
                     </Radio.Group>
@@ -470,7 +469,7 @@ const servicesFilter = [
   },
   {
       id: '2',
-      name: 'Stale'
+      name: 'Inactive'
   },
 ]
 
