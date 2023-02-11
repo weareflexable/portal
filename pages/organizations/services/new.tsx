@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
-import {Form, Row, Col, Input,Upload,Button,notification, Typography, Space, Select} from 'antd';
-import {UploadOutlined, ArrowLeftOutlined} from '@ant-design/icons'
+import {Form, Row, Col, Input,Upload,Button,notification, Typography, Space, Select, Radio} from 'antd';
+import {UploadOutlined, ArrowLeftOutlined, InboxOutlined} from '@ant-design/icons'
 const {Title,Text} = Typography
 const {TextArea} = Input
 
@@ -21,6 +21,7 @@ export default function NewService(){
     const queryClient = useQueryClient()
 
     const menuItems = useServiceTypes()
+    console.log(menuItems)
     const {paseto} = useAuthContext()
     const {currentOrg} = useOrgContext()
     const [form]=Form.useForm()
@@ -157,7 +158,7 @@ export default function NewService(){
                 </Row>
             </div>
             <Row >
-                <Col offset={3} span={8}>
+                <Col offset={3} span={11}>
                     
                     <Form
                     name="serviceForm"
@@ -167,22 +168,28 @@ export default function NewService(){
                     form={form}
                     >
 
-
-
+                <div style={{marginBottom:'0', marginTop:'3rem'}}>
+                    <Title level={3}>{`Select a service type`}</Title>
+                    {/* <Text>All changes here will be reflected in the marketplace</Text> */}
+                </div>
+                <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}> 
                     <Form.Item
                         name="serviceTypeId"
-                        label='Service type'
+                        label="Service type"
+                        tooltip = 'Service type will be used to categorize the type of your service'
+                        // extra='Service type will be used to categorize the type of your service'
                         // initialValue={'Bar'}
-
+                        style={{marginBottom:'0'}}
                         rules={[{ required: true, message: 'Please select a service type!' }]}
                     >
-                        <Select
-                            placeholder={'Bar, Restaurant'}
-                            size="large"
-                            style={{ width: 220 }}
-                            options={menuItems}
-                            />
+                        <Radio.Group size='large'> 
+                                {menuItems? menuItems.map((menu:any)=>(
+                                    <Radio.Button key={menu.id} value={menu.value}>{menu.label}</Radio.Button>
+                                )):<Text>Loading service types ...</Text> }
+                        </Radio.Group>
                     </Form.Item>
+
+                    </div>
 
                 <div style={{marginBottom:'2rem', marginTop:'3rem'}}>
                     <Title level={3}>Basic info</Title>
@@ -193,7 +200,8 @@ export default function NewService(){
                 <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}> 
                     <Form.Item
                         name="name"
-                        label="Service name"
+                        label="Name"
+                        extra="The name you provide here will be used as display on marketplace listing"
                         rules={[{ required: true, message: 'Please input a valid service name' }]}
                     >
                         <Input size="large" placeholder="Bill Cage coffee" />
@@ -225,6 +233,7 @@ export default function NewService(){
                     <Form.Item
                         name="currency"
                         label='Currency'
+                        style={{marginBottom:'0'}}
                         rules={[{ required: true, message: 'Please input a valid code!' }]}
                     >
                         <Input size="large" placeholder="USD" />
@@ -244,12 +253,16 @@ export default function NewService(){
                             label="Logo"
                             valuePropName="logoImageHash"
                             getValueFromEvent={normFile}
-                            extra="Upload file upto 2MB"
                             rules={[{ required: true, message: 'Please upload an image' }]}
                         >
-                            <Upload name="logoImageHash" action="" listType="picture">
-                            <Button icon={<UploadOutlined />}>Upload service logo</Button>
-                            </Upload>
+                            <Upload.Dragger style={{display:'flex',alignItems:'center'}} name="logoImageHash" action="">
+                                .
+                                {/* <p className="ant-upload-drag-icon">
+                                    <InboxOutlined />
+                                </p> */}
+                                <p style={{margin:'0'}} className="ant-upload-text">Click or drag file to this area to upload logo image</p>
+                                {/* <p style={{marginTop:'0'}} className="ant-upload-hint">Only upload single file</p> */}
+                            </Upload.Dragger>
                         </Form.Item>
 
                         <Form.Item
@@ -257,12 +270,17 @@ export default function NewService(){
                             label="Cover image"
                             valuePropName="coverImageHash"
                             getValueFromEvent={normFile}
-                            extra="Upload file upto 2MB"
+                            // hidden
+                            style={{marginBottom:'0'}}
                             rules={[{ required: true, message: 'Please upload an image' }]}
                         >
-                            <Upload name="coverImageHash" action="" listType="picture">
-                            <Button icon={<UploadOutlined />}>Upload service cover image</Button>
-                            </Upload>
+                            <Upload.Dragger  name="coverImageHash" action="">
+                                <p className="ant-upload-drag-icon">
+                                    <InboxOutlined />
+                                </p>
+                                <p style={{marginBottom:'0'}} className="ant-upload-text">Click or drag file to this area to upload</p>
+                                <p style={{marginTop:'0'}} className="ant-upload-hint">Support for a single or bulk upload.</p>
+                            </Upload.Dragger>
                         </Form.Item>
 
                     </div>
