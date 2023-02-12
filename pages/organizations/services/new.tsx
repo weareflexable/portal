@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
-import {Form, Row, Col, Input,Upload,Button,notification, Typography, Space, Select, Radio} from 'antd';
-import {UploadOutlined, ArrowLeftOutlined, InboxOutlined} from '@ant-design/icons'
+import {Form, Row, Col, Tooltip, Input,Upload,Button,notification, Typography, Space, Select, Radio, Divider, TimePicker} from 'antd';
+import {UploadOutlined, ArrowLeftOutlined, InfoCircleOutlined,  InboxOutlined} from '@ant-design/icons'
 const {Title,Text} = Typography
 const {TextArea} = Input
 
@@ -12,7 +12,6 @@ import { useOrgContext } from "../../../context/OrgContext";
 import useServiceTypes from "../../../hooks/useServiceTypes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { url } from "inspector";
 import { useAuthContext } from "../../../context/AuthContext";
 
 
@@ -85,29 +84,31 @@ export default function NewService(){
 
     const onFinish = async(formData:Service)=>{
 
-        setIsHashingAssets(true)
-        //@ts-ignore
-        const imageHash = await asyncStore(formData.logoImageHash[0].originFileObj)
-        //@ts-ignore
-        const coverImageHash = await asyncStore(formData.coverImageHash[0].originFileObj)
-        setIsHashingAssets(false)
+        // setIsHashingAssets(true)
+        // //@ts-ignore
+        // const imageHash = await asyncStore(formData.logoImageHash[0].originFileObj)
+        // //@ts-ignore
+        // const coverImageHash = await asyncStore(formData.coverImageHash[0].originFileObj)
+        // setIsHashingAssets(false)
 
 
-        const formObject: ServicePayload = {
-            ...formData,
-            ...fullAddress,
-            logoImageHash: imageHash,
-            coverImageHash: coverImageHash,
-            latitude:String(fullAddress.latitude),
-            longitude:String(fullAddress.longitude),
-            //@ts-ignore
-            orgId:currentOrg.orgId,
-            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // get user timezone
-        }
+        // const formObject: ServicePayload = {
+        //     ...formData,
+        //     ...fullAddress,
+        //     logoImageHash: imageHash,
+        //     coverImageHash: coverImageHash,
+        //     latitude:String(fullAddress.latitude),
+        //     longitude:String(fullAddress.longitude),
+        //     //@ts-ignore
+        //     orgId:currentOrg.orgId,
+        //     timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // get user timezone
+        // }
+
+        console.log(formData)
 
         // @ts-ignore
-        delete formObject.address
-        createData.mutate(formObject)
+        // delete formObject.address
+        // createData.mutate(formObject)
     }
 
     const normFile = (e: any) => {
@@ -168,7 +169,8 @@ export default function NewService(){
                     form={form}
                     >
 
-                <div style={{marginBottom:'0', marginTop:'3rem'}}>
+                {/* Service type */}
+                <div style={{marginBottom:'0'}}>
                     <Title level={3}>{`Select a service type`}</Title>
                     {/* <Text>All changes here will be reflected in the marketplace</Text> */}
                 </div>
@@ -180,8 +182,8 @@ export default function NewService(){
                         // extra='Service type will be used to categorize the type of your service'
                         // initialValue={'Bar'}
                         style={{marginBottom:'0'}}
-                        rules={[{ required: true, message: 'Please select a service type!' }]}
-                    >
+                        // rules={[{ required: true, message: 'Please select a service type!' }]}
+                        >
                         <Radio.Group size='large'> 
                                 {menuItems? menuItems.map((menu:any)=>(
                                     <Radio.Button key={menu.id} value={menu.value}>{menu.label}</Radio.Button>
@@ -189,14 +191,13 @@ export default function NewService(){
                         </Radio.Group>
                     </Form.Item>
 
-                    </div>
-
-                <div style={{marginBottom:'2rem', marginTop:'3rem'}}>
-                    <Title level={3}>Basic info</Title>
-                    <Text>All changes here will be reflected in the marketplace</Text>
                 </div>
 
-
+                 {/* Service info */}
+                <div style={{marginBottom:'2rem', marginTop:'3rem'}}>
+                    <Title level={3}>Service info</Title>
+                    <Text>All changes here will be reflected in the marketplace</Text>
+                </div>
                 <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}> 
                     <Form.Item
                         name="name"
@@ -210,9 +211,18 @@ export default function NewService(){
                     <Form.Item  
                         name="address"
                         label='Address'
+                        
+                    
                         rules={[{ required: true, message: 'Please input a valid address!' }]}
                     >
-                        <Input size="large" ref={(c) => {
+                        <Input 
+                            suffix={
+                                <Tooltip title="Please refresh the page if the date you selected is not being displayed in the field">
+                                  <InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
+                                </Tooltip>
+                              }
+                            size="large" 
+                            ref={(c) => {
                             // @ts-ignore
                             antInputRef.current = c;
                             // @ts-ignore
@@ -233,17 +243,31 @@ export default function NewService(){
                     <Form.Item
                         name="currency"
                         label='Currency'
-                        style={{marginBottom:'0'}}
                         rules={[{ required: true, message: 'Please input a valid code!' }]}
                     >
                         <Input size="large" placeholder="USD" />
                     </Form.Item>
 
+                    <Form.Item
+                        label="Start and end time"
+                        name='validityPeriod'
+                        style={{marginBottom:'0'}}
+                        tooltip={'Tickets validity will be calculated using the provided interval'}
+                        // rules={[{ required: true, message: 'Please select a time period' }]}
+                    >
+                        <div style={{display:'flex', alignItems:'center'}}>
+                        {/* <TimePicker.RangePicker use12Hours format="h:mm a" size="large" /> */}
+                        <TimePicker format="h:mm a" size="large" />
+                        <Text style={{marginLeft:'1rem'}}>9 hrs interval for all tickets</Text>
+                        </div>
+                    </Form.Item>
                 </div>
+
+                
 
                     <div style={{marginBottom:'2rem', marginTop:'3rem'}}>
                         <Title level={3}>Asset upload</Title>
-                        <Text>Please upload correct files according to proposed formats</Text>
+                        <Text >Please upload correct files according to proposed formats</Text>
                     </div>
 
                     <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}> 
