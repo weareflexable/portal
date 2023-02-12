@@ -41,8 +41,6 @@ export default function BankView(){
    
     }
 
-   
-
     async function changeOrgStatus({bankId, statusNumber}:{bankId:string, statusNumber: string}){
         const res = await axios({
             method:'patch',
@@ -90,10 +88,6 @@ export default function BankView(){
     const data = banksQuery.data && banksQuery.data.data
 
 
-    
-  
-  
-  
 
     function getCurrentFilterActions(){
         switch(currentFilter.id){

@@ -1,8 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 const {Text,Title} = Typography
 import React, { useRef, useState } from 'react'
-import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Modal, Alert, notification} from 'antd'
-import { useRouter } from 'next/router'
+import {Typography,Button,Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Modal, Alert, notification} from 'antd'
 import axios from 'axios';
 import {MoreOutlined,ReloadOutlined} from '@ant-design/icons'
 import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
@@ -29,74 +28,61 @@ export default function StaffView(){
 
     const [pageNumber, setPageNumber] = useState(0)
   
-    // const isFilterEmpty = Object.keys(filteredInfo).length === 0;
+
 
     type DataIndex = keyof Staff;
 
     const [selectedStaff, setSelectedStaff] = useState<any|Staff>({})
-    // const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Approved'})
+    const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Approved'})
+    const [showForm, setShowForm] = useState(false)
 
     async function fetchStaff(){
-    const res = await axios({
-            method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/staff?key=serviceId&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=10`,
-            headers:{
-                "Authorization": paseto
-            }
-        })
+      const res = await axios({
+              method:'get',
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/staff?key=service_id&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=10&key2=status&value2=${currentFilter.id}`,
+              headers:{
+                  "Authorization": paseto
+              }
+          })
 
-        return res.data;
-   
+          return res.data;
     }
 
-    function nextPage(){
-      setPageNumber(pageNumber+1)
-    }
 
-    function prevPage(){
-      setPageNumber(pageNumber-1)
-    }
-
-    
-    function jumpToPage(pageNumber:number){
-      setPageNumber(pageNumber)
-    }
-
-   
-
-    async function changeServiceItemStatus({serviceItemId, statusNumber}:{serviceItemId:string, statusNumber: string}){
-        const res = await axios({
-            method:'patch',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,
-            data:{
-                key:'status',
-                value: statusNumber, // 0 means de-activated in db
-                serviceItemId: serviceItemId 
-            },
-            headers:{
-                "Authorization": paseto
-            }
-        })
-        return res; 
-    }
+    // async function changeServiceItemStatus({serviceItemId, statusNumber}:{serviceItemId:string, statusNumber: string}){
+    //     const res = await axios({
+    //         method:'patch',
+    //         url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,
+    //         data:{
+    //             key:'status',
+    //             value: statusNumber, // 0 means de-activated in db
+    //             serviceItemId: serviceItemId 
+    //         },
+    //         headers:{
+    //             "Authorization": paseto
+    //         }
+    //     })
+    //     return res; 
+    // }
 
     
 
-    const changeStatusMutation = useMutation(['data'],{
-        mutationFn: changeServiceItemStatus,
-        onSuccess:(data:any)=>{
-            queryClient.invalidateQueries({queryKey:['users']})
-        },
-        onError:()=>{
-            console.log('Error changing status')
-        }
-    })
+    // const changeStatusMutation = useMutation(['data'],{
+    //     mutationFn: changeServiceItemStatus,
+    //     onSuccess:(data:any)=>{
+    //         queryClient.invalidateQueries({queryKey:['users']})
+    //     },
+    //     onError:()=>{
+    //         console.log('Error changing status')
+    //     }
+    // })
 
+    
 
   
 
 
-    const staffQuery = useQuery({queryKey:['users'], queryFn:fetchStaff, enabled:paseto !== ''})
+    const staffQuery = useQuery({queryKey:['staff',currentService.id,currentFilter.id], queryFn:fetchStaff, enabled:paseto !== ''})
     const data = staffQuery.data && staffQuery.data.data
 
 
@@ -152,17 +138,17 @@ export default function StaffView(){
         dataIndex: 'userRoleName',
         key: 'userRoleName',
       },
-      {
-        title: 'Status',
-        dataIndex: 'status',
-        key: 'status',
-        render: (status)=>{
-          const statusText = status? "Active": "In-active";
-          return(
-            <Badge status="success" text={statusText}/>
-          )
-        }
-      },
+      // {
+      //   title: 'Status',
+      //   dataIndex: 'status',
+      //   key: 'status',
+      //   render: (status)=>{
+      //     const statusText = status? "Active": "In-active";
+      //     return(
+      //       <Badge status="success" text={statusText}/>
+      //     )
+      //   }
+      // },
 
       {
           title: 'CreatedAt',
@@ -200,14 +186,22 @@ export default function StaffView(){
         return (
             <div>
                 <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
-                {/* <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
-                    {serviceItemsFilters.map(filter=>(
+                <Radio.Group defaultValue={currentFilter.id} style={{width:'100%'}} buttonStyle="solid">
+                    {staffFilter.map(filter=>(
                         <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
                      )
                     )}
-                </Radio.Group> */}
-                <div style={{width: "100%",display:'flex', marginTop:'2rem', justifyContent:'flex-end', alignItems:'center'}}>
+                </Radio.Group>
+                <div style={{width: "100%",display:'flex', justifyContent:'flex-end', alignItems:'center'}}>
                   <Button type='link' loading={staffQuery.isRefetching} onClick={()=>staffQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                  <Button
+                    type="primary"
+                    onClick={() => {
+                      setShowForm(true)
+                    }}
+                   >
+                    Add new staff
+                  </Button>
                 </div>
 
                 </div>
@@ -217,12 +211,131 @@ export default function StaffView(){
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedStaff={selectedStaff}/>
                   :null
                 }
+
+                <AddStaffForm open={showForm} onCancel={()=>setShowForm(false)} />
             </div>
     )
-
-
-
 }
+
+
+interface StaffFormProps {
+  open: boolean;
+  onCreate?: (values:any) => void;
+  onCancel: () => void;
+}
+
+const AddStaffForm: React.FC<StaffFormProps> = ({
+  open,
+  onCreate,
+  onCancel,
+}) => {
+  const [form] = Form.useForm();
+
+  const {paseto} = useAuthContext()
+  const {currentService} = useServicesContext()
+
+  const createDataHandler = async(newItem:any)=>{
+    const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/staff`, newItem,{
+        headers:{
+            "Authorization": paseto
+        },
+    })
+    if(data.status > 200){
+      throw new Error(data.message)
+    }
+    return data
+}
+
+const queryClient = useQueryClient()
+
+const createData = useMutation(createDataHandler,{
+   onSuccess:(data)=>{
+    let message;
+
+    const user = data.data[0]
+    const status = user.status
+    message = status == 0 ? `Staff could not be added because they aren't registered. A registration link has beens sent to ${user.email} to register and will be added automatically to as ${user.userRoleName} after registration`:`User has been added to service as a ${user.userRoleName}`
+    notification['success']({
+        message: message,
+      });
+      onCancel()
+   },
+    onError:(data:any)=>{
+      console.log(data)
+        notification['error']({
+            message:data.message ,
+          });
+        // leave modal open
+    },
+    onSettled:()=>{
+      queryClient.invalidateQueries(['staff',currentService.id])
+    }
+})
+
+const staffMutation = createData
+
+function handleSubmit(formData:any){
+  // console.log(formData)
+  const payload = {
+    ...formData,
+    serviceId: currentService.id
+  }
+  // console.log(payload)
+  createData.mutate(payload)
+}
+
+  return (
+    <Modal
+      open={open}
+      title="Add a staff to your service"
+      onCancel={onCancel}
+      footer={null}
+
+    >
+      <Form
+        form={form}
+        layout="vertical"
+        name="addStaffForm"
+        onFinish={handleSubmit}
+        initialValues={{ modifier: 'public' }}
+      >
+        <Form.Item
+          name="email"
+          label="Email"
+          extra={'Please be sure to provide an email of a registered user.'}
+          style={{marginTop:'1rem'}}
+          rules={[{ required: true, message: 'Please provide a valid email' }]}
+        >
+          <Input allowClear size="large" />
+        </Form.Item>
+
+        <Form.Item 
+          name="role" 
+          label="Role" 
+          rules={[{ required: true, message: 'Please select a role' }]}
+          >
+          <Radio.Group>
+            <Radio value="3">Supervisor</Radio>
+            <Radio value="4">Employee</Radio>
+          </Radio.Group>
+        </Form.Item>
+        <Form.Item style={{marginTop:'4rem',marginBottom:'0'}}>
+            <Space>
+                <Button shape="round" onClick={()=>onCancel()} type='ghost'>
+                    Cancel
+                </Button>
+
+                <Button shape="round" type="primary" size="large" loading={staffMutation.isLoading}  htmlType="submit" >
+                    Add staff
+                </Button>
+            </Space>     
+        </Form.Item>
+      </Form>
+    </Modal>
+  );
+};
+
+
 
 interface DrawerProps{
   selectedStaff: Staff,
@@ -234,6 +347,7 @@ function DetailDrawer({selectedStaff,isDrawerOpen,closeDrawer}:DrawerProps){
 const queryClient = useQueryClient()
 
 const {currentUser,paseto} = useAuthContext()
+const {currentService} = useServicesContext()
 
 const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
@@ -249,7 +363,7 @@ function toggleDeleteModal(){
 function deleteService(){ 
   console.log(selectedStaff.id)
   // mutate record
-  deleteData.mutate(selectedStaff,{
+  deleteMutation.mutate(selectedStaff,{
     onSuccess:()=>{
       notification['success']({
         message: 'Successfully deleted record!'
@@ -272,12 +386,11 @@ function deleteService(){
 
 const deleteDataHandler = async(record:Staff)=>{      
   const {data} = await axios({
-    method:'patch',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/users-role`,
+    method:'delete',
+    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/staff`,
     data: {
-        targetStaffId:record.id,
-        key:'status',
-        value: "0"
+        id:record.id,
+        serviceId: currentService.id
       },
     headers:{
           "Authorization": paseto 
@@ -285,24 +398,22 @@ const deleteDataHandler = async(record:Staff)=>{
   return data
 }
 
-const deleteData = useMutation(deleteDataHandler)
+const deleteMutation = useMutation(deleteDataHandler)
 
-const{isLoading:isDeletingItem} = deleteData
 
 return( 
 <Drawer title={"Staff details"} width={640} placement="right" closable={true} onClose={closeDrawerHandler} open={isDrawerOpen}>
   
-  {/* <EditableName selectedStaff={selectedStaff}/> */}
   <EditableRole selectedStaff={selectedStaff}/>
 
   
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
     <Title level={3}>Danger zone</Title>
-    <Button danger onClick={toggleDeleteModal} style={{width:'30%'}} type="link">Block user</Button>
+    <Button danger onClick={toggleDeleteModal} style={{width:'30%'}} type="link">Remove staff</Button>
   </div>
 
   <DeleteRecordModal 
-    isDeletingItem={isDeletingItem} 
+    isDeletingItem={deleteMutation.isLoading} 
     onCloseModal={toggleDeleteModal} 
     onDeleteRecord={deleteService} 
     isOpen={isDeleteModalOpen} 
@@ -318,101 +429,7 @@ interface EditableProp{
   selectedStaff: Staff
 }
 
-function EditableName({selectedStaff}:EditableProp){
 
-  const [state, setState] = useState(selectedStaff)
-
-  const [isEditMode, setIsEditMode] = useState(false)
-
-  const {paseto} = useAuthContext()
-
-  const queryClient = useQueryClient()
-
-  function toggleEdit(){
-    setIsEditMode(!isEditMode)
-  }
-
-
-  const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/users-role`,updatedItem,{
-      headers:{
-          //@ts-ignore
-          "Authorization": paseto
-      }
-    })
-      return data;
-  }
-  const mutation = useMutation({
-    mutationKey:['name'],
-    mutationFn: mutationHandler,
-    onSuccess:()=>{
-      toggleEdit()
-    }
-  })
-
-  function onFinish(updatedItem:Staff){
-    const payload = {
-      key:'name',
-      value: updatedItem.name,
-      targetStaffId: selectedStaff.id
-    }
-    const updatedRecord = {
-      ...selectedStaff,
-      name: updatedItem.name
-    }
-    setState(updatedRecord)
-    mutation.mutate(payload)
-  }
-
-  const {isLoading:isEditing} = mutation;
-
-  const readOnly = (
-    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Text>{state.name}</Text>
-      <Button type="link" onClick={toggleEdit}>Edit</Button>
-    </div>
-)
-
-  const editable = (
-    <Form
-     style={{ marginTop:'.5rem' }}
-     name="editableName"
-     initialValues={selectedStaff}
-     onFinish={onFinish}
-     >
-      <Row>
-        <Col span={16} style={{height:'100%'}}>
-          <Form.Item
-              name="name"
-              rules={[{ required: true, message: 'Please input a valid service name' }]}
-          >
-              <Input  disabled={isEditing} placeholder="Flexable serviceItem" />
-          </Form.Item>
-        </Col>
-        <Col span={4}>
-          <Form.Item style={{ width:'100%'}}>
-              <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
-                      Cancel
-                  </Button>
-                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
-                      Apply changes
-                  </Button>
-              </Space>
-                        
-          </Form.Item>
-        </Col>
-      </Row>
-           
-    </Form>
-  )
-  return(
-    <div style={{width:'100%', display:'flex', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>Name</Text>
-    {isEditMode?editable:readOnly}
-    </div>
-  )
-}
 function EditableRole({selectedStaff}:EditableProp){
 
   const [state, setState] = useState(selectedStaff)
@@ -432,7 +449,7 @@ function EditableRole({selectedStaff}:EditableProp){
 
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/users-role`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/staff`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -453,7 +470,7 @@ function EditableRole({selectedStaff}:EditableProp){
     const payload = {
       key:'role',
       value: String(updatedItem.role),
-      targetStaffId: selectedStaff.id
+      id: selectedStaff.id
     }
     const updatedRecord = {
       ...selectedStaff,
@@ -489,11 +506,8 @@ function EditableRole({selectedStaff}:EditableProp){
         >
           <Radio.Group >
             <Space direction="vertical">
-              <Radio value={1}>Manager</Radio>
-              <Radio value={2}>Admin</Radio>
               <Radio value={3}>Supervisor</Radio>
               <Radio value={4}>Employee</Radio>
-              <Radio value={5}>Staff</Radio>
             </Space>
           </Radio.Group>
         </Form.Item>
@@ -516,7 +530,7 @@ function EditableRole({selectedStaff}:EditableProp){
   )
   return(
     <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>Address</Text>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>Staff role</Text>
     {isEditMode?editable:readOnly}
     </div>
   )
@@ -597,6 +611,16 @@ function DeleteRecordModal({selectedStaff, isOpen, isDeletingItem, onDeleteRecor
 
 
 
+const staffFilter = [
+  {
+    id:'1',
+    name:'Approved'
+  },
+  {
+    id:'0',
+    name:'Pending registration'
+  }
+]
 
 
 

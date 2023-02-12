@@ -18,15 +18,15 @@ export default function Staff(){
         
         <AppLayout>
                 <Row>
-                    <Col offset={1} span={15}>
-                        <Title style={{marginLeft: '1em', marginTop:'1em'}} level={3}>Staff</Title>
+                    <Col offset={1} span={22}>
+                        <Title style={{marginTop:'1em'}} level={3}>Staff</Title>
                         <Content
                             style={{
-                            padding: '1em',
-                            margin:'1em',
-                            background:'white' ,
-                            width:`98%`,
-                            maxWidth:'100%',
+                            // padding: '1em',
+                            // margin:'1em',
+                            // background:'white' ,
+                            // width:`98%`,
+                            // maxWidth:'100%',
                             }}
                         >
                                 <StaffView/>

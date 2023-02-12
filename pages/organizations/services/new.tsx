@@ -152,7 +152,7 @@ export default function NewService(){
                 <Row>
                     <Col offset={1}> 
                          <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
-                            <Button shape='round' style={{marginRight:'1rem'}} type='text' onClick={()=>router.back()} icon={<ArrowLeftOutlined/>}/>
+                            <Button shape='round' style={{marginRight:'.3rem'}} type='link' onClick={()=>router.back()} icon={<ArrowLeftOutlined/>}/>
                             <Title style={{margin:'0'}} level={3}>Create new service</Title>
                         </div>
                     </Col>
@@ -202,7 +202,7 @@ export default function NewService(){
                     <Form.Item
                         name="name"
                         label="Name"
-                        extra="The name you provide here will be used as display on marketplace listing"
+                        // extra="The name you provide here will be used as display on marketplace listing"
                         rules={[{ required: true, message: 'Please input a valid service name' }]}
                     >
                         <Input size="large" placeholder="Bill Cage coffee" />
@@ -211,16 +211,15 @@ export default function NewService(){
                     <Form.Item  
                         name="address"
                         label='Address'
-                        
-                    
+                        extra={<Text type="secondary"><InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} /> Please refresh the page if the date you selected is not being displayed in the field </Text> }
                         rules={[{ required: true, message: 'Please input a valid address!' }]}
                     >
                         <Input 
-                            suffix={
-                                <Tooltip title="Please refresh the page if the date you selected is not being displayed in the field">
-                                  <InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
-                                </Tooltip>
-                              }
+                            // suffix={
+                            //     <Tooltip title="Please refresh the page if the date you selected is not being displayed in the field">
+                            //       <InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
+                            //     </Tooltip>
+                            //   }
                             size="large" 
                             ref={(c) => {
                             // @ts-ignore
@@ -253,13 +252,10 @@ export default function NewService(){
                         name='validityPeriod'
                         style={{marginBottom:'0'}}
                         tooltip={'Tickets validity will be calculated using the provided interval'}
-                        // rules={[{ required: true, message: 'Please select a time period' }]}
+                        rules={[{ type: 'object' as const, required: true, message: 'Please select a time period' }]}
                     >
-                        <div style={{display:'flex', alignItems:'center'}}>
-                        {/* <TimePicker.RangePicker use12Hours format="h:mm a" size="large" /> */}
-                        <TimePicker format="h:mm a" size="large" />
-                        <Text style={{marginLeft:'1rem'}}>9 hrs interval for all tickets</Text>
-                        </div>
+                        <TimePicker.RangePicker use12Hours format="h:mm a" size="large" />
+                        <Text style={{marginLeft:'1rem'}}>9 hrs interval for all tickets</Text> 
                     </Form.Item>
                 </div>
 
