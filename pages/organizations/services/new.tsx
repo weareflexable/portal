@@ -3,6 +3,9 @@ import {Form, Row, Col, Tooltip, Input,Upload,Button,notification, Typography, S
 import {UploadOutlined, ArrowLeftOutlined, InfoCircleOutlined,  InboxOutlined} from '@ant-design/icons'
 const {Title,Text} = Typography
 const {TextArea} = Input
+import dayjs from 'dayjs'
+var utc = require('dayjs/plugin/utc')
+
 
 import { useRouter } from 'next/router';
 import {usePlacesWidget} from 'react-google-autocomplete'
@@ -82,34 +85,41 @@ export default function NewService(){
       });
     
 
-    const onFinish = async(formData:Service)=>{
+    const onFinish = async(formData:any)=>{
 
-        // setIsHashingAssets(true)
-        // //@ts-ignore
-        // const imageHash = await asyncStore(formData.logoImageHash[0].originFileObj)
-        // //@ts-ignore
-        // const coverImageHash = await asyncStore(formData.coverImageHash[0].originFileObj)
-        // setIsHashingAssets(false)
+        setIsHashingAssets(true)
+        //@ts-ignore
+        const imageHash = await asyncStore(formData.logoImageHash[0].originFileObj)
+        //@ts-ignore
+        const coverImageHash = await asyncStore(formData.coverImageHash[0].originFileObj)
+        setIsHashingAssets(false)
 
 
-        // const formObject: ServicePayload = {
-        //     ...formData,
-        //     ...fullAddress,
-        //     logoImageHash: imageHash,
-        //     coverImageHash: coverImageHash,
-        //     latitude:String(fullAddress.latitude),
-        //     longitude:String(fullAddress.longitude),
-        //     //@ts-ignore
-        //     orgId:currentOrg.orgId,
-        //     timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // get user timezone
-        // }
-
-        console.log(formData)
-
+        const formObject: ServicePayload = {
+            ...formData,
+            ...fullAddress,
+            logoImageHash: imageHash,
+            coverImageHash: coverImageHash,
+            latitude:String(fullAddress.latitude),
+            longitude:String(fullAddress.longitude),
+            //@ts-ignore
+            orgId:currentOrg.orgId,
+            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // get user timezone
+            //@ts-ignore
+            startTime: dayjs(formData.validityPeriod[0]).format(),
+            //@ts-ignore
+            endTime: dayjs(formData.validityPeriod[1]).format()
+        }
+        //@ts-ignore
+        delete formObject.validityPeriod
         // @ts-ignore
-        // delete formObject.address
-        // createData.mutate(formObject)
+        delete formObject.address
+
+        console.log(formObject)
+
+        createData.mutate(formObject)
     }
+
 
     const normFile = (e: any) => {
         console.log('Upload event:', e);
@@ -163,7 +173,7 @@ export default function NewService(){
                     
                     <Form
                     name="serviceForm"
-                    initialValues={{ remember: true }}
+                    // initialValues={{ remember: true }}
                     layout='vertical'
                     onFinish={onFinish}
                     form={form}
@@ -171,7 +181,7 @@ export default function NewService(){
 
                 {/* Service type */}
                 <div style={{marginBottom:'0'}}>
-                    <Title level={3}>{`Select a service type`}</Title>
+                    <Title level={3}>Select a service type</Title>
                     {/* <Text>All changes here will be reflected in the marketplace</Text> */}
                 </div>
                 <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}> 
@@ -180,9 +190,9 @@ export default function NewService(){
                         label="Service type"
                         tooltip = 'Service type will be used to categorize the type of your service'
                         // extra='Service type will be used to categorize the type of your service'
-                        // initialValue={'Bar'}
+
                         style={{marginBottom:'0'}}
-                        // rules={[{ required: true, message: 'Please select a service type!' }]}
+                        rules={[{ required: true, message: 'Please select a service type!' }]}
                         >
                         <Radio.Group size='large'> 
                                 {menuItems? menuItems.map((menu:any)=>(
@@ -190,7 +200,6 @@ export default function NewService(){
                                 )):<Text>Loading service types ...</Text> }
                         </Radio.Group>
                     </Form.Item>
-
                 </div>
 
                  {/* Service info */}
@@ -249,14 +258,15 @@ export default function NewService(){
 
                     <Form.Item
                         label="Start and end time"
-                        name='validityPeriod'
+                        name={'validityPeriod'}
                         style={{marginBottom:'0'}}
                         tooltip={'Tickets validity will be calculated using the provided interval'}
-                        rules={[{ type: 'object' as const, required: true, message: 'Please select a time period' }]}
+                        // rules={[{ type: 'object' as const, required: true, message: 'Please select a time period' }]}
                     >
-                        <TimePicker.RangePicker use12Hours format="h:mm a" size="large" />
-                        <Text style={{marginLeft:'1rem'}}>9 hrs interval for all tickets</Text> 
-                    </Form.Item>
+                        <TimePicker.RangePicker  format="h A" size="large" />
+                        {/* <Text style={{marginLeft:'1rem'}}>9 hrs interval for all tickets</Text>   */}
+
+                    </Form.Item> 
                 </div>
 
                 
@@ -267,7 +277,6 @@ export default function NewService(){
                     </div>
 
                     <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}> 
-
                         <Form.Item
                             name="logoImageHash"
                             label="Logo"

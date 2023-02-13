@@ -15,7 +15,7 @@ export default function NewStaffForm(){
 
         const payload={
             orgServiceId: currentService.id,
-            staffEmailId: formData.emailId
+            // staffEmailId: formData.emailId
         }
         // console.log(payload)
 
