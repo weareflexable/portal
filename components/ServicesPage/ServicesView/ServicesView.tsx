@@ -194,9 +194,9 @@ function gotoDashboard(service:Service){
         title: 'Status',
         dataIndex: 'status',
         key: 'status',
-        width:'100px',
+        width:'150px',
         render:(status)=>{
-            const statusText = status? 'Active': 'In-active' 
+            const statusText = status? 'Active': 'Inactive' 
             return <Badge status={status?'processing':'warning'} text={statusText} /> 
         }
       },
@@ -224,7 +224,7 @@ function gotoDashboard(service:Service){
         return (
             <div style={{background:'#f7f7f7', minHeight:'100vh'}}>
                 <Row style={{marginTop:'.5em'}} gutter={[16,16]}>
-               <header style={{width:'100%', padding:'.5rem 0' , background:'#ffffff'}}>
+               <header style={{width:'100%', padding:'1rem 0' , background:'#ffffff'}}>
                    <Col style={{display:'flex', justifyContent:'space-between'}} offset={2} span={22}>
                        <div style={{display:'flex', flex:'7',alignItems:'center'}}> 
                            <Button style={{display:'flex', padding: '0', margin:'0', alignItems:'center', textAlign:'left'}} onClick={()=>router.replace('/')} icon={<ArrowLeftOutlined />} type='link'/>
@@ -468,7 +468,7 @@ const servicesFilter = [
       name: 'Active'
   },
   {
-      id: '2',
+      id: '0',
       name: 'Inactive'
   },
 ]

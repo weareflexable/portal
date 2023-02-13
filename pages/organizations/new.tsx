@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import {Form, Row, Col, Image, Input,Upload,Button,notification, Typography, Space, Select, Divider} from 'antd';
 import {UploadOutlined, ArrowLeftOutlined} from '@ant-design/icons'
-const {Title} = Typography
+const {Title,Text} = Typography
 const {TextArea} = Input
 
 import { useRouter } from 'next/router';
@@ -61,21 +61,32 @@ export default function NewOrgForm(){
             return addressObj
     }
 
-      const { ref: antRef } = usePlacesWidget({
-        apiKey: 'AIzaSyB7ZUkMcIXpOKYU4r4iBMM9BFjCL5OpeeE', // move this key to env
+      
+    const { ref: antRef } = usePlacesWidget({
+        apiKey: `${process.env.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API}`, // move this key to env
+        options:{
+            componentRestrictions:{country:'us'},
+            types: ['address'],
+            fields: ['address_components','formatted_address']
+        },
         onPlaceSelected: (place) => {
             // console.log(antInputRef.current.input)
+            console.log(place)
             form.setFieldValue('address',place?.formatted_address)
             
             const fullAddress = extractFullAddress(place)
-            setFullAddress(fullAddress)
+            // add street address
+            const addressWithStreet={
+                ...fullAddress,
+                street: place?.formatted_address
+            }
+            setFullAddress(addressWithStreet)
 
             //@ts-ignore
           antInputRef.current.input.value = place?.formatted_address
 
         },
       });
-    
 
     const onFinish = async(formData:NewOrg)=>{
 
@@ -173,14 +184,14 @@ export default function NewOrgForm(){
                 <Row>
                     <Col offset={1}> 
                          <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
-                            <Button shape='round' style={{marginRight:'1rem'}} type='text' onClick={()=>router.back()} icon={<ArrowLeftOutlined/>}/>
+                            <Button shape='round' style={{marginRight:'.3rem'}} type='link' onClick={()=>router.back()} icon={<ArrowLeftOutlined/>}/>
                             <Title style={{margin:'0'}} level={3}>Create new organization</Title>
                         </div>
-                    </Col>
+                    </Col> 
                 </Row>
             </div>
             <Row >
-                <Col offset={2} span={9}>
+                <Col offset={2} span={11}>
                     
                     <Form
                     name="organizationForm"
@@ -189,6 +200,12 @@ export default function NewOrgForm(){
                     onFinish={onFinish}
                     form={form}
                     >
+                      {/* Organization info */}
+                    <div style={{marginBottom:'2rem', marginTop:'3rem'}}>
+                        <Title level={3}>Organization info</Title>
+                        <Text>All changes here will be reflected in the marketplace</Text>
+                    </div>
+                    <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}> 
                     <Form.Item
                         name="name"
                         label="Organization name"
@@ -219,15 +236,15 @@ export default function NewOrgForm(){
                         label='Address'
                         rules={[{ required: true, message: 'Please input a valid address!' }]}
                     >
-                        <TextArea rows={3} placeholder='Apt. 235 30B NorthPointsettia Street, Syracuse'/>
-                        {/* <Input ref={(c) => {
+                        {/* <TextArea rows={3} placeholder='Apt. 235 30B NorthPointsettia Street, Syracuse'/> */}
+                        <Input ref={(c) => {
                             // @ts-ignore
                             antInputRef.current = c;
                             // @ts-ignore
                             if (c) antRef.current = c.input;
                             }} 
                             placeholder="Syracuse, United states" 
-                            /> */}
+                            />
                     </Form.Item>
 
 
@@ -239,6 +256,7 @@ export default function NewOrgForm(){
                     >
                         <Input size="large" placeholder="374739" />
                     </Form.Item>
+                    </div>
 
 
                     <Divider orientation='left'>Asset upload</Divider>

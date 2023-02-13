@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import {Form, Row, Col, Image, Input,Upload,Button,notification, Typography, Space, Select, Divider} from 'antd';
 import {UploadOutlined, ArrowLeftOutlined} from '@ant-design/icons'
-const {Title} = Typography
+const {Title,Text} = Typography
 const {TextArea} = Input
 
 import { useRouter } from 'next/router';
@@ -67,7 +67,7 @@ export default function NewOrgForm(){
         options:{
             componentRestrictions:{country:'us'},
             types: ['address'],
-            fields: ['address_components','geometry','formatted_address']
+            fields: ['address_components','formatted_address']
         },
         onPlaceSelected: (place) => {
             // console.log(antInputRef.current.input)
@@ -186,14 +186,14 @@ export default function NewOrgForm(){
                 <Row>
                     <Col offset={1}> 
                          <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
-                            <Button shape='round' style={{marginRight:'1rem'}} type='text' onClick={()=>router.back()} icon={<ArrowLeftOutlined/>}/>
+                            <Button shape='round' style={{marginRight:'.2rem'}} type='link' onClick={()=>router.back()} icon={<ArrowLeftOutlined/>}/>
                             <Title style={{margin:'0'}} level={3}>Create new organization</Title>
                         </div>
                     </Col>
                 </Row>
             </div>
             <Row >
-                <Col offset={2} span={9}>
+                <Col offset={2} span={10}>
                     
                     <Form
                     name="organizationForm"
@@ -202,9 +202,16 @@ export default function NewOrgForm(){
                     onFinish={onFinish}
                     form={form}
                     >
+                    
+                      {/* Organization info */}
+                      <div style={{marginBottom:'2rem', marginTop:'3rem'}}>
+                        <Title level={3}>Organization info</Title>
+                        {/* <Text>All changes here will be reflected in the marketplace</Text> */}
+                    </div>
+                    <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}> 
                     <Form.Item
                         name="name"
-                        label="Organization name"
+                        label="Name"
                         rules={[{ required: true, message: 'Please input a valid service name' }]}
                     >
                         <Input size="large" placeholder="Flexable org" />
@@ -213,7 +220,7 @@ export default function NewOrgForm(){
 
                     <Form.Item
                         name="email"
-                        label='Organization email'
+                        label='Email'
                         rules={[{ required: true, message: 'Please input a valid email!' }]}
                     >
                         <Input size="large" placeholder="mujahid.bappai@flexable.com" />
@@ -244,18 +251,15 @@ export default function NewOrgForm(){
                             />
                     </Form.Item>
 
-
-                    {/* <Form.Item
-                        name="zipCode"
-                        style={{width:'100px'}}
-                        label='Zip Code'
-                        rules={[{ required: true, message: 'Please input a valid code!' }]}
-                    >
-                        <Input size="large" placeholder="374739" />
-                    </Form.Item> */}
+                    </div>
 
 
-                    <Divider orientation='left'>Asset upload</Divider>
+                      {/* Assets */}
+                      <div style={{marginBottom:'2rem', marginTop:'3rem'}}>
+                        <Title level={3}>Assets upload</Title>
+                        {/* <Text>All changes here will be reflected in the marketplace</Text> */}
+                    </div>
+                    <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}> 
                     <Image alt='Organization logo' src={logoImage} style={{width:'150px',height:'150px', borderRadius:'50%', border:'1px solid #e5e5e5'}}/>
                     <Form.Item
                         name="logoImageHash"
@@ -281,6 +285,7 @@ export default function NewOrgForm(){
                             <Button size='small' type='link'>Upload cover image</Button>
                         </Upload>
                     </Form.Item>
+                    </div>
 
                     {/* onCancelFormCreation */}
                     <Form.Item style={{ marginTop:'4rem', width:'100%'}}>
