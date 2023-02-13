@@ -71,7 +71,7 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
    
   
     const editMutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items/availability`,updatedItem,{
+      const {data} = await axios.put(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items/availability`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -116,15 +116,17 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
 
 
     function onFinish(record:any){
+      console.log(record)
       const payload = {
         ...record,
-        price: record*100,
-        serviceItemId: selectedServiceItem.id, // Rename to "serviceItemId"
-        id: availability.id, // This should be renamed to "id"
+        price: String(record.price*100),
+        serviceItemId: selectedServiceItem.id, 
+        id: availability.id, 
         //@ts-ignore
         date: dayjs.utc(record.date).format(),
       }
-      // console.log(payload)
+
+      console.log(payload)
 
     //   setState(updatedRecord)
       editMutation.mutate(payload)
@@ -175,7 +177,7 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
           <Form
           style={{ marginTop:'.5rem' }}
           layout='vertical'
-          name="editableName"
+          name="editableAvailability"
           initialValues={transformedAvailability}
           onFinish={onFinish}
           >
@@ -241,7 +243,8 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
                   
           </Form>
       </div>
-  )
+    )
+
     return(
       <div style={{width:'100%', display:'flex', flexDirection:'column'}}>
       {isEditMode?editable:readOnly}

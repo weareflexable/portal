@@ -167,8 +167,8 @@ export default function BookingsView(){
         dataIndex: 'orderStatus',
         key: 'orderStatus',
         render: (status)=>{
-          const statusText = status === '1'? 'Complete': 'In-complete'
-          return <Badge status="success" text={statusText} />
+          const statusText = status === '0'? 'Payment_initiated': 'Complete'
+          return <Badge status="processing" text={statusText} />
         }
       },
       {

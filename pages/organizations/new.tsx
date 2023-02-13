@@ -106,8 +106,8 @@ export default function NewOrgForm(){
             ...fullAddress,
             logoImageHash: logoHash,
             coverImageHash: coverImageHash,
-            // orgId:currentOrg.orgId,
         }
+        console.log(formObject)
         // remove address field since because we have extracted
 
         // @ts-ignore

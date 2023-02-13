@@ -55,9 +55,7 @@ export default function CreateBankAccountForm(){
         notification['success']({
             message: 'Successfully created new bank account!'
         })
-        setInterval(()=>{
             router.back()
-        },2000)
        },
         onError:()=>{
             notification['error']({
