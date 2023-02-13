@@ -40,8 +40,6 @@ const Organizations: NextPage = () => {
                     <Col offset={1} span={22}>
                         <div style={{display:'flex', padding:'1rem 0', justifyContent:'space-between',alignItems:'center',width:'100%'}}>
                             <Title style={{margin:'0'}} level={3}>Welcome to the lounge</Title>
-                            {/* <Button danger onClick={logout}>Logout</Button> */}
-                            {/* <CurrentUser/>  */}
                             {isHydrated?<CurrentUser/>: <Skeleton.Input active={true} size={'default'} />}
                         </div>
                     </Col>

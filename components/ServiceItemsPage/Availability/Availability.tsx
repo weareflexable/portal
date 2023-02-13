@@ -118,6 +118,7 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
     function onFinish(record:any){
       const payload = {
         ...record,
+        price: record*100,
         serviceItemId: selectedServiceItem.id, // Rename to "serviceItemId"
         id: availability.id, // This should be renamed to "id"
         //@ts-ignore

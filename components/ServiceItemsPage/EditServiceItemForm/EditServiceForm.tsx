@@ -119,7 +119,10 @@ interface EditableProp{
       setIsEditMode(!isEditMode)
     }
   
-   
+  //  const transformedRecord = {
+  //   ...selectedRecord,
+  //   price: Number(selectedRecord.price)/100
+  //  }
   
     const recordMutationHandler = async(updatedItem:any)=>{
       const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,updatedItem,{
@@ -141,7 +144,7 @@ interface EditableProp{
     function onFinish(updatedItem:any){
       const payload = {
         key:'price',
-        value: updatedItem.price*100,
+        value: String(updatedItem.price*100),
         id: selectedRecord.id
       }
       const updatedRecord = {
@@ -156,7 +159,7 @@ interface EditableProp{
   
     const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{state.price}</Text>
+        <Text>${state.price}</Text>
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
   )
@@ -174,7 +177,7 @@ interface EditableProp{
                 name="price"
                 rules={[{ required: true, message: 'Please input a valid price' }]}
             >
-                <Input   disabled={isEditing} />
+                <Input  prefix="$" disabled={isEditing} />
             </Form.Item>
           </Col>
           <Col span={4}>

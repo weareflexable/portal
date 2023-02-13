@@ -203,12 +203,12 @@ export default function NewOrgForm(){
                       {/* Organization info */}
                     <div style={{marginBottom:'2rem', marginTop:'3rem'}}>
                         <Title level={3}>Organization info</Title>
-                        <Text>All changes here will be reflected in the marketplace</Text>
+                        {/* <Text>All changes here will be reflected in the marketplace</Text> */}
                     </div>
                     <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}> 
                     <Form.Item
                         name="name"
-                        label="Organization name"
+                        label="Name"
                         rules={[{ required: true, message: 'Please input a valid service name' }]}
                     >
                         <Input size="large" placeholder="Flexable org" />
@@ -217,7 +217,7 @@ export default function NewOrgForm(){
 
                     <Form.Item
                         name="email"
-                        label='Organization email'
+                        label='Email'
                         rules={[{ required: true, message: 'Please input a valid email!' }]}
                     >
                         <Input size="large" placeholder="mujahid.bappai@flexable.com" />
@@ -225,7 +225,7 @@ export default function NewOrgForm(){
 
                     <Form.Item
                         name="phone"
-                        label='Phone number'
+                        label='Contact number'
                         // rules={[{ required: true, message: 'Please input a valid email!' }]}
                     >
                         <Input size="large" placeholder="+23802323493" />
@@ -248,14 +248,14 @@ export default function NewOrgForm(){
                     </Form.Item>
 
 
-                    <Form.Item
+                    {/* <Form.Item
                         name="zipCode"
                         style={{width:'100px'}}
                         label='Zip Code'
                         rules={[{ required: true, message: 'Please input a valid code!' }]}
                     >
                         <Input size="large" placeholder="374739" />
-                    </Form.Item>
+                    </Form.Item> */}
                     </div>
 
 

@@ -15,6 +15,7 @@ import { Availability, AvailabilityPayload, CustomDate, ServiceItem } from "../.
 import { EditableCoverImage, EditableDescription, EditableName, EditablePrice, EditableTicketsPerDay } from "./EditServiceItemForm/EditServiceForm";
 import AvailabilitySection from "./Availability/Availability";
 import useUrlPrefix from "../../hooks/useUrlPrefix";
+import useRole from "../../hooks/useRole";
 
 
 // const mockServiceItems:ServiceItem[]=[
@@ -56,6 +57,7 @@ export default function ServiceItemsView(){
     const [selectedRecord, setSelectedServiceItem] = useState<any|ServiceItem>({})
     const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Active'})
     const [pageNumber, setPageNumber] = useState<number|undefined>(0)
+    const {isManager} = useRole()
 
 
     async function fetchServiceItems(){
@@ -215,12 +217,12 @@ export default function ServiceItemsView(){
         return (
             <div>
                 <div style={{marginBottom:'2em', marginTop:'.5rem', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
-                <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
+               { isManager? <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
                     {serviceItemsFilters.map(filter=>(
                         <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
                      )
                     )}
-                </Radio.Group>
+                </Radio.Group>:null}
 
                 <div style={{width: "20%",display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                   <Button type='link' loading={serviceItemsQuery.isRefetching} onClick={()=>serviceItemsQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
@@ -372,7 +374,7 @@ const serviceItemsFilters = [
       name: 'Active'
   },
   {
-      id: '2',
+      id: '0',
       name: 'In-active'
   },
 ]
