@@ -6,6 +6,7 @@ import axios from "axios"
 import { useState, useRef } from "react"
 import { usePlacesWidget } from "react-google-autocomplete"
 import { useAuthContext } from "../../../context/AuthContext"
+import useUrlPrefix from "../../../hooks/useUrlPrefix"
 import { asyncStore } from "../../../utils/nftStorage"
 import { Service } from "../Services.types"
 
@@ -17,6 +18,8 @@ interface EditableProp{
     const [state, setState] = useState(selectedRecord)
   
     const [isEditMode, setIsEditMode] = useState(false)
+
+    const urlPrefix = useUrlPrefix()
   
     const {paseto} = useAuthContext()
   
@@ -29,7 +32,7 @@ interface EditableProp{
    
   
     const nameMutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/services`,updatedItem,{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -122,6 +125,8 @@ interface EditableProp{
       country:'',
       city:''
   })
+
+  const urlPrefix = useUrlPrefix()
   
     const {paseto} = useAuthContext()
   
@@ -150,7 +155,7 @@ interface EditableProp{
   
           return addressObj
   }
-  
+
   const { ref: antRef } = usePlacesWidget({
     apiKey: 'AIzaSyAxBDdnJsmCX-zQa-cO9iy-v5pn53vXEFA', // move this key to env
     options:{
@@ -182,9 +187,9 @@ interface EditableProp{
     setFocused(true)
   }
   
-  console.log('focused nput', focus)
+
     const nameMutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -288,10 +293,11 @@ interface EditableProp{
       setIsEditMode(!isEditMode)
     }
   
+    const urlPrefix = useUrlPrefix()
    
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/services`,updatedItem,{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -377,7 +383,8 @@ interface EditableProp{
     const [isHashingImage, setIsHashingImage] = useState(false)
     const [updatedLogoImageHash, setUpdatedLogoImageHash] = useState(selectedRecord.logoImageHash)
   
-    const queryClient = useQueryClient()
+
+    const urlPrefix = useUrlPrefix()
   
     const {paseto} = useAuthContext()
   
@@ -393,7 +400,7 @@ interface EditableProp{
     )
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/services`,updatedItem,{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -495,6 +502,8 @@ interface EditableProp{
     const [updatedCoverImageHash, setUpdatedCoverImageHash] = useState(selectedRecord.logoImageHash)
   
     const queryClient = useQueryClient()
+
+    const urlPrefix = useUrlPrefix()
   
     const {paseto} = useAuthContext()
   
@@ -510,7 +519,7 @@ interface EditableProp{
     )
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/services`,updatedItem,{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto

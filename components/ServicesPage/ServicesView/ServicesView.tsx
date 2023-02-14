@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useOrgs from "../../../hooks/useOrgs";
 const {Text, Title} = Typography;
 import React, { useEffect, useRef, useState } from 'react'
-import {Typography,Button,Avatar, Upload,Skeleton, Badge, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Modal, Alert, notification} from 'antd'
+import {Typography,Button, Skeleton, Badge, Image, Table, Input, Radio,  Drawer, Row, Col, Form, Modal, Alert, notification} from 'antd'
 import { useRouter } from 'next/router'
 import axios from 'axios';
 import { MoreOutlined, ReloadOutlined, ArrowLeftOutlined, PlusOutlined} from '@ant-design/icons'
@@ -12,12 +12,11 @@ import { useServicesContext } from '../../../context/ServicesContext';
 import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { useOrgContext } from "../../../context/OrgContext";
-import { usePlacesWidget } from "react-google-autocomplete";
 import { Service } from "../Services.types";
-import Link from "next/link";
+
 import { EditableAddress, EditableCoverImage, EditableCurrency, EditableLogoImage, EditableName } from "../EditServiceForm/EditServiceForm";
 import CurrentUser from "../../Header/CurrentUser/CurrentUser";
-const {TextArea} = Input
+
 
 var relativeTime = require('dayjs/plugin/relativeTime')
 dayjs.extend(relativeTime)
