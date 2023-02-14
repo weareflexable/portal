@@ -17,6 +17,7 @@ import { useOrgContext } from "../../../context/OrgContext";
 import { asyncStore } from "../../../utils/nftStorage";
 import { ServiceItem } from "../../../types/Services";
 import { ManagerOrder } from "./Bookings.types";
+import useUrlPrefix from "../../../hooks/useUrlPrefix";
 const {TextArea} = Input
 
 
@@ -57,10 +58,12 @@ export default function ManagerBookingsView(){
     const [selectedServiceItem, setSelectedServiceItem] = useState<any|ServiceItem>({})
     const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Approved'})
 
+    const urlPrefix = useUrlPrefix()
+    
     async function fetchBookings(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/bookings?pageNumber=0&pageSize=10`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/bookings?pageNumber=0&pageSize=10`,
             headers:{
                 "Authorization": paseto
             }
@@ -72,42 +75,9 @@ export default function ManagerBookingsView(){
 
    
 
-    async function changeServiceItemStatus({serviceItemId, statusNumber}:{serviceItemId:string, statusNumber: string}){
-        const res = await axios({
-            method:'patch',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,
-            data:{
-                key:'status',
-                value: statusNumber, // 0 means de-activated in db
-                serviceItemId: serviceItemId 
-            },
-            headers:{
-                "Authorization": paseto
-            }
-        })
-        return res; 
-    }
-
     
 
-    const changeStatusMutation = useMutation(['data'],{
-        mutationFn: changeServiceItemStatus,
-        onSuccess:(data:any)=>{
-            queryClient.invalidateQueries({queryKey:['serviceItems',currentFilter]})
-        },
-        onError:()=>{
-            console.log('Error changing status')
-        }
-    })
-
-
-    function inActiveItemsHandler(serviceItem:ManagerOrder){
-        changeStatusMutation.mutate({serviceItemId:serviceItem.id, statusNumber:'0'})
-    }
-
-    function activeItemsHandler(serviceItem:ManagerOrder){
-        changeStatusMutation.mutate({serviceItemId:serviceItem.id, statusNumber:'2'})
-    }
+    
 
 
     const bookingsQuery = useQuery({queryKey:['managerBookings'], queryFn:fetchBookings, enabled:paseto !== ''})
