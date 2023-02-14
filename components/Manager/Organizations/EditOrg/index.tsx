@@ -272,7 +272,7 @@ interface EditableProp{
   
     const readOnly = (
         <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-          <Text>{selectedOrg.phone}</Text>
+          <Text>{selectedOrg.contactNumber}</Text>
           <Button type="link" onClick={toggleEdit}>Edit</Button>
         </div>
     )
@@ -287,7 +287,7 @@ interface EditableProp{
         return data;
     }
     const nameMutation = useMutation({
-      mutationKey:['phone'],
+      mutationKey:['contactNumber'],
       mutationFn: nameMutationHandler,
       onSuccess:()=>{
         toggleEdit()
@@ -297,8 +297,8 @@ interface EditableProp{
   
     function onFinish(field:any){
       const payload = {
-        key:'phone',
-        value: field.phone,
+        key:'contactNumber',
+        value: field.contactNumber,
         orgId: selectedOrg.id
       }
       console.log(payload)
@@ -317,7 +317,7 @@ interface EditableProp{
         <Row>
           <Col span={16}>
             <Form.Item
-                name="phone"
+                name="contactNumber"
                 rules={[{ required: true, message: 'Please input a valid phone number' }]}
             >
                 <Input disabled={isEditing} placeholder="09023234857" />

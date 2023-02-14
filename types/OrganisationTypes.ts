@@ -28,6 +28,7 @@ export interface NewOrg{
     name: string,
     email: string,
     phone: string,
+    contactNumber?:string,
     street: string,
     city: string,
     country: string,

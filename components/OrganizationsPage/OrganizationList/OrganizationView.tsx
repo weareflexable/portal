@@ -166,89 +166,89 @@ export default function AdminOrgsView(){
       setFilteredInfo(filters);
     };
   
-    const getColumnSearchProps = (dataIndex: DataIndex): ColumnType<NewOrg> => ({
-      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters}) => (
-        <div style={{ padding: 8 }} onKeyDown={e => e.stopPropagation()}>
-          <Input
-            ref={searchInput}
-            placeholder={`Search ${dataIndex}`}
-            value={selectedKeys[0]}
-            onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-            onPressEnter={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
-            style={{ marginBottom: 8, display: 'block' }}
-          />
-          <Space>
-            <Button
-              type="primary"
-              onClick={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
-              icon={<SearchOutlined />}
-              size="small"
-              shape='round'
-              style={{ width: 90, display:'flex',alignItems:'center' }}
-            >
-              Search
-            </Button>
+    // const getColumnSearchProps = (dataIndex: DataIndex): ColumnType<NewOrg> => ({
+    //   filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters}) => (
+    //     <div style={{ padding: 8 }} onKeyDown={e => e.stopPropagation()}>
+    //       <Input
+    //         ref={searchInput}
+    //         placeholder={`Search ${dataIndex}`}
+    //         value={selectedKeys[0]}
+    //         onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+    //         onPressEnter={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
+    //         style={{ marginBottom: 8, display: 'block' }}
+    //       />
+    //       <Space>
+    //         <Button
+    //           type="primary"
+    //           onClick={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
+    //           icon={<SearchOutlined />}
+    //           size="small"
+    //           shape='round'
+    //           style={{ width: 90, display:'flex',alignItems:'center' }}
+    //         >
+    //           Search
+    //         </Button>
             
-            <Button
-              onClick={() => clearFilters && handleReset(clearFilters)}
-              size="small"
-              shape='round'
-              style={{ width: 90 }}
-            >
-              Reset
-            </Button>
-            <Button
-              type="link"
-              size="small"
-              onClick={() => {
-                confirm({ closeDropdown: false });
-                setSearchText((selectedKeys as string[])[0]);
-                setSearchedColumn(dataIndex);
-              }}
-            >
-              Filter
-            </Button>
-            <Button
-              type='link'
-              danger
-              size="small"
-              onClick={() => {
-                confirm({closeDropdown:true})
-              }}
-            >
-              close
-            </Button>
-          </Space>
-        </div>
-      ),
-      filterIcon: (filtered: boolean) => (
-        <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
-      ),
-      onFilter: (value, record) =>
-        record[dataIndex]
-          .toString()
-          .toLowerCase()
-          .includes((value as string).toLowerCase()),
-      onFilterDropdownOpenChange: visible => {
-        if (visible) {
-          setTimeout(() => searchInput.current?.select(), 100);
-        }
-      },
-      render: text =>{
-        console.log('text',text)
-        console.log('dataIndex',dataIndex)
-        return searchedColumn === dataIndex ? (
-          <Highlighter
-            highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-            searchWords={[searchText]}
-            autoEscape
-            textToHighlight={text ? text.toString() : ''}
-          />
-        ) : (
-          text
-        )
-      }
-    });
+    //         <Button
+    //           onClick={() => clearFilters && handleReset(clearFilters)}
+    //           size="small"
+    //           shape='round'
+    //           style={{ width: 90 }}
+    //         >
+    //           Reset
+    //         </Button>
+    //         <Button
+    //           type="link"
+    //           size="small"
+    //           onClick={() => {
+    //             confirm({ closeDropdown: false });
+    //             setSearchText((selectedKeys as string[])[0]);
+    //             setSearchedColumn(dataIndex);
+    //           }}
+    //         >
+    //           Filter
+    //         </Button>
+    //         <Button
+    //           type='link'
+    //           danger
+    //           size="small"
+    //           onClick={() => {
+    //             confirm({closeDropdown:true})
+    //           }}
+    //         >
+    //           close
+    //         </Button>
+    //       </Space>
+    //     </div>
+    //   ),
+    //   filterIcon: (filtered: boolean) => (
+    //     <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
+    //   ),
+    //   onFilter: (value, record) =>
+    //     record[dataIndex]
+    //       .toString()
+    //       .toLowerCase()
+    //       .includes((value as string).toLowerCase()),
+    //   onFilterDropdownOpenChange: visible => {
+    //     if (visible) {
+    //       setTimeout(() => searchInput.current?.select(), 100);
+    //     }
+    //   },
+    //   render: text =>{
+    //     console.log('text',text)
+    //     console.log('dataIndex',dataIndex)
+    //     return searchedColumn === dataIndex ? (
+    //       <Highlighter
+    //         highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+    //         searchWords={[searchText]}
+    //         autoEscape
+    //         textToHighlight={text ? text.toString() : ''}
+    //       />
+    //     ) : (
+    //       text
+    //     )
+    //   }
+    // });
   
     const getTicketDateColumnSearchProps = (dataIndex: DataIndex): ColumnType<NewOrg> =>({
       filterDropdown:({ setSelectedKeys, selectedKeys, confirm, clearFilters})=>(
@@ -398,9 +398,9 @@ export default function AdminOrgsView(){
       }
       },
       {
-        title: 'Phone',
-        dataIndex: 'phone',
-        key: 'phone',
+        title: 'Contact',
+        dataIndex: 'contactNumber',
+        key: 'contactNumber',
       },
       {
           title: 'CreatedAt',
@@ -785,7 +785,7 @@ function EditablePhone({selectedOrg}:EditableProp){
 
   const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{selectedOrg.phone}</Text>
+        <Text>{selectedOrg.contactNumber}</Text>
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
   )
@@ -800,7 +800,7 @@ function EditablePhone({selectedOrg}:EditableProp){
       return data;
   }
   const nameMutation = useMutation({
-    mutationKey:['phone'],
+    mutationKey:['contactNumber'],
     mutationFn: nameMutationHandler,
     onSuccess:()=>{
       toggleEdit()
@@ -810,8 +810,8 @@ function EditablePhone({selectedOrg}:EditableProp){
 
   function onFinish(field:any){
     const payload = {
-      key:'phone',
-      value: field.phone,
+      key:'contact_number',
+      value: field.contactNumber,
       orgId: selectedOrg.id
     }
     console.log(payload)
@@ -830,7 +830,7 @@ function EditablePhone({selectedOrg}:EditableProp){
       <Row>
         <Col span={16}>
           <Form.Item
-              name="phone"
+              name="contactNumber"
               rules={[{ required: true, message: 'Please input a valid phone number' }]}
           >
               <Input disabled={isEditing} placeholder="09023234857" />
