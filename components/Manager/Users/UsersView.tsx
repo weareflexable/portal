@@ -173,6 +173,11 @@ export default function UsersView(){
         dataIndex: 'mobileNumber',
         key: 'mobileNumber',
       },
+      // {
+      //   title: 'Wallet address',
+      //   dataIndex: 'walletaddress',
+      //   key: 'walletaddress',
+      // },
       {
         title: 'Role',
         dataIndex: 'userRoleName',

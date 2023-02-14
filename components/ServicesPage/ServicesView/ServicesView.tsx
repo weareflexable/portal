@@ -65,7 +65,7 @@ export default function ManagerOrgsView(){
     async function changeOrgStatus({serviceId, statusNumber}:{serviceId:string, statusNumber: string}){
         const res = await axios({
             method:'patch',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/services`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,
             data:{
                 key:'status',
                 value: statusNumber, // 0 means de-activated in db
