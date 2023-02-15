@@ -17,6 +17,7 @@ import { useOrgContext } from "../../context/OrgContext";
 
 import { ServiceItem } from "../../types/Services";
 import { Order } from "./Bookings.types";
+import useUrlPrefix from "../../hooks/useUrlPrefix";
 const {TextArea} = Input
 
 
@@ -52,7 +53,7 @@ export default function BookingsView(){
     const [isDrawerOpen, setIsDrawerOpen] = useState(false) 
     const [pageNumber, setPageNumber] = useState<number|undefined>(0)
 
-  
+    const urlPrefix = useUrlPrefix();
 
     const [selectedServiceItem, setSelectedServiceItem] = useState<any|ServiceItem>({})
 
@@ -60,7 +61,7 @@ export default function BookingsView(){
     const res = await axios({
             method:'get',
             //@ts-ignore
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/bookings?key=service_id&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=10`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/bookings?key=service_id&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=10`,
             headers:{
                 "Authorization": paseto
             } 
