@@ -7,6 +7,7 @@ import { useAuthContext } from "../../../context/AuthContext"
 import {PlusCircleOutlined, DeleteOutlined,EditOutlined} from "@ant-design/icons"
 import { Availability, CustomDate, ServiceItem } from "../../../types/Services"
 import dayjs from 'dayjs'
+import useUrlPrefix from "../../../hooks/useUrlPrefix"
 var utc = require('dayjs/plugin/utc')
 dayjs.extend(utc)
 
@@ -67,11 +68,13 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
     function toggleEdit(){
       setIsEditMode(!isEditMode)
     }
+
+    const urlPrefix = useUrlPrefix()
   
    
   
     const editMutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.put(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items/availability`,updatedItem,{
+      const {data} = await axios.put(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items/availability`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -93,7 +96,7 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
     const deleteMutationHandler = async(item:any)=>{
       const {data} = await axios({
         method:'delete',
-        url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items/availability`,
+        url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items/availability`,
         data:{id:item.id},
         headers:{
             //@ts-ignore
@@ -248,7 +251,7 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
 
     return(
       <div style={{width:'100%', display:'flex', flexDirection:'column'}}>
-      {isEditMode?editable:readOnly}
+        {isEditMode?editable:readOnly}
       </div>
     )
   }
@@ -257,7 +260,7 @@ interface NewAvailabilityProps{
 availabilities: CustomDate[] // TODO: Find a better name to distinguish between availability array and it's items
 selectedServiceItem: ServiceItem
 }
-export function NewAvailability({availabilities, selectedServiceItem}:NewAvailabilityProps){
+export function NewAvailability({selectedServiceItem}:NewAvailabilityProps){
   
     // const [state, setState] = useState(
   
@@ -271,8 +274,10 @@ export function NewAvailability({availabilities, selectedServiceItem}:NewAvailab
       setIsEditMode(!isEditMode)
     }
   
+    const urlPrefix = useUrlPrefix()
+
     const createMutaionHandler = async(updatedItem:any)=>{
-      const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items/availability`,updatedItem,{
+      const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items/availability`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto

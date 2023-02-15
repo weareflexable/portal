@@ -15,6 +15,7 @@ import { asyncStore } from '../../../../utils/nftStorage';
 import axios from 'axios';
 import { useAuthContext } from '../../../../context/AuthContext';
 import { useMutation } from '@tanstack/react-query';
+import useUrlPrefix from '../../../../hooks/useUrlPrefix';
 
 
 
@@ -97,6 +98,8 @@ function BasicForm({nextStep}:BasicInfoProps){
      const {currentService} = useServicesContext()
      const {paseto} = useAuthContext()
      const router = useRouter()
+
+     const urlPrefix = useUrlPrefix()
     
    
 
@@ -131,7 +134,7 @@ function BasicForm({nextStep}:BasicInfoProps){
 
     const createDataHandler = async(newItem:ServiceItemReqPaylod)=>{
 
-        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`, newItem,{
+        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`, newItem,{
             headers:{
                 "Authorization": paseto
             },
@@ -269,7 +272,10 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
     const [form] = Form.useForm()
     const router = useRouter()
 
+    const urlPrefix = useUrlPrefix()
+
     const {paseto} = useAuthContext()
+    
     // This functions takes in custom availability array and
    // changes the format of the date field of every item in the array.
    function convertDates(customDates:Availability){ // TODO: rename this function and it's parameters
@@ -300,7 +306,7 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
 
 
     const createDataHandler = async(newItem:AvailabilityPayload)=>{ 
-        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items/availability`, newItem,{
+        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items/availability`, newItem,{
             headers:{
                 "Authorization": paseto
             },

@@ -270,8 +270,10 @@ const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
  const [isEditAvailability, setIsEditAvailability] = useState(false)
 
+ const urlPrefix = useUrlPrefix()
+
 async function fetchItemAvailability(){
- const res = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items/availability?key=service_item_id&value=${selectedRecord.id}&pageNumber=0&pageSize=10`,{
+ const res = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items/availability?key=service_item_id&value=${selectedRecord.id}&pageNumber=0&pageSize=10`,{
   headers:{
     "Authorization":paseto
   }
@@ -309,7 +311,7 @@ function deleteServiceItem(){
 const deleteDataHandler = async(record:ServiceItem)=>{      
   const {data} = await axios({
     method:'patch',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,
+    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,
     data: {
         id:record.id,
         key:'status',

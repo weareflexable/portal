@@ -5,6 +5,7 @@ const {Text} = Typography
 import axios from "axios"
 import { useState } from "react"
 import { useAuthContext } from "../../../context/AuthContext"
+import useUrlPrefix from "../../../hooks/useUrlPrefix"
 import { ServiceItem } from "../../../types/Services"
 import { asyncStore } from "../../../utils/nftStorage"
 
@@ -26,10 +27,10 @@ interface EditableProp{
       setIsEditMode(!isEditMode)
     }
   
-   
+   const urlPrefix = useUrlPrefix()
   
     const recordMutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,updatedItem,{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -123,9 +124,10 @@ interface EditableProp{
   //   ...selectedRecord,
   //   price: Number(selectedRecord.price)/100
   //  }
+   const urlPrefix = useUrlPrefix()
   
     const recordMutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,updatedItem,{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -216,10 +218,11 @@ interface EditableProp{
       setIsEditMode(!isEditMode)
     }
   
+    const urlPrefix = useUrlPrefix()
    
   
     const recordMutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,updatedItem,{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -312,9 +315,11 @@ interface EditableProp{
     }
   
     const [form]  = Form.useForm()
+
+    const urlPrefix = useUrlPrefix()
   
     const recordMutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,updatedItem,{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -405,6 +410,8 @@ interface EditableProp{
     const [updatedCoverImageHash, setUpdatedCoverImageHash] = useState(selectedRecord.logoImageHash)
   
     const {paseto} = useAuthContext()
+
+    const urlPrefix = useUrlPrefix()
   
     function toggleEdit(){
       setIsEditMode(!isEditMode)
@@ -418,7 +425,7 @@ interface EditableProp{
     )
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,updatedItem,{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
