@@ -12,6 +12,7 @@ import {PlusOutlined} from '@ant-design/icons'
 import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { Staff } from "../../types/Staff";
+import useUrlPrefix from "../../hooks/useUrlPrefix";
 const {TextArea} = Input
 
 
@@ -36,10 +37,12 @@ export default function StaffView(){
     const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Approved'})
     const [showForm, setShowForm] = useState(false)
 
+    const urlPrefix = useUrlPrefix()
+
     async function fetchStaff(){
       const res = await axios({
               method:'get',
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/staff?key=service_id&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=10&key2=status&value2=${currentFilter.id}`,
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff?key=service_id&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=10&key2=status&value2=${currentFilter.id}`,
               headers:{
                   "Authorization": paseto
               }
@@ -234,8 +237,10 @@ const AddStaffForm: React.FC<StaffFormProps> = ({
   const {paseto} = useAuthContext()
   const {currentService} = useServicesContext()
 
+  const urlPrefix = useUrlPrefix()
+
   const createDataHandler = async(newItem:any)=>{
-    const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/staff`, newItem,{
+    const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff`, newItem,{
         headers:{
             "Authorization": paseto
         },
@@ -382,12 +387,12 @@ function deleteService(){
   })
 }
 
-// const urlPrefix = currentStaff.role == 1 ? 'manager': 'admin'
+const urlPrefix = useUrlPrefix()
 
 const deleteDataHandler = async(record:Staff)=>{      
   const {data} = await axios({
     method:'delete',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/staff`,
+    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff`,
     data: {
         id:record.id,
         serviceId: currentService.id
@@ -445,11 +450,11 @@ function EditableRole({selectedStaff}:EditableProp){
 
   const [form]  = Form.useForm()
 
- 
+ const urlPrefix = useUrlPrefix()
 
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/staff`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
