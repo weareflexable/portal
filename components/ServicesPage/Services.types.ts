@@ -5,6 +5,7 @@
         country: string,
         state: string,
         status: boolean,
+        contactNumber: string,
         currency: 'USD',
         serviceType: Array<any>,
         timeZone: 'UTC',

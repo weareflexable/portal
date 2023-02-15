@@ -297,7 +297,7 @@ interface EditableProp{
   
     function onFinish(field:any){
       const payload = {
-        key:'contactNumber',
+        key:'contact_number',
         value: field.contactNumber,
         orgId: selectedOrg.id
       }
@@ -310,7 +310,7 @@ interface EditableProp{
     const editable = (
       <Form
        style={{ marginTop:'.5rem' }}
-       name="editablePhone"
+       name="editableContactNumber"
        initialValues={selectedOrg}
        onFinish={onFinish}
        >
@@ -342,7 +342,7 @@ interface EditableProp{
     )
     return(
       <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-        <Text type="secondary" style={{ marginRight: '2rem',}}>Phone</Text>
+        <Text type="secondary" style={{ marginRight: '2rem',}}>Contact number</Text>
         {isEditMode?editable:readOnly}
       </div>
     )

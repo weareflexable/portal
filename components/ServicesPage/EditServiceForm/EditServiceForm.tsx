@@ -31,7 +31,7 @@ interface EditableProp{
   
    
   
-    const nameMutationHandler = async(updatedItem:any)=>{
+    const mutationHandler = async(updatedItem:any)=>{
       const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,updatedItem,{
         headers:{
             //@ts-ignore
@@ -40,9 +40,9 @@ interface EditableProp{
       })
         return data;
     }
-    const nameMutation = useMutation({
+    const mutation = useMutation({
       mutationKey:['serviceName'],
-      mutationFn: nameMutationHandler,
+      mutationFn: mutationHandler,
       onSuccess:()=>{
         toggleEdit()
       }
@@ -59,10 +59,10 @@ interface EditableProp{
         name: updatedItem.name
       }
       setState(updatedRecord)
-      nameMutation.mutate(payload)
+      mutation.mutate(payload)
     }
   
-    const {isLoading:isEditing} = nameMutation;
+    const {isLoading:isEditing} = mutation;
   
     const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
@@ -188,7 +188,7 @@ interface EditableProp{
   }
   
 
-    const nameMutationHandler = async(updatedItem:any)=>{
+    const mutationHandler = async(updatedItem:any)=>{
       const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
         headers:{
             //@ts-ignore
@@ -197,9 +197,9 @@ interface EditableProp{
       })
         return data;
     }
-    const nameMutation = useMutation({
+    const mutation = useMutation({
       mutationKey:['address'],
-      mutationFn: nameMutationHandler,
+      mutationFn: mutationHandler,
       onSuccess:()=>{
         toggleEdit()
       }
@@ -216,10 +216,10 @@ interface EditableProp{
         name: updatedItem.country
       }
       setState(updatedRecord)
-      nameMutation.mutate(payload)
+      mutation.mutate(payload)
     }
   
-    const {isLoading:isEditing} = nameMutation 
+    const {isLoading:isEditing} = mutation 
   
     const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
@@ -279,6 +279,97 @@ interface EditableProp{
     )
   }
 
+  export function EditablePhone({selectedRecord}:EditableProp){
+  
+    const [isEditMode, setIsEditMode] = useState(false)
+  
+    const {paseto} = useAuthContext()
+  
+    const queryClient = useQueryClient()
+
+    const urlPrefix = useUrlPrefix()
+  
+    function toggleEdit(){
+      setIsEditMode(!isEditMode)
+    }
+  
+    const readOnly = (
+        <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+          <Text>{selectedRecord.contactNumber}</Text>
+          <Button type="link" onClick={toggleEdit}>Edit</Button>
+        </div>
+    )
+  
+    const mutationHandler = async(updatedItem:any)=>{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,updatedItem,{
+        headers:{
+            //@ts-ignore
+            "Authorization": paseto
+        }
+      })
+        return data;
+    }
+    const mutation = useMutation({
+      mutationKey:['contactNumber'],
+      mutationFn: mutationHandler,
+      onSuccess:()=>{
+        toggleEdit()
+        // queryClient.invalidateQueries(['services'])
+      }
+    })
+  
+    function onFinish(field:any){
+      const payload = {
+        key:'contact_number',
+        value: field.contactNumber,
+        id: selectedRecord.id
+      }
+      console.log(payload)
+      mutation.mutate(payload)
+    }
+  
+    const {isLoading:isEditing} = mutation 
+  
+    const editable = (
+      <Form
+       style={{ marginTop:'.5rem' }}
+       name="editableContactNumber"
+       initialValues={selectedRecord}
+       onFinish={onFinish}
+       >
+        <Row>
+          <Col span={16}>
+            <Form.Item
+                name="contactNumber"
+                rules={[{ required: true, message: 'Please input a valid phone number' }]}
+            >
+                <Input disabled={isEditing} placeholder="09023234857" />
+            </Form.Item>
+          </Col>
+          <Col span={4}>
+            <Form.Item style={{ width:'100%'}}>
+                <Space >
+                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                        Cancel
+                    </Button>
+                    <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                        Apply changes
+                    </Button>
+                </Space>
+                          
+            </Form.Item>
+          </Col>
+        </Row>
+             
+      </Form>
+    )
+    return(
+      <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+        <Text type="secondary" style={{ marginRight: '2rem',}}>Contact number</Text>
+        {isEditMode?editable:readOnly}
+      </div>
+    )
+  }
   
   export function EditableCurrency({selectedRecord}:EditableProp){
   

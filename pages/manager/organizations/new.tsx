@@ -227,7 +227,7 @@ export default function NewOrgForm(){
                     </Form.Item>
 
                     <Form.Item
-                        name="phone"
+                        name="contactNumber"
                         label='Contact number'
                         // rules={[{ required: true, message: 'Please input a valid email!' }]}
                     >

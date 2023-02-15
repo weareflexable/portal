@@ -14,7 +14,7 @@ import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { useOrgContext } from "../../../context/OrgContext";
 import { Service } from "../Services.types";
 
-import { EditableAddress, EditableCoverImage, EditableCurrency, EditableLogoImage, EditableName } from "../EditServiceForm/EditServiceForm";
+import { EditableAddress, EditableCoverImage, EditableCurrency, EditableLogoImage, EditableName, EditablePhone } from "../EditServiceForm/EditServiceForm";
 import CurrentUser from "../../Header/CurrentUser/CurrentUser";
 
 
@@ -368,6 +368,7 @@ return(
   
   <EditableName selectedRecord={selectedRecord}/>
   <EditableAddress selectedRecord={selectedRecord}/>
+  <EditablePhone selectedRecord={selectedRecord}/>
   <EditableCurrency selectedRecord={selectedRecord}/>
   <EditableLogoImage selectedRecord={selectedRecord}/>
   <EditableCoverImage selectedRecord={selectedRecord}/>
