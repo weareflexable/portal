@@ -144,7 +144,7 @@ interface EditableProp{
     function onFinish(updatedItem:any){
       const payload = {
         key:'price',
-        value: String(updatedItem.price*100),
+        value: updatedItem.price*100,
         id: selectedRecord.id
       }
       const updatedRecord = {
@@ -159,7 +159,7 @@ interface EditableProp{
   
     const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>${state.price}</Text>
+        <Text>${state.price/100}</Text> 
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
   )

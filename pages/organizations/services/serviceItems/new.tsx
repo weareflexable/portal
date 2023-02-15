@@ -114,7 +114,7 @@ function BasicForm({nextStep}:BasicInfoProps){
         // // only generate key if it's a new service
             const formObject: ServiceItemReqPaylod = {
                 name: formData.name,
-                price: String(Number(formData.price) * 100),
+                price: Number(formData.price) * 100,
                 ticketsPerDay: String(formData.ticketsPerDay),
                 description:formData.description,
                 orgServiceId: currentService.id,
@@ -141,7 +141,7 @@ function BasicForm({nextStep}:BasicInfoProps){
 
     const createData = useMutation(createDataHandler,{
        onSuccess:(data)=>{
-        form.resetFields()
+        // form.resetFields()
         notification['success']({
             message: 'Successfully created new service item!'
         })
@@ -272,14 +272,14 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
     const {paseto} = useAuthContext()
     // This functions takes in custom availability array and
    // changes the format of the date field of every item in the array.
-   function convertDates(customDates:Availability){
+   function convertDates(customDates:Availability){ // TODO: rename this function and it's parameters
     console.log(customDates)
-     const res = customDates.map(date=>{
+     const res = customDates.map(date=>{ 
           const updatedDate = {
               ...date,
               date: dayjs(date.date).format('MMM DD, YYYY'),
               ticketsPerDay: String(date.ticketsPerDay),
-              price: String(date.price)
+              price: date.price*100
           }
           return updatedDate
       })

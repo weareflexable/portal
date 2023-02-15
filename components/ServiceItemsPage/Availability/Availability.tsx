@@ -119,7 +119,7 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
       console.log(record)
       const payload = {
         ...record,
-        price: String(record.price*100),
+        price: record.price*100,
         serviceItemId: selectedServiceItem.id, 
         id: availability.id, 
         //@ts-ignore
@@ -152,7 +152,7 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
             </Col>
             <Col span={9}>
                 <div style={{width:"100%", display:'flex', marginBottom:'.2rem', marginTop:'.2rem'}}>
-                    <Text>${availability.price} </Text>
+                    <Text>${availability.price/100} </Text>
                     {/* <Text style={{marginLeft:'.3rem'}} type="secondary">Per ticket</Text> */}
                 </div>
             </Col>
@@ -168,7 +168,8 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
     // as it only accepts dayjs formats.
     const transformedAvailability={
       ...availability,
-      date: dayjs(availability.date)
+      date: dayjs(availability.date),
+      price: availability.price/100
     }
   
     const editable = (
@@ -298,7 +299,7 @@ export function NewAvailability({availabilities, selectedServiceItem}:NewAvailab
             //@ts-ignore
             date: dayjs.utc(updatedItem.date).format(), // provide it in utc
             name: updatedItem.name,
-            price: String(updatedItem.price),
+            price: updatedItem.price*100,
             ticketsPerDay: String(updatedItem.ticketsPerDay)
         }
         
