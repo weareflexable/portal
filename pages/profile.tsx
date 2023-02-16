@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react'
-import {Form,Input,Col, Image, Row, Select, Upload, Button, Layout, Typography, Avatar, Spin, Space, Radio} from 'antd'
+import {Form,Input,Col, Image, Row, Select, Upload, Button, Layout, Typography, Avatar, Spin, Space, Radio, Skeleton} from 'antd'
 import {UploadOutlined, ArrowLeftOutlined} from '@ant-design/icons'
-import {useMutation, useQuery} from '@tanstack/react-query';
+import {QueryClient, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 
 const {Option} = Select
 const {Title,Text} = Typography;
@@ -34,9 +34,24 @@ export default function Profile(){
 
     const [profilePic, setProfilePic] = useState<string>(placeholder)
     const router  = useRouter()
-    const {currentUser} = useAuthContext()
+    const {currentUser,paseto} = useAuthContext()
     // This state is just enabled to mimick behaviour of fetching user data from db
     const [isLoadingProfile, setIsLoadingProfile] = useState(true)
+
+    async function fetchUserDetails(){
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/users`,{
+        headers:{
+          "Authorization": paseto
+        }
+      })
+      return res.data.data
+    }
+    const userQuery = useQuery({
+      queryKey:['user'], 
+      queryFn: fetchUserDetails, 
+      enabled:paseto!==''})
+
+    
 
     const [form] = Form.useForm();
 
@@ -48,7 +63,7 @@ export default function Profile(){
             phone: currentUser.mobile_number,
             country: currentUser.country
         })
-    }, [])
+    }, []) 
 
     useEffect(()=>{
         setTimeout(()=>{
@@ -81,7 +96,7 @@ export default function Profile(){
                     <Col offset={1}> 
                         <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
                             <Button shape='round'  type='text' onClick={()=>router.back()} icon={<ArrowLeftOutlined/>}/>
-                            <Title style={{margin:'0'}} level={3}>Update profile</Title>
+                            <Title style={{margin:'0'}} level={3}>Profile</Title>
                         </div>
                     </Col>
                 </Row>
@@ -93,17 +108,20 @@ export default function Profile(){
                     style={{
                     padding: '1em',
                     margin:'1em',
-                    background:'white' ,
+                    // background:'white' , 
                     width:`50%`,
                     maxWidth:'100%',
                     }}
                 > 
 
-                   <EditableImage selectedRecord={currentUser}/>
-                    <EditableName selectedRecord={currentUser}/>
-                    <EditablePhone selectedRecord={currentUser}/>
-                    <EditableGender selectedRecord={currentUser}/>
-                    <EditableCountry selectedRecord={currentUser}/>
+                    {userQuery.isLoading
+                    ?<Skeleton.Input active size={'large'}  block />
+                    :<EditableImage selectedRecord={userQuery.data&&userQuery.data[0]}/>
+                    }
+                    <EditableName selectedRecord={userQuery.data&&userQuery.data[0]}/>
+                    <EditablePhone selectedRecord={userQuery.data&&userQuery.data[0]}/>
+                    <EditableGender selectedRecord={userQuery.data&&userQuery.data[0]}/>
+                    <EditableCountry selectedRecord={userQuery.data&&userQuery.data[0]}/>
 
                 </Content>
             </Col>
@@ -137,11 +155,14 @@ interface EditableProp{
 
 function EditableName({selectedRecord}:EditableProp){
 
-    const [state, setState] = useState(selectedRecord)
+
+    // const [state, setState] = useState(selectedRecord)
   
     const [isEditMode, setIsEditMode] = useState(false)
   
     const {paseto} = useAuthContext()
+
+    const queryClient = useQueryClient()
   
     function toggleEdit(){
       setIsEditMode(!isEditMode)
@@ -163,6 +184,9 @@ function EditableName({selectedRecord}:EditableProp){
       mutationFn: mutationHandler,
       onSuccess:()=>{
         toggleEdit()
+      },
+      onSettled:()=>{
+        queryClient.invalidateQueries({queryKey:['user']})
       }
     })
   
@@ -173,9 +197,9 @@ function EditableName({selectedRecord}:EditableProp){
       }
       const payload = {
         key:'name',
-        value:updatedItem.fullName
+        value:updatedItem.name,
       }
-      setState(updatedRecord)
+      // setState(updatedRecord)
       mutation.mutate(payload)
     }
   
@@ -183,7 +207,7 @@ function EditableName({selectedRecord}:EditableProp){
   
     const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{state.name}</Text>
+        <Text>{selectedRecord.name}</Text>
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
   )
@@ -201,7 +225,7 @@ function EditableName({selectedRecord}:EditableProp){
                 name="name"
                 rules={[{ required: true, message: 'Please input a valid service name' }]}
             >
-                <Input  disabled={isEditing} placeholder="Flexable serviceItem" />
+                <Input allowClear disabled={isEditing} placeholder="Bill Jones" />
             </Form.Item>
           </Col>
           <Col span={4}>
@@ -240,10 +264,10 @@ function EditablePhone({selectedRecord}:EditableProp){
       setIsEditMode(!isEditMode)
     }
   
-   
+   const queryClient = useQueryClient()
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/user`,updatedItem,{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/users`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -256,13 +280,16 @@ function EditablePhone({selectedRecord}:EditableProp){
       mutationFn: mutationHandler,
       onSuccess:()=>{
         toggleEdit()
+      },
+      onSettled:()=>{
+        queryClient.invalidateQueries({queryKey:['user']})
       }
     })
   
     function onFinish(updatedItem:User){
       const payload = {
-        key:'mobile_number',
-        value: updatedItem.mobileNumber,
+        key:'contact_number',
+        value: updatedItem.contactNumber,
       }
 
       const updatedRecord = {
@@ -277,7 +304,7 @@ function EditablePhone({selectedRecord}:EditableProp){
   
     const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{state.mobileNumber}</Text>
+        <Text>{selectedRecord.contactNumber}</Text>
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
   )
@@ -292,7 +319,7 @@ function EditablePhone({selectedRecord}:EditableProp){
         <Row>
           <Col span={16} style={{height:'100%'}}>
             <Form.Item
-                name="mobileNumber"
+                name="contactNumber"
                 rules={[{ required: true, message: 'Please input a valid phone number' }]}
             >
                 <Input  disabled={isEditing} />
@@ -333,11 +360,13 @@ function EditableGender({selectedRecord}:EditableProp){
     function toggleEdit(){
       setIsEditMode(!isEditMode)
     }
+
+    const queryClient = useQueryClient()
   
    
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/user`,updatedItem,{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/users`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -350,6 +379,9 @@ function EditableGender({selectedRecord}:EditableProp){
       mutationFn: mutationHandler,
       onSuccess:()=>{
         toggleEdit()
+      },
+      onSettled:()=>{
+        queryClient.invalidateQueries({queryKey:['user']})
       }
     })
   
@@ -362,7 +394,7 @@ function EditableGender({selectedRecord}:EditableProp){
         ...selectedRecord,
         name: updatedItem.gender
       }
-      setState(updatedRecord)
+      // setState(updatedRecord)
       mutation.mutate(payload)
     }
   
@@ -370,7 +402,7 @@ function EditableGender({selectedRecord}:EditableProp){
   
     const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{state.gender}</Text>
+        <Text>{selectedRecord.gender}</Text>
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
   )
@@ -419,6 +451,7 @@ function EditableGender({selectedRecord}:EditableProp){
       </div>
     )
   }
+
 function EditableCountry({selectedRecord}:EditableProp){
 
     const [state, setState] = useState(selectedRecord)
@@ -431,10 +464,10 @@ function EditableCountry({selectedRecord}:EditableProp){
       setIsEditMode(!isEditMode)
     }
   
-   
+   const queryClient = useQueryClient()
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/user`,updatedItem,{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/users`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -447,6 +480,9 @@ function EditableCountry({selectedRecord}:EditableProp){
       mutationFn: mutationHandler,
       onSuccess:()=>{
         toggleEdit()
+      },
+      onSettled:()=>{
+        queryClient.invalidateQueries({queryKey:['user']})
       }
     })
   
@@ -459,7 +495,7 @@ function EditableCountry({selectedRecord}:EditableProp){
         ...selectedRecord,
         name: updatedItem.country
       }
-      setState(updatedRecord)
+      // setState(updatedRecord)
       mutation.mutate(payload)
     }
   
@@ -467,7 +503,7 @@ function EditableCountry({selectedRecord}:EditableProp){
   
     const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{state.country}</Text>
+        <Text>{selectedRecord.country}</Text>
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
   )
@@ -535,10 +571,11 @@ function EditableImage({selectedRecord}:EditableProp){
     setIsEditMode(!isEditMode)
   }
 
+  const queryClient = useQueryClient() 
  
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.put(`${process.env.NEXT_PUBLIC_NEW_API_URL}/users`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/users`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -551,6 +588,9 @@ function EditableImage({selectedRecord}:EditableProp){
     mutationFn: mutationHandler,
     onSuccess:()=>{
       toggleEdit()
+    },
+    onSettled:()=>{
+      queryClient.invalidateQueries({queryKey:['user']})
     }
   })
 
@@ -565,8 +605,8 @@ function EditableImage({selectedRecord}:EditableProp){
 
 
     const payload = {
-      ...selectedRecord,
-      profilePic: profilePicHash,
+      key:'profile_pic',
+      value: profilePicHash,
     }
     setUpdatedProfilePicHash(profilePicHash)
     mutation.mutate(payload)
@@ -642,6 +682,7 @@ const readOnly = (
     id:string,
     name: string,
     profilePic: string,
+    contactNumber: string,
     mobileNumber: string,
     city: string,
     country: string,
