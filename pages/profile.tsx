@@ -55,15 +55,15 @@ export default function Profile(){
 
     const [form] = Form.useForm();
 
-    useEffect(() => {
-        const profilePicHash = currentUser.profile_pic !== ''? currentUser.profilePic: placeholder;
-        setProfilePic(profilePicHash)
-        form.setFieldsValue({
-            fullName: currentUser.name,
-            phone: currentUser.mobile_number,
-            country: currentUser.country
-        })
-    }, []) 
+    // useEffect(() => {
+    //     const profilePicHash = currentUser.profile_pic !== ''? currentUser.profilePic: placeholder;
+    //     setProfilePic(profilePicHash)
+    //     form.setFieldsValue({
+    //         fullName: currentUser.name,
+    //         phone: currentUser.mobile_number,
+    //         country: currentUser.country
+    //     })
+    // }, [])  
 
     useEffect(()=>{
         setTimeout(()=>{
