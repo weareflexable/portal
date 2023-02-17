@@ -1,5 +1,5 @@
 import React,{useState} from 'react';
-import {Card,Form, Input,InputNumber, DatePicker,Upload,Button,notification, Space, Alert, Typography, TimePicker, Select, Row, Col, Steps, Radio} from 'antd';
+import {Card,Form, Input,InputNumber, Image, DatePicker,Upload,Button,notification, Space, Alert, Typography, TimePicker, Select, Row, Col, Steps, Radio} from 'antd';
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
 const {Text,Title} = Typography;
@@ -121,7 +121,7 @@ function BasicForm({nextStep}:BasicInfoProps){
                 ticketsPerDay: String(formData.ticketsPerDay),
                 description:formData.description,
                 orgServiceId: currentService.id,
-                serviceItemTypeId: formData.serviceItemTypeId, // TODO: replace with form value,
+                serviceItemTypeId: formData.serviceItemTypeId, // TODO: Get this value from context,
                 logoImageHash: imageHash
             }
 
@@ -284,7 +284,7 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
           const updatedDate = {
               ...date,
               date: dayjs(date.date).format('MMM DD, YYYY'),
-              ticketsPerDay: String(date.ticketsPerDay),
+              ticketsPerDay: Number(date.ticketsPerDay),
               price: date.price*100
           }
           return updatedDate
@@ -452,3 +452,12 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
         </>
     )
 }
+
+
+
+
+const lineSkipImages = [
+    '/placeholder.png',
+    '/placeholder.png',
+    '/placeholder.png',
+]

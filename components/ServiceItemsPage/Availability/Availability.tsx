@@ -119,7 +119,6 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
 
 
     function onFinish(record:any){
-      console.log(record)
       const payload = {
         ...record,
         price: record.price*100,
@@ -129,7 +128,6 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
         date: dayjs.utc(record.date).format(),
       }
 
-      console.log(payload)
 
     //   setState(updatedRecord)
       editMutation.mutate(payload)
@@ -305,7 +303,7 @@ export function NewAvailability({selectedServiceItem}:NewAvailabilityProps){
             date: dayjs.utc(updatedItem.date).format(), // provide it in utc
             name: updatedItem.name,
             price: updatedItem.price*100,
-            ticketsPerDay: String(updatedItem.ticketsPerDay)
+            ticketsPerDay: Number(updatedItem.ticketsPerDay) 
         }
         
         // Combine previous availabilities with new (transformedItem) into a single array and pass
