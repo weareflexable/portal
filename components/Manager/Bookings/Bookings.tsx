@@ -197,7 +197,7 @@ export default function ManagerBookingsView(){
         }
       },
       {
-          title: 'CreatedAt',
+          title: 'Created On',
           dataIndex: 'createdAt',
           key: 'createdAt',
           render: (_,record)=>{
@@ -233,7 +233,14 @@ export default function ManagerBookingsView(){
                 </div>
 
                 </div>
-                <Table style={{width:'100%'}} key='dfadfe' loading={bookingsQuery.isLoading||bookingsQuery.isRefetching} columns={columns} onChange={handleChange} dataSource={data} />
+                <Table 
+                  style={{width:'100%'}} 
+                  key='dfadfe' 
+                  loading={bookingsQuery.isLoading||bookingsQuery.isRefetching} 
+                  columns={columns} 
+                  onChange={handleChange} 
+                  dataSource={data} 
+                  />
                 {
                   isDrawerOpen
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedServiceItem={selectedServiceItem}/>

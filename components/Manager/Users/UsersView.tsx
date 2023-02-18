@@ -30,8 +30,7 @@ export default function UsersView(){
     const router = useRouter()
     const {switchOrg} = useOrgs()
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-
-    const [pageNumber, setPageNumber] = useState(0)
+    const [pageNumber, setPageNumber] = useState<number|undefined>(0)
   
     // const isFilterEmpty = Object.keys(filteredInfo).length === 0;
 
@@ -53,55 +52,9 @@ export default function UsersView(){
    
     }
 
-    function nextPage(){
-      setPageNumber(pageNumber+1)
-    }
-
-    function prevPage(){
-      setPageNumber(pageNumber-1)
-    }
-
-    
-    function jumpToPage(pageNumber:number){
-      setPageNumber(pageNumber)
-    }
-
-   
-
-    async function changeServiceItemStatus({serviceItemId, statusNumber}:{serviceItemId:string, statusNumber: string}){
-        const res = await axios({
-            method:'patch',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,
-            data:{
-                key:'status',
-                value: statusNumber, // 0 means de-activated in db
-                serviceItemId: serviceItemId 
-            },
-            headers:{
-                "Authorization": paseto
-            }
-        })
-        return res; 
-    }
-
-    
-
-    const changeStatusMutation = useMutation(['data'],{
-        mutationFn: changeServiceItemStatus,
-        onSuccess:(data:any)=>{
-            queryClient.invalidateQueries({queryKey:['users']})
-        },
-        onError:()=>{
-            console.log('Error changing status')
-        }
-    })
-
-
-  
-
-
-    const bookingsQuery = useQuery({queryKey:['users'], queryFn:fetchUsers, enabled:paseto !== ''})
-    const data = bookingsQuery.data && bookingsQuery.data.data
+    const usersQuery = useQuery({queryKey:['users'], queryFn:fetchUsers, enabled:paseto !== ''})
+    const data = usersQuery.data && usersQuery.data.data
+    const totalLength = usersQuery.data && usersQuery.data.dataLength;
 
 
     console.log(data)
@@ -132,6 +85,12 @@ export default function UsersView(){
         }
       };
       
+      const handleChange: TableProps<User>['onChange'] = (data) => {
+        console.log(data.current)
+        //@ts-ignore
+        setPageNumber(data.current-1); // Subtracting 1 because pageSize param in url starts counting from 0
+      };
+    
   
     const columns: ColumnsType<User> = [
       {
@@ -202,7 +161,7 @@ export default function UsersView(){
       },
 
       {
-          title: 'CreatedAt',
+          title: 'Created On',
           dataIndex: 'createdAt',
           key: 'createdAt',
           render: (_,record)=>{
@@ -212,17 +171,6 @@ export default function UsersView(){
             )
         },
       },
-    //   {
-    //       title: 'UpdatedAt',
-    //       dataIndex: 'updatedAt',
-    //       key: 'updatedAt',
-    //       render: (_,record)=>{
-    //           const date = dayjs(record.updatedAt).format('MMM DD, YYYY')
-    //           return(
-    //         <Text>{date}</Text>
-    //         )
-    //     },
-    // },
 
     {
       dataIndex: 'actions', 
@@ -244,11 +192,22 @@ export default function UsersView(){
                     )}
                 </Radio.Group> */}
                 <div style={{width: "100%",display:'flex', marginTop:'2rem', justifyContent:'flex-end', alignItems:'center'}}>
-                  <Button type='link' loading={bookingsQuery.isRefetching} onClick={()=>bookingsQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                  <Button type='link' loading={usersQuery.isRefetching} onClick={()=>usersQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
                 </div>
 
                 </div>
-                <Table style={{width:'100%'}} key='dfadfe' loading={bookingsQuery.isLoading||bookingsQuery.isRefetching} columns={columns}  dataSource={data} />
+                <Table 
+                  style={{width:'100%'}} 
+                  key='dfadfe' 
+                  pagination={{
+                    total:totalLength,  
+                    showTotal:(total) => `Total ${total} items`,
+                  }} 
+                  onChange={handleChange}
+                  loading={usersQuery.isLoading||usersQuery.isRefetching} 
+                  columns={columns}  
+                  dataSource={data} 
+                  />
                 {
                   isDrawerOpen
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedUser={selectedUser}/>

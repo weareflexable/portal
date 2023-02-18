@@ -363,9 +363,9 @@ const{isLoading:isDeletingItem} = deleteData
 
 return( 
 <Drawer 
-  title="Service Details" 
+  title="Venue Details" 
   width={640} placement="right" 
-  extra={<Button size='large' onClick={()=>gotoServices(selectedRecord)}>Visit service</Button>}
+  extra={<Button size='large' onClick={()=>gotoServices(selectedRecord)}>Visit Venue</Button>}
   closable={true} 
   onClose={closeDrawerHandler} 
   open={isDrawerOpen}
@@ -380,7 +380,7 @@ return(
 
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
     <Title level={3}>Danger zone</Title>
-    <Button danger onClick={toggleDeleteModal} style={{width:'30%'}} type="link">De-activate service</Button>
+    <Button danger onClick={toggleDeleteModal} style={{width:'30%'}} type="link">Deactivate Venue</Button>
   </div>
 
   <DeleteRecordModal 

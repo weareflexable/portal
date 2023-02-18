@@ -440,7 +440,7 @@ export default function ManagerOrgsView(){
 
         return (
             <div>
-                <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+               { orgs && orgs.length === 0 ? null : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                 <Radio.Group defaultValue={currentStatus.id} buttonStyle="solid">
                     {orgStatus.map(status=>(
                         <Radio.Button key={status.id} onClick={()=>setCurrentStatus(status)} value={status.id}>{status.name}</Radio.Button>
@@ -450,15 +450,18 @@ export default function ManagerOrgsView(){
                 <Button type='link' loading={orgQuery.isRefetching} onClick={()=>orgQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
 
                 </div>
+                }
   
-                <Table 
+                { orgs && orgs.length === 0 
+                ?<EmptyState/>
+                :<Table 
                   style={{width:'100%'}} 
                   // rowKey={(record)=>record.id}  
                   loading={orgQuery.isLoading||orgQuery.isRefetching} 
                   columns={columns} 
                   onChange={handleChange} 
                   dataSource={orgs} 
-                />
+                />}
                 {
                   isDrawerOpen
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedOrg={selectedOrg}/>
@@ -561,11 +564,11 @@ return(
   <EditablePhone selectedOrg={selectedOrg}/>
   {/* <EditableZipCode selectedOrg={selectedOrg}/> */}
   <EditableLogoImage selectedOrg={selectedOrg}/>
-  <EditableCoverImage selectedOrg={selectedOrg}/>
+  {/* <EditableCoverImage selectedOrg={selectedOrg}/> */}
 
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
     <Title level={3}>Danger zone</Title>
-    <Button danger onClick={toggleDeleteModal} style={{width:'30%'}} type="link">De-activate organization</Button>
+    <Button danger onClick={toggleDeleteModal} style={{width:'30%'}} type="link">Deactivate organization</Button>
   </div>
 
   <DeleteRecordModal isDeletingItem={isDeletingItem} onCloseModal={toggleDeleteModal} onDeleteRecord={deleteServiceItem} isOpen={isDeleteModalOpen} selectedRecord={selectedOrg}/>
@@ -597,9 +600,9 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
 
   return(
     <Modal title="Are you absolutely sure?" footer={null} open={isOpen} onOk={()=>{}} onCancel={onCloseModal}>
-      <Alert style={{marginBottom:'.5rem'}} showIcon message="Bad things will happen if you don't read this!" type="warning" />
+      {/* <Alert style={{marginBottom:'.5rem'}} showIcon message="Bad things will happen if you don't read this!" type="warning" /> */}
       <Text >
-        {`This action cannot be undone. This will permanently delete the ${selectedRecord.name} and all other entities created under it like services and service items most importantly, all services and service items under this org will be removed from the marketplace `}
+        {`This action will remove ${selectedRecord.name} organization and all other venues and DATs associated with it. All venues of the organization will be removed from marketplace. The organization can be reactivated in the future`}
       </Text>
 
       <Form 
@@ -614,7 +617,7 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
         label={`Please type "${selectedRecord.name}" to confirm`}
         rules={[{ required: true, message: 'Please type correct service item name!' }]}
       >
-        <Input disabled={isDeletingItem} />
+        <Input size='large' disabled={isDeletingItem} />
       </Form.Item>
 
       <Form.Item

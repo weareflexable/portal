@@ -6,7 +6,7 @@ const {Text,Title} = Typography
 import { SearchOutlined, PlusOutlined } from '@ant-design/icons';
 import type { FilterConfirmProps } from 'antd/es/table/interface';
 import React, { useRef, useState } from 'react'
-import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form} from 'antd'
+import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Modal, notification, Empty} from 'antd'
 import { useRouter } from 'next/router'
 import Highlighter from 'react-highlight-words'
 import axios from 'axios';
@@ -436,7 +436,9 @@ export default function AdminOrgsView(){
 
         return (
             <div>
-                <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+                {orgs&&orgs.length === 0
+                ? null
+                :<div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                     <Radio.Group defaultValue={currentStatus.id} buttonStyle="solid">
                         {orgStatus.map(status=>(
                             <Radio.Button key={status.id} onClick={()=>setCurrentStatus(status)} value={status.id}>{status.name}</Radio.Button>
@@ -445,7 +447,18 @@ export default function AdminOrgsView(){
                     </Radio.Group>
                     <Button type='link' loading={orgQuery.isRefetching} onClick={()=>orgQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
                 </div>
-                <Table style={{width:'100%'}} key='dfadfe' loading={orgQuery.isLoading||orgQuery.isRefetching} columns={columns} onChange={handleChange} dataSource={orgs} />
+                }
+                
+                {orgs&&orgs.length === 0
+                ?<EmptyState/>
+                :<Table 
+                  style={{width:'100%'}} 
+                  key='dfadfe' 
+                  loading={orgQuery.isLoading||orgQuery.isRefetching} 
+                  columns={columns} 
+                  onChange={handleChange} 
+                  dataSource={orgs}
+                />}
                 {
                   isDrawerOpen && currentStatus.name === 'Approved'
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedOrg={selectedOrg}/>
@@ -468,6 +481,8 @@ function DetailDrawer({selectedOrg,isDrawerOpen,closeDrawer}:DrawerProps){
 const queryClient = useQueryClient()
 const router = useRouter()
 const {switchOrg} = useOrgContext()
+const {paseto} = useAuthContext()
+const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
 function closeDrawerHandler(){
   queryClient.invalidateQueries(['organizations'])
@@ -482,6 +497,53 @@ function gotoServices(org:NewOrg){
   router.push('/organizations/services/')
 }
 
+function toggleDeleteModal(){
+  setIsDeleteModalOpen(!isDeleteModalOpen)
+}
+
+function deleteServiceItem(){ 
+
+  // mutate record
+  deleteData.mutate(selectedOrg,{
+    onSuccess:()=>{
+      notification['success']({
+        message: 'Successfully deleted record!'
+    })  
+      toggleDeleteModal()
+      closeDrawerHandler()
+    },
+
+  onError:(err)=>{
+    console.log(err)
+    notification['error']({
+        message: 'Encountered an error while deleting record custom custom dates',
+      });
+    // leave modal open
+}
+  })
+}
+
+// const urlPrefix = currentUser.role == 1 ? 'manager': 'admin'
+
+const deleteDataHandler = async(record:NewOrg)=>{      
+  const {data} = await axios({
+    method:'patch',
+    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/org`,
+    data: {
+        //@ts-ignore
+        orgId:record.orgId,
+        key:'status',
+        value: '0'
+      },
+    headers:{
+          "Authorization": paseto
+  }})
+  return data
+}
+
+const deleteData = useMutation(deleteDataHandler)
+
+const{isLoading:isDeletingItem} = deleteData
 
 return( 
 <Drawer 
@@ -498,17 +560,88 @@ return(
   <EditablePhone selectedOrg={selectedOrg}/>
   <EditableZipCode selectedOrg={selectedOrg}/>
   <EditableLogoImage selectedOrg={selectedOrg}/>
-  <EditableCoverImage selectedOrg={selectedOrg}/>
+  {/* <EditableCoverImage selectedOrg={selectedOrg}/> */}
 
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
-    <Divider/>
-    <Button danger type="link">De-activate organization</Button>
-    <Divider/>
+    <Title level={3}>Danger zone</Title>
+    <Button danger onClick={toggleDeleteModal} style={{width:'30%'}} type="link">Deactivate organization</Button>
   </div>
+
+
+
+  <DeleteRecordModal isDeletingItem={isDeletingItem} onCloseModal={toggleDeleteModal} onDeleteRecord={deleteServiceItem} isOpen={isDeleteModalOpen} selectedRecord={selectedOrg}/>
 
 </Drawer>
 )
 }
+
+interface DeleteProp{
+  selectedRecord: NewOrg
+  isOpen: boolean
+  onCloseModal: ()=>void
+  onDeleteRecord: ()=>void
+  isDeletingItem: boolean
+}
+
+function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteRecord, onCloseModal}:DeleteProp){
+
+  function onFinish(){
+    // call mutate function to delete record
+    onDeleteRecord()
+  }
+
+  const [form] = Form.useForm()
+
+  return(
+    <Modal title="Are you absolutely sure?" footer={null} open={isOpen} onOk={()=>{}} onCancel={onCloseModal}>
+      {/* <Alert style={{marginBottom:'.5rem'}} showIcon message="Bad things will happen if you don't read this!" type="warning" /> */}
+      <Text >
+        {`This action will remove ${selectedRecord.name} organization and all other venues and DATs associated with it. All venues of the organization will be removed from marketplace. The organization can be reactivated in the future`}
+      </Text>
+
+      <Form 
+      form={form} 
+      style={{marginTop:'1rem'}}
+      name="deleteServiceItemForm" 
+      layout='vertical'
+      onFinish={onFinish}>
+      <Form.Item
+        name="name"
+        style={{marginBottom:'.6rem'}}
+        label={`Please type "${selectedRecord.name}" to confirm`}
+        rules={[{ required: true, message: 'Please type correct service item name!' }]}
+      >
+        <Input size='large' disabled={isDeletingItem} />
+      </Form.Item>
+
+      <Form.Item
+        style={{marginBottom:'0'}}
+        shouldUpdate
+       >
+          {() => (
+          <Button
+            style={{width:'100%'}}
+            danger
+            loading={isDeletingItem}
+            htmlType="submit"
+            disabled={
+              // !form.isFieldTouched('name') &&
+              form.getFieldValue('name') !== selectedRecord.name
+              // !!form.getFieldsError().filter(({ errors }) => errors.length).length
+            }
+          >
+           I understand the consequences, delete permanently
+          </Button>
+        )}
+      </Form.Item>
+
+    </Form>
+
+  </Modal>
+  )
+}
+
+
 
 
 interface EditableProp{
@@ -1224,7 +1357,7 @@ function EmptyState(){
   return(
     <div style={{border: '1px solid #e5e5e5', display:'flex', justifyContent:'center', alignItems:'center', padding: '2rem'}}>
       <div style={{maxWidth:'300px', display:'flex', flexDirection:'column', justifyContent:'center'}}>
-        <Title level={3}>Getting Started</Title>
+        <Title level={3}>Get Started</Title>
         <Text>Ready to get started listing your services on the Flexable Marketplace? The first step is to load in your organization’s details</Text>
         <Button size="large" shape="round" type="ghost" icon={<PlusOutlined />} style={{marginTop:'1rem'}}>Create New Organization</Button>
       </div>

@@ -266,7 +266,7 @@ export default function NewOrgForm(){
                             name="logoImageHash"
                             valuePropName="logoImageHash"
                             getValueFromEvent={extractLogoImage}
-                            extra={'Please upload a PNG or JPEG that is 512px x 512px'}
+                            extra={'Please upload a PNG or JPEG that is 1024px x 1024px'}
                             rules={[{ required: true, message: 'Please upload an image' }]}
                         >
                             
