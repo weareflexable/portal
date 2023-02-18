@@ -28,12 +28,11 @@ const PLACEHOLDER_IMAGE = '/placeholder.png'
 export default function NewOrgForm(){
 
 
-    // const menuItems = useServiceTypes()
+    const menuItems = useServiceTypes()
     const {paseto} = useAuthContext()
     const {currentOrg} = useOrgContext()
     const [form]=Form.useForm()
     const [fullAddress, setFullAddress] = useState({
-        state: '',
         country:'',
         city:''
     })
@@ -47,23 +46,24 @@ export default function NewOrgForm(){
     const extractFullAddress = (place:any)=>{
         const addressComponents = place.address_components 
             let addressObj = {
-                state:'',
+                // state:'',
                 country:'',
                 city:'',
+                zipCode:'',
             };
             addressComponents.forEach((address:any)=>{
                 const type = address.types[0]
                 if(type==='country') addressObj.country = address.long_name
-                if(type === 'locality') addressObj.state = address.short_name
+                // if(type === 'locality') addressObj.state = address.short_name
                 if(type === 'administrative_area_level_1') addressObj.city = address.short_name
+                if(type === 'postal_code') addressObj.zipCode = address.short_name
             })
 
             return addressObj
     }
 
-      
-    const { ref: antRef } = usePlacesWidget({
-        apiKey: `${process.env.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API}`, // move this key to env
+      const { ref: antRef } = usePlacesWidget({
+        apiKey: `${process.env.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API}`,
         options:{
             componentRestrictions:{country:'us'},
             types: ['address'],
@@ -71,15 +71,14 @@ export default function NewOrgForm(){
         },
         onPlaceSelected: (place) => {
             // console.log(antInputRef.current.input)
-            console.log(place)
             form.setFieldValue('address',place?.formatted_address)
             
             const fullAddress = extractFullAddress(place)
-            // add street address
             const addressWithStreet={
                 ...fullAddress,
                 street: place?.formatted_address
             }
+
             setFullAddress(addressWithStreet)
 
             //@ts-ignore
@@ -87,17 +86,18 @@ export default function NewOrgForm(){
 
         },
       });
+    
 
     const onFinish = async(formData:NewOrg)=>{
 
         const logoRes = await formData.logoImageHash
-        const coverImageRes = await formData.coverImageHash
+        // const coverImageRes = await formData.coverImageHash
 
         setIsHashingAssets(true)
         // @ts-ignore
         const logoHash = await asyncStore(logoRes[0].originFileObj)
         // @ts-ignore
-        const coverImageHash = await asyncStore(coverImageRes[0].originFileObj)
+        // const coverImageHash = await asyncStore(coverImageRes[0].originFileObj)
         setIsHashingAssets(false)
 
 
@@ -105,9 +105,9 @@ export default function NewOrgForm(){
             ...formData,
             ...fullAddress,
             logoImageHash: logoHash,
-            coverImageHash: coverImageHash,
+            coverImageHash: '',
+            // orgId:currentOrg.orgId,
         }
-        console.log(formObject)
         // remove address field since because we have extracted
 
         // @ts-ignore
@@ -117,6 +117,7 @@ export default function NewOrgForm(){
     }
 
         const extractLogoImage = async(e: any) => {
+            // e.preventDefault()
             console.log('Upload event:', e);
             if (Array.isArray(e)) {
             return e;
@@ -133,6 +134,7 @@ export default function NewOrgForm(){
       };
 
         const extractCoverImage = async(e: any) => {
+            // e.preventDefault()
             console.log('Upload event:', e);
             if (Array.isArray(e)) {
             return e;
@@ -180,14 +182,14 @@ export default function NewOrgForm(){
 
     return (
         <div style={{background:'#ffffff', minHeight:'100vh'}}>
-            <div style={{marginBottom:'3rem', padding: '1rem', borderBottom:'1px solid #e5e5e5',}}>
+            <div style={{marginBottom:'1rem', padding: '1rem', borderBottom:'1px solid #e5e5e5',}}>
                 <Row>
                     <Col offset={1}> 
                          <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
-                            <Button shape='round' style={{marginRight:'.3rem'}} type='link' onClick={()=>router.back()} icon={<ArrowLeftOutlined/>}/>
-                            <Title style={{margin:'0'}} level={3}>Create new organization</Title>
+                            <Button shape='round' style={{marginRight:'.2rem'}} type='link' onClick={()=>router.back()} icon={<ArrowLeftOutlined/>}/>
+                            <Title style={{margin:'0'}} level={3}>New Organization</Title>
                         </div>
-                    </Col> 
+                    </Col>
                 </Row>
             </div>
             <Row >
@@ -200,19 +202,13 @@ export default function NewOrgForm(){
                     onFinish={onFinish}
                     form={form}
                     >
+                    
                       {/* Organization info */}
-                    <div style={{marginBottom:'2rem', marginTop:'3rem'}}>
+                      <div style={{marginBottom:'2rem', marginTop:'3rem'}}>
                         <Title level={3}>Organization info</Title>
                         {/* <Text>All changes here will be reflected in the marketplace</Text> */}
                     </div>
                     <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}> 
-                    <Form.Item
-                        name="name"
-                        label="Name"
-                        rules={[{ required: true, message: 'Please input a valid service name' }]}
-                    >
-                        <Input size="large" placeholder="Flexable org" />
-                    </Form.Item>
 
 
                     <Form.Item
@@ -224,20 +220,29 @@ export default function NewOrgForm(){
                     </Form.Item>
 
                     <Form.Item
-                        name="phone"
+                        name="name"
+                        label="Name"
+                        rules={[{ required: true, message: 'Please input a valid service name' }]}
+                    >
+                        <Input size="large" placeholder="Flexable org" />
+                    </Form.Item>
+
+                    <Form.Item
+                        name="contactNumber"
                         label='Contact number'
                         // rules={[{ required: true, message: 'Please input a valid email!' }]}
                     >
-                        <Input size="large" placeholder="+23802323493" />
+                        <Input size="large" placeholder="+1 (315) 232-3493" />
                     </Form.Item>
 
                     <Form.Item 
                         name="address"
                         label='Address'
+                        // hasFeedback
                         rules={[{ required: true, message: 'Please input a valid address!' }]}
                     >
                         {/* <TextArea rows={3} placeholder='Apt. 235 30B NorthPointsettia Street, Syracuse'/> */}
-                        <Input ref={(c) => {
+                        <Input size="large" ref={(c) => {
                             // @ts-ignore
                             antInputRef.current = c;
                             // @ts-ignore
@@ -247,32 +252,29 @@ export default function NewOrgForm(){
                             />
                     </Form.Item>
 
-
-                    {/* <Form.Item
-                        name="zipCode"
-                        style={{width:'100px'}}
-                        label='Zip Code'
-                        rules={[{ required: true, message: 'Please input a valid code!' }]}
-                    >
-                        <Input size="large" placeholder="374739" />
-                    </Form.Item> */}
                     </div>
 
 
-                    <Divider orientation='left'>Asset upload</Divider>
-                    <Image alt='Organization logo' src={logoImage} style={{width:'150px',height:'150px', borderRadius:'50%', border:'1px solid #e5e5e5'}}/>
-                    <Form.Item
-                        name="logoImageHash"
-                        valuePropName="logoImageHash"
-                        getValueFromEvent={extractLogoImage}
-                        rules={[{ required: true, message: 'Please upload an image' }]}
-                    >
-                        
-                        <Upload name="logoImageHash" multiple={false} fileList={[]}  >
-                                <Button size='small' type='link'>Upload logo image</Button>
-                        </Upload>
-                    </Form.Item>
-
+                      {/* Assets */}
+                      <div style={{marginBottom:'2rem', marginTop:'3rem'}}>
+                        <Title level={3}>Image upload</Title>
+                        {/* <Text>All changes here will be reflected in the marketplace</Text> */}
+                    </div>
+                    {/* <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}>   */}
+                        <Image alt='Organization logo' src={logoImage} style={{width:'150px',height:'150px', borderRadius:'50%', border:'1px solid #e5e5e5'}}/>
+                        <Form.Item
+                            name="logoImageHash"
+                            valuePropName="logoImageHash"
+                            getValueFromEvent={extractLogoImage}
+                            extra={'Please upload a PNG or JPEG that is 512px x 512px'}
+                            rules={[{ required: true, message: 'Please upload an image' }]}
+                        >
+                            
+                            <Upload name="logoImageHash" multiple={false} fileList={[]}  >
+                                    <Button size='small' type='link'>Upload logo image</Button>
+                            </Upload>
+                        </Form.Item>
+{/* 
                     <Image alt='Organization cover image' src={coverImage} style={{width:'350px',height:'150px', objectFit:'cover', borderRadius:'4px', border:'2px dashed #dddddd'}}/>
                     <Form.Item
                         name="coverImageHash"
@@ -284,7 +286,8 @@ export default function NewOrgForm(){
                         <Upload name="coverImageHash" multiple={false} fileList={[]} >
                             <Button size='small' type='link'>Upload cover image</Button>
                         </Upload>
-                    </Form.Item>
+                    </Form.Item> */}
+                    {/* </div> */}
 
                     {/* onCancelFormCreation */}
                     <Form.Item style={{ marginTop:'4rem', width:'100%'}}>
