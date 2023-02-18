@@ -403,7 +403,7 @@ export default function AdminOrgsView(){
         key: 'contactNumber',
       },
       {
-          title: 'CreatedAt',
+          title: 'Created On',
           dataIndex: 'createdAt',
           key: 'createdAt',
           render: (_,record)=>{
@@ -413,18 +413,6 @@ export default function AdminOrgsView(){
             )
         },
     },
-    //   {
-    //       title: 'UpdatedAt',
-    //       dataIndex: 'updatedAt',
-    //       key: 'updatedAt',
-    //       render: (_,record)=>{
-    //         //@ts-ignore
-    //           const date = dayjs().from(dayjs(record.updatedAt),true)
-    //           return(
-    //         <Text>{date} ago</Text>
-    //         )
-    //     },
-    // },
     {
         ...getTableActions()
     }
@@ -1198,7 +1186,7 @@ const orgStatus = [
   },
   {
       id: '0',
-      name: 'De-activated'
+      name: 'Deactivated'
   },
 ]
 

@@ -48,8 +48,8 @@ const Organizations: NextPage = () => {
             <Row style={{background: '#f4f4f4',height:'100%',minHeight:'100vh'}}>
                 <Col offset={1} span={22}>
                     <div style={{width:'100%', display:'flex', marginTop:'2rem', marginBottom:'2rem', justifyContent:'space-between', alignItems:'center'}}>
-                        <Title style={{margin:'0'}} level={2}>My organizations</Title>
-                        <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/new')}>New organization</Button>
+                        <Title style={{margin:'0'}} level={2}>My Organizations</Title>
+                        <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/new')}>New Organization</Button>
                     </div>
                     <Content 
                         style={{

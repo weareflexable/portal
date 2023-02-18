@@ -404,7 +404,7 @@ export default function ManagerOrgsView(){
         key: 'contactNumber',
       },
       {
-          title: 'CreatedAt',
+          title: 'Created On',
           dataIndex: 'createdAt',
           key: 'createdAt',
           render: (_,record)=>{
@@ -660,7 +660,7 @@ const orgStatus = [
   },
   {
       id: '0',
-      name: 'De-activated'
+      name: 'Deactivated'
   },
 ]
 
