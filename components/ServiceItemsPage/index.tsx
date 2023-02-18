@@ -414,9 +414,9 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
 
   return(
     <Modal title="Are you absolutely sure?" footer={null} open={isOpen} onOk={()=>{}} onCancel={onCloseModal}>
-      <Alert style={{marginBottom:'.5rem'}} showIcon message="Bad things will happen if you don't read this!" type="warning" />
+      {/* <Alert style={{marginBottom:'.5rem'}} showIcon message="Bad things will happen if you don't read this!" type="warning" /> */}
       <Text >
-        {`This action cannot be undone. This will permanently delete the ${selectedRecord.name} service item, custom dates, prices, descriptions, coverImages, ticketsPerDay and remove from listing on marketplace 
+        {`This action will remove the listing of from marketplace and will delete any custom dates, quantities and prices attached to it 
         `}
       </Text>
 
@@ -430,9 +430,9 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
         name="name"
         style={{marginBottom:'.6rem'}}
         label={`Please type "${selectedRecord.name}" to confirm`}
-        rules={[{ required: true, message: 'Please type correct service item name!' }]}
+        rules={[{ required: true, message: 'Please type correct service name' }]}
       >
-        <Input disabled={isDeletingItem} />
+        <Input size='large' disabled={isDeletingItem} />
       </Form.Item>
 
       <Form.Item
@@ -442,6 +442,7 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
           {() => (
           <Button
             style={{width:'100%'}}
+            size='large'
             danger
             loading={isDeletingItem}
             htmlType="submit"
@@ -451,7 +452,7 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
               // !!form.getFieldsError().filter(({ errors }) => errors.length).length
             }
           >
-           I understand the consequences, delete permanently
+           I understand the consequences, remove from marketplace
           </Button>
         )}
       </Form.Item>
@@ -490,7 +491,7 @@ function EmptyState(){
     <div style={{border: '1px solid #d6d6d6', marginTop:'2rem', borderRadius:'4px', height:'50vh', display:'flex', justifyContent:'center', alignItems:'center', padding: '2rem'}}>
       <div style={{maxWidth:'300px', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
         <Title level={3}>Get Started</Title> 
-        <Text style={{textAlign:'center'}}>Ready to get started listing your services on the Flexable Marketplace? The first step is to load in your organization’s details</Text>
+        <Text style={{textAlign:'center'}}>Ready to get started listing your services on the Flexable Marketplace?</Text>
         <Button size="large" type="primary" shape="round" icon={<PlusOutlined />} onClick={()=>router.push('/organizations/services/serviceItems/new')} style={{marginTop:'1rem'}}>Create New Service</Button>
       </div>
     </div>
