@@ -374,9 +374,9 @@ return(
   <EditableName selectedRecord={selectedRecord}/>
   <EditableAddress selectedRecord={selectedRecord}/>
   <EditablePhone selectedRecord={selectedRecord}/>
-  <EditableCurrency selectedRecord={selectedRecord}/>
+  {/* <EditableCurrency selectedRecord={selectedRecord}/> */}
   <EditableLogoImage selectedRecord={selectedRecord}/>
-  <EditableCoverImage selectedRecord={selectedRecord}/>
+  {/* <EditableCoverImage selectedRecord={selectedRecord}/> */}
 
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
     <Title level={3}>Danger zone</Title>
@@ -414,9 +414,9 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
 
   return(
     <Modal title="Are you absolutely sure?" footer={null} open={isOpen} onOk={()=>{}} onCancel={onCloseModal}>
-      <Alert style={{marginBottom:'.5rem'}} showIcon message="Bad things will happen if you don't read this!" type="warning" />
+      {/* <Alert style={{marginBottom:'.5rem'}} showIcon message="Bad things will happen if you don't read this!" type="warning" /> */}
       <Text >
-        {`This action cannot be undone. This will permanently delete the ${selectedRecord.name} service item, staff, bookings, and remove from listing on marketplace 
+        {`This action will remove this venue’s listing from the marketplace and will deactivate any DATs that are attached to it. Venue can be reactivated in the future 
         `}
       </Text>
 
@@ -432,7 +432,7 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
         label={`Please type "${selectedRecord.name}" to confirm`}
         rules={[{ required: true, message: 'Please type correct service item name!' }]}
       >
-        <Input disabled={isDeletingItem} />
+        <Input size="large" disabled={isDeletingItem} />
       </Form.Item>
 
       <Form.Item
@@ -442,6 +442,7 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
           {() => (
           <Button
             style={{width:'100%'}}
+            size='large'
             danger
             loading={isDeletingItem}
             htmlType="submit"

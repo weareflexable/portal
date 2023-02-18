@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import {Form, Row, Col, Tooltip, Input,Upload,Button,notification, Typography, Space, Select, Radio, Divider, TimePicker} from 'antd';
+import {Form, Row, Col, Image, Tooltip, Input,Upload,Button,notification, Typography, Space, Select, Radio, Divider, TimePicker} from 'antd';
 import {UploadOutlined, ArrowLeftOutlined, InfoCircleOutlined,  InboxOutlined} from '@ant-design/icons'
 const {Title,Text} = Typography
 const {TextArea} = Input
@@ -17,6 +17,15 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useAuthContext } from "../../../context/AuthContext";
 
+const getBase64 = (file: any): Promise<string> => 
+new Promise((resolve, reject) => {
+const reader = new FileReader();
+reader.readAsDataURL(file);
+reader.onload = () => resolve(reader.result as string);
+reader.onerror = (error) => reject(error);
+});
+
+const PLACEHOLDER_IMAGE = '/placeholder.png'
 
 export default function NewService(){
 
@@ -35,6 +44,7 @@ export default function NewService(){
         city:''
     })
     const [isHashingAssets, setIsHashingAssets] = useState(false)
+    const [logoImage, setLogoImage] = useState(PLACEHOLDER_IMAGE)
 
     const router = useRouter()
     const antInputRef = useRef();
@@ -91,7 +101,7 @@ export default function NewService(){
         //@ts-ignore
         const imageHash = await asyncStore(formData.logoImageHash[0].originFileObj)
         //@ts-ignore
-        const coverImageHash = await asyncStore(formData.coverImageHash[0].originFileObj)
+        // const coverImageHash = await asyncStore(formData.coverImageHash[0].originFileObj)
         setIsHashingAssets(false)
 
 
@@ -99,9 +109,10 @@ export default function NewService(){
             ...formData,
             ...fullAddress,
             logoImageHash: imageHash,
-            coverImageHash: coverImageHash,
+            coverImageHash: "coverimagehash",
             latitude:String(fullAddress.latitude),
             longitude:String(fullAddress.longitude),
+            currency: 'USD',
             //@ts-ignore
             orgId:currentOrg.orgId,
             timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // get user timezone
@@ -121,13 +132,22 @@ export default function NewService(){
     }
 
 
-    const normFile = (e: any) => {
+    const extractLogoImage = async(e: any) => {
+        // e.preventDefault()
         console.log('Upload event:', e);
         if (Array.isArray(e)) {
-          return e;
-        } 
-        return e?.fileList;
-      };
+        return e;
+        }
+
+        console.log(e)
+        const imageBlob = e.fileList[0].originFileObj
+        console.log("blob",imageBlob)
+        const src = await getBase64(imageBlob)
+        setLogoImage(src)
+   
+
+    return e?.fileList;
+  };
 
       const createDataHandler = async(newItem:any)=>{
         const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/services`, newItem,{
@@ -163,7 +183,7 @@ export default function NewService(){
                     <Col offset={1}> 
                          <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
                             <Button shape='round' style={{marginRight:'.3rem'}} type='link' onClick={()=>router.back()} icon={<ArrowLeftOutlined/>}/>
-                            <Title style={{margin:'0'}} level={3}>Create new service</Title>
+                            <Title style={{margin:'0'}} level={3}>New Venue</Title>
                         </div>
                     </Col>
                 </Row>
@@ -181,7 +201,7 @@ export default function NewService(){
 
                 {/* Service type */}
                 <div style={{marginBottom:'0'}}>
-                    <Title level={3}>Select a service type</Title>
+                    <Title level={3}>Select a venue type</Title>
                     {/* <Text>All changes here will be reflected in the marketplace</Text> */}
                 </div>
                 <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}> 
@@ -204,7 +224,7 @@ export default function NewService(){
 
                  {/* Service info */}
                 <div style={{marginBottom:'2rem', marginTop:'3rem'}}>
-                    <Title level={3}>Service info</Title>
+                    <Title level={3}>Venue info</Title>
                     <Text>All changes here will be reflected in the marketplace</Text>
                 </div>
                 <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}> 
@@ -241,7 +261,7 @@ export default function NewService(){
                     </Form.Item>
 
                     <Form.Item
-                        name="phone"
+                        name="contactNumber"
                         label="Contact phone"
                         rules={[{ required: true, message: 'Please input a valid phone number' }]}
                     >
@@ -276,23 +296,20 @@ export default function NewService(){
                         <Text >Your logo and artwork will be visible on marketplace</Text>
                     </div>
 
-                    <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}> 
+                    {/* <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}>  */}
+
+                        <Image alt='Organization logo' src={logoImage} style={{width:'150px',height:'150px', borderRadius:'50%', border:'1px solid #e5e5e5'}}/>
                         <Form.Item
                             name="logoImageHash"
-                            label="Logo"
                             valuePropName="logoImageHash"
-                            extra={'Please upload PNG or JPEG file with file size of 1024px x 1024px'}
-                            getValueFromEvent={normFile}
+                            getValueFromEvent={extractLogoImage}
+                            extra={'Please upload a PNG or JPEG that is 1024px x 1024px'}
                             rules={[{ required: true, message: 'Please upload an image' }]}
                         >
-                            <Upload.Dragger style={{display:'flex',alignItems:'center'}} name="logoImageHash" action="">
-                                .
-                                {/* <p className="ant-upload-drag-icon">
-                                    <InboxOutlined />
-                                </p> */}
-                                <p style={{margin:'0'}} className="ant-upload-text">Click or drag file to this area to upload logo image</p>
-                                {/* <p style={{marginTop:'0'}} className="ant-upload-hint">Only upload single file</p> */}
-                            </Upload.Dragger>
+                            
+                            <Upload name="logoImageHash" multiple={false} fileList={[]}  >
+                                    <Button size='small' type='link'>Upload logo image</Button>
+                            </Upload>
                         </Form.Item>
 
                         {/* <Form.Item
@@ -314,7 +331,7 @@ export default function NewService(){
                             </Upload.Dragger>
                         </Form.Item> */}
 
-                    </div>
+                    {/* </div> */}
 
                     {/* onCancelFormCreation */}
                     <Form.Item style={{marginTop:'4rem'}}>
@@ -324,7 +341,7 @@ export default function NewService(){
                             </Button>
 
                             <Button shape="round" type="primary" size="large" loading={isHashingAssets || isCreatingData}  htmlType="submit" >
-                                Launch service
+                                Launch Venue
                             </Button>
                         </Space>     
                     </Form.Item>

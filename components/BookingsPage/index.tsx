@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useOrgs from "../../hooks/useOrgs";
-const {Text} = Typography
+const {Text, Title} = Typography
 import React, { useRef, useState } from 'react'
 import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge} from 'antd'
 import { useRouter } from 'next/router'
@@ -94,7 +94,7 @@ export default function BookingsView(){
   
     const columns: ColumnsType<Order> = [
       {
-        title: 'Name',
+        title: 'Service',
         dataIndex: 'name',
         key: 'name',
         render:(_,record)=>{
@@ -107,6 +107,26 @@ export default function BookingsView(){
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{serviceItemName}</Text>  
                         <Text type="secondary">{serviceName}</Text>  
+                    </div>
+                </div>
+            )
+        },
+      },
+      {
+        title: 'Customer',
+        // dataIndex: 'customer',
+        key: 'customer',
+        render:(_,record)=>{
+          const user = record.user[0]
+          const email = user.email
+          const name = user.name
+          const logoImageHash = user.logoImageHash
+            return(
+                <div style={{display:'flex',alignItems:'center'}}>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${logoImageHash}`}/>
+                    <div style={{display:'flex',flexDirection:'column'}}>
+                        <Text>{name}</Text>  
+                        <Text type="secondary">{email}</Text>  
                     </div>
                 </div>
             )
@@ -186,7 +206,7 @@ export default function BookingsView(){
         }
       },
       {
-          title: 'CreatedAt',
+          title: 'Created On',
           dataIndex: 'createdAt',
           key: 'createdAt',
           render: (_,record)=>{
@@ -196,47 +216,34 @@ export default function BookingsView(){
             )
         },
     },
-
-    // { 
-    //   dataIndex: 'actions', 
-    //   key: 'actions',
-    //   render:(_,record)=>{
-    //     const items = getTableRecordActions()
-    //     return (<Dropdown.Button menu={{ items , onClick: (e)=>onMenuClick(e,record) }}>Actions</Dropdown.Button>)
-    //   }
-    // }
     ];
 
         return (
             <div>
-                <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
-                {/* <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
-                    {serviceItemsFilters.map(filter=>(
-                        <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
-                     )
-                    )}
-                </Radio.Group> */}
-                <div style={{width: "20%",display:'flex', marginTop:'2rem', justifyContent:'space-between', alignItems:'center'}}>
-                  <Button type='link' loading={bookingsQuery.isRefetching} onClick={()=>bookingsQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+               { data && data.length === 0
+               ?null 
+               :<div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+                  <div style={{width: "20%",display:'flex', marginTop:'2rem', justifyContent:'space-between', alignItems:'center'}}>
+                    <Button type='link' loading={bookingsQuery.isRefetching} onClick={()=>bookingsQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                  </div>
                 </div>
-
-                </div>
-                <Table 
-                style={{width:'100%'}} 
-                key='dfadfe' 
-                loading={bookingsQuery.isLoading||bookingsQuery.isRefetching} 
-                columns={columns} 
-                pagination={{
-                  total:totalLength,  
-                  showTotal:(total) => `Total ${total} items`,
-                }} 
-                onChange={handleChange} 
-                dataSource={data} />
-                {
-                  isDrawerOpen
-                  ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedServiceItem={selectedServiceItem}/>
-                  :null
                 }
+
+               { 
+               data && data.length === 0
+               ?<EmptyState/>
+               :<Table 
+                  style={{width:'100%'}} 
+                  key='dfadfe' 
+                  loading={bookingsQuery.isLoading||bookingsQuery.isRefetching} 
+                  columns={columns} 
+                  pagination={{
+                    total:totalLength,  
+                    showTotal:(total) => `Total ${total} items`,
+                  }} 
+                  onChange={handleChange} 
+                  dataSource={data}
+                 />}
             </div>
     )
 
@@ -244,36 +251,49 @@ export default function BookingsView(){
 
 }
 
-interface DrawerProps{
-  selectedServiceItem: ServiceItem,
-  isDrawerOpen: boolean,
-  closeDrawer: (value:boolean)=>void
-}
-function DetailDrawer({selectedServiceItem,isDrawerOpen,closeDrawer}:DrawerProps){
+// interface DrawerProps{
+//   selectedServiceItem: ServiceItem,
+//   isDrawerOpen: boolean,
+//   closeDrawer: (value:boolean)=>void
+// }
+// function DetailDrawer({selectedServiceItem,isDrawerOpen,closeDrawer}:DrawerProps){
 
-const queryClient = useQueryClient()
+// const queryClient = useQueryClient()
 
-function closeDrawerHandler(){
-  queryClient.invalidateQueries(['serviceItems'])
-  closeDrawer(!isDrawerOpen)
-}
+// function closeDrawerHandler(){
+//   queryClient.invalidateQueries(['serviceItems'])
+//   closeDrawer(!isDrawerOpen)
+// }
 
-return( 
-<Drawer title="Organization Details" width={640} placement="right" closable={true} onClose={closeDrawerHandler} open={isDrawerOpen}>
+// return( 
+// <Drawer title="Organization Details" width={640} placement="right" closable={true} onClose={closeDrawerHandler} open={isDrawerOpen}>
   
-  {/* <EditableName selectedServiceItem={selectedServiceItem}/> */}
-  {/* <EditableDescription selectedServiceItem={selectedServiceItem}/> */}
+//   {/* <EditableName selectedServiceItem={selectedServiceItem}/> */}
+//   {/* <EditableDescription selectedServiceItem={selectedServiceItem}/> */}
 
-  <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
-    <Divider/>
-    <Button danger type="link">De-activate service-item</Button>
-    <Divider/>
-  </div>
+//   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
+//     <Divider/>
+//     <Button danger type="link">Deactivate service-item</Button>
+//     <Divider/>
+//   </div>
 
-</Drawer>
-)
+// </Drawer>
+// )
+// }
+
+
+
+function EmptyState(){
+  return(
+    <div style={{border: '1px solid #e5e5e5', display:'flex', justifyContent:'center', alignItems:'center', padding: '2rem'}}>
+      <div style={{maxWidth:'300px', display:'flex', flexDirection:'column', justifyContent:'center'}}>
+        <Title level={3}>Oops!</Title>
+        <Text>There are currently no bookings for this service</Text>
+        {/* <Button size="large" shape="round" type="ghost" icon={<PlusOutlined />} style={{marginTop:'1rem'}}>Create New Organization</Button> */}
+      </div>
+    </div>
+  )
 }
-
 
 
 

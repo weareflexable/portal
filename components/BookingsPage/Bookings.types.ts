@@ -6,6 +6,7 @@ export interface Order {
     serviceItemDetails: any[],
     serviceDetails: any[],
     quantity: number,
+    user: any[],
     orderStatus: string,
     ticketStatus: string,
     unitPrice:number,

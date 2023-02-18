@@ -260,7 +260,7 @@ export default function NewOrgForm(){
                         <Title level={3}>Image upload</Title>
                         {/* <Text>All changes here will be reflected in the marketplace</Text> */}
                     </div>
-                    {/* <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}>   */}
+
                         <Image alt='Organization logo' src={logoImage} style={{width:'150px',height:'150px', borderRadius:'50%', border:'1px solid #e5e5e5'}}/>
                         <Form.Item
                             name="logoImageHash"

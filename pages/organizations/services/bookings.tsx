@@ -11,11 +11,11 @@ export default function Bookings(){
 
         <AppLayout>
             <Row>
-                <Col offset={1} span={21}>
-                    <Title style={{marginLeft: '1em', marginTop:'1em'}} level={3}>Bookings</Title>
+                <Col offset={1} span={22}>
+                    <Title style={{marginTop:'1em'}} level={3}>Bookings</Title>
                     <Content
                         style={{
-                        margin:'1em',
+                        // margin:'1em',
                         width:`98%`,
                         maxWidth:'100%',
                         // height: '100%',

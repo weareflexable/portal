@@ -314,7 +314,9 @@ interface EditableProp{
       mutationFn: mutationHandler,
       onSuccess:()=>{
         toggleEdit()
-        // queryClient.invalidateQueries(['services'])
+      },
+      onSettled:()=>{
+        queryClient.invalidateQueries(['services'])
       }
     })
   
