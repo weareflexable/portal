@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { NewOrg } from "../../../../types/OrganisationTypes";
 import useOrgs from "../../../../hooks/useOrgs";
 const {Text,Title} = Typography
-import { SearchOutlined } from '@ant-design/icons';
+import { SearchOutlined, PlusOutlined } from '@ant-design/icons';
 import type { FilterConfirmProps } from 'antd/es/table/interface';
 import React, { useRef, useState } from 'react'
 import {Typography,Button,Avatar, Alert, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Modal, notification} from 'antd'
@@ -450,6 +450,7 @@ export default function ManagerOrgsView(){
                 <Button type='link' loading={orgQuery.isRefetching} onClick={()=>orgQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
 
                 </div>
+  
                 <Table 
                   style={{width:'100%'}} 
                   // rowKey={(record)=>record.id}  
@@ -708,3 +709,17 @@ const rejectedOrgsActions = [
     },
 
 ]
+
+
+function EmptyState(){
+  const router = useRouter()
+  return(
+    <div style={{border: '1px solid #e5e5e5', display:'flex', justifyContent:'center', alignItems:'center', padding: '2rem'}}>
+      <div style={{maxWidth:'300px', display:'flex', flexDirection:'column', justifyContent:'center'}}>
+        <Title level={3}>Getting Started</Title>
+        <Text>Ready to get started listing your services on the Flexable Marketplace? The first step is to load in your organization’s details</Text>
+        <Button size="large" shape="round" type="ghost" icon={<PlusOutlined />} onClick={()=>router.push('/organizations/new')} style={{marginTop:'1rem'}}>Create New Organization</Button>
+      </div>
+    </div>
+  )
+}

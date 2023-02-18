@@ -53,15 +53,12 @@ const Organizations: NextPage = () => {
                     </div>
                     <Content 
                         style={{
-                        // padding: '1em',
-                        // margin:'1em',
-                        // background:'white' ,
                         width:`98%`,
                         maxWidth:'100%', 
                         }}
                     > 
-                                <DynamicOrgs/>
-                                </Content>
+                        <DynamicOrgs/>
+                    </Content>
                 </Col>
             </Row>
 

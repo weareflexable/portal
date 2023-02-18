@@ -216,7 +216,7 @@ export default function ServiceItemsView(){
 
         return (
             <div>
-                <div style={{marginBottom:'2em', marginTop:'.5rem', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+               { servicesData && servicesData.length === 0 ? null : <div style={{marginBottom:'2em', marginTop:'.5rem', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                { isManager? <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
                     {serviceItemsFilters.map(filter=>(
                         <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
@@ -229,8 +229,11 @@ export default function ServiceItemsView(){
                   <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/services/serviceItems/new')}>New Service</Button>
                 </div>
 
-                </div>
-                <Table 
+                </div>}
+                {
+                  servicesData && servicesData.length === 0 
+                  ?<EmptyState/>
+                  :<Table 
                   style={{width:'100%'}} 
                   key='dfadfe' 
                   pagination={{
@@ -242,6 +245,8 @@ export default function ServiceItemsView(){
                   onChange={handleChange} 
                   dataSource={servicesData} 
                 />
+                }
+                
                 {
                   isDrawerOpen
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedRecord={selectedRecord}/>
@@ -476,3 +481,18 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
 //     price: '123'
 //   },
 // ]
+
+
+
+function EmptyState(){
+  const router = useRouter()
+  return(
+    <div style={{border: '1px solid #d6d6d6', marginTop:'2rem', borderRadius:'4px', height:'50vh', display:'flex', justifyContent:'center', alignItems:'center', padding: '2rem'}}>
+      <div style={{maxWidth:'300px', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
+        <Title level={3}>Get Started</Title> 
+        <Text style={{textAlign:'center'}}>Ready to get started listing your services on the Flexable Marketplace? The first step is to load in your organization’s details</Text>
+        <Button size="large" type="primary" shape="round" icon={<PlusOutlined />} onClick={()=>router.push('/organizations/services/serviceItems/new')} style={{marginTop:'1rem'}}>Create New Service</Button>
+      </div>
+    </div>
+  )
+}

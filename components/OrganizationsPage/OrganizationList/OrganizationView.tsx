@@ -1,8 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { NewOrg } from "../../../types/OrganisationTypes";
 import useOrgs from "../../../hooks/useOrgs";
-const {Text} = Typography
-import { SearchOutlined } from '@ant-design/icons';
+const {Text,Title} = Typography
+
+import { SearchOutlined, PlusOutlined } from '@ant-design/icons';
 import type { FilterConfirmProps } from 'antd/es/table/interface';
 import React, { useRef, useState } from 'react'
 import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form} from 'antd'
@@ -1218,3 +1219,15 @@ const rejectedOrgsActions = [
     },
 
 ]
+
+function EmptyState(){
+  return(
+    <div style={{border: '1px solid #e5e5e5', display:'flex', justifyContent:'center', alignItems:'center', padding: '2rem'}}>
+      <div style={{maxWidth:'300px', display:'flex', flexDirection:'column', justifyContent:'center'}}>
+        <Title level={3}>Getting Started</Title>
+        <Text>Ready to get started listing your services on the Flexable Marketplace? The first step is to load in your organization’s details</Text>
+        <Button size="large" shape="round" type="ghost" icon={<PlusOutlined />} style={{marginTop:'1rem'}}>Create New Organization</Button>
+      </div>
+    </div>
+  )
+}

@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 const {Text,Title} = Typography
 import React, { useRef, useState } from 'react'
-import {Typography,Button,Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Modal, Alert, notification} from 'antd'
+import {Typography,Button,Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Modal, Alert, notification, Empty} from 'antd'
 import axios from 'axios';
 import {MoreOutlined,ReloadOutlined} from '@ant-design/icons'
 import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
@@ -13,6 +13,7 @@ import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { Staff } from "../../types/Staff";
 import useUrlPrefix from "../../hooks/useUrlPrefix";
+import { useRouter } from "next/router";
 const {TextArea} = Input
 
 
@@ -188,27 +189,40 @@ export default function StaffView(){
 
         return (
             <div>
-                <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
-                <Radio.Group defaultValue={currentFilter.id} style={{width:'100%'}} buttonStyle="solid">
-                    {staffFilter.map(filter=>(
-                        <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
-                     )
-                    )}
-                </Radio.Group>
-                <div style={{width: "100%",display:'flex', justifyContent:'flex-end', alignItems:'center'}}>
-                  <Button type='link' loading={staffQuery.isRefetching} onClick={()=>staffQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
-                  <Button
-                    type="primary"
-                    onClick={() => {
-                      setShowForm(true)
-                    }}
-                   >
-                    Add new staff
-                  </Button>
-                </div>
+                {data && data.length === 0 ? null : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+                  <Radio.Group defaultValue={currentFilter.id} style={{width:'100%'}} buttonStyle="solid">
+                      {staffFilter.map(filter=>(
+                          <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
+                      )
+                      )}
+                  </Radio.Group>
+                  <div style={{width: "100%",display:'flex', justifyContent:'flex-end', alignItems:'center'}}>
+                    <Button type='link' loading={staffQuery.isRefetching} onClick={()=>staffQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                    <Button
+                      type="primary"
+                      icon={<PlusOutlined/>}
+                      onClick={() => {
+                        setShowForm(true)
+                      }}
+                    >
+                      New Staff
+                    </Button>
+                  </div>
+                </div>}
 
-                </div>
-                <Table style={{width:'100%'}} key='dfadfe' loading={staffQuery.isLoading||staffQuery.isRefetching} columns={columns}  dataSource={data} />
+                {
+                  data && data.length === 0 
+                  ? <EmptyState onOpenForm={()=>setShowForm(true)}/>
+                  : <Table 
+                      style={{width:'100%'}} 
+                      key='dfadfe' 
+                      loading={staffQuery.isLoading||staffQuery.isRefetching} 
+                      columns={columns}  
+                      dataSource={data} 
+                    />
+                }
+                
+
                 {
                   isDrawerOpen
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedStaff={selectedStaff}/>
@@ -623,7 +637,7 @@ const staffFilter = [
   },
   {
     id:'0',
-    name:'Pending registration'
+    name:'Pending'
   }
 ]
 
@@ -646,3 +660,20 @@ const staffFilter = [
 //     },
    
 // ]
+
+interface EmptyProps{
+  onOpenForm: ()=>void
+}
+
+function EmptyState({onOpenForm}:EmptyProps){
+
+  return(
+    <div style={{border: '1px solid #d6d6d6', marginTop:'2rem', borderRadius:'4px', height:'50vh', display:'flex', justifyContent:'center', alignItems:'center', padding: '2rem'}}>
+      <div style={{maxWidth:'350px', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
+        <Title level={3}>Get Started</Title> 
+        <Text style={{textAlign:'center'}}>Ready to get started listing your services on the Flexable Marketplace? The first step is to load in your organization’s details</Text>
+        <Button size="large" type="primary" shape="round" icon={<PlusOutlined />} onClick={onOpenForm} style={{marginTop:'1rem'}}>Add your first staff</Button>
+      </div>
+    </div>
+  )
+}

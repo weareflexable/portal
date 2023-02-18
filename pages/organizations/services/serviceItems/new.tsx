@@ -295,7 +295,7 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
 
     async function onFinish(formData:any){
         console.log('form data',formData.availability)
-        const transformedDates = convertDates(formData.availability)
+        const transformedDates = convertDates(formData.customDates)
         const reqPayload = {
             serviceItemId: serviceItemId,
             availability: transformedDates
