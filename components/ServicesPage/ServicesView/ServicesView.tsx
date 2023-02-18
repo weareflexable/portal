@@ -239,33 +239,37 @@ function gotoDashboard(service:Service){
 
                <Col offset={2} span={20}>
                    <Title style={{marginBottom:'1em'}} level={2}>Launchpad</Title>
-                   {/* <Title style={{marginBottom:'1em'}} level={2}>Services</Title> */}
-                   <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
-                    <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
-                        {servicesFilter.map(filter=>(
-                            <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
-                        )
-                        )}
-                    </Radio.Group>
-                    <div style={{display:'flex',  justifyContent:'space-between', alignItems:'center'}}>
-                        <Button type='link' loading={servicesQuery.isRefetching} onClick={()=>servicesQuery.refetch()} icon={<ReloadOutlined />}>{servicesQuery.isRefetching? 'Refreshing...':'Refresh'}</Button>
-                        <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/services/new')}>Launch New Service</Button>
-                    </div>
-                </div>
+                   {data && data.length === 0 ? null : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+                      <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
+                          {servicesFilter.map(filter=>(
+                              <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
+                          )
+                          )}
+                      </Radio.Group>
+                      <div style={{display:'flex',  justifyContent:'space-between', alignItems:'center'}}>
+                          <Button type='link' loading={servicesQuery.isRefetching} onClick={()=>servicesQuery.refetch()} icon={<ReloadOutlined />}>{servicesQuery.isRefetching? 'Refreshing...':'Refresh'}</Button>
+                          <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/services/new')}>Launch New Service</Button>
+                      </div>
+                   </div>}
                 
-                <Table 
-                  style={{width:'100%'}} 
-                  size='large' 
-                  rowKey={(record)=>record.id}
-                  onChange={handleChange} 
-                  loading={servicesQuery.isLoading} 
-                  columns={columns} 
-                  dataSource={data||[]}
-                  pagination={{
-                    total:totalLength,  
-                    showTotal:(total) => `Total: ${total} items`,
-                  }} 
-                   />
+                {
+                  data && data.length === 0 
+                  ? <EmptyState/> 
+                  : <Table 
+                      style={{width:'100%'}} 
+                      size='large' 
+                      rowKey={(record)=>record.id}
+                      onChange={handleChange} 
+                      loading={servicesQuery.isLoading} 
+                      columns={columns} 
+                      dataSource={data||[]}
+                      pagination={{
+                        total:totalLength,  
+                        showTotal:(total) => `Total: ${total} items`,
+                      }} 
+                    />
+                }
+                
                 { 
                   isDrawerOpen
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedRecord={selectedRecord}/>
@@ -476,6 +480,18 @@ const servicesFilter = [
 
 
 
+function EmptyState(){
+  const router = useRouter()
+  return(
+    <div style={{border: '1px solid #d6d6d6', marginTop:'2rem', borderRadius:'4px', height:'50vh', display:'flex', justifyContent:'center', alignItems:'center', padding: '2rem'}}>
+      <div style={{maxWidth:'350px', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
+        <Title level={3}>Get Started</Title> 
+        <Text style={{textAlign:'center'}}>Oops! We have found no active venues in your organization</Text>
+        <Button size="large" type="primary" shape="round" icon={<PlusOutlined />} onClick={()=>router.push('/organizations/services/new')} style={{marginTop:'1rem'}}>Launch New Venue</Button>
+      </div>
+    </div>
+  )
+}
 
 
 
