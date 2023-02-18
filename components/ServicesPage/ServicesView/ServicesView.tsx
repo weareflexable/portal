@@ -200,7 +200,7 @@ function gotoDashboard(service:Service){
         }
       },
       {
-          title: 'CreatedAt',
+          title: 'Created On',
           dataIndex: 'createdAt',
           key: 'createdAt',
           render: (_,record)=>{
@@ -249,7 +249,7 @@ function gotoDashboard(service:Service){
                     </Radio.Group>
                     <div style={{display:'flex',  justifyContent:'space-between', alignItems:'center'}}>
                         <Button type='link' loading={servicesQuery.isRefetching} onClick={()=>servicesQuery.refetch()} icon={<ReloadOutlined />}>{servicesQuery.isRefetching? 'Refreshing...':'Refresh'}</Button>
-                        <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/services/new')}>Launch new service</Button>
+                        <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/services/new')}>Launch New Service</Button>
                     </div>
                 </div>
                 

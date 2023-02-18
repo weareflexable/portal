@@ -220,7 +220,7 @@ export default function NewService(){
                     <Form.Item  
                         name="address"
                         label='Address'
-                        extra={<Text type="secondary"><InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} /> Please refresh the page if the date you selected is not being displayed in the field </Text> }
+                        extra={<Text type="secondary"><InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} /> Please refresh the page if the address you selected is not being displayed in the field </Text> }
                         rules={[{ required: true, message: 'Please input a valid address!' }]}
                     >
                         <Input 
@@ -248,20 +248,20 @@ export default function NewService(){
                         <Input size="large" placeholder="+1348574934" />
                     </Form.Item>
 
-                    <Form.Item
+                    {/* <Form.Item
                         name="currency"
                         label='Currency'
                         rules={[{ required: true, message: 'Please input a valid code!' }]}
                     >
                         <Input size="large" placeholder="USD" />
-                    </Form.Item>
+                    </Form.Item> */}
 
                     <Form.Item
-                        label="Start and end time"
+                        label="Validity Period"
                         name={'validityPeriod'}
                         style={{marginBottom:'0'}}
-                        tooltip={'Tickets validity will be calculated using the provided interval'}
-                        // rules={[{ type: 'object' as const, required: true, message: 'Please select a time period' }]}
+                        extra={`Enter a timeframe you want your DAT to be redeemable by customers. This may vary based on your industry and service you provide. Eg: a "Saturday Night Line Skip" at a bar might be valid from 7pm on Saturday night until 4am Sunday morning, to allow the late night partygoers a chance to redeem their tickets. A restaurant DAT for a "Last Minute Saturday Reservation" might only need to have validity period of 12 noon - 12 midnight`} 
+                        rules={[{ type: 'object' as const, required: true, message: 'Please select a time period' }]}
                     >
                         <TimePicker.RangePicker  format="h A" size="large" />
                         {/* <Text style={{marginLeft:'1rem'}}>9 hrs interval for all tickets</Text>   */}
@@ -272,8 +272,8 @@ export default function NewService(){
                 
 
                     <div style={{marginBottom:'2rem', marginTop:'3rem'}}>
-                        <Title level={3}>Asset upload</Title>
-                        <Text >Please upload correct files according to proposed formats</Text>
+                        <Title level={3}>Image Upload</Title>
+                        <Text >Your logo and artwork will be visible on marketplace</Text>
                     </div>
 
                     <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}> 
@@ -281,6 +281,7 @@ export default function NewService(){
                             name="logoImageHash"
                             label="Logo"
                             valuePropName="logoImageHash"
+                            extra={'Please upload PNG or JPEG file with file size of 1024px x 1024px'}
                             getValueFromEvent={normFile}
                             rules={[{ required: true, message: 'Please upload an image' }]}
                         >
@@ -294,11 +295,12 @@ export default function NewService(){
                             </Upload.Dragger>
                         </Form.Item>
 
-                        <Form.Item
+                        {/* <Form.Item
                             name="coverImageHash"
                             label="Cover image"
                             valuePropName="coverImageHash"
                             getValueFromEvent={normFile}
+                            extra={'Please upload PNG or JPEG file with file size of 2400px x 1200px'}
                             // hidden
                             style={{marginBottom:'0'}}
                             rules={[{ required: true, message: 'Please upload an image' }]}
@@ -310,7 +312,7 @@ export default function NewService(){
                                 <p style={{marginBottom:'0'}} className="ant-upload-text">Click or drag file to this area to upload</p>
                                 <p style={{marginTop:'0'}} className="ant-upload-hint">Support for a single or bulk upload.</p>
                             </Upload.Dragger>
-                        </Form.Item>
+                        </Form.Item> */}
 
                     </div>
 
