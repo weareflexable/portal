@@ -154,7 +154,7 @@ export default function StaffView(){
       // },
 
       {
-          title: 'CreatedAt',
+          title: 'Created On',
           dataIndex: 'createdAt',
           key: 'createdAt',
           render: (_,record)=>{
@@ -292,7 +292,7 @@ function handleSubmit(formData:any){
   return (
     <Modal
       open={open}
-      title="Add a staff to your service"
+      title="Add staff to your venue"
       onCancel={onCancel}
       footer={null}
 

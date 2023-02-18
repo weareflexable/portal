@@ -342,7 +342,7 @@ const deleteData = useMutation(deleteDataHandler,{
 const{isLoading:isDeletingItem} = deleteData
 
 return( 
-<Drawer title="Service-item Details" width={640} placement="right" closable={true} onClose={closeDrawerHandler} open={isDrawerOpen}>
+<Drawer title="Service Details" width={640} placement="right" closable={true} onClose={closeDrawerHandler} open={isDrawerOpen}>
   
   <EditableName selectedRecord={selectedRecord}/>
   <EditableDescription selectedRecord={selectedRecord}/>
@@ -351,13 +351,13 @@ return(
   <EditableCoverImage selectedRecord={selectedRecord}/>
 
   {/* <Text>CUSTOM AVALABILITY</Text> */}
-  <Title style={{marginTop:'3rem'}} level={3}>Custom Availability</Title>
+  <Title style={{marginTop:'3rem'}} level={3}>Custom Dates</Title>
   <AvailabilitySection selectedServiceItem={selectedRecord} />
   {/* <AvailabilitySection selectedServiceItem={selectedRecord}/> */}
   
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
     <Title level={3}>Danger zone</Title>
-    <Button danger onClick={toggleDeleteModal} style={{width:'30%'}} type="link">De-activate service-item</Button>
+    <Button danger onClick={toggleDeleteModal} style={{width:'30%'}} type="link">Deactivate Service </Button>
   </div>
 
   <DeleteRecordModal isDeletingItem={isDeletingItem} onCloseModal={toggleDeleteModal} onDeleteRecord={deleteServiceItem} isOpen={isDeleteModalOpen} selectedRecord={selectedRecord}/>

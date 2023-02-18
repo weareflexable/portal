@@ -50,7 +50,7 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
 
   function getManagerMenu(){
     return[
-    {label:<Text onClick={navigateBackToServices}>Back to services</Text>, key:'servicesPage'},
+    {label:<Text onClick={navigateBackToServices}>Back to launchpad</Text>, key:'servicesPage'},
     {label:<Text onClick={()=>router.push('/manager/organizations')} >Back to organizations</Text>, key:'organizationsPage'},
     {type:'divider', key:'divider0'},
     {label:<Text onClick={navigateToProfile}  >Profile</Text>, key:'profile'},

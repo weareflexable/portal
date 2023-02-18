@@ -103,7 +103,7 @@ interface EditableProp{
     )
     return(
       <div style={{width:'100%', display:'flex', flexDirection:'column'}}>
-        <Text type="secondary" style={{ marginRight: '2rem',}}>Name</Text>
+        <Text type="secondary" style={{ marginRight: '2rem',}}>Title</Text>
       {isEditMode?editable:readOnly}
       </div>
     )

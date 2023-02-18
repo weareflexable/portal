@@ -175,7 +175,7 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
   
     const editable = (
       <div style={{padding:'1rem', marginBottom:'1rem', marginTop:'1rem', border:'1px solid #e1e1e1', borderRadius:'4px'}} >
-          <Title style={{marginBottom:'1rem'}} level={5}> Edit availability</Title>
+          <Title style={{marginBottom:'1rem'}} level={5}> Edit Custom Date</Title>
           <Form
           style={{ marginTop:'.5rem' }}
           layout='vertical'
@@ -189,7 +189,7 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
                   // label="Label"
                   style={{width:'100%'}}
               >
-                  <Input placeholder='Label(optional): Thanks giving' />
+                  <Input placeholder='Thanks giving' />
               </Form.Item>
               <Row>
               <Col span={11} style={{height:'100%'}}>
@@ -327,13 +327,13 @@ export function NewAvailability({selectedServiceItem}:NewAvailabilityProps){
   
     const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', marginTop:'1rem', marginBottom:'1rem', alignItems:'center'}}>
-        <Button icon={<PlusCircleOutlined />} style={{display:'flex',alignItems:'center'}} type="link" onClick={toggleEdit}>Add custom availability</Button>
+        <Button icon={<PlusCircleOutlined />} style={{display:'flex',alignItems:'center'}} type="link" onClick={toggleEdit}>Add Custom Date</Button>
       </div>
   )
   
     const editable = (
         <div style={{padding:'1rem', marginBottom:'2rem', marginTop:'1rem', border:'1px solid #e1e1e1', borderRadius:'4px'}} >
-            <Title style={{marginBottom:'1rem'}} level={5}> New availability</Title>
+            <Title style={{marginBottom:'1rem'}} level={5}> New Custom Date</Title>
             <Form
             style={{ marginTop:'.5rem' }}
             layout='vertical'
@@ -347,7 +347,7 @@ export function NewAvailability({selectedServiceItem}:NewAvailabilityProps){
                     // label="Label"
                     style={{width:'100%'}}
                 >
-                    <Input placeholder='Label(optional): Thanks giving' />
+                    <Input placeholder='Thanks giving' />
                 </Form.Item>
                 <Row>
                 <Col span={11} style={{height:'100%'}}>
@@ -394,7 +394,7 @@ export function NewAvailability({selectedServiceItem}:NewAvailabilityProps){
                                 Cancel
                             </Button>
                             <Button shape="round" loading={isEditing} type="primary"  htmlType="submit" >
-                                Create availability
+                                Add Custom Date
                             </Button>
                         </Space>           
                     </Form.Item>
