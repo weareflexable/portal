@@ -118,6 +118,7 @@ export default function Profile(){
                     ?<Skeleton.Input active size={'large'}  block />
                     :<EditableImage selectedRecord={userQuery.data&&userQuery.data[0]}/>
                     }
+                    <EditableEmail selectedRecord={userQuery.data&&userQuery.data[0]}/>
                     <EditableName selectedRecord={userQuery.data&&userQuery.data[0]}/>
                     <EditablePhone selectedRecord={userQuery.data&&userQuery.data[0]}/>
                     <EditableGender selectedRecord={userQuery.data&&userQuery.data[0]}/>
@@ -153,6 +154,100 @@ interface EditableProp{
     selectedRecord: User
 }
 
+function EditableEmail({selectedRecord}:EditableProp){
+
+
+    // const [state, setState] = useState(selectedRecord)
+  
+    const [isEditMode, setIsEditMode] = useState(false)
+  
+    const {paseto} = useAuthContext()
+
+    const queryClient = useQueryClient()
+  
+    function toggleEdit(){
+      setIsEditMode(!isEditMode)
+    }
+  
+   
+  
+    const mutationHandler = async(updatedItem:any)=>{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/users`,updatedItem,{
+        headers:{
+            //@ts-ignore
+            "Authorization": paseto
+        }
+      })
+        return data;
+    }
+    const mutation = useMutation({
+      mutationKey:['email'],
+      mutationFn: mutationHandler,
+      onSuccess:()=>{
+        toggleEdit()
+      },
+      onSettled:()=>{
+        queryClient.invalidateQueries({queryKey:['user']})
+      }
+    })
+  
+    function onFinish(updatedItem:any){
+      const payload = {
+        key:'email',
+        value:updatedItem.name,
+      }
+      mutation.mutate(payload)
+    }
+  
+    const {isLoading:isEditing} = mutation ;
+  
+    const readOnly = (
+      <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+        <Text>{selectedRecord.email}</Text>
+        <Button type="link" onClick={toggleEdit}>Edit</Button>
+      </div>
+  )
+  
+    const editable = (
+      <Form
+       style={{ marginTop:'.5rem' }}
+       name="editableEmail"
+       initialValues={selectedRecord}
+       onFinish={onFinish}
+       >
+        <Row>
+          <Col span={16} style={{height:'100%'}}>
+            <Form.Item
+                name="email"
+                rules={[{ required: true, message: 'Please input a valid email address' }]}
+            >
+                <Input allowClear disabled={isEditing} placeholder="bill@yahoo.com" />
+            </Form.Item>
+          </Col>
+          <Col span={4}>
+            <Form.Item style={{ width:'100%'}}>
+                <Space >
+                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                        Cancel
+                    </Button>
+                    <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                        Apply changes
+                    </Button>
+                </Space>
+                          
+            </Form.Item>
+          </Col>
+        </Row>
+             
+      </Form>
+    )
+    return(
+      <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+        <Text type="secondary" style={{ marginRight: '2rem',}}>Email</Text>
+      {isEditMode?editable:readOnly}
+      </div>
+    )
+  }
 function EditableName({selectedRecord}:EditableProp){
 
 
@@ -682,6 +777,7 @@ const readOnly = (
     id:string,
     name: string,
     profilePic: string,
+    email: string,
     contactNumber: string,
     mobileNumber: string,
     city: string,
