@@ -1,9 +1,9 @@
 import React,{useState} from 'react';
-import {Card,Form, Input,InputNumber, Image, DatePicker,Upload,Button,notification, Space, Alert, Typography, TimePicker, Select, Row, Col, Steps, Radio} from 'antd';
+import {Card,Form, Input,InputNumber, Image, DatePicker,Upload,Button,notification, Space, Alert, Typography, TimePicker, Select, Row, Col, Steps, Radio, Tooltip} from 'antd';
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
 const {Text,Title} = Typography;
-import {UploadOutlined,ArrowLeftOutlined,MinusCircleOutlined,PlusCircleOutlined} from '@ant-design/icons'
+import {UploadOutlined,ArrowLeftOutlined,MinusCircleOutlined,InfoCircleOutlined,PlusCircleOutlined} from '@ant-design/icons'
 
 
 import { useRouter } from 'next/router';
@@ -66,13 +66,13 @@ export default function ServiceItemForm(){
                     <Col offset={1}> 
                          <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
                             <Button  type='link' onClick={()=>router.back()} icon={<ArrowLeftOutlined/>}/>
-                            <Title style={{margin:'0'}} level={3}>Create new service-item</Title>
+                            <Title style={{margin:'0'}} level={3}>New Service</Title>
                         </div>
                     </Col>
                 </Row>
             </div>
            <Row > 
-                <Col offset={5} span={10}>
+                <Col offset={5} span={11}>
                 <Steps current={currentStep} items={items} />
                     {/* <BasicForm nextStep={next}/> */}
                     {steps[currentStep].content}
@@ -195,14 +195,14 @@ function BasicForm({nextStep}:BasicInfoProps){
 
         <Form.Item
             name="name"
-            label="Name"
+            label="Title"
             rules={[{ required: true, message: 'Please input a valid service name' }]}
          >
-            <Input allowClear size='large' placeholder="Bill Cage Line Skip" />
+            <Input allowClear size='large' maxLength={150} placeholder="Bill Cage Line Skip" />
         </Form.Item>
 
         <Form.Item name='description'  label="Description">
-            <TextArea allowClear maxLength={150} size='large' showCount  placeholder='Tell us more about this service' rows={2} />
+            <TextArea allowClear maxLength={500} size='large' showCount  placeholder='Tell us more about this service' rows={2} />
         </Form.Item>
 
         <Form.Item
@@ -251,7 +251,7 @@ function BasicForm({nextStep}:BasicInfoProps){
                 </Button>
 
                 <Button shape='round' size='large' loading={isHashingImage||isCreatingData} type="primary"  htmlType="submit" >
-                    Create service item
+                    Create Service
                 </Button>
 
             </Space>
@@ -342,9 +342,13 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
     return(
         <>
         <div style={{width:'100%', marginTop:'3rem', display:'flex',flexDirection:'column'}}>
-            <Title style={{marginBottom:'.2rem'}} level={3}>Create custom availability</Title>
-            <Text>You can add multiple custom dates on which this service will be available to be purchased on the marketplace</Text>
-        </div> 
+            <Title style={{marginBottom:'.2rem'}} level={3}>Create Custom Dates</Title>
+            <div style={{padding:'1rem', marginTop:'1rem', display:'flex', flexDirection:'column', marginBottom:'1rem', borderRadius:'4px', border:'1px solid #e1e1e1'}}>
+                <Text>{`You can add multiple custom dates (i.e. New Year's Eve, St. Patricks Day, Cinco De Mayo, e.t.c) on which this service will be available on the marketplace.`}</Text>
+                <Text style={{marginTop:'.2rem'}}>{` These custom dates generally align with increased traffic/demand on your establishment and price & quantity of DATs should reflect that. These prices and quantity changes will go into effect on that day and that day only. After the custom date has passed, DAT price and quantitly will go back to the default settings you outlined on the "Basic info" step`}</Text>
+                <Text style={{marginTop:'.2rem'}}>{`For Eg. A Bar that offers 50 Line Skip DATs for $15 each on a normal Saturday night may wish to create a custom date for New Year's Eve in which they offer 100 Line Skip DATs for $25 each`}</Text>
+            </div>
+        </div>  
         <Form
             name="serviceItemAvailability"
             initialValues={{ remember: false }}
@@ -354,11 +358,11 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
             onFinish={onFinish}
             >
 
-            <Form.List name="availability">
+            <Form.List name="customDates">
                 {(fields, { add, remove }) => (
                     <>
                     {fields.map(({ key, name, ...restField }) => (
-                        <div style={{padding:'1rem', marginBottom:'1rem', borderRadius:'4px', border:'1px solid #e1e1e1'}} key={key}>
+                        <div style={{padding:'1rem', marginBottom:'1rem', borderRadius:'4px', border:'1px solid #FFC680'}} key={key}>
 
                             {/* label */}
                             <Form.Item
@@ -369,7 +373,7 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
                                     name={[name, 'name']}
                                     style={{width:'100%'}}
                                 >
-                                <Input size='large' placeholder='Label(optional): Christmas eve' />
+                                <Input size='large' suffix={<Tooltip title='This field is optional'><InfoCircleOutlined/></Tooltip> } placeholder='Christmas eve' />
                             </Form.Item>
 
                             {/* price and tickets per day */}
@@ -418,7 +422,7 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
                             <Col span={4}>
                                 <Form.Item style={{marginBottom:'0', width:'100%'}}>
                                     <Space >
-                                        <Button shape="round" icon={<MinusCircleOutlined  />} size='small'  onClick={() => remove(name)} type='text'>Remove availability</Button>
+                                        <Button shape="round" icon={<MinusCircleOutlined  />} size='small'  onClick={() => remove(name)} type='text'>Remove Custom Date</Button>
                                     </Space>           
                                 </Form.Item>
                             </Col>
@@ -427,7 +431,7 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
 
                     <Form.Item>
                         <Button icon={<PlusCircleOutlined />} size='large' shape='round' onClick={() => add()}>
-                             Add custom availability
+                             Add Custom Date
                         </Button>
                     </Form.Item>
                     </>
@@ -441,12 +445,51 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
                         Skip for now
                     </Button>
 
-                    <Button shape='round' size='large' loading={isCreatingData} type='primary' htmlType="submit" >
-                         Create availabilities
-                    </Button>
+                    {/* <Button shape='round' size='large' loading={isCreatingData} type='primary' htmlType="submit" >
+                         Create Custom Dates
+                    </Button> */}
+                    <Form.Item
+                        style={{marginBottom:'0'}}
+                        shouldUpdate
+                    >
+                    {() => (
+                     <Button
+                    type='primary'
+                    shape='round'
+                    loading={isCreatingData}
+                    htmlType="submit"
+                    disabled={
+                    !form.isFieldTouched('customDates')
+                    // !!form.getFieldsError().filter(({ errors }) => errors.length).length
+                    }
+                >
+                Create Custom Dates
+                </Button>
+                )}
+                </Form.Item>
                 </Space>
                 
             </Form.Item>
+
+            {/* <Form.Item
+                style={{marginBottom:'0'}}
+                shouldUpdate
+            >
+                {() => (
+                <Button
+                    danger
+                    shape='round'
+                    loading={isCreatingData}
+                    htmlType="submit"
+                    disabled={
+                    !form.isFieldTouched('customDates')
+                    // !!form.getFieldsError().filter(({ errors }) => errors.length).length
+                    }
+                >
+                Create Custom Dates
+                </Button>
+                )}
+          </Form.Item> */}
 
             </Form>
         </>

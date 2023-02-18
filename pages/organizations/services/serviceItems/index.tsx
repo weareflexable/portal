@@ -22,7 +22,7 @@ export default function Staffs(){
                 <Row>
                     <Col offset={1} span={22}>
                     <div style={{width:'100%', display:'flex', marginTop:'.5rem', justifyContent:'space-between', alignItems:'center'}}> 
-                        <Title level={2}>Service Items</Title> 
+                        <Title level={2}>Services</Title> 
                      </div>
                         <Content
                             style={{
