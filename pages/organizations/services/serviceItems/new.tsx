@@ -118,7 +118,7 @@ function BasicForm({nextStep}:BasicInfoProps){
             const formObject: ServiceItemReqPaylod = {
                 name: formData.name,
                 price: Number(formData.price) * 100,
-                ticketsPerDay: String(formData.ticketsPerDay),
+                ticketsPerDay: Number(formData.ticketsPerDay),
                 description:formData.description,
                 orgServiceId: currentService.id,
                 serviceItemTypeId: formData.serviceItemTypeId, // TODO: Get this value from context,
