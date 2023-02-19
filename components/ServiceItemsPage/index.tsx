@@ -16,6 +16,7 @@ import { EditableCoverImage, EditableDescription, EditableName, EditablePrice, E
 import AvailabilitySection from "./Availability/Availability";
 import useUrlPrefix from "../../hooks/useUrlPrefix";
 import useRole from "../../hooks/useRole";
+import useServiceItemTypes from "../../hooks/useServiceItemTypes";
 
 
 // const mockServiceItems:ServiceItem[]=[
@@ -59,6 +60,9 @@ export default function ServiceItemsView(){
     const [pageNumber, setPageNumber] = useState<number|undefined>(0)
     const {isManager} = useRole()
 
+    const serviceItemTypes = useServiceItemTypes()
+
+    const items = serviceItemTypes && serviceItemTypes.map((item:any)=>({label:item.label, key:item.value}))
 
     async function fetchServiceItems(){
     const res = await axios({
@@ -102,13 +106,16 @@ export default function ServiceItemsView(){
     })
 
 
-    function inActiveItemsHandler(serviceItem:ServiceItem){
-        changeStatusMutation.mutate({serviceItemId:serviceItem.id, statusNumber:'0'})
+    type ServiceMenu={
+      label:string,
+      key:string
     }
 
-    function activeItemsHandler(serviceItem:ServiceItem){
-        changeStatusMutation.mutate({serviceItemId:serviceItem.id, statusNumber:'2'})
-    }
+    const onLaunchButtonClick: MenuProps['onClick'] = (e) => {
+      const key = e.key
+      const targetMenu:any = items.find((item:ServiceMenu)=>item.key === key)
+      router.push(`/organizations/services/serviceItems/new?key=${targetMenu!.key}&label=${targetMenu!.label}`)
+    };
 
 
     const serviceItemsQuery = useQuery({queryKey:['serviceItems', {currentFilter,pageNumber:pageNumber}], queryFn:fetchServiceItems, enabled:paseto !== ''})
@@ -226,7 +233,7 @@ export default function ServiceItemsView(){
 
                 <div style={{width: "20%",display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                   <Button type='link' loading={serviceItemsQuery.isRefetching} onClick={()=>serviceItemsQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
-                  <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/services/serviceItems/new')}>New Service</Button>
+                  <Dropdown.Button trigger={['click']} type="primary"   icon={<PlusOutlined/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
                 </div>
 
                 </div>}

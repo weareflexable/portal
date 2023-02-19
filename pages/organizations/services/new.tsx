@@ -137,6 +137,7 @@ export default function NewService(){
             latitude:String(fullAddress.latitude),
             longitude:String(fullAddress.longitude),
             contactNumber: formatedContact,
+            serviceTypeId: router.query.key,
             currency: 'USD',
             //@ts-ignore
             orgId:currentOrg.orgId,

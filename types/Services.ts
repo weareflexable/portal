@@ -70,5 +70,5 @@ export type ServiceItemReqPaylod = {
     orgServiceId: string,
     logoImageHash?: string,
     // serviceItemId: string
-    serviceItemTypeId?: string
+    serviceItemTypeId?: string | undefined | string[]
 }

@@ -2,6 +2,9 @@ import React,{useState} from 'react';
 import {Card,Form, Input,InputNumber, Image, DatePicker,Upload,Button,notification, Space, Alert, Typography, TimePicker, Select, Row, Col, Steps, Radio, Tooltip} from 'antd';
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
+// import { Keyframes } from '@ant-design/cssinjs';
+
+
 const {Text,Title} = Typography;
 import {UploadOutlined,ArrowLeftOutlined,MinusCircleOutlined,InfoCircleOutlined,PlusCircleOutlined} from '@ant-design/icons'
 
@@ -15,7 +18,7 @@ import { asyncStore } from '../../../../utils/nftStorage';
 import axios from 'axios';
 import { useAuthContext } from '../../../../context/AuthContext';
 import { useMutation } from '@tanstack/react-query';
-import useUrlPrefix from '../../../../hooks/useUrlPrefix';
+import useUrlPrefix from '../../../../hooks/useUrlPrefix'; 
 
 
 
@@ -66,7 +69,7 @@ export default function ServiceItemForm(){
                     <Col offset={1}> 
                          <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
                             <Button  type='link' onClick={()=>router.back()} icon={<ArrowLeftOutlined/>}/>
-                            <Title style={{margin:'0'}} level={3}>New Service</Title>
+                            <Title style={{margin:'0', textTransform:'capitalize'}} level={3}>{router.isReady?`New ${router.query.label}`:'...'}</Title>
                         </div>
                     </Col>
                 </Row>
@@ -89,10 +92,9 @@ interface BasicInfoProps{
 
 function BasicForm({nextStep}:BasicInfoProps){
 
+    
      // TODO: set field for editing
      //@ts-ignore
-     const menuItems = useServiceItemTypes()
-     console.log(menuItems)
 
      const [isHashingImage, setIsHashingImage] = useState(false)
      const {currentService} = useServicesContext()
@@ -100,6 +102,8 @@ function BasicForm({nextStep}:BasicInfoProps){
      const router = useRouter()
 
      const urlPrefix = useUrlPrefix()
+
+     console.log(router.query)
     
    
 
@@ -121,7 +125,7 @@ function BasicForm({nextStep}:BasicInfoProps){
                 ticketsPerDay: Number(formData.ticketsPerDay),
                 description:formData.description,
                 orgServiceId: currentService.id,
-                serviceItemTypeId: formData.serviceItemTypeId, // TODO: Get this value from context,
+                serviceItemTypeId: router.query.key, // TODO: Get this value from context,
                 logoImageHash: imageHash
             }
 
@@ -182,17 +186,6 @@ function BasicForm({nextStep}:BasicInfoProps){
         onFinish={onFinish}
         >
 
-
-         <Form.Item
-            name="serviceItemTypeId"
-            label='Service item type'
-            rules={[{ required: true, message: 'Please select a service-item type!' }]}
-            >
-            <Radio.Group size='large'>
-                {menuItems.map((item:any)=><Radio.Button value={item.value} key={item.value}>{item.label}</Radio.Button>)}
-            </Radio.Group>
-        </Form.Item> 
-
         <Form.Item
             name="name"
             label="Title"
@@ -233,14 +226,15 @@ function BasicForm({nextStep}:BasicInfoProps){
         <Form.Item
             name="logoImageHash"
             label="Cover image"
-            valuePropName="fileList"
-            getValueFromEvent={normFile}
+            // valuePropName="fileList"
+            // getValueFromEvent={normFile}
             extra="This cover image will be used for listing on marketplace and Digital access token NFT"
             rules={[{ required: true, message: 'Please upload an image' }]}
         >
-            <Upload name="logo" action="" listType="picture">
+            <Input hidden={true}/>
+            {/* <Upload name="logo" action="" listType="picture">
             <Button icon={<UploadOutlined />}>Upload service item cover image</Button>
-            </Upload>
+            </Upload> */}
         </Form.Item> 
 
 
@@ -251,7 +245,7 @@ function BasicForm({nextStep}:BasicInfoProps){
                 </Button>
 
                 <Button shape='round' size='large' loading={isHashingImage||isCreatingData} type="primary"  htmlType="submit" >
-                    Create Service
+                {router.isReady?`Create ${router.query.label}`:'...'}
                 </Button>
 
             </Space>

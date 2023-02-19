@@ -259,10 +259,14 @@ function gotoDashboard(service:Service){
                            {isHydrated ? <Title style={{margin:'0'}} level={4}>{currentOrg.name}</Title>:<Skeleton.Input active size='default'/> } 
                        </div>
 
-                       {isHydrated?<div style={{ display:'flex', flex:'3', justifyContent:'space-end', alignItems:'center'}}>
+                       {
+                       isHydrated
+                        ?<div style={{ display:'flex', flex:'3', justifyContent:'space-end', alignItems:'center'}}>
                           <Button type="link" style={{marginRight:'2rem'}} onClick={gotoBillingsPage} >Billings</Button>
                           <CurrentUser/>
-                       </div>: <Skeleton.Input active size='default'/>}
+                       </div>
+                       : <Skeleton.Input active size='default'/>
+                       }
                    </Col>
                </header>
 
@@ -278,7 +282,7 @@ function gotoDashboard(service:Service){
                       <div style={{display:'flex',  justifyContent:'space-between', alignItems:'center'}}>
                           <Button type='link' loading={servicesQuery.isRefetching} onClick={()=>servicesQuery.refetch()} icon={<ReloadOutlined />}>{servicesQuery.isRefetching? 'Refreshing...':'Refresh'}</Button>
                           {/* <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/services/new')}>Launch New Service</Button> */}
-                          <Dropdown.Button trigger={['click']} type="primary"  icon={<PlusOutlined/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New</Dropdown.Button>
+                          <Dropdown.Button trigger={['click']} type="primary"   icon={<PlusOutlined/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
                       </div>
                    </div>}
                 
