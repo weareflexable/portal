@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
-import {Form, Row, Col, Image, Tooltip, Input,Upload,Button,notification, Typography, Space, Select, Radio, Divider, TimePicker} from 'antd';
-import {UploadOutlined, ArrowLeftOutlined, InfoCircleOutlined,  InboxOutlined} from '@ant-design/icons'
+import {Form, Row, Col, Image, Tooltip, Input,Upload,Button,notification, Typography, Space, Select, Radio, Divider, TimePicker, InputRef} from 'antd';
+import {UploadOutlined,MinusOutlined, ArrowLeftOutlined, InfoCircleOutlined,  InboxOutlined} from '@ant-design/icons'
 const {Title,Text} = Typography
 const {TextArea} = Input
 import dayjs from 'dayjs'
@@ -48,6 +48,20 @@ export default function NewService(){
 
     const router = useRouter()
     const antInputRef = useRef();
+    const areaCodeRef = useRef<InputRef>(null)
+    const centralOfficeCodeRef = useRef<InputRef>(null)
+    const tailNoRef = useRef<InputRef>(null)
+
+    function handleAreaCodeRef(e:any){
+        if(e.target.value.length >= 3){ 
+            centralOfficeCodeRef.current!.focus()
+        }
+    }
+    function handleCentralOfficeCode(e:any){
+        if(e.target.value.length >= 3){ 
+            tailNoRef.current!.focus()
+        }
+    }
 
     const extractFullAddress = (place:any)=>{
         const addressComponents = place.address_components 
@@ -97,12 +111,17 @@ export default function NewService(){
 
     const onFinish = async(formData:any)=>{
 
+        const logoRes = await formData.logoImageHash
         setIsHashingAssets(true)
         //@ts-ignore
-        const imageHash = await asyncStore(formData.logoImageHash[0].originFileObj)
+        const imageHash = await asyncStore(logoRes[0].originFileObj)
         //@ts-ignore
         // const coverImageHash = await asyncStore(formData.coverImageHash[0].originFileObj)
         setIsHashingAssets(false)
+
+        // format phoneNumber
+        const contact = formData.contact
+        const formatedContact = `${contact.countryCode}${contact.areaCode}${contact.centralOfficeCode}${contact.tailNumber}`
 
 
         const formObject: ServicePayload = {
@@ -112,6 +131,7 @@ export default function NewService(){
             coverImageHash: "coverimagehash",
             latitude:String(fullAddress.latitude),
             longitude:String(fullAddress.longitude),
+            contactNumber: formatedContact,
             currency: 'USD',
             //@ts-ignore
             orgId:currentOrg.orgId,
@@ -128,7 +148,7 @@ export default function NewService(){
 
         console.log(formObject)
 
-        createData.mutate(formObject)
+        // createData.mutate(formObject)
     }
 
 
@@ -230,7 +250,7 @@ export default function NewService(){
                 <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}> 
                     <Form.Item
                         name="name"
-                        label="Name"
+                        label="Name" 
                         // extra="The name you provide here will be used as display on marketplace listing"
                         rules={[{ required: true, message: 'Please input a valid service name' }]}
                     >
@@ -261,27 +281,36 @@ export default function NewService(){
                     </Form.Item>
 
                     <Form.Item
-                        name="contactNumber"
+                        // name="contactNumber"
                         label="Contact phone"
-                        rules={[{ required: true, message: 'Please input a valid phone number' }]}
+                        // rules={[{ required: true, message: 'Please input a valid phone number' }]}
                     >
-                        <Input size="large" placeholder="+1348574934" />
+                        <Input.Group compact>
+                            <Form.Item initialValue={'+1'} name={['contact','countryCode']} noStyle>
+                                <Input style={{width:'10%'}} disabled size="large"/>
+                            </Form.Item>
+                            <Form.Item name={['contact','areaCode']} noStyle>
+                                <Input ref={areaCodeRef} maxLength={3} onChange={handleAreaCodeRef} style={{width:'20%'}} size="large" placeholder="235" />
+                            </Form.Item>
+                            <Form.Item name={['contact','centralOfficeCode']} noStyle>
+                                <Input ref={centralOfficeCodeRef} onChange={handleCentralOfficeCode} maxLength={3} style={{width:'20%'}} size="large" placeholder="380" />
+                            </Form.Item>
+                            <div style={{height:'40px',margin:'0 .3rem 0 .3rem', display:'inline-flex', alignItems:'center',  verticalAlign:'center'}}>
+                            <MinusOutlined />
+                            </div>
+                            <Form.Item name={['contact','tailNumber']} noStyle>
+                                <Input ref={tailNoRef} maxLength={4} style={{width:'30%'}} size="large" placeholder="3480" />
+                            </Form.Item>
+                        </Input.Group>
                     </Form.Item>
 
-                    {/* <Form.Item
-                        name="currency"
-                        label='Currency'
-                        rules={[{ required: true, message: 'Please input a valid code!' }]}
-                    >
-                        <Input size="large" placeholder="USD" />
-                    </Form.Item> */}
 
                     <Form.Item
                         label="Validity Period"
                         name={'validityPeriod'}
                         style={{marginBottom:'0'}}
-                        extra={`Enter a timeframe you want your DAT to be redeemable by customers. This may vary based on your industry and service you provide. Eg: a "Saturday Night Line Skip" at a bar might be valid from 7pm on Saturday night until 4am Sunday morning, to allow the late night partygoers a chance to redeem their tickets. A restaurant DAT for a "Last Minute Saturday Reservation" might only need to have validity period of 12 noon - 12 midnight`} 
-                        rules={[{ type: 'object' as const, required: true, message: 'Please select a time period' }]}
+                        // extra={`Enter a timeframe you want your DAT to be redeemable by customers. This may vary based on your industry and service you provide. Eg: a "Saturday Night Line Skip" at a bar might be valid from 7pm on Saturday night until 4am Sunday morning, to allow the late night partygoers a chance to redeem their tickets. A restaurant DAT for a "Last Minute Saturday Reservation" might only need to have validity period of 12 noon - 12 midnight`} 
+                        // rules={[{ type: 'object' as const, required: true, message: 'Please select a time period' }]}
                     >
                         <TimePicker.RangePicker  format="h A" size="large" />
                         {/* <Text style={{marginLeft:'1rem'}}>9 hrs interval for all tickets</Text>   */}
