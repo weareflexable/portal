@@ -16,6 +16,7 @@ import useServiceTypes from "../../../hooks/useServiceTypes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useAuthContext } from "../../../context/AuthContext";
+import loadConfig from "next/dist/server/config";
 
 const getBase64 = (file: any): Promise<string> => 
 new Promise((resolve, reject) => {
@@ -32,9 +33,10 @@ export default function NewService(){
     const queryClient = useQueryClient()
 
     const menuItems = useServiceTypes()
-    console.log(menuItems)
+
     const {paseto} = useAuthContext()
     const {currentOrg} = useOrgContext()
+
     const [form]=Form.useForm()
     const [fullAddress, setFullAddress] = useState({
         latitude:0,
@@ -46,7 +48,10 @@ export default function NewService(){
     const [isHashingAssets, setIsHashingAssets] = useState(false)
     const [logoImage, setLogoImage] = useState(PLACEHOLDER_IMAGE)
 
-    const router = useRouter()
+    const router = useRouter() 
+
+    console.log(router.isReady, router.query)
+
     const antInputRef = useRef();
     const areaCodeRef = useRef<InputRef>(null)
     const centralOfficeCodeRef = useRef<InputRef>(null)
@@ -203,7 +208,7 @@ export default function NewService(){
                     <Col offset={1}> 
                          <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
                             <Button shape='round' style={{marginRight:'.3rem'}} type='link' onClick={()=>router.back()} icon={<ArrowLeftOutlined/>}/>
-                            <Title style={{margin:'0'}} level={3}>New Venue</Title>
+                            <Title style={{margin:'0'}} level={3}>{`New ${router.isReady?router.query.label:'...'}`}</Title>
                         </div>
                     </Col>
                 </Row>
@@ -219,32 +224,11 @@ export default function NewService(){
                     form={form}
                     >
 
-                {/* Service type */}
-                <div style={{marginBottom:'0'}}>
-                    <Title level={3}>Select a venue type</Title>
-                    {/* <Text>All changes here will be reflected in the marketplace</Text> */}
-                </div>
-                <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}> 
-                    <Form.Item
-                        name="serviceTypeId"
-                        label="Service type"
-                        tooltip = 'Service type will be used to categorize the type of your service'
-                        // extra='Service type will be used to categorize the type of your service'
-
-                        style={{marginBottom:'0'}}
-                        rules={[{ required: true, message: 'Please select a service type!' }]}
-                        >
-                        <Radio.Group size='large'> 
-                                {menuItems? menuItems.map((menu:any)=>(
-                                    <Radio.Button key={menu.id} value={menu.value}>{menu.label}</Radio.Button>
-                                )):<Text>Loading service types ...</Text> }
-                        </Radio.Group>
-                    </Form.Item>
-                </div>
+           
 
                  {/* Service info */}
-                <div style={{marginBottom:'2rem', marginTop:'3rem'}}>
-                    <Title level={3}>Venue info</Title>
+                <div style={{marginBottom:'2rem'}}>
+                   { router.isReady?<Title level={3}>{`${router.query.label} info`}</Title>: <Text>Loading...</Text>}
                     <Text>All changes here will be reflected in the marketplace</Text>
                 </div>
                 <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}> 
@@ -282,8 +266,9 @@ export default function NewService(){
 
                     <Form.Item
                         // name="contactNumber"
-                        label="Contact phone"
-                        // rules={[{ required: true, message: 'Please input a valid phone number' }]}
+                        label="Contact Number"
+                        required
+                        rules={[{ required: true, message: 'Please input a valid phone number' }]}
                     >
                         <Input.Group compact>
                             <Form.Item initialValue={'+1'} name={['contact','countryCode']} noStyle>
@@ -296,10 +281,10 @@ export default function NewService(){
                                 <Input ref={centralOfficeCodeRef} onChange={handleCentralOfficeCode} maxLength={3} style={{width:'20%'}} size="large" placeholder="380" />
                             </Form.Item>
                             <div style={{height:'40px',margin:'0 .3rem 0 .3rem', display:'inline-flex', alignItems:'center',  verticalAlign:'center'}}>
-                            <MinusOutlined />
+                            <MinusOutlined style={{color:"#e7e7e7"}} />
                             </div>
                             <Form.Item name={['contact','tailNumber']} noStyle>
-                                <Input ref={tailNoRef} maxLength={4} style={{width:'30%'}} size="large" placeholder="3480" />
+                                <Input ref={tailNoRef} maxLength={4} style={{width:'20%'}} size="large" placeholder="3480" />
                             </Form.Item>
                         </Input.Group>
                     </Form.Item>
@@ -309,7 +294,7 @@ export default function NewService(){
                         label="Validity Period"
                         name={'validityPeriod'}
                         style={{marginBottom:'0'}}
-                        // extra={`Enter a timeframe you want your DAT to be redeemable by customers. This may vary based on your industry and service you provide. Eg: a "Saturday Night Line Skip" at a bar might be valid from 7pm on Saturday night until 4am Sunday morning, to allow the late night partygoers a chance to redeem their tickets. A restaurant DAT for a "Last Minute Saturday Reservation" might only need to have validity period of 12 noon - 12 midnight`} 
+                        extra={`Enter a timeframe you want your DAT to be redeemable by customers. This may vary based on your industry and service you provide. Eg: a "Saturday Night Line Skip" at a bar might be valid from 7pm on Saturday night until 4am Sunday morning, to allow the late night partygoers a chance to redeem their tickets. A restaurant DAT for a "Last Minute Saturday Reservation" might only need to have validity period of 12 noon - 12 midnight`} 
                         // rules={[{ type: 'object' as const, required: true, message: 'Please select a time period' }]}
                     >
                         <TimePicker.RangePicker  format="h A" size="large" />
@@ -370,7 +355,7 @@ export default function NewService(){
                             </Button>
 
                             <Button shape="round" type="primary" size="large" loading={isHashingAssets || isCreatingData}  htmlType="submit" >
-                                Launch Venue
+                               {router.isReady? `Launch ${router.query.label}`: '...'}
                             </Button>
                         </Space>     
                     </Form.Item>

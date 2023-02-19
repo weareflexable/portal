@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useOrgs from "../../../hooks/useOrgs";
 const {Text, Title} = Typography;
-import React, { useEffect, useRef, useState } from 'react'
-import {Typography,Button, Skeleton, Badge, Image, Table, Input, Radio,  Drawer, Row, Col, Form, Modal, Alert, notification} from 'antd'
+import React, { ReactNode, useEffect, useRef, useState } from 'react'
+import {Typography,Button, Skeleton, Badge, Image, Table, Input, Radio,  Drawer, Row, Col, Form, Modal, Alert, notification, Dropdown, MenuProps} from 'antd'
 import { useRouter } from 'next/router'
 import axios from 'axios';
 import { MoreOutlined, ReloadOutlined, ArrowLeftOutlined, PlusOutlined} from '@ant-design/icons'
@@ -16,6 +16,7 @@ import { Service } from "../Services.types";
 
 import { EditableAddress, EditableCoverImage, EditableCurrency, EditableLogoImage, EditableName, EditablePhone } from "../EditServiceForm/EditServiceForm";
 import CurrentUser from "../../Header/CurrentUser/CurrentUser";
+import useServiceTypes from "../../../hooks/useServiceTypes";
 
 
 var relativeTime = require('dayjs/plugin/relativeTime')
@@ -29,11 +30,16 @@ export default function ManagerOrgsView(){
     const queryClient = useQueryClient()
     const router = useRouter()
     const {switchOrg} = useOrgs()
+    // const [items, setItems] = useState([])
 
     const {switchService} = useServicesContext()
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const [pageNumber, setPageNumber] = useState<number|undefined>(0)
+
+    const serviceTypes = useServiceTypes()
+
+    const items = serviceTypes && serviceTypes.map((item:any)=>({label:item.label, key:item.value}))
   
 
     const [selectedRecord, setSelectedRecord] = useState<any|Service>({})
@@ -220,6 +226,29 @@ function gotoDashboard(service:Service){
     }
     ];
 
+    // const items = [
+    //   {
+    //     key:'dafa930434',
+    //     label:'Bar'
+    //   },
+    //   {
+    //     key:'dafa9304fd3534',
+    //     label:'Restaurant'
+    //   }
+
+    // ]
+
+    type ServiceMenu={
+      label:string,
+      key:string
+    }
+
+    const onLaunchButtonClick: MenuProps['onClick'] = (e) => {
+      const key = e.key
+      const targetMenu:any = items.find((item:ServiceMenu)=>item.key === key)
+      router.push(`/organizations/services/new?key=${targetMenu!.key}&label=${targetMenu!.label}`)
+    };
+
         return (
             <div style={{background:'#f7f7f7', minHeight:'100vh'}}>
                 <Row style={{marginTop:'.5em'}} gutter={[16,16]}>
@@ -248,7 +277,8 @@ function gotoDashboard(service:Service){
                       </Radio.Group>
                       <div style={{display:'flex',  justifyContent:'space-between', alignItems:'center'}}>
                           <Button type='link' loading={servicesQuery.isRefetching} onClick={()=>servicesQuery.refetch()} icon={<ReloadOutlined />}>{servicesQuery.isRefetching? 'Refreshing...':'Refresh'}</Button>
-                          <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/services/new')}>Launch New Service</Button>
+                          {/* <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/services/new')}>Launch New Service</Button> */}
+                          <Dropdown.Button trigger={['click']} type="primary"  icon={<PlusOutlined/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New</Dropdown.Button>
                       </div>
                    </div>}
                 
@@ -464,7 +494,17 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
 }
 
 
-
+function CustomDropdown(menus:ReactNode[]){
+  return(
+    <div>
+      {
+        menus!.map((item:any)=>(
+          <Text key={item}>{item}</Text>
+        ))
+      }
+    </div>
+  )
+}
 
 
 
