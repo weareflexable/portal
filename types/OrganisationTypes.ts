@@ -23,6 +23,7 @@ export interface Org {
 }
 
 export interface NewOrg{
+    contact?:any,
     status: number,
     id: string,
     name: string,
@@ -47,6 +48,7 @@ export interface OrgPayload{
     email: string,
     phone: string,
     street: string,
+    contactNumber: string,
     city: string,
     country: string,
     zipCode: string,

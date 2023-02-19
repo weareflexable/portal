@@ -140,14 +140,6 @@ export default function CreateBankAccountForm(){
                     </Form.Item>
 
             
-                    <Form.Item
-                        name="currency"
-                        label="Currency"
-                        style={{marginBottom:'0'}} 
-                        rules={[{ required: true, message: 'Please select your currency' }]}
-                    >
-                        <Input size='large' placeholder="USD" />
-                    </Form.Item>
                 </div>
 
 
@@ -175,7 +167,7 @@ export default function CreateBankAccountForm(){
                 >
                     <Input size='large' placeholder="89, Highstreet Boston" />
                 </Form.Item>
-
+{/* 
                 <Form.Item
                     name="swiftCode"
                     label='Swift/BIC code'
@@ -183,7 +175,7 @@ export default function CreateBankAccountForm(){
                 >
                     <Input size='large' placeholder="AAAA-BB-CC-123" />
                 
-                </Form.Item>
+                </Form.Item> */}
 
                 <Form.Item
                     name="routingNumber"

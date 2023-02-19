@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
-import {Form, Row, Col, Image, Input,Upload,Button,notification, Typography, Space, Select, Divider} from 'antd';
-import {UploadOutlined, ArrowLeftOutlined} from '@ant-design/icons'
+import {Form, Row, Col, Image, Input,Upload,Button,notification, Typography, Space, Select, Divider, InputRef} from 'antd';
+import {UploadOutlined, MinusOutlined, ArrowLeftOutlined} from '@ant-design/icons'
 const {Title,Text} = Typography
 const {TextArea} = Input
 
@@ -42,6 +42,21 @@ export default function NewOrgForm(){
     const antInputRef = useRef();
     const [logoImage, setLogoImage] = useState(PLACEHOLDER_IMAGE)
     const [coverImage, setCoverImage] = useState(PLACEHOLDER_IMAGE)
+
+    const areaCodeRef = useRef<InputRef>(null)
+    const centralOfficeCodeRef = useRef<InputRef>(null)
+    const tailNoRef = useRef<InputRef>(null)
+
+    function handleAreaCodeRef(e:any){
+        if(e.target.value.length >= 3){ 
+            centralOfficeCodeRef.current!.focus()
+        }
+    }
+    function handleCentralOfficeCode(e:any){
+        if(e.target.value.length >= 3){ 
+            tailNoRef.current!.focus()
+        }
+    }
 
     const extractFullAddress = (place:any)=>{
         const addressComponents = place.address_components 
@@ -100,12 +115,17 @@ export default function NewOrgForm(){
         // const coverImageHash = await asyncStore(coverImageRes[0].originFileObj)
         setIsHashingAssets(false)
 
+         // format phoneNumber
+         const contact = formData.contact
+         const formatedContact = `${contact.countryCode}${contact.areaCode}${contact.centralOfficeCode}${contact.tailNumber}`
+
 
         const formObject: OrgPayload = {
             ...formData,
             ...fullAddress,
             logoImageHash: logoHash,
             coverImageHash: '',
+            contactNumber: formatedContact
             // orgId:currentOrg.orgId,
         }
         // remove address field since because we have extracted
@@ -205,7 +225,7 @@ export default function NewOrgForm(){
                     
                       {/* Organization info */}
                       <div style={{marginBottom:'2rem', marginTop:'3rem'}}>
-                        <Title level={3}>Organization info</Title>
+                        <Title level={3}>Organization Info</Title>
                         {/* <Text>All changes here will be reflected in the marketplace</Text> */}
                     </div>
                     <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}> 
@@ -228,11 +248,28 @@ export default function NewOrgForm(){
                     </Form.Item>
 
                     <Form.Item
-                        name="contactNumber"
-                        label='Contact number'
-                        // rules={[{ required: true, message: 'Please input a valid email!' }]}
+                        // name="contactNumber"
+                        label="Contact Number"
+                        required
+                        rules={[{ required: true, message: 'Please input a valid phone number' }]}
                     >
-                        <Input size="large" placeholder="+1 (315) 232-3493" />
+                        <Input.Group compact>
+                            <Form.Item initialValue={'+1'} name={['contact','countryCode']} noStyle>
+                                <Input style={{width:'10%'}} disabled size="large"/>
+                            </Form.Item>
+                            <Form.Item name={['contact','areaCode']} noStyle>
+                                <Input ref={areaCodeRef} maxLength={3} onChange={handleAreaCodeRef} style={{width:'20%'}} size="large" placeholder="235" />
+                            </Form.Item>
+                            <Form.Item name={['contact','centralOfficeCode']} noStyle>
+                                <Input ref={centralOfficeCodeRef} onChange={handleCentralOfficeCode} maxLength={3} style={{width:'20%'}} size="large" placeholder="380" />
+                            </Form.Item>
+                            <div style={{height:'40px',margin:'0 .3rem 0 .3rem', display:'inline-flex', alignItems:'center',  verticalAlign:'center'}}>
+                            <MinusOutlined style={{color:"#e7e7e7"}} />
+                            </div>
+                            <Form.Item name={['contact','tailNumber']} noStyle>
+                                <Input ref={tailNoRef} maxLength={4} style={{width:'20%'}} size="large" placeholder="3480" />
+                            </Form.Item>
+                        </Input.Group>
                     </Form.Item>
 
                     <Form.Item 
@@ -257,10 +294,10 @@ export default function NewOrgForm(){
 
                       {/* Assets */}
                       <div style={{marginBottom:'2rem', marginTop:'3rem'}}>
-                        <Title level={3}>Image upload</Title>
+                        <Title level={3}>Image Upload</Title>
                         {/* <Text>All changes here will be reflected in the marketplace</Text> */}
                     </div>
-
+                    {/* <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}>   */}
                         <Image alt='Organization logo' src={logoImage} style={{width:'150px',height:'150px', borderRadius:'50%', border:'1px solid #e5e5e5'}}/>
                         <Form.Item
                             name="logoImageHash"
@@ -297,7 +334,7 @@ export default function NewOrgForm(){
                             </Button>
 
                             <Button shape="round" type="primary" size="large" loading={isHashingAssets || isCreatingData}  htmlType="submit" >
-                                Create organization
+                                Create Organization
                             </Button>
                         </Space>
                         
