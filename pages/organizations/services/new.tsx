@@ -154,7 +154,7 @@ export default function NewService(){
 
         console.log(formObject)
 
-        // createData.mutate(formObject)
+        createData.mutate(formObject)
     }
 
 
@@ -189,7 +189,7 @@ export default function NewService(){
         notification['success']({
             message: 'Success creating record',
           });
-          router.replace('/organizations/services')
+          router.back()
        },
         onError:()=>{
             notification['error']({

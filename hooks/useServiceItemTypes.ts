@@ -21,7 +21,7 @@ export default function useServiceItemTypes(){
 
 
     const fetchServiceItemTypes = async()=>{
-        const {data} = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-item-types?pageNumber=0&pageSize=10&key=service_type_id&value=${serviceTypeId}`,{
+        const {data} = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-item-types?pageNumber=0&pageSize=10&key=service_type_id&value=${serviceTypeId}&key2=status&value2=1`,{
             headers:{
                 //@ts-ignore
                 "Authorization":paseto

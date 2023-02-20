@@ -285,10 +285,10 @@ export default function BookingsView(){
 
 function EmptyState(){
   return(
-    <div style={{border: '1px solid #e5e5e5', display:'flex', justifyContent:'center', alignItems:'center', padding: '2rem'}}>
+    <div style={{border: '1px solid #e5e5e5', display:'flex', justifyContent:'center', marginTop:'2rem', alignItems:'center', padding: '2rem'}}>
       <div style={{maxWidth:'300px', display:'flex', flexDirection:'column', justifyContent:'center'}}>
-        <Title level={3}>Oops!</Title>
-        <Text>There are currently no bookings for this service</Text>
+        <Title style={{textAlign:'center'}} level={3}>Oops!</Title>
+        <Text style={{textAlign:'center'}}>There are currently no bookings for this service</Text>
         {/* <Button size="large" shape="round" type="ghost" icon={<PlusOutlined />} style={{marginTop:'1rem'}}>Create New Organization</Button> */}
       </div>
     </div>

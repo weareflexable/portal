@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useOrgs from "../../hooks/useOrgs";
 const {Text,Title} = Typography
-import React, { useRef, useState } from 'react'
+import React, { ReactNode, useRef, useState } from 'react'
 import {Typography,Button,Avatar, Upload, Tag, Alert, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Skeleton, InputNumber, notification, Modal} from 'antd'
 import { useRouter } from 'next/router'
 import axios from 'axios';
@@ -239,7 +239,9 @@ export default function ServiceItemsView(){
                 </div>}
                 {
                   servicesData && servicesData.length === 0 
-                  ?<EmptyState/>
+                  ?<EmptyState>
+                    <Dropdown.Button trigger={['click']} type="primary"   icon={<PlusOutlined/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
+                  </EmptyState>
                   :<Table 
                   style={{width:'100%'}} 
                   key='dfadfe' 
@@ -490,16 +492,21 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
 //   },
 // ]
 
+interface Empty{
+  children: ReactNode
+} 
 
-
-function EmptyState(){
+function EmptyState({children}:Empty){
   const router = useRouter()
   return(
     <div style={{border: '1px solid #d6d6d6', marginTop:'2rem', borderRadius:'4px', height:'50vh', display:'flex', justifyContent:'center', alignItems:'center', padding: '2rem'}}>
       <div style={{maxWidth:'300px', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
         <Title level={3}>Get Started</Title> 
         <Text style={{textAlign:'center'}}>Ready to get started listing your services on the Flexable Marketplace?</Text>
-        <Button size="large" type="primary" shape="round" icon={<PlusOutlined />} onClick={()=>router.push('/organizations/services/serviceItems/new')} style={{marginTop:'1rem'}}>Create New Service</Button>
+        {/* <Button size="large" type="primary" shape="round" icon={<PlusOutlined />} onClick={()=>router.push('/organizations/services/serviceItems/new')} style={{marginTop:'1rem'}}>Create New Service</Button> */}
+          <div style={{marginTop:'1rem', display:'flex',justifyContent:'center'}}>
+            {children}
+          </div>
       </div>
     </div>
   )
