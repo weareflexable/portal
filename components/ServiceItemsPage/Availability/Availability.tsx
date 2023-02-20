@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Button, Form, Row, Col, Input, InputNumber, Space, DatePicker, Typography, Skeleton } from "antd"
+import { Button, Form, Row, Col, Input, InputNumber, Space, DatePicker, Typography, Skeleton, Popconfirm } from "antd"
 const {Text, Title} = Typography
 import axios from "axios"
 import { useState } from "react"
@@ -158,8 +158,19 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
                 </div>
             </Col>
             <Col span={1}>
-                <Button type="text" onClick={toggleEdit} icon={<EditOutlined />}/>
-                <Button type="text" danger onClick={()=>deleteAvailability(availability)} icon={<DeleteOutlined/>}/>
+              <Space direction="vertical">
+                    <Button  onClick={toggleEdit} icon={<EditOutlined />}/>
+                    <Popconfirm
+                        title="Delete custom date"
+                        description="Are you sure to delete this custom date?"
+                        onConfirm={()=>deleteAvailability(availability)}
+                        // onCancel={cancel}
+                        okText="Yes, Delete"
+                        cancelText="No"
+                        >
+                    <Button  icon={<DeleteOutlined/>}/>
+                    </Popconfirm>
+              </Space>
             </Col>
         </Row>
       </div>  

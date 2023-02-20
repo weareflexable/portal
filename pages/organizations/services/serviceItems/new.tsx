@@ -1,5 +1,5 @@
 import React,{useState} from 'react';
-import {Card,Form, Input,InputNumber, Image, DatePicker,Upload,Button,notification, Space, Alert, Typography, TimePicker, Select, Row, Col, Steps, Radio, Tooltip} from 'antd';
+import {Card,Form, Input,InputNumber, Image, DatePicker,Upload,Button,notification, Space, Alert, Typography, TimePicker, Select, Row, Col, Steps, Radio, Tooltip, Popconfirm, message} from 'antd';
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
 // import { Keyframes } from '@ant-design/cssinjs';
@@ -334,6 +334,10 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
     const {isError, isLoading:isCreatingData, isSuccess:isDataCreated, data:createdData} = createData
 
 
+    const cancel = (e: React.MouseEvent<HTMLElement>) => {
+        console.log(e);
+        message.success('keep custom date');
+      };
 
 
     return(
@@ -419,7 +423,16 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
                             <Col span={4}>
                                 <Form.Item style={{marginBottom:'0', width:'100%'}}>
                                     <Space >
-                                        <Button shape="round" icon={<MinusCircleOutlined  />} size='small'  onClick={() => remove(name)} type='text'>Remove Custom Date</Button>
+                                    <Popconfirm
+                                        title="Delete custom date"
+                                        description="Are you sure to delete this custom date?"
+                                        onConfirm={() => remove(name)}
+                                        // onCancel={cancel}
+                                        okText="Yes, Delete"
+                                        cancelText="No"
+                                    >
+                                        <Button shape="round" icon={<MinusCircleOutlined  />} size='small'  type='text'>Remove Custom Date</Button>
+                                    </Popconfirm>
                                     </Space>           
                                 </Form.Item>
                             </Col>
