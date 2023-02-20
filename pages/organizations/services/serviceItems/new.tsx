@@ -115,7 +115,7 @@ function BasicForm({nextStep}:BasicInfoProps){
 
         setIsHashingImage(true)
         //@ts-ignore
-        const imageHash = await asyncStore(formData.logoImageHash[0].originFileObj) 
+        // const imageHash = await asyncStore(formData.logoImageHash[0].originFileObj) 
         setIsHashingImage(false)
 
         // // only generate key if it's a new service
@@ -126,7 +126,7 @@ function BasicForm({nextStep}:BasicInfoProps){
                 description:formData.description,
                 orgServiceId: currentService.id,
                 serviceItemTypeId: router.query.key, // TODO: Get this value from context,
-                logoImageHash: imageHash
+                logoImageHash: router.query.label === 'Bottle service'? bottleServiceHash:lineSkipHash
             }
 
             createData.mutate(formObject)
@@ -221,9 +221,12 @@ function BasicForm({nextStep}:BasicInfoProps){
         </Form.Item>
 
 
-
-        
-        <Form.Item
+        <Title style={{marginTop:'4rem'}} level={3}>Artwork</Title>
+        <div style={{display:'flex',flexDirection:'column'}}>
+            <Image alt='artwork' style={{objectFit:'cover', height:'400px', width:'100%'}} src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${router.query.label==='Bottle service'? bottleServiceHash:lineSkipHash}`}/>
+            <Text type='secondary'>This cover image will be used for listing on marketplace and Digital access token NFT</Text>
+        </div>
+        {/* <Form.Item
             name="logoImageHash"
             label="Cover image"
             // valuePropName="fileList"
@@ -231,11 +234,11 @@ function BasicForm({nextStep}:BasicInfoProps){
             extra="This cover image will be used for listing on marketplace and Digital access token NFT"
             rules={[{ required: true, message: 'Please upload an image' }]}
         >
-            <Input hidden={true}/>
+
             {/* <Upload name="logo" action="" listType="picture">
             <Button icon={<UploadOutlined />}>Upload service item cover image</Button>
             </Upload> */}
-        </Form.Item> 
+        {/* </Form.Item>  */} 
 
 
         <Form.Item style={{marginTop:'4rem'}}>
@@ -498,3 +501,6 @@ const lineSkipImages = [
     '/placeholder.png',
     '/placeholder.png',
 ]
+
+const lineSkipHash = 'bafkreidsmu4nvoxylp6pea24ovvn6zczaofdgxstd77z5gqcx4mqwosco4'
+const bottleServiceHash = 'bafkreiaepvu5tennh267wlemky3imiqze4e7sgswra6eg4liazon3alnlq'

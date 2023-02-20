@@ -46,6 +46,7 @@ export default function Profile(){
       })
       return res.data.data
     }
+    
     const userQuery = useQuery({
       queryKey:['user'], 
       queryFn: fetchUserDetails, 

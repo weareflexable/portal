@@ -90,7 +90,7 @@ export default function CreateBankAccountForm(){
                     form={form}
                 >
                 <div style={{marginBottom:'2rem'}}>
-                <Title level={3}>Beneficiary details</Title>
+                <Title level={3}>Beneficiary Details</Title>
                 </div>
 
                 <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}>    
@@ -115,25 +115,25 @@ export default function CreateBankAccountForm(){
 
 
                 <div style={{marginBottom:'2rem', marginTop:'3rem'}}>
-                <Title level={3}>Account details</Title>
+                <Title level={3}>Account Details</Title>
                 </div>
 
                 <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}> 
 
                     <Form.Item 
-                        label="Account type" 
+                        label="Account Type" 
                         name="accountType"
                         rules={[{ required: true, message: 'Please select an accountType' }]}
                         >
                         <Radio.Group size='large'>
                             <Radio.Button value="savings">Savings</Radio.Button>
-                            <Radio.Button value="current">Current</Radio.Button>
+                            <Radio.Button value="checking">Checking</Radio.Button>
                         </Radio.Group>
                     </Form.Item>
 
                     <Form.Item
                         name="accountNo"
-                        label='Account number'
+                        label='Account Number'
                         rules={[{ required: true, message: 'Please input a valid account number' }]}
                     >
                         <Input allowClear size='large' placeholder="0127467382" />
@@ -179,7 +179,7 @@ export default function CreateBankAccountForm(){
 
                 <Form.Item
                     name="routingNumber"
-                    label='Routing number'
+                    label='Routing Number'
                     rules={[{ required: true, message: 'Please input a valid routing number' }]}
                 >
                     <Input size='large' placeholder="623852453 1234567 001" />
@@ -200,7 +200,7 @@ export default function CreateBankAccountForm(){
 
                 <Form.Item style={{marginTop:'3rem'}}>
                     <Button type="primary" size='large' shape='round' loading={isCreatingData} htmlType="submit">
-                    { isCreatingData? 'Creating...' :'Add bank'}
+                    { isCreatingData? 'Submiting...' :'Add Bank'}
                     </Button>
                 </Form.Item>
                 

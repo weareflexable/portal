@@ -154,7 +154,7 @@ export default function ServiceItemsView(){
                 <div style={{display:'flex',alignItems:'center'}}>
                     <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.logoImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
-                        <Text>{record.name}</Text>  
+                        <Text style={{textTransform:'capitalize'}}>{record.name}</Text>  
                     </div>
                 </div>
             )
@@ -166,7 +166,7 @@ export default function ServiceItemsView(){
         key: 'serviceItemType',
         render:(_,record)=>{
           const type = record.serviceItemType[0]
-          return <Text>{type.name}</Text>
+          return <Text style={{textTransform:'capitalize'}}>{type.name}</Text>
         }
       },
       {
