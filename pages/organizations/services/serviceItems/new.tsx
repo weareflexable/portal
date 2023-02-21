@@ -1,5 +1,5 @@
 import React,{useState} from 'react';
-import {Card,Form, Input,InputNumber, Image, DatePicker,Upload,Button,notification, Space, Alert, Typography, TimePicker, Select, Row, Col, Steps, Radio, Tooltip, Popconfirm, message} from 'antd';
+import {Card,Form, Input,InputNumber, Image, DatePicker,Upload,Button,notification, Space, Alert, Typography, TimePicker, Select, Row, Col, Steps, Radio, Tooltip, Popconfirm, message, Drawer} from 'antd';
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
 // import { Keyframes } from '@ant-design/cssinjs';
@@ -221,11 +221,7 @@ function BasicForm({nextStep}:BasicInfoProps){
         </Form.Item>
 
 
-        <Title style={{marginTop:'4rem'}} level={3}>Artwork</Title>
-        <div style={{display:'flex',flexDirection:'column'}}>
-            <Image alt='artwork' style={{objectFit:'cover', height:'400px', width:'100%'}} src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${router.query.label==='Bottle service'? bottleServiceHash: router.query.label === 'Reservation'? reservationHash:lineSkipHash}`}/>
-            <Text type='secondary'>This cover image will be used for listing on marketplace and Digital access token NFT</Text>
-        </div>
+        <Artwork/>
         {/* <Form.Item
             name="logoImageHash"
             label="Cover image"
@@ -507,6 +503,57 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
 }
 
 
+function Artwork(){
+
+    const router = useRouter()
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+
+    function toggleDrawer(){
+        setIsDrawerOpen(!isDrawerOpen)
+    }
+
+    return(
+        <div>
+            <Title style={{marginTop:'4rem'}} level={3}>Artwork</Title>
+            <div style={{display:'flex',flexDirection:'column'}}>
+                <Button type='link' onClick={toggleDrawer}>Select a different artwork</Button>
+                <Image alt='artwork' style={{objectFit:'cover', height:'400px', width:'100%'}} src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${router.query.label==='Bottle service'? bottleServiceHash: router.query.label === 'Reservation'? reservationHash:lineSkipHash}`}/>
+                <Text type='secondary'>This cover image will be used for listing on marketplace and Digital access token NFT</Text>
+            </div>
+            <ArtworkPicker 
+            isOpen={isDrawerOpen}
+            onToggleDrawer={toggleDrawer}
+            />
+        </div>
+    )
+}
+
+
+interface ArtworkPickerProps{
+    isOpen: boolean,
+    onToggleDrawer: ()=>void
+}
+function ArtworkPicker({isOpen,onToggleDrawer}:ArtworkPickerProps){
+    return(
+        <Drawer
+        height={'500px'}
+        title="Select an artwork for your service"
+        placement={'bottom'}
+        closable={true}
+        onClose={onToggleDrawer}
+        open={isOpen}
+      >
+        <div style={{width:'100%', overflowX:'auto', overflowY:'hidden', display:'flex'}}>
+            {/* <Image alt='artwork for lineskip' style={{objectFit: 'cover', height:'300px', width:'400px'}} src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${lineSkipHash}`}/> */}
+            <Image  alt='artwork for lineskip' style={{objectFit: 'cover', marginRight:'.4rem', height:'300px', width:'400px'}} src={lineSkipImages[0]}/>
+            <Image alt='artwork for lineskip' style={{objectFit: 'cover', marginRight:'.4rem', height:'300px', width:'400px'}} src={lineSkipImages[0]}/>
+            <Image alt='artwork for lineskip' style={{objectFit: 'cover', marginRight:'.4rem', height:'300px', width:'400px'}} src={lineSkipImages[0]}/>
+            <Image alt='artwork for lineskip' style={{objectFit: 'cover', marginRight:'.4rem', height:'300px', width:'400px'}} src={lineSkipImages[0]}/>
+            <Image alt='artwork for lineskip' style={{objectFit: 'cover', marginRight:'.4rem', height:'300px', width:'400px'}} src={lineSkipImages[0]}/>
+        </div>
+      </Drawer>
+    )
+}
 
 
 const lineSkipImages = [
