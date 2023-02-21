@@ -34,7 +34,7 @@ interface ServiceFormProps{
 export default function ServiceItemForm(){
 
     const router = useRouter()
-    const [currentStep, setCurrentStep] = useState(1);
+    const [currentStep, setCurrentStep] = useState(0);
     // State to hold the id of the service item that will get created in the
     // first form.
     const [createdItemId, setCreatedItemId] = useState('')
