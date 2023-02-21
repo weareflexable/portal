@@ -1,9 +1,10 @@
-import React,{useRef, useState} from 'react';
-import {Card,Form, Input,InputNumber, DatePicker,Upload,Button,notification, Space, Alert, Typography, TimePicker, Select, Row, Col, Steps, Radio, Tooltip, Popconfirm, message, Drawer} from 'antd';
+import React,{useEffect, useRef, useState} from 'react';
+import {Card,Form, Input,InputNumber, DatePicker,Upload,Button,notification, Space, Alert, Typography, TimePicker, Select, Row, Col, Steps, Radio, Tooltip, Popconfirm, message, Drawer, Collapse} from 'antd';
 const { TextArea } = Input;
 import Image from 'next/image'
 const { RangePicker } = DatePicker;
 // import { Keyframes } from '@ant-design/cssinjs';
+const { Panel } = Collapse;
 
 
 const {Text,Title} = Typography;
@@ -33,7 +34,7 @@ interface ServiceFormProps{
 export default function ServiceItemForm(){
 
     const router = useRouter()
-    const [currentStep, setCurrentStep] = useState(0);
+    const [currentStep, setCurrentStep] = useState(1);
     // State to hold the id of the service item that will get created in the
     // first form.
     const [createdItemId, setCreatedItemId] = useState('')
@@ -105,7 +106,7 @@ function BasicForm({nextStep}:BasicInfoProps){
      const urlPrefix = useUrlPrefix()
 
      // make this default value to be lineskip images first element
-    const artworkRef = useRef<string|null>(null)
+    const artworkRef = useRef<string|null>(lineSkipHashes[0])
     
     console.log(artworkRef)
 
@@ -119,7 +120,6 @@ function BasicForm({nextStep}:BasicInfoProps){
 
         // availability should return empty array whenever user decides not to add custom dates
         // const transformedAvailability = formData.availability?convertDates(formData.availability):[]
-        console.log(artworkRef)
 
         // // only generate key if it's a new service
             const formObject: ServiceItemReqPaylod = {
@@ -129,10 +129,10 @@ function BasicForm({nextStep}:BasicInfoProps){
                 description:formData.description,
                 orgServiceId: currentService.id,
                 serviceItemTypeId: router.query.key, // TODO: Get this value from context,
-                logoImageHash: router.query.label==='Bottle service'? bottleServiceHash: router.query.label === 'Reservation'? reservationHash:lineSkipHash
+                logoImageHash: artworkRef.current
             }
 
-            // createData.mutate(formObject)
+            createData.mutate(formObject)
 
 
     }
@@ -188,10 +188,10 @@ function BasicForm({nextStep}:BasicInfoProps){
             label="Title"
             rules={[{ required: true, message: 'Please input a valid service name' }]}
          >
-            <Input allowClear size='large' maxLength={150} placeholder="Bill Cage Line Skip" />
+            <Input allowClear size='large' maxLength={150} placeholder="Wonderland cage" />
         </Form.Item>
 
-        <Form.Item name='description'  label="Description">
+        <Form.Item name='description' rules={[{ required: true, message: 'Please write a description for your service' }]}  label="Description">
             <TextArea allowClear maxLength={500} size='large' showCount  placeholder='Tell us more about this service' rows={2} />
         </Form.Item>
 
@@ -323,10 +323,14 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
         <>
         <div style={{width:'100%', marginTop:'3rem', display:'flex',flexDirection:'column'}}>
             <Title style={{marginBottom:'.2rem'}} level={3}>Create Custom Dates</Title>
-            <div style={{padding:'1rem', marginTop:'1rem', display:'flex', flexDirection:'column', marginBottom:'1rem', borderRadius:'4px', border:'1px solid #e1e1e1'}}>
-                <Text>{`You can add multiple custom dates (i.e. New Year's Eve, St. Patricks Day, Cinco De Mayo, e.t.c) on which this service will be available on the marketplace.`}</Text>
-                <Text style={{marginTop:'.2rem'}}>{` These custom dates generally align with increased traffic/demand on your establishment and price & quantity of DATs should reflect that. These prices and quantity changes will go into effect on that day and that day only. After the custom date has passed, DAT price and quantitly will go back to the default settings you outlined on the "Basic info" step`}</Text>
-                <Text style={{marginTop:'.2rem'}}>{`For Eg. A Bar that offers 50 Line Skip DATs for $15 each on a normal Saturday night may wish to create a custom date for New Year's Eve in which they offer 100 Line Skip DATs for $25 each`}</Text>
+            <div style={{ marginTop:'1rem', display:'flex', flexDirection:'column', marginBottom:'1rem', borderRadius:'4px'}}>
+                <Text style={{marginBottom:'.2rem'}}>{`You can add multiple custom dates (i.e. New Year's Eve, St. Patricks Day, Cinco De Mayo, e.t.c) on which this service will be available on the marketplace.`}</Text>
+                <Text style={{marginBottom:'1rem',display:'block'}}>{` These custom dates generally align with increased traffic/demand on your establishment and price & quantity of DATs should reflect that. These prices and quantity changes will go into effect on that day and that day only. After the custom date has passed, DAT price and quantitly will go back to the default settings you outlined on the "Basic info" step`}</Text>
+                <Collapse>
+                    <Panel header="See example" key="1">
+                        <Text style={{marginTop:'.2rem'}}>{`For Eg. A Bar that offers 50 Line Skip DATs for $15 each on a normal Saturday night may wish to create a custom date for New Year's Eve in which they offer 100 Line Skip DATs for $25 each`}</Text>
+                    </Panel>
+                </Collapse>
             </div>
         </div>  
         <Form
@@ -403,11 +407,11 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
                                 <Form.Item style={{marginBottom:'0', width:'100%'}}>
                                     <Space >
                                     <Popconfirm
-                                        title="Delete custom date"
-                                        description="Are you sure to delete this custom date?"
+                                        title="Remove custom date"
+                                        description="Are you sure to remove this custom date?"
                                         onConfirm={() => remove(name)}
                                         // onCancel={cancel}
-                                        okText="Yes, Delete"
+                                        okText="Yes, Remove"
                                         cancelText="No"
                                     >
                                         <Button shape="round" icon={<MinusCircleOutlined  />} size='small'  type='text'>Remove Custom Date</Button>
@@ -492,11 +496,19 @@ function Artwork({onHandleArtwork}:ArtworkProps){
 
     const router = useRouter()
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-    const [selectedArtwork, setSelectedArtwork] = useState(lineSkipImages[0])
+    const [currentServiceItemType, setCurrentServiceItemType] = useState<null|string|string[]|undefined>(undefined)
+    const [selectedArtwork, setSelectedArtwork] = useState(lineSkipHashes[0]) // 
 
     function toggleDrawer(){
         setIsDrawerOpen(!isDrawerOpen)
     }
+
+    useEffect(() => {
+        if(router.isReady){
+            setCurrentServiceItemType(router.query.label)
+            setSelectedArtwork(router.query.label === 'Bottle service'?bottleServiceHashes[0]:lineSkipHashes[0])
+        }
+    }, [router.isReady, router.query.label])
 
     function selectImage(image:string){
         setSelectedArtwork(image)
@@ -508,10 +520,11 @@ function Artwork({onHandleArtwork}:ArtworkProps){
             <Title style={{marginTop:'4rem'}} level={3}>Artwork</Title>
             <div style={{display:'flex',flexDirection:'column'}}>
                 <Button type='link' onClick={toggleDrawer}>Select a different artwork</Button>
-                <Image alt='artwork' objectFit='cover' height='400px' width='400px'  src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${selectedArtwork}`}/>
+                <Image alt='artwork' objectFit='cover' height='300px' width='400px'  src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${selectedArtwork}`}/>
                 <Text type='secondary'>This cover image will be used for listing on marketplace and Digital access token NFT</Text>
             </div>
             <ArtworkPicker 
+                currentServiceItemType={currentServiceItemType}
                 selected = {selectedArtwork}
                 isOpen={isDrawerOpen}
                 onSelectImage = {selectImage}
@@ -523,12 +536,15 @@ function Artwork({onHandleArtwork}:ArtworkProps){
 
 
 interface ArtworkPickerProps{
+    currentServiceItemType: null|string|string[]|undefined,
     isOpen: boolean,
     onSelectImage: (image:string) =>void
     selected: string,
     onToggleDrawer: ()=>void
 }
-function ArtworkPicker({isOpen, selected, onSelectImage, onToggleDrawer}:ArtworkPickerProps){
+function ArtworkPicker({isOpen, selected, currentServiceItemType, onSelectImage, onToggleDrawer}:ArtworkPickerProps){
+ 
+    const currentHashes = currentServiceItemType && currentServiceItemType === 'Line skip'?lineSkipHashes:bottleServiceHashes || lineSkipHashes
 
     return(
         <Drawer
@@ -539,12 +555,12 @@ function ArtworkPicker({isOpen, selected, onSelectImage, onToggleDrawer}:Artwork
         onClose={onToggleDrawer}
         open={isOpen}
       >
-        <div style={{width:'100%', display:'flex'}}>
+        <div style={{width:'100%', display:'flex', overflowX:'scroll'}}>
             {/* <Image alt='artwork for lineskip' style={{objectFit: 'cover', height:'300px', width:'400px'}} src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${lineSkipHash}`}/> */}
             {
-                lineSkipImages.map((image:string)=>(
+                currentHashes.map((image:string)=>(
                     <div key={image} onClick={()=>onSelectImage(image)} style={{border:`4px solid ${selected === image? 'blue':'#eeeeee'}`,borderRadius:'4px',marginRight:'.4rem', padding:'.5rem'}}>
-                    <Image  alt='artwork for lineskip' height='300px' width='400px'  src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${image}`}/>
+                    <Image  alt='artwork for lineskip' height='300px' width='300px'  src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${image}`}/>
                     </div>
                 ))
             }
@@ -554,17 +570,23 @@ function ArtworkPicker({isOpen, selected, onSelectImage, onToggleDrawer}:Artwork
     )
 }
 
-const lineSkipHash = 'bafkreidsmu4nvoxylp6pea24ovvn6zczaofdgxstd77z5gqcx4mqwosco4'
-const bottleServiceHash = 'bafkreiaepvu5tennh267wlemky3imiqze4e7sgswra6eg4liazon3alnlq'
+
 const reservationHash = 'bafkreia2crkmeu3bcktnz77qcvlbdd4bjlbtzukbxocfhgyyl6yrmcj4sa'
 
-const lineSkipImages = [
-    lineSkipHash,
-    bottleServiceHash,
-    reservationHash
+const lineSkipHashes = [
+    'bafkreicl6mxs4xifx6vef3lacxrfozbqzw2h7ccekkr2qsxe552jo3zzbm',
+    'bafkreifuv3jjwm2tltcgpe36br3q4qrwyrd4aqj7dv4apqqi64kwc7ma6q',
+    'bafkreicxz3njmsqovgifgdjwngoghbmaeieywgw5j2gzoy26dtecdqfc7e',
+    'bafkreig4h3dhawjzqiieegze7ksbzj5i3no4duexaxzezgm5d272yp7gpq',
+    'bafkreidm6lrgassu63uald57ocsbn2xkmzexq3n3c5mbkf23vhxcl4jxzm'
 ]
 
-const lineSkipHashes = [
-    'bafkreidsmu4nvoxylp6pea24ovvn6zczaofdgxstd77z5gqcx4mqwosco4',
-
+const bottleServiceHashes = [
+    'bafkreih5kmywbykilkwduqdx7lttuuzin2puselw6swwnhi3hrnztuv6r4',
+    'bafkreignk6ctyc3ngrklrmnpqnrbovij3e5x23ups5ynbwghe6rwwpnq4y',
+    'bafkreibzyvawcyr3zjnvob6rfr7edzct7a63radq6ec5k5woa2v7belvs4',
+    'bafkreidrgnhgak5zurcyud73kzgm347fkvruoy5mjm4stosetpfocyhem4',
+    'bafkreigbbf73imovkwrsjrcvys6cggwff2jwb6ixi5weovlxftb73t54qe',
+    'bafkreifll4nla7zdudxrlei3widcqtiz6phaa5zlbzyo5fdd76byytytgy',
+    'bafkreiffhginn626rfdqsrn4lqpzhpsdfqbdeqxmofr3offdl6akp5qixy'
 ]

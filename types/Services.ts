@@ -68,7 +68,7 @@ export type ServiceItemReqPaylod = {
     ticketsPerDay: number,
     description:string,
     orgServiceId: string,
-    logoImageHash?: string,
+    logoImageHash?: string | null | any,
     // serviceItemId: string
     serviceItemTypeId?: string | undefined | string[]
 }
