@@ -117,7 +117,6 @@ export default function ManagerOrgsView(){
 
 
     const handleChange: TableProps<Service>['onChange'] = (data) => {
-      console.log(data.current)
       //@ts-ignore
       setPageNumber(data.current-1); // Subtracting 1 because pageSize param in url starts counting from 0
     };
@@ -288,7 +287,9 @@ function gotoDashboard(service:Service){
                 
                 {
                   data && data.length === 0 
-                  ? <EmptyState/> 
+                  ? <EmptyState>
+                      <Dropdown.Button trigger={['click']} type="primary"   icon={<PlusOutlined/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
+                  </EmptyState> 
                   : <Table 
                       style={{width:'100%'}} 
                       size='large' 
@@ -524,15 +525,20 @@ const servicesFilter = [
 ]
 
 
+interface EmptyStateProps{
+  children: ReactNode
+}
 
-function EmptyState(){
-  const router = useRouter()
+function EmptyState({children}:EmptyStateProps){
+
   return(
     <div style={{border: '1px solid #d6d6d6', marginTop:'2rem', borderRadius:'4px', height:'50vh', display:'flex', justifyContent:'center', alignItems:'center', padding: '2rem'}}>
       <div style={{maxWidth:'350px', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
         <Title level={3}>Get Started</Title> 
         <Text style={{textAlign:'center'}}>Oops! We have found no active venues in your organization</Text>
-        <Button size="large" type="primary" shape="round" icon={<PlusOutlined />} onClick={()=>router.push('/organizations/services/new')} style={{marginTop:'1rem'}}>Launch New Venue</Button>
+        <div style={{marginTop:'1rem', display:'flex',justifyContent:'center'}}>
+            {children}
+        </div>
       </div>
     </div>
   )

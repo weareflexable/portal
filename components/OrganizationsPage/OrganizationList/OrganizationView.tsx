@@ -39,6 +39,7 @@ export default function AdminOrgsView(){
     const searchInput = useRef<InputRef>(null);
     const ticketSearchRef = useRef(null)
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+    const [pageNumber, setPageNumber] = useState<number|undefined>(0)
   
     // const isFilterEmpty = Object.keys(filteredInfo).length === 0;
 
@@ -50,7 +51,7 @@ export default function AdminOrgsView(){
     async function fetchOrgs(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/orgs?key=status&value=${currentStatus.id}&pageNumber=0&pageSize=10`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/orgs?key=status&value=${currentStatus.id}&pageNumber=${pageNumber}&pageSize=10`,
             headers:{
                 "Authorization": paseto
             }
@@ -119,6 +120,8 @@ export default function AdminOrgsView(){
 
     const orgQuery = useQuery({queryKey:['organizations', currentStatus], queryFn:fetchOrgs, enabled:paseto !== ''})
     const orgs = orgQuery.data && orgQuery.data.data
+    // const data = servicesQuery.data && servicesQuery.data.data
+    const totalLength = orgQuery.data && orgQuery.data.dataLength;
 
 
     
@@ -162,9 +165,9 @@ export default function AdminOrgsView(){
       setSearchedDate('');
     };
   
-    const handleChange: TableProps<NewOrg>['onChange'] = (pagination, filters, sorter) => {
-      console.log('Various parameters', pagination, filters, sorter);
-      setFilteredInfo(filters);
+    const handleChange: TableProps<NewOrg>['onChange'] = (data) => {
+      //@ts-ignore
+      setPageNumber(data.current-1); 
     };
   
     // const getColumnSearchProps = (dataIndex: DataIndex): ColumnType<NewOrg> => ({
@@ -463,6 +466,10 @@ export default function AdminOrgsView(){
                   columns={columns} 
                   onChange={handleChange} 
                   dataSource={orgs}
+                  pagination={{
+                    total:totalLength,  
+                    showTotal:(total) => `Total: ${total} items`,
+                  }} 
                 />}
                 {
                   isDrawerOpen && currentStatus.name === 'Approved'
