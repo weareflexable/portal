@@ -231,13 +231,6 @@ export default function NewOrgForm(){
                     <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}> 
 
 
-                    <Form.Item
-                        name="email"
-                        label='Email'
-                        rules={[{ required: true, message: 'Please input a valid email!' }]}
-                    >
-                        <Input size="large" placeholder="mujahid.bappai@flexable.com" />
-                    </Form.Item>
 
                     <Form.Item
                         name="name"
@@ -247,6 +240,14 @@ export default function NewOrgForm(){
                         <Input size="large" placeholder="Flexable org" />
                     </Form.Item>
 
+                    <Form.Item
+                        name="email"
+                        label='Email'
+                        rules={[{ required: true, message: 'Please input a valid email!' }]}
+                    >
+                        <Input size="large" placeholder="mujahid.bappai@flexable.com" />
+                    </Form.Item>
+                    
                     <Form.Item
                         // name="contactNumber"
                         label="Contact Number"
