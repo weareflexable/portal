@@ -503,7 +503,7 @@ function EmptyState({children}:Empty){
       <div style={{maxWidth:'300px', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
         <Title level={3}>Get Started</Title> 
         <Text style={{textAlign:'center'}}>Ready to get started listing your services on the Flexable Marketplace?</Text>
-        {/* <Button size="large" type="primary" shape="round" icon={<PlusOutlined />} onClick={()=>router.push('/organizations/services/serviceItems/new')} style={{marginTop:'1rem'}}>Create New Service</Button> */}
+
           <div style={{marginTop:'1rem', display:'flex',justifyContent:'center'}}>
             {children}
           </div>
