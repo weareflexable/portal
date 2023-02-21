@@ -3,6 +3,16 @@ const nextConfig = {
   reactStrictMode: true,
   // swcMinify: true,
   output: "standalone",
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'nftstorage.link',
+        port: '',
+        pathname: '/ipfs/**',
+      },
+    ],
+  },
 };
 
 module.exports = nextConfig;

@@ -1,6 +1,7 @@
-import React,{useState} from 'react';
-import {Card,Form, Input,InputNumber, Image, DatePicker,Upload,Button,notification, Space, Alert, Typography, TimePicker, Select, Row, Col, Steps, Radio, Tooltip, Popconfirm, message, Drawer} from 'antd';
+import React,{useRef, useState} from 'react';
+import {Card,Form, Input,InputNumber, DatePicker,Upload,Button,notification, Space, Alert, Typography, TimePicker, Select, Row, Col, Steps, Radio, Tooltip, Popconfirm, message, Drawer} from 'antd';
 const { TextArea } = Input;
+import Image from 'next/image'
 const { RangePicker } = DatePicker;
 // import { Keyframes } from '@ant-design/cssinjs';
 
@@ -103,20 +104,22 @@ function BasicForm({nextStep}:BasicInfoProps){
 
      const urlPrefix = useUrlPrefix()
 
-     console.log(router.query)
+     // make this default value to be lineskip images first element
+    const artworkRef = useRef<string|null>(null)
     
+    console.log(artworkRef)
+
+    function handleArtworkChange(hash:string){
+        artworkRef.current = hash
+    }
+
    
 
      const onFinish = async (formData:ServiceItem)=>{
 
         // availability should return empty array whenever user decides not to add custom dates
         // const transformedAvailability = formData.availability?convertDates(formData.availability):[]
-
-
-        setIsHashingImage(true)
-        //@ts-ignore
-        // const imageHash = await asyncStore(formData.logoImageHash[0].originFileObj) 
-        setIsHashingImage(false)
+        console.log(artworkRef)
 
         // // only generate key if it's a new service
             const formObject: ServiceItemReqPaylod = {
@@ -129,7 +132,7 @@ function BasicForm({nextStep}:BasicInfoProps){
                 logoImageHash: router.query.label==='Bottle service'? bottleServiceHash: router.query.label === 'Reservation'? reservationHash:lineSkipHash
             }
 
-            createData.mutate(formObject)
+            // createData.mutate(formObject)
 
 
     }
@@ -168,13 +171,7 @@ function BasicForm({nextStep}:BasicInfoProps){
     const {isError, isLoading:isCreatingData, isSuccess:isDataCreated, data:createdData} = createData
 
 
-    const normFile = (e: any) => {
-        console.log('Upload event:', e);
-        if (Array.isArray(e)) {
-          return e;
-        } 
-        return e?.fileList;
-      };
+   
 
     return(
         <Form
@@ -221,21 +218,7 @@ function BasicForm({nextStep}:BasicInfoProps){
         </Form.Item>
 
 
-        <Artwork/>
-        {/* <Form.Item
-            name="logoImageHash"
-            label="Cover image"
-            // valuePropName="fileList"
-            // getValueFromEvent={normFile}
-            extra="This cover image will be used for listing on marketplace and Digital access token NFT"
-            rules={[{ required: true, message: 'Please upload an image' }]}
-        >
-
-            {/* <Upload name="logo" action="" listType="picture">
-            <Button icon={<UploadOutlined />}>Upload service item cover image</Button>
-            </Upload> */}
-        {/* </Form.Item>  */} 
-
+        <Artwork onHandleArtwork={handleArtworkChange}/>
 
         <Form.Item style={{marginTop:'4rem'}}>
             <Space>
@@ -502,14 +485,22 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
     )
 }
 
-
-function Artwork(){
+interface ArtworkProps{
+    onHandleArtwork: (value:string)=>void
+}
+function Artwork({onHandleArtwork}:ArtworkProps){
 
     const router = useRouter()
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+    const [selectedArtwork, setSelectedArtwork] = useState(lineSkipImages[0])
 
     function toggleDrawer(){
         setIsDrawerOpen(!isDrawerOpen)
+    }
+
+    function selectImage(image:string){
+        setSelectedArtwork(image)
+        onHandleArtwork(image)
     }
 
     return(
@@ -517,12 +508,14 @@ function Artwork(){
             <Title style={{marginTop:'4rem'}} level={3}>Artwork</Title>
             <div style={{display:'flex',flexDirection:'column'}}>
                 <Button type='link' onClick={toggleDrawer}>Select a different artwork</Button>
-                <Image alt='artwork' style={{objectFit:'cover', height:'400px', width:'100%'}} src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${router.query.label==='Bottle service'? bottleServiceHash: router.query.label === 'Reservation'? reservationHash:lineSkipHash}`}/>
+                <Image alt='artwork' objectFit='cover' height='400px' width='400px'  src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${selectedArtwork}`}/>
                 <Text type='secondary'>This cover image will be used for listing on marketplace and Digital access token NFT</Text>
             </div>
             <ArtworkPicker 
-            isOpen={isDrawerOpen}
-            onToggleDrawer={toggleDrawer}
+                selected = {selectedArtwork}
+                isOpen={isDrawerOpen}
+                onSelectImage = {selectImage}
+                onToggleDrawer={toggleDrawer}
             />
         </div>
     )
@@ -531,9 +524,12 @@ function Artwork(){
 
 interface ArtworkPickerProps{
     isOpen: boolean,
+    onSelectImage: (image:string) =>void
+    selected: string,
     onToggleDrawer: ()=>void
 }
-function ArtworkPicker({isOpen,onToggleDrawer}:ArtworkPickerProps){
+function ArtworkPicker({isOpen, selected, onSelectImage, onToggleDrawer}:ArtworkPickerProps){
+
     return(
         <Drawer
         height={'500px'}
@@ -543,25 +539,32 @@ function ArtworkPicker({isOpen,onToggleDrawer}:ArtworkPickerProps){
         onClose={onToggleDrawer}
         open={isOpen}
       >
-        <div style={{width:'100%', overflowX:'auto', overflowY:'hidden', display:'flex'}}>
+        <div style={{width:'100%', display:'flex'}}>
             {/* <Image alt='artwork for lineskip' style={{objectFit: 'cover', height:'300px', width:'400px'}} src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${lineSkipHash}`}/> */}
-            <Image  alt='artwork for lineskip' style={{objectFit: 'cover', marginRight:'.4rem', height:'300px', width:'400px'}} src={lineSkipImages[0]}/>
-            <Image alt='artwork for lineskip' style={{objectFit: 'cover', marginRight:'.4rem', height:'300px', width:'400px'}} src={lineSkipImages[0]}/>
-            <Image alt='artwork for lineskip' style={{objectFit: 'cover', marginRight:'.4rem', height:'300px', width:'400px'}} src={lineSkipImages[0]}/>
-            <Image alt='artwork for lineskip' style={{objectFit: 'cover', marginRight:'.4rem', height:'300px', width:'400px'}} src={lineSkipImages[0]}/>
-            <Image alt='artwork for lineskip' style={{objectFit: 'cover', marginRight:'.4rem', height:'300px', width:'400px'}} src={lineSkipImages[0]}/>
+            {
+                lineSkipImages.map((image:string)=>(
+                    <div key={image} onClick={()=>onSelectImage(image)} style={{border:`4px solid ${selected === image? 'blue':'#eeeeee'}`,borderRadius:'4px',marginRight:'.4rem', padding:'.5rem'}}>
+                    <Image  alt='artwork for lineskip' height='300px' width='400px'  src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${image}`}/>
+                    </div>
+                ))
+            }
+
         </div>
       </Drawer>
     )
 }
 
-
-const lineSkipImages = [
-    '/placeholder.png',
-    '/placeholder.png',
-    '/placeholder.png',
-]
-
 const lineSkipHash = 'bafkreidsmu4nvoxylp6pea24ovvn6zczaofdgxstd77z5gqcx4mqwosco4'
 const bottleServiceHash = 'bafkreiaepvu5tennh267wlemky3imiqze4e7sgswra6eg4liazon3alnlq'
 const reservationHash = 'bafkreia2crkmeu3bcktnz77qcvlbdd4bjlbtzukbxocfhgyyl6yrmcj4sa'
+
+const lineSkipImages = [
+    lineSkipHash,
+    bottleServiceHash,
+    reservationHash
+]
+
+const lineSkipHashes = [
+    'bafkreidsmu4nvoxylp6pea24ovvn6zczaofdgxstd77z5gqcx4mqwosco4',
+
+]
