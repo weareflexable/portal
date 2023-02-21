@@ -106,13 +106,10 @@ export default function NewOrgForm(){
     const onFinish = async(formData:NewOrg)=>{
 
         const logoRes = await formData.logoImageHash
-        // const coverImageRes = await formData.coverImageHash
 
         setIsHashingAssets(true)
         // @ts-ignore
         const logoHash = await asyncStore(logoRes[0].originFileObj)
-        // @ts-ignore
-        // const coverImageHash = await asyncStore(coverImageRes[0].originFileObj)
         setIsHashingAssets(false)
 
          // format phoneNumber
@@ -132,7 +129,10 @@ export default function NewOrgForm(){
 
         // @ts-ignore
         delete formObject.address
-        console.log(formObject)
+
+        // @ts-ignore
+        delete formObject.contact
+
         createData.mutate(formObject)
     }
 
@@ -231,20 +231,21 @@ export default function NewOrgForm(){
                     <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}> 
 
 
+
+                    <Form.Item
+                        name="name"
+                        label="Name"
+                        rules={[{ required: true, message: 'Please input a valid name' }]}
+                    >
+                        <Input size="large" placeholder="Flexable org" />
+                    </Form.Item>
+
                     <Form.Item
                         name="email"
                         label='Email'
                         rules={[{ required: true, message: 'Please input a valid email!' }]}
                     >
                         <Input size="large" placeholder="mujahid.bappai@flexable.com" />
-                    </Form.Item>
-
-                    <Form.Item
-                        name="name"
-                        label="Name"
-                        rules={[{ required: true, message: 'Please input a valid service name' }]}
-                    >
-                        <Input size="large" placeholder="Flexable org" />
                     </Form.Item>
 
                     <Form.Item

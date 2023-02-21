@@ -132,7 +132,10 @@ export default function NewOrgForm(){
 
         // @ts-ignore
         delete formObject.address
-        console.log(formObject)
+
+        // @ts-ignore
+        delete formObject.contact
+
         createData.mutate(formObject)
     }
 
@@ -235,7 +238,7 @@ export default function NewOrgForm(){
                     <Form.Item
                         name="name"
                         label="Name"
-                        rules={[{ required: true, message: 'Please input a valid service name' }]}
+                        rules={[{ required: true, message: 'Please input a valid name' }]}
                     >
                         <Input size="large" placeholder="Flexable org" />
                     </Form.Item>
@@ -247,7 +250,7 @@ export default function NewOrgForm(){
                     >
                         <Input size="large" placeholder="mujahid.bappai@flexable.com" />
                     </Form.Item>
-                    
+
                     <Form.Item
                         // name="contactNumber"
                         label="Contact Number"
