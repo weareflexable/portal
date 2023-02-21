@@ -45,7 +45,7 @@ export default function AdminOrgsView(){
     type DataIndex = keyof NewOrg;
 
     const [selectedOrg, setSelelectedOrg] = useState<any|NewOrg>({})
-    const [currentStatus, setCurrentStatus] = useState({id:'1',name: 'Approved'})
+    const [currentStatus, setCurrentStatus] = useState({id:'2',name: 'In Review'})
 
     async function fetchOrgs(){
     const res = await axios({
@@ -66,7 +66,7 @@ export default function AdminOrgsView(){
       console.log(orgId)
         const res = await axios({
             method:'patch',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/org`,
             data:{
                 key:'status',
                 value: statusNumber, // 0 means de-activated in db
@@ -1310,12 +1310,12 @@ function EditableCoverImage({selectedOrg}:EditableProp){
 
 const orgStatus = [
   {
-      id: '1',
-      name: 'Approved'
-  },
-  {
       id: '2',
       name: 'In Review'
+  },
+  {
+      id: '1',
+      name: 'Approved'
   },
   {
       id: '4',
