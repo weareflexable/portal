@@ -667,7 +667,7 @@ function EditableName({selectedOrg}:EditableProp){
  
 
   const nameMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/org`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -807,7 +807,7 @@ function EditableAddress({selectedOrg}:EditableProp){
 
 
   const nameMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/org`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -916,7 +916,7 @@ function EditablePhone({selectedOrg}:EditableProp){
   )
 
   const nameMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/org`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -1005,7 +1005,7 @@ function EditableZipCode({selectedOrg}:EditableProp){
   )
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/org`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -1095,7 +1095,7 @@ function EditableLogoImage({selectedOrg}:EditableProp){
   )
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/org`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -1211,7 +1211,7 @@ function EditableCoverImage({selectedOrg}:EditableProp){
   )
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/org`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
