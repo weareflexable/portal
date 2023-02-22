@@ -464,25 +464,7 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
                 
             </Form.Item>
 
-            {/* <Form.Item
-                style={{marginBottom:'0'}}
-                shouldUpdate
-            >
-                {() => (
-                <Button
-                    danger
-                    shape='round'
-                    loading={isCreatingData}
-                    htmlType="submit"
-                    disabled={
-                    !form.isFieldTouched('customDates')
-                    // !!form.getFieldsError().filter(({ errors }) => errors.length).length
-                    }
-                >
-                Create Custom Dates
-                </Button>
-                )}
-          </Form.Item> */}
+           
 
             </Form>
         </>
@@ -518,9 +500,9 @@ function Artwork({onHandleArtwork}:ArtworkProps){
     return(
         <div>
             <Title style={{marginTop:'4rem'}} level={3}>Artwork</Title>
-            <div style={{display:'flex',flexDirection:'column'}}>
-                <Button type='link' onClick={toggleDrawer}>Select a different artwork</Button>
-                <Image alt='artwork' objectFit='cover' height='300px' width='400px'  src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${selectedArtwork}`}/>
+            <div style={{display:'flex', flexDirection:'column'}}>
+                <Button type='link' style={{alignSelf:'flex-end'}} onClick={toggleDrawer}>Select a different artwork</Button>
+                <Image alt='artwork' objectFit='cover' height='400px' width='300px'  src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${selectedArtwork}`}/>
                 <Text type='secondary'>This cover image will be used for listing on marketplace and Digital access token NFT</Text>
             </div>
             <ArtworkPicker 
@@ -571,7 +553,7 @@ function ArtworkPicker({isOpen, selected, currentServiceItemType, onSelectImage,
 }
 
 
-const reservationHash = 'bafkreia2crkmeu3bcktnz77qcvlbdd4bjlbtzukbxocfhgyyl6yrmcj4sa'
+
 
 const lineSkipHashes = [
     'bafkreicl6mxs4xifx6vef3lacxrfozbqzw2h7ccekkr2qsxe552jo3zzbm',

@@ -12,7 +12,7 @@ import { useServicesContext } from '../../context/ServicesContext';
 import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { Availability, AvailabilityPayload, CustomDate, ServiceItem } from "../../types/Services";
-import { EditableCoverImage, EditableDescription, EditableName, EditablePrice, EditableTicketsPerDay } from "./EditServiceItemForm/EditServiceForm";
+import { EditableCoverImage, EditableDescription, EditableName, EditablePrice, EditableTicketsPerDay } from "./EditServiceItemForm/EditServiceItemForm";
 import AvailabilitySection from "./Availability/Availability";
 import useUrlPrefix from "../../hooks/useUrlPrefix";
 import useRole from "../../hooks/useRole";

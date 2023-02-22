@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { Button, Col, Form, Typography, Image, Input, Row, Space, Upload } from "antd"
+import { Button, Col, Form, Typography, Image as AntImage, Input, Row, Space, Upload } from "antd"
 const {TextArea} = Input
 const {Text} = Typography
 import axios from "axios"
@@ -8,6 +8,8 @@ import { useAuthContext } from "../../../context/AuthContext"
 import useUrlPrefix from "../../../hooks/useUrlPrefix"
 import { ServiceItem } from "../../../types/Services"
 import { asyncStore } from "../../../utils/nftStorage"
+import { ArtworkPicker } from "../Artwork"
+import Image from 'next/image'
 
 interface EditableProp{
     selectedRecord: ServiceItem
@@ -108,6 +110,7 @@ interface EditableProp{
       </div>
     )
   }
+
   export function EditablePrice({selectedRecord}:EditableProp){
   
     const [state, setState] = useState(selectedRecord)
@@ -206,6 +209,7 @@ interface EditableProp{
       </div>
     )
   }
+
   export function EditableTicketsPerDay({selectedRecord}:EditableProp){
   
     const [state, setState] = useState(selectedRecord)
@@ -408,7 +412,8 @@ interface EditableProp{
     const [isEditMode, setIsEditMode] = useState(false) 
     const [isHashingImage, setIsHashingImage] = useState(false)
     const [updatedCoverImageHash, setUpdatedCoverImageHash] = useState(selectedRecord.logoImageHash)
-  
+    const [artwork, setArtwork] = useState(selectedRecord.logoImageHash)
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const {paseto} = useAuthContext()
 
     const urlPrefix = useUrlPrefix()
@@ -416,13 +421,15 @@ interface EditableProp{
     function toggleEdit(){
       setIsEditMode(!isEditMode)
     }
-  
-    const readOnly = (
-        <div style={{width:'100%', marginTop:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-          <Image style={{width:'500px', height:'200px', objectFit:'cover', border:'1px solid #f2f2f2'}} alt='cover image for serviceItem' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedCoverImageHash}`}/>
-          <Button type="link" onClick={toggleEdit}>Edit</Button>
-        </div>
-    )
+    
+    function toggleDrawer(){
+      setIsDrawerOpen(!isDrawerOpen)
+    }
+
+    function handleSelectImage(imageHash:string){
+      setArtwork(imageHash)
+    }
+   
   
     const mutationHandler = async(updatedItem:any)=>{
       const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,updatedItem,{
@@ -434,83 +441,69 @@ interface EditableProp{
         return data;
     }
     const mutation = useMutation({
-      mutationKey:['logoImage'],
+      mutationKey:['logo_image'],
       mutationFn: mutationHandler,
       onSuccess:()=>{
         toggleEdit()
       }
     })
+
   
-    async function onFinish(field:ServiceItem){
-  
-      // hash it first
-      const coverImageRes = await field.logoImageHash
-  
-      setIsHashingImage(true)
-      //@ts-ignore
-      const coverImageHash = await asyncStore(coverImageRes[0].originFileObj)
-      setIsHashingImage(false)
-  
+    async function onFinish(){
+    
   
       const payload = {
         key:'logo_image_hash',
-        value: coverImageHash,
+        value: artwork,
         id: selectedRecord.id
       }
-      setUpdatedCoverImageHash(coverImageHash)
+      // setUpdatedCoverImageHash(coverImageHash)
       mutation.mutate(payload)
     }
   
     const {isLoading:isEditing} = mutation
   
-    const extractCoverImage = async(e: any) => {
-      console.log('Upload event:', e);
-      if (Array.isArray(e)) {
-      return e;
-      }
   
-     return e?.fileList;
-  };
-  
-  
-    const editable = (
-      <Form
+    const editable = ( 
+      <div
        style={{ marginTop:'.5rem' }}
-       name="editableCoverImage"
-       initialValues={selectedRecord}
-       onFinish={onFinish}
        >
         <Row>
           <Col span={10}>
-            <Form.Item
-                name="logoImageHash"
-                valuePropName="logoImageHash"
-                getValueFromEvent={extractCoverImage}
-                rules={[{ required: true, message: 'Please upload card image for service item' }]}
-            >
-                
-                <Upload name="logoImageHash" listType="picture" multiple={false}>
-                     <Button size='small' disabled={isHashingImage} type='link'>Upload image</Button>
-                </Upload>
-            </Form.Item>
+           <Image alt='Artwork preview' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${artwork}`} height='300px' width='300px'/>
+            <Button onClick={toggleDrawer}>Change artwork</Button>
+            <ArtworkPicker
+              currentServiceItemType={'Line skip'}
+              isOpen ={isDrawerOpen}
+              onToggleDrawer = {toggleDrawer}
+              onSelectImage = {handleSelectImage}
+              currentSelectedArtwork = {artwork}
+            />
           </Col>
           <Col span={4}>
-            <Form.Item style={{ width:'100%'}}>
+
                 <Space >
                     <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
                         Cancel
                     </Button>
-                    <Button shape="round" loading={isEditing||isHashingImage} type="link" size="small"  htmlType="submit" >
+                    <Button shape="round" loading={isEditing} disabled={artwork === ''} onClick={onFinish}  type="link" size="small"  htmlType="submit" >
                         Apply changes
                     </Button>
                 </Space>
                           
-            </Form.Item>
           </Col>
         </Row>
              
-      </Form>
+      </div>
     )
+
+    const readOnly = (
+      <div style={{width:'100%', marginTop:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+        <AntImage style={{width:'500px', height:'200px', objectFit:'cover', border:'1px solid #f2f2f2'}} alt='cover image for serviceItem' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedCoverImageHash}`}/>
+        <Button type="link" onClick={toggleEdit}>Edit</Button>
+      </div>
+    )
+
     return(
       <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
         <Text type="secondary" style={{ marginRight: '2rem',}}>Cover Image</Text>
