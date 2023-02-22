@@ -46,7 +46,7 @@ export default function AdminOrgsView(){
     type DataIndex = keyof NewOrg;
 
     const [selectedOrg, setSelelectedOrg] = useState<any|NewOrg>({})
-    const [currentStatus, setCurrentStatus] = useState({id:'2',name: 'In Review'})
+    const [currentStatus, setCurrentStatus] = useState({id:'1',name: 'Approved'})
 
     async function fetchOrgs(){
     const res = await axios({
@@ -441,7 +441,7 @@ export default function AdminOrgsView(){
 
         return (
             <div>
-                {orgs&&orgs.length === 0
+                {orgs && orgs.length === 0 && currentStatus.id == '1' 
                 ? null
                 :<div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                     <Radio.Group defaultValue={currentStatus.id} buttonStyle="solid">
@@ -1319,12 +1319,12 @@ function EditableCoverImage({selectedOrg}:EditableProp){
 
 const orgStatus = [
   {
-      id: '2',
-      name: 'In Review'
-  },
-  {
       id: '1',
       name: 'Approved'
+  },
+  {
+      id: '2',
+      name: 'In Review'
   },
   {
       id: '4',
