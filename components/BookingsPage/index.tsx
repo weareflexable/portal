@@ -120,10 +120,10 @@ export default function BookingsView(){
           const user = record.user[0]
           const email = user.email
           const name = user.name
-          const logoImageHash = user.logoImageHash
+          const profilePicHash = user.profilePic
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${logoImageHash}`}/>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${profilePicHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{name}</Text>  
                         <Text type="secondary">{email}</Text>  

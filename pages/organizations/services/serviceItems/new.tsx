@@ -555,12 +555,12 @@ function ArtworkPicker({isOpen, selected, currentServiceItemType, onSelectImage,
         onClose={onToggleDrawer}
         open={isOpen}
       >
-        <div style={{width:'100%', display:'flex', overflowX:'scroll'}}>
+        <div style={{width:'100%', height:'100%', position:'relative',   overflowY: 'hidden', whiteSpace:'nowrap', overflowX:'scroll'}}>
             {/* <Image alt='artwork for lineskip' style={{objectFit: 'cover', height:'300px', width:'400px'}} src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${lineSkipHash}`}/> */}
             {
                 currentHashes.map((image:string)=>(
-                    <div key={image} onClick={()=>onSelectImage(image)} style={{border:`4px solid ${selected === image? 'blue':'#eeeeee'}`,borderRadius:'4px',marginRight:'.4rem', padding:'.5rem'}}>
-                    <Image  alt='artwork for lineskip' height='300px' width='300px'  src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${image}`}/>
+                    <div key={image} onClick={()=>onSelectImage(image)} style={{border:`4px solid ${selected === image? '#1677ff':'#eeeeee'}`,borderRadius:'4px',  display:'inline-block', marginRight:'1rem', padding:'.5rem'}}>
+                        <Image  alt='artwork for lineskip' height='300px' width='300px'  src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${image}`}/> 
                     </div>
                 ))
             }
