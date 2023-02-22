@@ -455,7 +455,7 @@ export default function ManagerOrgsView(){
                 </div>
                 }
   
-                { orgs && orgs.length === 0 
+                { orgs && orgs.length === 0 && currentStatus.id == '2' 
                 ?<EmptyState/>
                 :<Table 
                   style={{width:'100%'}} 
