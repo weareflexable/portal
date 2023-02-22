@@ -271,7 +271,7 @@ function gotoDashboard(service:Service){
 
                <Col offset={2} span={20}>
                    <Title style={{marginBottom:'1em'}} level={2}>Launchpad</Title>
-                   {data && data.length === 0 ? null : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+                   {data && data.length === 0 && currentFilter.id == '1' ? null : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                       <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
                           {servicesFilter.map(filter=>(
                               <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
@@ -286,7 +286,7 @@ function gotoDashboard(service:Service){
                    </div>}
                 
                 {
-                  data && data.length === 0 
+                  data && data.length === 0 && currentFilter.id == '1'
                   ? <EmptyState>
                       <Dropdown.Button trigger={['click']} type="primary"   icon={<PlusOutlined/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
                   </EmptyState> 

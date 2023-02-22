@@ -223,7 +223,7 @@ export default function ServiceItemsView(){
 
         return (
             <div>
-               { servicesData && servicesData.length === 0 ? null : <div style={{marginBottom:'2em', marginTop:'.5rem', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+               { servicesData && servicesData.length === 0 && currentFilter.id == '1' ? null : <div style={{marginBottom:'2em', marginTop:'.5rem', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                { isManager? <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
                     {serviceItemsFilters.map(filter=>(
                         <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
@@ -238,7 +238,7 @@ export default function ServiceItemsView(){
 
                 </div>}
                 {
-                  servicesData && servicesData.length === 0 
+                  servicesData && servicesData.length === 0 && currentFilter.id == '1'
                   ?<EmptyState>
                     <Dropdown.Button trigger={['click']} type="primary"   icon={<PlusOutlined/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
                   </EmptyState>

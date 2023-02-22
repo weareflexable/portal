@@ -189,7 +189,7 @@ export default function StaffView(){
 
         return (
             <div>
-                {data && data.length === 0 ? null : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+                {data && data.length === 0 && currentFilter.id == '1' ? null : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                   <Radio.Group defaultValue={currentFilter.id} style={{width:'100%'}} buttonStyle="solid">
                       {staffFilter.map(filter=>(
                           <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
@@ -211,7 +211,7 @@ export default function StaffView(){
                 </div>}
 
                 {
-                  data && data.length === 0 
+                  data && data.length === 0 && currentFilter.id == '1'
                   ? <EmptyState onOpenForm={()=>setShowForm(true)}/>
                   : <Table 
                       style={{width:'100%'}} 

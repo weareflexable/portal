@@ -443,7 +443,7 @@ export default function ManagerOrgsView(){
 
         return (
             <div>
-               { orgs && orgs.length === 0 ? null : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+               { orgs && orgs.length === 0 && currentStatus.id == '2' ? null : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                 <Radio.Group defaultValue={currentStatus.id} buttonStyle="solid">
                     {orgStatus.map(status=>(
                         <Radio.Button key={status.id} onClick={()=>setCurrentStatus(status)} value={status.id}>{status.name}</Radio.Button>
