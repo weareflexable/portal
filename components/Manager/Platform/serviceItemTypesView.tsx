@@ -201,6 +201,7 @@ export default function ServiceItemTypesView(){
                 <div style={{width: "100%",display:'flex', justifyContent:'flex-end', alignItems:'center'}}>
                   <Button type='link' loading={ServiceItemTypesQuery.isRefetching} onClick={()=>ServiceItemTypesQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
                   <Button
+                   disabled
                     type="primary"
                     onClick={() => {
                       setShowForm(true)

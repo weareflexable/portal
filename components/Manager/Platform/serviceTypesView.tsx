@@ -39,7 +39,7 @@ export default function ServiceTypesView(){
     async function fetchServiceType(){
       const res = await axios({
               method:'get',
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-types?pageNumber=0&pageSize=10`,
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-types?pageNumber=0&pageSize=10  `,
               headers:{
                   "Authorization": paseto
               }
@@ -190,6 +190,7 @@ export default function ServiceTypesView(){
                 <div style={{width: "100%",display:'flex', justifyContent:'flex-end', alignItems:'center'}}>
                   <Button type='link' loading={ServiceTypesQuery.isRefetching} onClick={()=>ServiceTypesQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
                   <Button
+                   disabled
                     type="primary"
                     onClick={() => {
                       setShowForm(true)
