@@ -416,6 +416,7 @@ interface EditableProp{
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const {paseto} = useAuthContext()
 
+    const serviceItemTypeName = selectedRecord.serviceItemType[0].name
     const urlPrefix = useUrlPrefix()
   
     function toggleEdit(){
@@ -473,7 +474,7 @@ interface EditableProp{
            <Image alt='Artwork preview' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${artwork}`} height='300px' width='300px'/>
             <Button onClick={toggleDrawer}>Change artwork</Button>
             <ArtworkPicker
-              currentServiceItemType={'Line skip'}
+              currentServiceItemType={serviceItemTypeName}
               isOpen ={isDrawerOpen}
               onToggleDrawer = {toggleDrawer}
               onSelectImage = {handleSelectImage}
