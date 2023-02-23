@@ -119,11 +119,13 @@ export default function ManagerOrgsView(){
     // console.log('prefix',urlPrefix)
     // console.log('shouldfetch',shouldFetch)
 
-    const servicesQuery = useQuery({queryKey:['services', currentFilter.name, pageNumber], queryFn:fetchServices, enabled: paseto !== ''})
+    // @ts-ignore
+    const servicesQuery = useQuery({queryKey:['services',{currentOrg: currentOrg.orgId, status:currentFilter.name, pageNumber} ], queryFn:fetchServices, enabled: paseto !== ''})
     const data = servicesQuery.data && servicesQuery.data.data
     const totalLength = servicesQuery.data && servicesQuery.data.dataLength;
 
-    const allServicesQuery = useQuery({queryKey:['all-services'], queryFn:fetchAllServices, enabled: paseto !== '', staleTime:Infinity})
+    // @ts-ignore
+    const allServicesQuery = useQuery({queryKey:['all-services',{currentOrg: currentOrg.orgId}], queryFn:fetchAllServices, enabled: paseto !== '', staleTime:Infinity})
     const allServicesLength = allServicesQuery.data && allServicesQuery.data.dataLength;
 
 

@@ -132,14 +132,14 @@ export default function ServiceItemsView(){
     };
 
 
-    const serviceItemsQuery = useQuery({queryKey:['serviceItems', {currentFilter,pageNumber:pageNumber}], queryFn:fetchServiceItems, enabled:paseto !== ''})
+    const serviceItemsQuery = useQuery({queryKey:['serviceItems', {currentSerive:currentService.id, currentFilter,pageNumber:pageNumber}], queryFn:fetchServiceItems, enabled:paseto !== ''})
     const res = serviceItemsQuery.data && serviceItemsQuery.data;
     const servicesData = res && res.data
     const totalLength = res && res.dataLength;
 
-    const allServiceItemsQuery = useQuery({queryKey:['all-serviceItems'], queryFn:fetchServiceItems, enabled:paseto !== '', staleTime:Infinity})
+    const allServiceItemsQuery = useQuery({queryKey:['all-serviceItems',{currentService: currentService.id}], queryFn:fetchServiceItems, enabled:paseto !== '', staleTime:Infinity})
     const allServiceItemsLength = allServiceItemsQuery.data && allServiceItemsQuery.data.dataLength;
-
+ 
 
 
   

@@ -10,3 +10,4 @@ Webapp for service providers to offer and manage DATs
 What happens when the route changes and you still need the param values? Hence, that's the reason for proposing the new routing pattern.  
 
 **The routing new pattern** was adopted because currently active organizations and services are being cached in local storage. Therefore, whenever those ids are needed, they could easily be accessed in the local storage.
+

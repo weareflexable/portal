@@ -1,7 +1,7 @@
-name: "[PROD] Build and Push to GHCR"
+name: "[STAGING] Build and Push to GHCR"
 on:
   push:
-    branches: [prod]
+    branches: [staging]
 
 jobs:
   next-build:
@@ -71,7 +71,7 @@ jobs:
       - name: Build and Push Docker Image
         run: |
           export CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
-          export TAG=$([[ $CURRENT_BRANCH == "prod" ]] && echo $CURRENT_BRANCH || echo "latest")
+          export TAG=$([[ $CURRENT_BRANCH == "staging" ]] && echo $CURRENT_BRANCH || echo "latest")
           export GITHUB_REF_IMAGE=ghcr.io/$GITHUB_REPOSITORY:$GITHUB_SHA
           export GITHUB_BRANCH_IMAGE=ghcr.io/$GITHUB_REPOSITORY:$TAG
           docker build -t $GITHUB_REF_IMAGE -t $GITHUB_BRANCH_IMAGE .
