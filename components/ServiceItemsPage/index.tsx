@@ -41,6 +41,12 @@ import useServiceItemTypes from "../../hooks/useServiceItemTypes";
 // ]
 
 
+type ServiceMenu={
+  label:string,
+  key:string
+}
+
+
 export default function ServiceItemsView(){
 
     const {paseto} = useAuthContext()
@@ -64,6 +70,18 @@ export default function ServiceItemsView(){
 
     const items = serviceItemTypes && serviceItemTypes.map((item:any)=>({label:item.label, key:item.value}))
 
+    async function fetchAllServiceItems(){
+    const res = await axios({
+            method:'get',
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items?key=org_service_id&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=10`,
+            headers:{
+                "Authorization": paseto
+            }
+        })
+
+        return res.data;
+   
+    }
     async function fetchServiceItems(){
     const res = await axios({
             method:'get',
@@ -106,10 +124,6 @@ export default function ServiceItemsView(){
     })
 
 
-    type ServiceMenu={
-      label:string,
-      key:string
-    }
 
     const onLaunchButtonClick: MenuProps['onClick'] = (e) => {
       const key = e.key
@@ -122,6 +136,10 @@ export default function ServiceItemsView(){
     const res = serviceItemsQuery.data && serviceItemsQuery.data;
     const servicesData = res && res.data
     const totalLength = res && res.dataLength;
+
+    const allServiceItemsQuery = useQuery({queryKey:['all-serviceItems'], queryFn:fetchServiceItems, enabled:paseto !== '', staleTime:Infinity})
+    const allServiceItemsLength = allServiceItemsQuery.data && allServiceItemsQuery.data.dataLength;
+
 
 
   
@@ -223,7 +241,7 @@ export default function ServiceItemsView(){
 
         return (
             <div>
-               { servicesData && servicesData.length === 0 && currentFilter.id == '1' ? null : <div style={{marginBottom:'2em', marginTop:'.5rem', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+               { servicesData && allServiceItemsLength === 0  ? null : <div style={{marginBottom:'2em', marginTop:'.5rem', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                { isManager? <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
                     {serviceItemsFilters.map(filter=>(
                         <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
@@ -238,7 +256,7 @@ export default function ServiceItemsView(){
 
                 </div>}
                 {
-                  servicesData && servicesData.length === 0 && currentFilter.id == '1'
+                  servicesData && allServiceItemsLength === 0
                   ?<EmptyState>
                     <Dropdown.Button trigger={['click']} type="primary"   icon={<PlusOutlined/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
                   </EmptyState>

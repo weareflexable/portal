@@ -48,6 +48,19 @@ export default function ManagerOrgsView(){
     const [selectedOrg, setSelelectedOrg] = useState<any|NewOrg>({})
     const [currentStatus, setCurrentStatus] = useState({id:'2',name: 'In Review'})
 
+    async function fetchAllOrgs(){
+    const res = await axios({
+            method:'get',
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/orgs?pageNumber=${pageNumber}&pageSize=10`,
+            headers:{
+                "Authorization": paseto
+            }
+        })
+
+        return res.data;
+   
+    }
+
     async function fetchOrgs(){
     const res = await axios({
             method:'get',
@@ -121,6 +134,9 @@ export default function ManagerOrgsView(){
     const orgQuery = useQuery({queryKey:['organizations', currentStatus], queryFn:fetchOrgs, enabled:paseto !== ''})
     const orgs = orgQuery.data && orgQuery.data.data
     const totalLength = orgQuery.data && orgQuery.data.dataLength;
+
+    const allOrgsQuery = useQuery({queryKey:['all-orgs'], queryFn:fetchAllOrgs, enabled:paseto !== '',staleTime:Infinity})
+    const allOrgsTotal = allOrgsQuery.data && allOrgsQuery.data.dataLength;
 
 
     
@@ -443,7 +459,7 @@ export default function ManagerOrgsView(){
 
         return (
             <div>
-               { orgs && orgs.length === 0 && currentStatus.id == '2' ? null : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+               { allOrgsQuery && allOrgsTotal === 0 ? null : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                 <Radio.Group defaultValue={currentStatus.id} buttonStyle="solid">
                     {orgStatus.map(status=>(
                         <Radio.Button key={status.id} onClick={()=>setCurrentStatus(status)} value={status.id}>{status.name}</Radio.Button>
@@ -455,7 +471,7 @@ export default function ManagerOrgsView(){
                 </div>
                 }
   
-                { orgs && orgs.length === 0 && currentStatus.id == '2' 
+                { allOrgsQuery && allOrgsTotal === 0 
                 ?<EmptyState/>
                 :<Table 
                   style={{width:'100%'}} 

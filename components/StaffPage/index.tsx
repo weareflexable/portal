@@ -40,6 +40,17 @@ export default function StaffView(){
 
     const urlPrefix = useUrlPrefix()
 
+    async function fetchAllStaff(){
+      const res = await axios({
+              method:'get',
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff?key=service_id&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=10`,
+              headers:{
+                  "Authorization": paseto
+              }
+          })
+
+          return res.data;
+    }
     async function fetchStaff(){
       const res = await axios({
               method:'get',
@@ -89,8 +100,11 @@ export default function StaffView(){
     const staffQuery = useQuery({queryKey:['staff',currentService.id,currentFilter.id], queryFn:fetchStaff, enabled:paseto !== ''})
     const data = staffQuery.data && staffQuery.data.data
 
+    const allStaffQuery = useQuery({queryKey:['all-staff'], queryFn:fetchAllStaff, enabled:paseto !== '', staleTime:Infinity})
+    const allStaffLength = allStaffQuery.data && allStaffQuery.data.dataLength
 
-    console.log(data)
+
+
     
   
   
@@ -189,7 +203,7 @@ export default function StaffView(){
 
         return (
             <div>
-                {data && data.length === 0 && currentFilter.id == '1' ? null : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+                {data && allStaffLength === 0 ? null : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                   <Radio.Group defaultValue={currentFilter.id} style={{width:'100%'}} buttonStyle="solid">
                       {staffFilter.map(filter=>(
                           <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
@@ -211,7 +225,7 @@ export default function StaffView(){
                 </div>}
 
                 {
-                  data && data.length === 0 && currentFilter.id == '1'
+                  data && allStaffLength === 0
                   ? <EmptyState onOpenForm={()=>setShowForm(true)}/>
                   : <Table 
                       style={{width:'100%'}} 

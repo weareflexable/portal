@@ -52,6 +52,22 @@ export default function ManagerOrgsView(){
 
     const urlPrefix = currentUser.role == 1 ? 'manager': 'admin'
 
+  
+    async function fetchAllServices(){
+    const res = await axios({
+            method:'get',
+            //@ts-ignore
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services?key=org_id&value=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=10`,
+
+            headers:{
+                "Authorization": paseto
+            }
+        })
+
+        return res.data;
+   
+    }
+  
     async function fetchServices(){
     const res = await axios({
             method:'get',
@@ -106,6 +122,9 @@ export default function ManagerOrgsView(){
     const servicesQuery = useQuery({queryKey:['services', currentFilter.name, pageNumber], queryFn:fetchServices, enabled: paseto !== ''})
     const data = servicesQuery.data && servicesQuery.data.data
     const totalLength = servicesQuery.data && servicesQuery.data.dataLength;
+
+    const allServicesQuery = useQuery({queryKey:['all-services'], queryFn:fetchAllServices, enabled: paseto !== '', staleTime:Infinity})
+    const allServicesLength = allServicesQuery.data && allServicesQuery.data.dataLength;
 
 
 
@@ -271,7 +290,7 @@ function gotoDashboard(service:Service){
 
                <Col offset={2} span={20}>
                    <Title style={{marginBottom:'1em'}} level={2}>Launchpad</Title>
-                   {data && data.length === 0 && currentFilter.id == '1' ? null : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+                   {allServicesQuery.data && allServicesLength === 0 ? null : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                       <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
                           {servicesFilter.map(filter=>(
                               <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
@@ -286,7 +305,7 @@ function gotoDashboard(service:Service){
                    </div>}
                 
                 {
-                  data && data.length === 0 && currentFilter.id == '1'
+                  allServicesQuery.data && allServicesLength === 0
                   ? <EmptyState>
                       <Dropdown.Button trigger={['click']} type="primary"   icon={<PlusOutlined/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
                   </EmptyState> 
@@ -520,7 +539,7 @@ const servicesFilter = [
   },
   {
       id: '0',
-      name: 'Inactive'
+      name: 'In-active'
   },
 ]
 
