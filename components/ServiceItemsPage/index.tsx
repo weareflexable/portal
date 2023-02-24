@@ -132,12 +132,12 @@ export default function ServiceItemsView(){
     };
 
 
-    const serviceItemsQuery = useQuery({queryKey:['serviceItems', {currentSerive:currentService.id, currentFilter,pageNumber:pageNumber}], queryFn:fetchServiceItems, enabled:paseto !== ''})
+    const serviceItemsQuery = useQuery({queryKey:['serviceItems', {currentSerive:currentService.id, filter:currentFilter.id,pageNumber:pageNumber}], queryFn:fetchServiceItems, enabled:paseto !== ''})
     const res = serviceItemsQuery.data && serviceItemsQuery.data;
     const servicesData = res && res.data
     const totalLength = res && res.dataLength;
 
-    const allServiceItemsQuery = useQuery({queryKey:['all-serviceItems',{currentService: currentService.id}], queryFn:fetchServiceItems, enabled:paseto !== '', staleTime:Infinity})
+    const allServiceItemsQuery = useQuery({queryKey:['all-serviceItems',{currentService: currentService.id}], queryFn:fetchAllServiceItems, enabled:paseto !== '', staleTime:Infinity})
     const allServiceItemsLength = allServiceItemsQuery.data && allServiceItemsQuery.data.dataLength;
  
 
@@ -158,9 +158,46 @@ export default function ServiceItemsView(){
 
     }
   
+    async function reActivateServiceHandler(record:ServiceItem){
+      const res = await axios({
+          method:'patch',
+          url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,
+          data:{
+              key:'status',
+              value: '1', 
+              id: record.id  
+          },
+          headers:{
+              "Authorization": paseto
+          }
+      })
+      return res; 
+  }
+
+
+  const reactivateService = useMutation(reActivateServiceHandler,{
+    onSettled:()=>{
+      queryClient.invalidateQueries({queryKey:['serviceItems']})
+    }
+  })
+
     
     
-      
+    function getTableActions(){
+      return {
+          dataIndex: 'actions', 
+          key: 'actions',
+          //@ts-ignore
+          render:(_,record:Service)=>{
+            if(currentFilter.name === 'In-active'){
+              return (<Button   onClick={()=>reactivateService.mutate(record)}>Reactivate</Button>)
+            }else{
+              return <Button type="text" onClick={()=>viewDetails(record)} icon={<MoreOutlined/>}/> 
+            }
+          }
+        }
+  
+  }
   
     const columns: ColumnsType<ServiceItem> = [
       {
@@ -211,7 +248,7 @@ export default function ServiceItemsView(){
         dataIndex: 'status',
         key: 'status',
         render: (status)=>{
-          const statusText = status ? 'Active': 'InActive'
+          const statusText = status ? 'Active': 'Inactive'
           return <Badge status="processing" text={statusText} />
         }
       },
@@ -228,14 +265,7 @@ export default function ServiceItemsView(){
     },
       
     {
-      dataIndex: 'actions', 
-      key: 'actions',
-      render:(_,record)=>{
-        // const items = getTableRecordActions()
-        return (
-          <Button type="text" onClick={()=>viewDetails(record)} icon={<MoreOutlined/>}/>
-        )
-      }
+      ...getTableActions()
     }
     ];
 

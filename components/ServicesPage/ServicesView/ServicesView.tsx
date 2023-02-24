@@ -22,6 +22,11 @@ import useServiceTypes from "../../../hooks/useServiceTypes";
 var relativeTime = require('dayjs/plugin/relativeTime')
 dayjs.extend(relativeTime)
 
+type ServiceMenu={
+  label:string,
+  key:string
+}
+
 
 export default function ManagerOrgsView(){
 
@@ -69,28 +74,28 @@ export default function ManagerOrgsView(){
     }
   
     async function fetchServices(){
-    const res = await axios({
-            method:'get',
-            //@ts-ignore
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services?key=org_id&value=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=10&key2=status&value2=${currentFilter.id}`,
+      const res = await axios({
+              method:'get',
+              //@ts-ignore
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services?key=org_id&value=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=10&key2=status&value2=${currentFilter.id}`,
 
-            headers:{
-                "Authorization": paseto
-            }
-        })
+              headers:{
+                  "Authorization": paseto
+              }
+          })
 
-        return res.data;
-   
+          return res.data;
+    
     }
 
-    async function changeOrgStatus({serviceId, statusNumber}:{serviceId:string, statusNumber: string}){
+    async function reActivateServiceHandler(record:Service){
         const res = await axios({
             method:'patch',
             url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,
             data:{
                 key:'status',
-                value: statusNumber, // 0 means de-activated in db
-                id: serviceId 
+                value: '1', 
+                id: record.id  
             },
             headers:{
                 "Authorization": paseto
@@ -99,20 +104,14 @@ export default function ManagerOrgsView(){
         return res; 
     }
 
-    const changeStatusMutation = useMutation(['services'],{
-        mutationFn: changeOrgStatus,
-        onSuccess:(data:any)=>{
-            queryClient.invalidateQueries({queryKey:['services',currentFilter]})
-        },
-        onError:()=>{
-            console.log('Error changing status')
-        }
+
+    const reactivateService = useMutation(reActivateServiceHandler,{
+      onSettled:()=>{
+        queryClient.invalidateQueries({queryKey:['services']})
+      }
     })
 
-    function deActivateRecordHandler(service:Service){
-        // setSelectedRecord(org.orgId)
-        changeStatusMutation.mutate({serviceId:service.id, statusNumber:'0'})
-    }
+   
 
     // const shouldFetch = paseto !== '' && urlPrefix != undefined
 
@@ -165,7 +164,21 @@ function gotoDashboard(service:Service){
         console.log('click', record);
       };
 
-      
+      function getTableActions(){
+            return {
+                dataIndex: 'actions', 
+                key: 'actions',
+                //@ts-ignore
+                render:(_,record:Service)=>{
+                  if(currentFilter.name === 'In-active'){
+                    return (<Button  onClick={()=>reactivateService.mutate(record)}>Reactivate</Button>)
+                  }else{
+                    return <Button onClick= {()=>onMenuClick(record)} type="text" icon={<MoreOutlined/>}/> 
+                  }
+                }
+              }
+        
+    }
   
     const columns: ColumnsType<Service> = [
       {
@@ -237,14 +250,10 @@ function gotoDashboard(service:Service){
         },
     },
     {
-      dataIndex: 'actions', 
-      key: 'actions',
-      width:'70px',
-      render:(_,record)=>{
-        return (<Button onClick= {()=>onMenuClick(record)} type="text" icon={<MoreOutlined/>}/> )
-      }
+      ...getTableActions()
     }
     ];
+
 
     // const items = [
     //   {
@@ -258,10 +267,7 @@ function gotoDashboard(service:Service){
 
     // ]
 
-    type ServiceMenu={
-      label:string,
-      key:string
-    }
+    
 
     const onLaunchButtonClick: MenuProps['onClick'] = (e) => {
       const key = e.key
