@@ -9,7 +9,7 @@ import {usePlacesWidget} from 'react-google-autocomplete'
 import { asyncStore} from "../../../utils/nftStorage";
 import { useOrgContext } from "../../../context/OrgContext";
 import useServiceTypes from "../../../hooks/useServiceTypes";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useAuthContext } from "../../../context/AuthContext";
 import {NewOrg, OrgPayload } from "../../../types/OrganisationTypes";
@@ -37,6 +37,7 @@ export default function NewOrgForm(){
         city:''
     })
     const [isHashingAssets, setIsHashingAssets] = useState(false)
+    let queryClient = useQueryClient()
 
     const router = useRouter()
     const antInputRef = useRef();
@@ -153,23 +154,7 @@ export default function NewOrgForm(){
         return e?.fileList;
       };
 
-        const extractCoverImage = async(e: any) => {
-            // e.preventDefault()
-            console.log('Upload event:', e);
-            if (Array.isArray(e)) {
-            return e;
-            }
-
-            console.log(e)
-            const imageBlob = e.fileList[0].originFileObj
-            console.log("blob",imageBlob)
-            const src = await getBase64(imageBlob)
-            setCoverImage(src)
-       
-
-        return e?.fileList;
-      };
-
+   
 
       const createDataHandler = async(newItem:any)=>{
         const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`, newItem,{
@@ -182,12 +167,13 @@ export default function NewOrgForm(){
 
     const createData = useMutation(createDataHandler,{
        onSuccess:()=>{
-        form.resetFields()
-        console.log('record created')
         notification['success']({
             message: 'Successfully created new organization!'
         })
             router.back()
+       },
+       onSettled:()=>{
+            queryClient.invalidateQueries(['all-orgs'])
        },
         onError:()=>{
             notification['error']({
