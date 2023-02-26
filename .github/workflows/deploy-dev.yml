@@ -78,3 +78,18 @@ jobs:
           echo "Pushing Image to GitHub Container Registry"
           docker push $GITHUB_REF_IMAGE
           docker push $GITHUB_BRANCH_IMAGE
+      
+      - name: Deploy on Dev server 
+        uses: appleboy/ssh-action@v0.1.7
+        with:         
+          host: ${{ secrets.DEV_REMOTE_SERVER_ADDRESS }}
+          username: ${{ secrets.DEV_SERVER_USERNAME }}
+          key:  ${{ secrets.DEV_REMOTE_SERVER_KEY }}
+          port: ${{ secrets.DEV_SSH_PORT }}
+          script: |
+            pwd
+            cd ~
+            podman pull ghcr.io/weareflexable/portal:main
+            podman stop portal
+            podman rm portal
+            podman run --name="portal" -p 9082:3000 -d ghcr.io/weareflexable/portal:main
