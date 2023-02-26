@@ -77,13 +77,14 @@ export default function ServiceTypesView(){
 
     
 
-  
+  // console.log('current',currentService!.length!==0)
+  // @ts-ignore
 
 
-    const ServiceTypesQuery = useQuery({queryKey:['service-item-types',currentService.serviceType[0].id,currentFilter.id], queryFn:fetchServiceType, enabled:paseto !== ''})
+    const ServiceTypesQuery = useQuery({queryKey:['service-types',currentFilter.id], queryFn:fetchServiceType, enabled:paseto !== ''})
 
 
-    
+     
 
     function viewServiceTypeDetails(user:ServiceType){
       // set state
@@ -179,13 +180,13 @@ export default function ServiceTypesView(){
                 </div>
 
                 </div>
-                {/* <Table 
+                <Table 
                   style={{width:'100%'}} 
                   key='dfadfe' 
                   loading={ServiceTypesQuery.isLoading||ServiceTypesQuery.isRefetching} 
                   columns={columns}  
-                  dataSource={ServiceTypesQuery && ServiceTypesQuery.data.data || []}
-                /> */}
+                  dataSource={ServiceTypesQuery && ServiceTypesQuery.data && ServiceTypesQuery.data.data || []}
+                />
                 {
                   isDrawerOpen
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedServiceType={selectedServiceType}/>
@@ -242,7 +243,6 @@ const createData = useMutation(createDataHandler,{
       onCancel()
    },
     onError:(data:any)=>{
-      console.log(data)
         notification['error']({
             message:data.message ,
           });
@@ -342,7 +342,6 @@ function toggleDeleteModal(){
 }
 
 function deleteService(){ 
-  console.log(selectedServiceType.id)
   // mutate record
   deleteMutation.mutate(selectedServiceType,{
     onSuccess:()=>{

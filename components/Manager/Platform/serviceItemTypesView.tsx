@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 const {Text,Title} = Typography
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {Typography,Button,Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Modal, Alert, notification} from 'antd'
 import axios from 'axios';
 import {MoreOutlined,ReloadOutlined} from '@ant-design/icons'
@@ -27,18 +27,22 @@ export default function ServiceItemTypesView(){
     const [pageNumber, setPageNumber] = useState(0)
   
 
+    type ServiceType ={
+      id: string,
+      name: string
+    }
 
     type DataIndex = keyof ServiceItemType;
 
     const [selectedServiceItemType, setSelectedServiceItemType] = useState<any|ServiceItemType>({})
-    const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Approved'})
+    const [currentFilters, setCurrentFilters] = useState([])
+    const [selectedFilter, setSelectedFilter] = useState<ServiceType>({id:'',name:''})
     const [showForm, setShowForm] = useState(false)
 
-
-    async function fetchServiceItemType(){
+    async function fetchServiceType(){
       const res = await axios({
               method:'get',
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-item-types?pageNumber=0&pageSize=10&key=service_type_id&value=${currentService.serviceType[0].id}`,
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-types?pageNumber=0&pageSize=10  `,
               headers:{
                   "Authorization": paseto
               }
@@ -48,8 +52,30 @@ export default function ServiceItemTypesView(){
     }
 
 
+    async function fetchServiceItemType(){
+      const res = await axios({
+              method:'get',
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-item-types?pageNumber=0&pageSize=10&key=service_type_id&value=${selectedFilter.id}`,
+              headers:{
+                  "Authorization": paseto
+              }
+          })
 
-    const serviceItemTypesQuery = useQuery({queryKey:['service-item-types',currentService.serviceType[0].id,currentFilter.id], queryFn:fetchServiceItemType, enabled:paseto !== ''})
+          return res.data;
+    }
+
+    const serviceTypesQuery = useQuery({queryKey:['service-types'], queryFn:fetchServiceType, enabled:paseto !== ''})
+
+    useEffect(() => {
+      if(serviceTypesQuery){
+        console.log(serviceTypesQuery.data)
+        setCurrentFilters(serviceTypesQuery.data && serviceTypesQuery.data.data)
+      }
+    }, [serviceTypesQuery])
+
+
+
+    const serviceItemTypesQuery = useQuery({queryKey:['service-item-types',selectedFilter], queryFn:fetchServiceItemType, enabled:paseto !== '' && serviceTypesQuery.isFetched})
 
     function viewServiceItemTypeDetails(user:ServiceItemType){
       // set state
@@ -145,12 +171,14 @@ export default function ServiceItemTypesView(){
         return (
             <div>
                 <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
-                {/* <Radio.Group defaultValue={currentFilter.id} style={{width:'100%'}} buttonStyle="solid">
-                    {staffFilter.map(filter=>(
-                        <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
+                {serviceTypesQuery.isLoading
+                ?<Text>Loading service-types ...</Text>
+                :<Radio.Group defaultValue={selectedFilter!.id} style={{width:'100%'}} buttonStyle="solid">
+                    {serviceTypesQuery.data && serviceTypesQuery.data && serviceTypesQuery.data.data.map((item:any)=>(
+                        <Radio.Button key={item.id} onClick={()=>setSelectedFilter(item)} value={item.id}>{item.name}</Radio.Button>
                      )
                     )}
-                </Radio.Group> */}
+                </Radio.Group>}
                 <div style={{width: "100%",display:'flex', justifyContent:'flex-end', alignItems:'center'}}>
                   <Button type='link' loading={serviceItemTypesQuery.isRefetching} onClick={()=>serviceItemTypesQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
                   <Button
@@ -165,13 +193,13 @@ export default function ServiceItemTypesView(){
                 </div>
 
                 </div>
-                {/* <Table 
+                <Table 
                 style={{width:'100%'}}
                  key='dfadfe' 
                  loading={serviceItemTypesQuery.isLoading||serviceItemTypesQuery.isRefetching} 
                  columns={columns}  
-                 dataSource={serviceItemTypesQuery && serviceItemTypesQuery.data.data || []}
-                  /> */}
+                 dataSource={serviceItemTypesQuery && serviceItemTypesQuery.data && serviceItemTypesQuery.data.data || []}
+                  />
                 {
                   isDrawerOpen
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedServiceItemType={selectedServiceItemType}/>
