@@ -450,7 +450,7 @@ export default function ManagerOrgsView(){
       key: 'actions',
       render:(_,record)=>{
         const items = getCurrentStatusActionItems()
-        return (<Dropdown menu={{ items , onClick: (e)=>onMenuClick(e,record) }}>
+        return (<Dropdown trigger={["click"]} menu={{ items , onClick: (e)=>onMenuClick(e,record) }}>
           <Button type='text' icon={<MoreOutlined/>}/>
         </Dropdown>)
       }
