@@ -555,6 +555,14 @@ function EditableCountry({selectedRecord}:EditableProp){
     const [isEditMode, setIsEditMode] = useState(false)
   
     const {paseto} = useAuthContext()
+
+    const list = countryList.getNames()
+    // console.log(countryList.getData())
+    const america = countryList.getName('US')
+    const sortedList = list.sort()
+    const prioritizedList = [america, ...sortedList]
+    console.log(prioritizedList)
+    
   
     function toggleEdit(){
       setIsEditMode(!isEditMode)
@@ -622,8 +630,8 @@ function EditableCountry({selectedRecord}:EditableProp){
                 defaultValue={'USA'}
                 allowClear
                 >
-                    {countryList.getData().map((country:any)=>(
-                        <Option key={country.code} value={country.name}>{country.name}</Option>
+                    {prioritizedList.map((country:any)=>(
+                        <Option key={country} value={country}>{country}</Option>
                     ))}
                 </Select>
             </Form.Item> 
