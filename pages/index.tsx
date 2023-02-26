@@ -1,4 +1,5 @@
 import {Button, Typography, Card, Spin} from 'antd'
+import Head from 'next/head';
 import { useRouter } from 'next/router'
 import { useEffect,useState } from 'react'
 import { useAuthContext } from '../context/AuthContext';
@@ -37,9 +38,15 @@ export default function Login(){
     }
 
     return(
+        <>
+        <Head>
+             <title>Flexable|Portal</title>
+             {/* <link rel="icon" href="/favicon.png" /> */}
+        </Head>
         <div style={{width:'100vw',minHeight:'100vh',background:'#f4f4f4',display:'flex',justifyContent:'center',alignItems:'center'}}>
             <Spin size='large'/>
         </div>
+        </>
     ) 
 }
 

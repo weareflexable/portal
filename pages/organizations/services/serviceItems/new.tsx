@@ -2,8 +2,7 @@ import React,{useEffect, useRef, useState} from 'react';
 import {Card,Form, Input,InputNumber, DatePicker,Upload,Button,notification, Space, Alert, Typography, TimePicker, Select, Row, Col, Steps, Radio, Tooltip, Popconfirm, message, Drawer, Collapse} from 'antd';
 const { TextArea } = Input;
 import Image from 'next/image'
-const { RangePicker } = DatePicker;
-// import { Keyframes } from '@ant-design/cssinjs';
+
 const { Panel } = Collapse;
 
 
@@ -19,7 +18,7 @@ import useServiceItemTypes from '../../../../hooks/useServiceItemTypes';
 import { asyncStore } from '../../../../utils/nftStorage';
 import axios from 'axios';
 import { useAuthContext } from '../../../../context/AuthContext';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import useUrlPrefix from '../../../../hooks/useUrlPrefix'; 
 
 
@@ -247,6 +246,7 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
 
     const [form] = Form.useForm()
     const router = useRouter()
+    const queryClient = useQueryClient()
 
     const urlPrefix = useUrlPrefix()
 
@@ -296,7 +296,6 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
         notification['success']({
             message: 'Successfully created custom availabilties!'
         })
-            console.log(data)
             router.back()
             // nextStep(data.data)
             
@@ -307,7 +306,10 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
                 message: 'Encountered an error while creating custom custom dates',
               });
             // leave modal open
-        } 
+        } ,
+        onSettled:()=>{
+            queryClient.invalidateQueries(['all-serviceItems'])
+       },
     })
 
     const {isError, isLoading:isCreatingData, isSuccess:isDataCreated, data:createdData} = createData
@@ -488,7 +490,7 @@ function Artwork({onHandleArtwork}:ArtworkProps){
     useEffect(() => {
         if(router.isReady){
             setCurrentServiceItemType(router.query.label)
-            setSelectedArtwork(router.query.label === 'Bottle service'?bottleServiceHashes[0]:lineSkipHashes[0])
+            setSelectedArtwork(router.query.label === 'Bottle service'?bottleServiceHashes[0]:router.query.label == 'Reservation'?reservationHashes[0]:lineSkipHashes[0])
         }
     }, [router.isReady, router.query.label])
 
@@ -526,7 +528,7 @@ interface ArtworkPickerProps{
 }
 function ArtworkPicker({isOpen, selected, currentServiceItemType, onSelectImage, onToggleDrawer}:ArtworkPickerProps){
  
-    const currentHashes = currentServiceItemType && currentServiceItemType === 'Line skip'?lineSkipHashes:bottleServiceHashes || lineSkipHashes
+    const currentHashes = currentServiceItemType && currentServiceItemType === 'Line skip'?lineSkipHashes:currentServiceItemType === 'Reservation'? reservationHashes:bottleServiceHashes || lineSkipHashes
 
     return(
         <Drawer

@@ -11,7 +11,7 @@ import Highlighter from 'react-highlight-words'
 import axios from 'axios';
 import {MoreOutlined,ReloadOutlined} from '@ant-design/icons'
 import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
-
+import Head from 'next/head'
 import { useAuthContext } from '../../../../context/AuthContext';
 import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
@@ -459,6 +459,10 @@ export default function ManagerOrgsView(){
 
         return (
             <div>
+              <Head>
+                <title>Flexable|Portal</title>
+                <link rel="icon" href="/favicon.png" />
+               </Head>
                { allOrgsQuery && allOrgsTotal === 0 ? null : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                 <Radio.Group defaultValue={currentStatus.id} buttonStyle="solid">
                     {orgStatus.map(status=>(

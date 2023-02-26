@@ -196,7 +196,10 @@ export default function NewService(){
                 message: 'Encountered an error while creating record',
               });
             // leave modal open
-        } 
+        },
+        onSettled:()=>{
+            queryClient.invalidateQueries(['all-services'])
+       },
     })
 
     const {isError, isLoading:isCreatingData, isSuccess:isDataCreated, data:createdData} = createData
