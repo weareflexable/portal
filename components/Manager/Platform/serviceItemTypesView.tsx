@@ -20,7 +20,6 @@ export default function ServiceItemTypesView(){
 
     const {paseto} = useAuthContext()
     const queryClient = useQueryClient()
-    const {currentService} = useServicesContext()
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
 
@@ -32,7 +31,6 @@ export default function ServiceItemTypesView(){
       name: string
     }
 
-    type DataIndex = keyof ServiceItemType;
 
     const [selectedServiceItemType, setSelectedServiceItemType] = useState<any|ServiceItemType>({})
     const [currentFilters, setCurrentFilters] = useState([])
