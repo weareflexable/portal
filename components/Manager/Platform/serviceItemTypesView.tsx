@@ -165,12 +165,13 @@ export default function ServiceItemTypesView(){
                 </div>
 
                 </div>
-                <Table 
+                {/* <Table 
                 style={{width:'100%'}}
                  key='dfadfe' 
                  loading={serviceItemTypesQuery.isLoading||serviceItemTypesQuery.isRefetching} 
                  columns={columns}  
-                 dataSource={serviceItemTypesQuery && serviceItemTypesQuery.data.data || []} />
+                 dataSource={serviceItemTypesQuery && serviceItemTypesQuery.data.data || []}
+                  /> */}
                 {
                   isDrawerOpen
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedServiceItemType={selectedServiceItemType}/>

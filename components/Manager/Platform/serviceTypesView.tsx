@@ -29,8 +29,6 @@ export default function ServiceTypesView(){
   
 
 
-    type DataIndex = keyof ServiceType;
-
     const [selectedServiceType, setSelectedServiceType] = useState<any|ServiceType>({})
     const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Active'})
     const [showForm, setShowForm] = useState(false)
@@ -83,18 +81,9 @@ export default function ServiceTypesView(){
 
 
     const ServiceTypesQuery = useQuery({queryKey:['service-item-types',currentService.serviceType[0].id,currentFilter.id], queryFn:fetchServiceType, enabled:paseto !== ''})
-    const data = ServiceTypesQuery.data && ServiceTypesQuery.data.data
 
 
     
-  
-  
-    // function getTableRecordActions(){
-    //     switch(currentFilter.id){
-    //         // 1 = approved
-    //         case '1': return activeItemActions 
-    //     }
-    // }
 
     function viewServiceTypeDetails(user:ServiceType){
       // set state
@@ -104,15 +93,6 @@ export default function ServiceTypesView(){
 
     }
   
-    
-      const onMenuClick=(e:any, record:ServiceType) => {
-        const event = e.key
-        switch(event){
-          // break;
-          case 'viewDetails': viewServiceTypeDetails(record)
-        }
-      };
-      
   
     const columns: ColumnsType<ServiceType> = [
       {
@@ -199,13 +179,13 @@ export default function ServiceTypesView(){
                 </div>
 
                 </div>
-                <Table 
+                {/* <Table 
                   style={{width:'100%'}} 
                   key='dfadfe' 
                   loading={ServiceTypesQuery.isLoading||ServiceTypesQuery.isRefetching} 
                   columns={columns}  
                   dataSource={ServiceTypesQuery && ServiceTypesQuery.data.data || []}
-                   />
+                /> */}
                 {
                   isDrawerOpen
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedServiceType={selectedServiceType}/>
