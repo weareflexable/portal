@@ -4,7 +4,6 @@ import React, { useRef, useState } from 'react'
 import {Typography,Button,Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Modal, Alert, notification} from 'antd'
 import axios from 'axios';
 import {MoreOutlined,ReloadOutlined} from '@ant-design/icons'
-import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
 
 import { useAuthContext } from '../../../context/AuthContext';
 import { useServicesContext } from '../../../context/ServicesContext';
@@ -49,53 +48,8 @@ export default function ServiceItemTypesView(){
     }
 
 
-    // async function changeServiceItemStatus({serviceItemId, statusNumber}:{serviceItemId:string, statusNumber: string}){
-    //     const res = await axios({
-    //         method:'patch',
-    //         url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,
-    //         data:{
-    //             key:'status',
-    //             value: statusNumber, // 0 means de-activated in db
-    //             serviceItemId: serviceItemId 
-    //         },
-    //         headers:{
-    //             "Authorization": paseto
-    //         }
-    //     })
-    //     return res; 
-    // }
 
-    
-
-    // const changeStatusMutation = useMutation(['data'],{
-    //     mutationFn: changeServiceItemStatus,
-    //     onSuccess:(data:any)=>{
-    //         queryClient.invalidateQueries({queryKey:['users']})
-    //     },
-    //     onError:()=>{
-    //         console.log('Error changing status')
-    //     }
-    // })
-
-    
-
-  
-
-
-    const ServiceItemTypesQuery = useQuery({queryKey:['service-item-types',currentService.serviceType[0].id,currentFilter.id], queryFn:fetchServiceItemType, enabled:paseto !== ''})
-    const data = ServiceItemTypesQuery.data && ServiceItemTypesQuery.data.data
-
-
-    console.log(data)
-    
-  
-  
-    // function getTableRecordActions(){
-    //     switch(currentFilter.id){
-    //         // 1 = approved
-    //         case '1': return activeItemActions 
-    //     }
-    // }
+    const serviceItemTypesQuery = useQuery({queryKey:['service-item-types',currentService.serviceType[0].id,currentFilter.id], queryFn:fetchServiceItemType, enabled:paseto !== ''})
 
     function viewServiceItemTypeDetails(user:ServiceItemType){
       // set state
@@ -124,7 +78,6 @@ export default function ServiceItemTypesView(){
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
                     {/* <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.profilePic}`}/> */}
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`/favicon.ico`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{record.name}</Text>  
                         {/* <Text type="secondary">{record.email}</Text>   */}
@@ -199,7 +152,7 @@ export default function ServiceItemTypesView(){
                     )}
                 </Radio.Group> */}
                 <div style={{width: "100%",display:'flex', justifyContent:'flex-end', alignItems:'center'}}>
-                  <Button type='link' loading={ServiceItemTypesQuery.isRefetching} onClick={()=>ServiceItemTypesQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                  <Button type='link' loading={serviceItemTypesQuery.isRefetching} onClick={()=>serviceItemTypesQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
                   <Button
                    disabled
                     type="primary"
@@ -212,7 +165,12 @@ export default function ServiceItemTypesView(){
                 </div>
 
                 </div>
-                <Table style={{width:'100%'}} key='dfadfe' loading={ServiceItemTypesQuery.isLoading||ServiceItemTypesQuery.isRefetching} columns={columns}  dataSource={data} />
+                <Table 
+                style={{width:'100%'}}
+                 key='dfadfe' 
+                 loading={serviceItemTypesQuery.isLoading||serviceItemTypesQuery.isRefetching} 
+                 columns={columns}  
+                 dataSource={serviceItemTypesQuery && serviceItemTypesQuery.data.data || []} />
                 {
                   isDrawerOpen
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedServiceItemType={selectedServiceItemType}/>

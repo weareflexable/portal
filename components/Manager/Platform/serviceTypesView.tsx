@@ -32,7 +32,7 @@ export default function ServiceTypesView(){
     type DataIndex = keyof ServiceType;
 
     const [selectedServiceType, setSelectedServiceType] = useState<any|ServiceType>({})
-    const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Approved'})
+    const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Active'})
     const [showForm, setShowForm] = useState(false)
 
 
@@ -86,7 +86,6 @@ export default function ServiceTypesView(){
     const data = ServiceTypesQuery.data && ServiceTypesQuery.data.data
 
 
-    console.log(data)
     
   
   
@@ -124,7 +123,6 @@ export default function ServiceTypesView(){
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
                     {/* <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.profilePic}`}/> */}
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`/favicon.ico`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{record.name}</Text>  
                         {/* <Text type="secondary">{record.email}</Text>   */}
@@ -201,7 +199,13 @@ export default function ServiceTypesView(){
                 </div>
 
                 </div>
-                <Table style={{width:'100%'}} key='dfadfe' loading={ServiceTypesQuery.isLoading||ServiceTypesQuery.isRefetching} columns={columns}  dataSource={data} />
+                <Table 
+                  style={{width:'100%'}} 
+                  key='dfadfe' 
+                  loading={ServiceTypesQuery.isLoading||ServiceTypesQuery.isRefetching} 
+                  columns={columns}  
+                  dataSource={ServiceTypesQuery && ServiceTypesQuery.data.data || []}
+                   />
                 {
                   isDrawerOpen
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedServiceType={selectedServiceType}/>
@@ -604,11 +608,11 @@ function DeleteRecordModal({selectedServiceType, isOpen, isDeletingItem, onDelet
 const staffFilter = [
   {
     id:'1',
-    name:'Approved'
+    name:'Active'
   },
   {
     id:'0',
-    name:'Pending registration'
+    name:'Inactive'
   }
 ]
 
