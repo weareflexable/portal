@@ -302,6 +302,7 @@ const createData = useMutation(createDataHandler,{
     },
     onSettled:()=>{
       queryClient.invalidateQueries(['staff',currentService.id])
+      queryClient.invalidateQueries(['all-staff'])
     }
 })
 
