@@ -47,7 +47,7 @@ jobs:
             .next
             public
             .env
-          retention-days: 7         # artifact retention duration, can be upto 30 days
+          retention-days: 0         # artifact retention duration, can be upto 30 days
   ghcr-push:
     name:
     needs: next-build               # Job depends on next-build(above) job
