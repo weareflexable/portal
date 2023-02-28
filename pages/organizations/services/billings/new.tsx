@@ -1,7 +1,7 @@
 
 
 import React,{useState} from 'react'
-import {Card,Form,Input, InputNumber,Button, Typography, Radio, notification, Row, Col, Segmented, Checkbox} from 'antd'
+import {Card,Form,Input, InputNumber,Button, Typography, Radio, notification, Row, Col, Segmented, Checkbox, Select, Space} from 'antd'
 import { Bank } from '../../../../components/BillingsPage/Types/Banks.types'
 import { useOrgContext } from '../../../../context/OrgContext'
 import {ArrowLeftOutlined} from '@ant-design/icons'
@@ -9,9 +9,15 @@ import { useMutation } from '@tanstack/react-query'
 import router, { useRouter } from 'next/router'
 import axios from 'axios'
 import { useAuthContext } from '../../../../context/AuthContext'
+const countryList = require('country-list')
 
 const {Title} = Typography;
+const {Option} = Select
 
+const list = countryList.getNames()
+const america = countryList.getName('US')
+const sortedList = list.sort()
+const prioritizedList = [america, ...sortedList]
 
 
 interface CreateBankAccountFormProps{
@@ -32,6 +38,7 @@ export default function CreateBankAccountForm(){
             //@ts-ignore
             orgId: currentOrg.orgId
         }
+        console.log(formObject)
         createData.mutate(formObject)
         // onCreateBankAccount(formObject)
     }
@@ -50,8 +57,6 @@ export default function CreateBankAccountForm(){
 
     const createData = useMutation(createDataHandler,{
        onSuccess:()=>{
-        form.resetFields()
-        console.log('record created')
         notification['success']({
             message: 'Successfully created new bank account!'
         })
@@ -101,16 +106,73 @@ export default function CreateBankAccountForm(){
                     >
                         <Input size='large' placeholder="Bill Cage" />
                     </Form.Item>
-
                     <Form.Item
-                        name="beneficiaryAddress"
-                        label='Address'
+                        name="beneficiaryStreet"
+                        label='Address Line'
                         style={{marginBottom:'0'}}
                         rules={[{ required: true, message: 'Please enter valid address' }]}
                     >
-                        <Input size='large' placeholder="89, Highstreet Boston" />
+                        <Input size='large' placeholder="89, Highstreet" />
                     </Form.Item>
 
+
+                    <Row style={{marginTop:'1.5rem',marginBottom:'0'}} >
+                        <Col style={{height:'100%'}} span={11}>
+                            <Form.Item
+                                name="beneficiaryCountry"
+                                style={{width:'100%'}}
+                                label='Country'
+                                rules={[{ required: true, message: 'Please select your country !' }]}
+                            >
+                                <Select
+                                placeholder="Country"
+                                allowClear
+                                size='large'
+                                style={{width:'100%'}}
+                                >
+                                    {prioritizedList.map((country:any)=>(
+                                        <Option key={country} value={country}>{country}</Option>
+                                    ))}
+                                </Select>
+                            </Form.Item> 
+                        </Col>
+                        <Col style={{height:'100%'}} offset={1} span={12}>
+                            <Form.Item
+                                name="beneficiaryState"
+                                label='State'
+                                style={{width:'100%'}}
+                                rules={[{ required: true, message: 'Please provide a state' }]}
+                            >
+                                <Input style={{width:'100%'}} size='large' placeholder="State" />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                    <Row style={{}} >
+                        <Col span={11}>
+                            <Form.Item
+                                name="beneficiaryCity"
+                                label='City'
+                                style={{marginBottom:'0'}}
+                                rules={[{ required: true, message: 'Please select a city' }]}
+                            >
+                                <Input size='large' placeholder="City" />
+                            </Form.Item>
+                        </Col>
+                        <Col offset={1} span={12}>
+                            <Form.Item
+                                name="beneficiaryPostalCode"
+                                label='Postal Code'
+                                style={{marginBottom:'0'}}
+                                rules={[{ required: true, message: 'Please enter valid postcode' }]}
+                            >
+                                <Input size='large' placeholder="Postal Code" />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+
+
+                   
+        
                 </div>
 
 
@@ -199,9 +261,12 @@ export default function CreateBankAccountForm(){
                     </Form.Item> */}
 
                 <Form.Item style={{marginTop:'3rem'}}>
-                    <Button type="primary" size='large' shape='round' loading={isCreatingData} htmlType="submit">
-                    { isCreatingData? 'Submiting...' :'Add Bank'}
-                    </Button>
+                    <Space>
+                        <Button onClick={()=>router.back()}>Cancel</Button>
+                        <Button type="primary" size='large' shape='round' loading={isCreatingData} htmlType="submit">
+                        { isCreatingData? 'Submiting...' :'Add Bank'}
+                        </Button>
+                    </Space>
                 </Form.Item>
                 
 

@@ -160,7 +160,6 @@ export default function ManagerOrgsView(){
         return res; 
     }
 
-
     const changeStatusMutation = useMutation(['data'],{
         mutationFn: changeOrgStatus,
         onSuccess:(data:any)=>{
@@ -170,7 +169,6 @@ export default function ManagerOrgsView(){
             console.log('Error changing status')
         }
     })
-
 
     function deActivateBankHandler(bank:Bank){
         // setSelelectedOrg(org.orgId)
@@ -189,10 +187,6 @@ export default function ManagerOrgsView(){
 
     const banksQuery = useQuery({queryKey:['admin-banks', currentFilter], queryFn:fetchBanks, enabled:paseto !== ''})
     const data = banksQuery.data && banksQuery.data.data
-
-
-    
-  
   
   
 
@@ -238,10 +232,10 @@ export default function ManagerOrgsView(){
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={'/favicon.ico'}/>
+                    {/* <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={'/favicon.ico'}/> */}
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{record.bankName}</Text>  
-                        <Text type="secondary">{record.accountType}</Text>
+                        <Text style={{textTransform:'capitalize'}} type="secondary">{record.accountType}</Text>
                     </div>
                 </div>
             )
@@ -258,28 +252,17 @@ export default function ManagerOrgsView(){
         dataIndex: 'beneficiaryName',
         key: 'beneficiaryName'
       },
+      // {
+      //   title: 'Currency',
+      //   dataIndex: 'currency',
+      //   key: 'currency'
+      // },
       {
-        title: 'Currency',
-        dataIndex: 'currency',
-        key: 'currency'
-      },
-      {
-          title: 'CreatedAt',
+          title: 'Created On',
           dataIndex: 'createdAt',
           key: 'createdAt',
           render: (_,record)=>{
               const date = dayjs(record.createdAt).format('MMM DD, YYYY')
-              return(
-            <Text>{date}</Text>
-            )
-        },
-    },
-      {
-          title: 'UpdatedAt',
-          dataIndex: 'updatedAt',
-          key: 'updatedAt',
-          render: (_,record)=>{
-              const date = dayjs(record.updatedAt).format('MMM DD, YYYY')
               return(
             <Text>{date}</Text>
             )
