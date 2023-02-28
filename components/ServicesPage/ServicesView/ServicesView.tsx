@@ -17,6 +17,7 @@ import { Service } from "../Services.types";
 import { EditableAddress, EditableCoverImage, EditableCurrency, EditableLogoImage, EditableName, EditablePhone } from "../EditServiceForm/EditServiceForm";
 import CurrentUser from "../../Header/CurrentUser/CurrentUser";
 import useServiceTypes from "../../../hooks/useServiceTypes";
+import { convertToAmericanFormat } from "../../../utils/phoneNumberFormatter";
 
 
 var relativeTime = require('dayjs/plugin/relativeTime')
@@ -197,16 +198,25 @@ function gotoDashboard(service:Service){
         },
       },
       {
-        title: 'Address',
+        title: 'Location',
         // dataIndex: 'address',
         key: 'address',
         render:(_,record)=>(
           <div style={{display:'flex',flexDirection:'column'}}>
               <Text style={{textTransform:'capitalize'}}>{record.country}</Text>  
-              <Text style={{textTransform:'capitalize'}} type='secondary'>{record.city}</Text>  
+              <Text style={{textTransform:'capitalize'}} type='secondary'>{record.state} {record.city}</Text>  
           </div>
         )
       },
+        {
+          title: 'Contact Number',
+          dataIndex: 'contactNumber',
+          key: 'contactNumber',
+          render: (_,record)=>{
+            const formatedNumber = convertToAmericanFormat(record.contactNumber)
+              return <Text>{formatedNumber}</Text>
+          }
+        },
         {
           title: 'Type',
           dataIndex: 'serviceType',
@@ -222,12 +232,12 @@ function gotoDashboard(service:Service){
         key: 'timeZone',
 
       },
-      {
-        title: 'Currency',
-        dataIndex: 'currency',
-        key: 'currency',
-        width:'70px',
-      },
+      // {
+      //   title: 'Currency',
+      //   dataIndex: 'currency',
+      //   key: 'currency',
+      //   width:'70px',
+      // },
       {
         title: 'Status',
         dataIndex: 'status',

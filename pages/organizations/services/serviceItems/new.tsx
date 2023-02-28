@@ -504,7 +504,7 @@ function Artwork({onHandleArtwork}:ArtworkProps){
             <Title style={{marginTop:'4rem'}} level={3}>Artwork</Title>
             <div style={{display:'flex', flexDirection:'column'}}>
                 <Button type='link' style={{alignSelf:'flex-end'}} onClick={toggleDrawer}>Select a different artwork</Button>
-                <Image alt='artwork' objectFit='cover' height='400px' width='300px'  src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${selectedArtwork}`}/>
+                <Image alt='artwork' objectFit='cover' height='400px' width='100px' style={{minWidth:'0'}}  src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${selectedArtwork}`}/>
                 <Text type='secondary'>This cover image will be used for listing on marketplace and Digital access token NFT</Text>
             </div>
             <ArtworkPicker 
