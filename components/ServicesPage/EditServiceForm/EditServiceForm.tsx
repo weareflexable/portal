@@ -116,8 +116,39 @@ interface EditableProp{
     const [state, setState] = useState(selectedRecord)
   
     const [isEditMode, setIsEditMode] = useState(false)
+  
+  
+    function toggleEdit(){
+      setIsEditMode(!isEditMode)
+    }
+
+  
+    const readOnly = (
+      <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+        <Text>{`${state.country}, ${state.city}`}</Text>
+        <Button type="link" onClick={toggleEdit}>Edit</Button>
+      </div>
+  )
+  
+    return(
+      <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+        <Text type="secondary" style={{ marginRight: '2rem',}}>Address</Text>
+        {isEditMode
+        ?<AddressField toggleEdit={toggleEdit} selectedRecord={selectedRecord}/>
+        :readOnly
+        }
+      </div>
+    )
+  }
+
+  interface AddressFieldProp{
+    selectedRecord: Service
+    toggleEdit: ()=>void
+  }
+  function AddressField({selectedRecord,toggleEdit}:AddressFieldProp){
+  
+    // const [isEditMode, setIsEditMode] = useState(false)
     const antInputRef = useRef();
-    const [focused, setFocused] = useState(false)
     const [fullAddress, setFullAddress] = useState({
       latitude:0,
       longitude:0,
@@ -128,12 +159,8 @@ interface EditableProp{
 
   const urlPrefix = useUrlPrefix()
   
-    const {paseto} = useAuthContext()
-  
-  
-    function toggleEdit(){
-      setIsEditMode(!isEditMode)
-    }
+   const {paseto} = useAuthContext()
+
   
     const [form]  = Form.useForm()
   
@@ -157,7 +184,7 @@ interface EditableProp{
   }
 
   const { ref: antRef } = usePlacesWidget({
-    apiKey: 'AIzaSyAxBDdnJsmCX-zQa-cO9iy-v5pn53vXEFA', // move this key to env
+    apiKey: process.env.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API,  // move this key to env
     options:{
         componentRestrictions:{country:'us'},
         types: ['address'],
@@ -182,53 +209,43 @@ interface EditableProp{
 
     },
   });
-  
-  function focusHandler(){
-    setFocused(true)
-  }
-  
 
-    const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
-        headers:{
-            //@ts-ignore
-            "Authorization": paseto
-        }
-      })
-        return data;
-    }
-    const mutation = useMutation({
-      mutationKey:['address'],
-      mutationFn: mutationHandler,
-      onSuccess:()=>{
-        toggleEdit()
+  const mutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
+      headers:{
+          //@ts-ignore
+          "Authorization": paseto
       }
     })
-  
-    function onFinish(updatedItem:any){
-      const payload = {
-        key:'country',
-        value: updatedItem.country,
-        orgId: selectedRecord.id
-      }
-      const updatedRecord = {
-        ...selectedRecord,
-        name: updatedItem.country
-      }
-      setState(updatedRecord)
-      mutation.mutate(payload)
+      return data;
+  }
+
+  const mutation = useMutation({
+    mutationKey:['address'],
+    mutationFn: mutationHandler,
+    onSuccess:()=>{
+      toggleEdit()
     }
+  })
+
+  function onFinish(updatedItem:any){
+    const payload = {
+      key:'country',
+      value: updatedItem.country,
+      orgId: selectedRecord.id
+    }
+    const updatedRecord = {
+      ...selectedRecord,
+      name: updatedItem.country
+    }
+    // setState(updatedRecord)
+    mutation.mutate(payload)
+  }
+
+  const {isLoading:isEditing} = mutation 
+
   
-    const {isLoading:isEditing} = mutation 
-  
-    const readOnly = (
-      <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{`${state.country}, ${state.city}`}</Text>
-        <Button type="link" onClick={toggleEdit}>Edit</Button>
-      </div>
-  )
-  
-    const editable = (
+    return(
       <Form
        style={{ marginTop:'.5rem' }}
        name="editableAddress"
@@ -242,7 +259,7 @@ interface EditableProp{
               name="address"
               rules={[{ required: true, message: 'Please input a valid address!' }]}
           >
-             <Input onFocus={focusHandler} ref={(c) => {
+             <Input  ref={(c) => {
                   // @ts-ignore
                   antInputRef.current = c;
               
@@ -270,12 +287,6 @@ interface EditableProp{
         </Row>
              
       </Form>
-    )
-    return(
-      <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-        <Text type="secondary" style={{ marginRight: '2rem',}}>Address</Text>
-      {isEditMode?editable:readOnly}
-      </div>
     )
   }
 
