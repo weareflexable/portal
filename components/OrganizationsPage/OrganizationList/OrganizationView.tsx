@@ -19,6 +19,7 @@ import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { useOrgContext } from "../../../context/OrgContext";
 import { asyncStore } from "../../../utils/nftStorage";
 import { usePlacesWidget } from "react-google-autocomplete";
+import useUrlPrefix from "../../../hooks/useUrlPrefix";
 
 
 var relativeTime = require('dayjs/plugin/relativeTime')
@@ -675,6 +676,7 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
 interface EditableProp{
   selectedOrg: NewOrg
 }
+
 function EditableName({selectedOrg}:EditableProp){
 
   const [state, setState] = useState(selectedOrg)
@@ -772,155 +774,37 @@ function EditableName({selectedOrg}:EditableProp){
     </div>
   )
 }
-function EditableAddress({selectedOrg}:EditableProp){
 
+export function EditableAddress({selectedOrg}:EditableProp){
+  
   const [state, setState] = useState(selectedOrg)
 
   const [isEditMode, setIsEditMode] = useState(false)
-  const antInputRef = useRef();
-  const [fullAddress, setFullAddress] = useState({
-    latitude:0,
-    longitude:0,
-    state: '',
-    country:'',
-    city:''
-})
-
-  const {paseto} = useAuthContext()
 
 
   function toggleEdit(){
     setIsEditMode(!isEditMode)
   }
 
-  const [form]  = Form.useForm()
-
-  const extractFullAddress = (place:any)=>{
-    const addressComponents = place.address_components 
-        let addressObj = {
-            state:'',
-            country:'',
-            city:'',
-            latitude:place.geometry.location.lat(),
-            longitude:place.geometry.location.lng()
-        };
-        addressComponents.forEach((address:any)=>{
-            const type = address.types[0]
-            if(type==='country') addressObj.country = address.long_name
-            if(type === 'locality') addressObj.state = address.short_name
-            if(type === 'administrative_area_level_1') addressObj.city = address.short_name
-        })
-
-        return addressObj
-}
-
-  const { ref: antRef } = usePlacesWidget({
-    apiKey: `${process.env.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API}`, // move this key to env
-    // apiKey: `AIzaSyB7ZUkMcIXpOKYU4r4iBMM9BFjCL5OpeeE`, // move this key to env
-    onPlaceSelected: (place) => {
-        // console.log(antInputRef.current.input)
-        form.setFieldValue('address',place?.formatted_address)
-        
-        const fullAddress = extractFullAddress(place)
-        setFullAddress(fullAddress)
-
-        //@ts-ignore
-      antInputRef.current.input.value = place?.formatted_address
-
-    },
-  });
-
-
-  const nameMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/org`,updatedItem,{
-      headers:{
-          //@ts-ignore
-          "Authorization": paseto
-      }
-    })
-      return data;
-  }
-  const nameMutation = useMutation({
-    mutationKey:['address'],
-    mutationFn: nameMutationHandler,
-    onSuccess:()=>{
-      toggleEdit()
-    }
-  })
-
-  function onFinish(updatedItem:any){
-    const payload = {
-      key:'country',
-      value: updatedItem.country,
-      orgId: selectedOrg.id
-    }
-    const updatedOrg = {
-      ...selectedOrg,
-      name: updatedItem.country
-    }
-    setState(updatedOrg)
-    nameMutation.mutate(payload)
-  }
-
-  const {isLoading:isEditing} = nameMutation 
 
   const readOnly = (
     <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Text>{`${state.street}, ${state.country}, ${state.city}`}</Text>
+      <Text>{`${state.street}`}</Text>
       <Button type="link" onClick={toggleEdit}>Edit</Button>
     </div>
 )
 
-  const editable = (
-    <Form
-     style={{ marginTop:'.5rem' }}
-     name="editableAddress"
-     initialValues={selectedOrg}
-     onFinish={onFinish}
-     form={form}
-     >
-      <Row>
-        <Col span={16} style={{height:'100%'}}>
-        <Form.Item 
-            name="address"
-            rules={[{ required: true, message: 'Please input a valid address!' }]}
-        >
-            {/* <TextArea rows={3} placeholder='Apt. 235 30B NorthPointsettia Street, Syracuse'/> */}
-            <Input ref={(c) => {
-                // @ts-ignore
-                antInputRef.current = c;
-                // @ts-ignore
-                if (c) antRef.current = c.input;
-                }} 
-                placeholder="Syracuse, United states" 
-                />
-        </Form.Item>
-
-        </Col>
-        <Col span={4}>
-          <Form.Item style={{ width:'100%'}}>
-              <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
-                      Cancel
-                  </Button>
-                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
-                      Apply changes
-                  </Button>
-              </Space>
-                        
-          </Form.Item>
-        </Col>
-      </Row>
-           
-    </Form>
-  )
   return(
     <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
       <Text type="secondary" style={{ marginRight: '2rem',}}>Address</Text>
-    {isEditMode?editable:readOnly}
+      {isEditMode
+      ?<AddressField toggleEdit={toggleEdit} selectedRecord={selectedOrg}/>
+      :readOnly
+      }
     </div>
   )
 }
+
 function EditablePhone({selectedOrg}:EditableProp){
 
   const [isEditMode, setIsEditMode] = useState(false)
@@ -1327,6 +1211,156 @@ function EditableCoverImage({selectedOrg}:EditableProp){
       <Text type="secondary" style={{ marginRight: '2rem',}}>Cover Image</Text>
       {isEditMode?editable:readOnly}
     </div>
+  )
+}
+
+interface AddressFieldProp{
+  selectedRecord: NewOrg
+  toggleEdit: ()=>void
+}
+function AddressField({selectedRecord,toggleEdit}:AddressFieldProp){
+
+  // const [isEditMode, setIsEditMode] = useState(false)
+  const antInputRef = useRef();
+  const [fullAddress, setFullAddress] = useState({
+    latitude:0,
+    longitude:0,
+    state: '',
+    country:'',
+    city:'',
+    street:''
+})
+
+const urlPrefix = useUrlPrefix()
+
+ const {paseto} = useAuthContext()
+
+
+  const [form]  = Form.useForm()
+
+  const extractFullAddress = (place:any)=>{
+    const addressComponents = place.address_components 
+        let addressObj = {
+            state:'',
+            country:'',
+            city:'',
+            latitude:place.geometry.location.lat(),
+            longitude:place.geometry.location.lng()
+        };
+        addressComponents.forEach((address:any)=>{
+            const type = address.types[0]
+            if(type==='country') addressObj.country = address.long_name
+            if(type === 'locality') addressObj.state = address.short_name
+            if(type === 'administrative_area_level_1') addressObj.city = address.short_name
+        })
+
+        return addressObj
+}
+
+const { ref: antRef } = usePlacesWidget({
+  apiKey: process.env.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API,  // move this key to env
+  options:{
+      componentRestrictions:{country:'us'},
+      types: ['address'],
+      fields: ['address_components','geometry','formatted_address','name']
+  },
+  onPlaceSelected: (place) => {
+      // console.log(antInputRef.current.input)
+      form.setFieldValue('address',place?.formatted_address)
+
+      console.log(place)  
+      
+      const fullAddress = extractFullAddress(place)
+      // add street address
+      const addressWithStreet={
+          ...fullAddress,
+          street: place?.formatted_address
+      }
+      setFullAddress(addressWithStreet)
+
+      //@ts-ignore
+    antInputRef.current.input.value = place?.formatted_address
+
+  },
+});
+
+const mutationHandler = async(updatedItem:any)=>{
+  const {data} = await axios.put(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
+    headers:{
+        //@ts-ignore
+        "Authorization": paseto
+    }
+  })
+    return data;
+}
+
+const mutation = useMutation({
+  mutationFn: mutationHandler,
+  onSuccess:()=>{
+    toggleEdit()
+  }
+})
+
+function onFinish(updatedItem:any){
+
+  const payload = {
+    ...fullAddress,
+    id: selectedRecord.id,
+    coverImageHash: selectedRecord.coverImageHash,
+    logoImageHash: selectedRecord.logoImageHash,
+    contactNumber: selectedRecord.contactNumber,
+    status: String(selectedRecord.status),
+    orgId: selectedRecord.id
+  }
+
+  mutation.mutate(payload)
+}
+
+const {isLoading:isEditing} = mutation 
+
+
+  return(
+    <Form
+     style={{ marginTop:'.5rem' }}
+     name="editableAddress"
+     initialValues={selectedRecord}
+     onFinish={onFinish}
+     form={form}
+     >
+      <Row>
+        <Col span={16} style={{height:'100%'}}>
+        <Form.Item 
+            name="address"
+            rules={[{ required: true, message: 'Please input a valid address!' }]}
+        >
+           <Input  ref={(c) => {
+                // @ts-ignore
+                antInputRef.current = c;
+            
+                // @ts-ignore
+                if (c) antRef.current = c.input;
+                }} 
+                placeholder="Syracuse, United states" 
+            />
+        </Form.Item>
+
+        </Col>
+        <Col span={4}>
+          <Form.Item style={{ width:'100%'}}>
+              <Space >
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                      Cancel
+                  </Button>
+                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                      Apply changes
+                  </Button>
+              </Space>
+                        
+          </Form.Item>
+        </Col>
+      </Row>
+           
+    </Form>
   )
 }
 
