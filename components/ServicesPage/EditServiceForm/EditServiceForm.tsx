@@ -125,7 +125,7 @@ interface EditableProp{
   
     const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{`${state.country}, ${state.city}`}</Text>
+        <Text>{`${state.street}`}</Text>
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
   )
@@ -154,7 +154,8 @@ interface EditableProp{
       longitude:0,
       state: '',
       country:'',
-      city:''
+      city:'',
+      street:''
   })
 
   const urlPrefix = useUrlPrefix()
@@ -198,11 +199,11 @@ interface EditableProp{
         
         const fullAddress = extractFullAddress(place)
         // add street address
-        // const addressWithStreet={
-        //     ...fullAddress,
-        //     street: place?.formatted_address
-        // }
-        setFullAddress(fullAddress)
+        const addressWithStreet={
+            ...fullAddress,
+            street: place?.formatted_address
+        }
+        setFullAddress(addressWithStreet)
 
         //@ts-ignore
       antInputRef.current.input.value = place?.formatted_address
@@ -211,7 +212,7 @@ interface EditableProp{
   });
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
+    const {data} = await axios.put(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -229,15 +230,31 @@ interface EditableProp{
   })
 
   function onFinish(updatedItem:any){
+  
     const payload = {
-      key:'country',
-      value: updatedItem.country,
+      // ...selectedRecord,
+      // ...fullAddress,
+      id: selectedRecord.id,
+      // serviceId: selectedRecord.ser
+      country: fullAddress.country,
+      city: fullAddress.city,
+      state: fullAddress.state,
+      street: fullAddress.street,
+      coverImageHash: selectedRecord.coverImageHash,
+      logoImageHash: selectedRecord.logoImageHash,
+      contactNumber: selectedRecord.contactNumber,
+      startTime: selectedRecord.startTime,
+      endTime: selectedRecord.endTime,
+      latitude: String(selectedRecord.latitude),
+      longitude: String(selectedRecord.longitude),
+      status: String(selectedRecord.status),
       orgId: selectedRecord.id
     }
-    const updatedRecord = {
-      ...selectedRecord,
-      name: updatedItem.country
-    }
+
+    // const updatedRecord = {
+    //   ...selectedRecord,
+    //   name: updatedItem.country
+    // }
     // setState(updatedRecord)
     mutation.mutate(payload)
   }
