@@ -235,7 +235,7 @@ interface EditableProp{
       // ...selectedRecord,
       // ...fullAddress,
       id: selectedRecord.id,
-      // serviceId: selectedRecord.ser
+      serviceTypeId: selectedRecord.serviceType[0].id,
       country: fullAddress.country,
       city: fullAddress.city,
       state: fullAddress.state,
@@ -243,14 +243,15 @@ interface EditableProp{
       coverImageHash: selectedRecord.coverImageHash,
       logoImageHash: selectedRecord.logoImageHash,
       contactNumber: selectedRecord.contactNumber,
-      startTime: selectedRecord.startTime,
-      endTime: selectedRecord.endTime,
+      startTime: selectedRecord.start_time,
+      endTime: selectedRecord.end_time,
       latitude: String(selectedRecord.latitude),
       longitude: String(selectedRecord.longitude),
-      status: String(selectedRecord.status),
-      orgId: selectedRecord.id
+      // status: String(selectedRecord.status),
+      orgId: selectedRecord.orgId
     }
 
+    console.log(payload) 
     // const updatedRecord = {
     //   ...selectedRecord,
     //   name: updatedItem.country
