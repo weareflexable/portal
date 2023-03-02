@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import {Form, Row, Col, Image, Tooltip, Input,Upload,Button,notification, Typography, Space, Select, Radio, Divider, TimePicker, InputRef} from 'antd';
-import {UploadOutlined,MinusOutlined, ArrowLeftOutlined, InfoCircleOutlined,  InboxOutlined} from '@ant-design/icons'
+import {UploadOutlined,MinusOutlined, QuestionCircleOutlined, ArrowLeftOutlined, InfoCircleOutlined,  InboxOutlined} from '@ant-design/icons'
 const {Title,Text} = Typography
 const {TextArea} = Input
 import dayjs from 'dayjs'
@@ -17,6 +17,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useAuthContext } from "../../../context/AuthContext";
 import loadConfig from "next/dist/server/config";
+import useUrlPrefix from "../../../hooks/useUrlPrefix";
 
 const getBase64 = (file: any): Promise<string> => 
 new Promise((resolve, reject) => {
@@ -49,8 +50,6 @@ export default function NewService(){
     const [logoImage, setLogoImage] = useState(PLACEHOLDER_IMAGE)
 
     const router = useRouter() 
-
-    console.log(router.isReady, router.query)
 
     const antInputRef = useRef();
     const areaCodeRef = useRef<InputRef>(null)
@@ -157,6 +156,7 @@ export default function NewService(){
         createData.mutate(formObject)
     }
 
+    const urlPrefix = useUrlPrefix()
 
     const extractLogoImage = async(e: any) => {
         // e.preventDefault()
@@ -176,7 +176,7 @@ export default function NewService(){
   };
 
       const createDataHandler = async(newItem:any)=>{
-        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/services`, newItem,{
+        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`, newItem,{
             headers:{
                 "Authorization": paseto
             },
@@ -312,6 +312,9 @@ export default function NewService(){
                     <div style={{marginBottom:'2rem', marginTop:'3rem'}}>
                         <Title level={3}>Image Upload</Title>
                         <Text >Your logo and artwork will be visible on marketplace</Text>
+                        <Tooltip trigger={['click']} placement='right' title={<LogoTip/>}>
+                            <Button type="link">Show me <QuestionCircleOutlined /></Button>
+                        </Tooltip>
                     </div>
 
                     {/* <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}>  */}
@@ -369,4 +372,15 @@ export default function NewService(){
             </Row>
        </div>    
     )
+}
+
+
+
+function LogoTip(){
+    return(
+        <div>
+            <Image style={{objectFit:'cover'}} src={'/explainers/service-explainer.png'} alt='Service explainer as displayed on marketplace'/>
+            <Text style={{color:'white'}}>It is very important that you provide the requested the image size else, it will look distorted on marketplace.</Text>
+        </div>
+    ) 
 }
