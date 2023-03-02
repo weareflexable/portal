@@ -149,8 +149,6 @@ interface EditableProp{
     // const [isEditMode, setIsEditMode] = useState(false)
     const antInputRef = useRef();
     const [fullAddress, setFullAddress] = useState({
-      latitude:0,
-      longitude:0,
       state: '',
       country:'',
       city:'',
@@ -170,8 +168,6 @@ interface EditableProp{
               state:'',
               country:'',
               city:'',
-              latitude:place.geometry.location.lat(),
-              longitude:place.geometry.location.lng()
           };
           addressComponents.forEach((address:any)=>{
               const type = address.types[0]
@@ -231,14 +227,17 @@ interface EditableProp{
   
     const payload = {
       ...fullAddress,
-      id: selectedRecord.id,
+      //@ts-ignore
+      id: selectedRecord.orgId,
+      name: selectedRecord.name,
+      email: selectedRecord.email,
+      zipCode: selectedRecord.zipCode,
       coverImageHash: selectedRecord.coverImageHash,
       logoImageHash: selectedRecord.logoImageHash,
       contactNumber: selectedRecord.contactNumber,
-      status: String(selectedRecord.status),
-      orgId: selectedRecord.id
     }
   
+
     mutation.mutate(payload)
   }
   

@@ -19,6 +19,7 @@ import { useOrgContext } from "../../../../context/OrgContext";
 import { asyncStore } from "../../../../utils/nftStorage";
 import { usePlacesWidget } from "react-google-autocomplete";
 import { EditableName, EditableAddress, EditablePhone, EditableZipCode, EditableLogoImage, EditableCoverImage } from "../EditOrg";
+import { convertToAmericanFormat } from "../../../../utils/phoneNumberFormatter";
 
 
 var relativeTime = require('dayjs/plugin/relativeTime')
@@ -421,6 +422,10 @@ export default function ManagerOrgsView(){
         title: 'Contact',
         dataIndex: 'contactNumber',
         key: 'contactNumber',
+        render: (_,record)=>(
+          //@ts-ignore
+          <Text>{convertToAmericanFormat(record.contactNumber)}</Text> 
+        )
       },
       {
           title: 'Created On',

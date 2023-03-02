@@ -1223,8 +1223,6 @@ function AddressField({selectedRecord,toggleEdit}:AddressFieldProp){
   // const [isEditMode, setIsEditMode] = useState(false)
   const antInputRef = useRef();
   const [fullAddress, setFullAddress] = useState({
-    latitude:0,
-    longitude:0,
     state: '',
     country:'',
     city:'',
@@ -1243,9 +1241,7 @@ const urlPrefix = useUrlPrefix()
         let addressObj = {
             state:'',
             country:'',
-            city:'',
-            latitude:place.geometry.location.lat(),
-            longitude:place.geometry.location.lng()
+            city:''
         };
         addressComponents.forEach((address:any)=>{
             const type = address.types[0]
@@ -1305,12 +1301,14 @@ function onFinish(updatedItem:any){
 
   const payload = {
     ...fullAddress,
-    id: selectedRecord.id,
+    //@ts-ignore
+    id: selectedRecord.orgId,
+    name: selectedRecord.name,
+    email: selectedRecord.email,
+    zipCode: selectedRecord.zipCode,
     coverImageHash: selectedRecord.coverImageHash,
     logoImageHash: selectedRecord.logoImageHash,
     contactNumber: selectedRecord.contactNumber,
-    status: String(selectedRecord.status),
-    orgId: selectedRecord.id
   }
 
   mutation.mutate(payload)
