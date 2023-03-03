@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {Typography,Avatar,Button, Dropdown} from 'antd'
 import {DownOutlined,LogoutOutlined} from '@ant-design/icons'
 import { useAuthContext } from '../../../context/AuthContext'
@@ -20,6 +20,13 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
     const {currentService} = useServicesContext()
     const router = useRouter()
     const {orgUserRole} = useOrgContext()
+    const [isManagerRoute, setIsManagerRoute] = useState(false)
+
+   
+    useEffect(() => {
+      const isManagerRoute = router.isReady? router.asPath.includes('/manager'): false
+      setIsManagerRoute(isManagerRoute)
+    }, [])
 
    const navigateBackToServices=()=>{
       router.replace(`/organizations/services`)
@@ -33,7 +40,7 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
    }
   
 
-  const items: MenuProps['items'] = currentUser.role == 1 ? getManagerMenu() :getAdminMenu()
+  const items = currentUser.role == 1 ? getManagerMenu() :getAdminMenu()
 
   function getAdminMenu(){
     return[
@@ -48,9 +55,13 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
     ]
   }
 
+  
+
+  
+
   function getManagerMenu(){
     return[
-    {label:<Text onClick={navigateBackToServices}>Back to launchpad</Text>, key:'servicesPage'},
+    {label:<Text hidden={isManagerRoute} onClick={navigateBackToServices}>Back to launchpad</Text>, key:'servicesPage'},
     {label:<Text onClick={()=>router.push('/manager/organizations')} >Back to organizations</Text>, key:'organizationsPage'},
     {type:'divider', key:'divider0'},
     {label:<Text onClick={navigateToProfile}  >Profile</Text>, key:'profile'},
@@ -61,6 +72,7 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
 
 
     return(
+      //@ts-ignore
       <Dropdown trigger={['click']} menu={{items}} >
       <div
         onClick={()=>console.log('show modal to switch')} 

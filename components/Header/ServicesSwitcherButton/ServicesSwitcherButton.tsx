@@ -12,7 +12,6 @@ export default function ServiceSwitcher({onOpenSwitcher}:ServiceSwitcherProps){
 
   const {currentService} =  useServicesContext()
   const {currentUser} = useAuthContext()
-  console.log(currentUser)
     
     return (
                 <div
