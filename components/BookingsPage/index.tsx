@@ -18,6 +18,8 @@ import { useOrgContext } from "../../context/OrgContext";
 import { ServiceItem } from "../../types/Services";
 import { Order } from "./Bookings.types";
 import useUrlPrefix from "../../hooks/useUrlPrefix";
+import { numberFormatter } from "../../utils/numberFormatter";
+import { IMAGE_PLACEHOLDER_HASH } from "../../constants";
 const {TextArea} = Input
 
 
@@ -103,7 +105,7 @@ export default function BookingsView(){
           const logoImageHash = record.serviceItemDetails[0].logoImageHash
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${logoImageHash}`}/>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${logoImageHash.length < 10? IMAGE_PLACEHOLDER_HASH : logoImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{serviceItemName}</Text>  
                         <Text type="secondary">{serviceName}</Text>  
@@ -123,7 +125,7 @@ export default function BookingsView(){
           const profilePicHash = user.profilePic
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${profilePicHash}`}/>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${profilePicHash.length < 10? IMAGE_PLACEHOLDER_HASH : profilePicHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{name}</Text>  
                         <Text type="secondary">{email}</Text>  
@@ -140,7 +142,7 @@ export default function BookingsView(){
         render: (unitPrice)=>(
           <div>
             <Text type="secondary">$</Text>
-            <Text>{unitPrice/100}</Text>
+            <Text>{`${numberFormatter.from(unitPrice/100)}`}</Text>
           </div>
         )
       },
@@ -166,7 +168,7 @@ export default function BookingsView(){
           return(
             <div>
             <Text type="secondary">$</Text>
-            <Text>{total}</Text>
+            <Text>{`${numberFormatter.from(total)}`}</Text>
           </div>
           )
         }

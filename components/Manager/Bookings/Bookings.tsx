@@ -19,6 +19,7 @@ import { ServiceItem } from "../../../types/Services";
 import { ManagerOrder } from "./Bookings.types";
 import useUrlPrefix from "../../../hooks/useUrlPrefix";
 const {TextArea} = Input
+import {numberFormatter} from '../../../utils/numberFormatter'
 
 
 // const mockServiceItems:ServiceItem[]=[
@@ -157,7 +158,7 @@ export default function ManagerBookingsView(){
         render: (unitPrice)=>(
           <div>
             <Text type="secondary">$</Text>
-            <Text>{unitPrice/100}</Text>
+            <Text>{`${numberFormatter.from(unitPrice/100)}`}</Text>
           </div>
         )
       },
@@ -183,7 +184,7 @@ export default function ManagerBookingsView(){
           return(
             <div>
             <Text type="secondary">$</Text>
-            <Text>{total}</Text>
+            <Text>{`${numberFormatter.from(total)}`}</Text>
           </div>
           )
         }
@@ -213,11 +214,11 @@ export default function ManagerBookingsView(){
         }
       },
       {
-          title: 'Created On',
-          dataIndex: 'createdAt',
-          key: 'createdAt',
+          title: 'Ticket Date',
+          dataIndex: 'targeDate',
+          key: 'targetDate',
           render: (_,record)=>{
-              const date = dayjs(record.createdAt).format('MMM DD, YYYY')
+              const date = dayjs(record.targetDate).format('MMM DD, YYYY')
               return(
             <Text>{date}</Text>
             )
