@@ -122,16 +122,32 @@ export default function ManagerBookingsView(){
         dataIndex: 'name',
         key: 'name',
         render:(_,record)=>{
+          const serviceItemName = record.serviceItemDetails[0].name
+          const serviceName = record.serviceDetails[0].name
+          const logoImageHash = record.serviceItemDetails[0].logoImageHash
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={'/favicon.ico'}/>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${logoImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
-                        <Text>{record.name}</Text>  
-                        <Text type="secondary">{record.serviceName}</Text>  
+                        <Text>{serviceItemName}</Text>  
+                        <Text type="secondary">{serviceName}</Text>  
                     </div>
                 </div>
             )
         },
+      },
+      {
+        title: 'Type',
+        // dataIndex: 'unitPrice',
+        key: 'unitPrice',
+        align:'right',
+        render: (_,record)=>{
+          const serviceItemType = record.serviceItemDetails[0].serviceItemType[0].name
+          return(
+          <div>
+            <Text style={{textTransform:'capitalize'}}>{serviceItemType}</Text>
+          </div>
+        )}
       },
       {
         title: 'Unit price',

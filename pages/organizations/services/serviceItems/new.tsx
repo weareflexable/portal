@@ -18,7 +18,7 @@ import useServiceItemTypes from '../../../../hooks/useServiceItemTypes';
 import { asyncStore } from '../../../../utils/nftStorage';
 import axios from 'axios';
 import { useAuthContext } from '../../../../context/AuthContext';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import useUrlPrefix from '../../../../hooks/useUrlPrefix'; 
 
 
@@ -109,6 +109,8 @@ function BasicForm({nextStep}:BasicInfoProps){
     
     console.log(artworkRef)
 
+    const queryClient = useQueryClient()
+
     function handleArtworkChange(hash:string){
         artworkRef.current = hash
     }
@@ -158,6 +160,9 @@ function BasicForm({nextStep}:BasicInfoProps){
             nextStep(data.data)
             
        },
+       onSettled:()=>{
+        queryClient.invalidateQueries(['all-serviceItems'])
+   },
         onError:(err)=>{
             console.log(err)
             notification['error']({
