@@ -5,7 +5,7 @@ import {Card,Form,Input, InputNumber,Button, Typography, Radio, notification, Ro
 import { Bank } from '../../../../components/BillingsPage/Types/Banks.types'
 import { useOrgContext } from '../../../../context/OrgContext'
 import {ArrowLeftOutlined} from '@ant-design/icons'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import router, { useRouter } from 'next/router'
 import axios from 'axios'
 import { useAuthContext } from '../../../../context/AuthContext'
@@ -33,6 +33,8 @@ export default function CreateBankAccountForm(){
     const router  = useRouter()
 
     const urlPrefix = useUrlPrefix()
+
+    const queryClient = useQueryClient()
 
     const onFinish = (formData:Bank)=>{
         // call function to create store
@@ -64,6 +66,9 @@ export default function CreateBankAccountForm(){
             message: 'Successfully created new bank account!'
         })
             router.back()
+       },
+       onSettled:()=>{
+        queryClient.invalidateQueries(['all-banks'])
        },
         onError:()=>{
             notification['error']({
