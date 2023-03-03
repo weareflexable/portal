@@ -81,7 +81,7 @@ export default function BillingsView(){
     const changeStatusMutation = useMutation(['data'],{
         mutationFn: changeStatus,
         onSuccess:(data:any)=>{
-            queryClient.invalidateQueries({queryKey:['admin-banks',currentFilter]})
+            queryClient.invalidateQueries({queryKey:['banks',currentFilter]})
         },
         onError:()=>{
             console.log('Error changing status')
@@ -111,7 +111,6 @@ export default function BillingsView(){
     const banksQuery = useQuery({queryKey:['banks', currentFilter], queryFn:fetchBanks, enabled:paseto !== '' && allBanksQuery.isFetched})
     const data = banksQuery.data && banksQuery.data.data
 
-    console.log(data)
   
   
 

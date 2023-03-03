@@ -17,6 +17,7 @@ import { useOrgContext } from "../../../context/OrgContext";
 import { asyncStore } from "../../../utils/nftStorage";
 import { ServiceItem } from "../../../types/Services";
 import { User } from "./Users.types";
+import { IMAGE_PLACEHOLDER_HASH } from "../../../constants";
 const {TextArea} = Input
 
 
@@ -102,6 +103,7 @@ export default function UsersView(){
                 <div style={{display:'flex',alignItems:'center'}}>
                     {/* <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.profilePic}`}/> */}
                     {/* <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.profilePic}`}/>     */}
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.profilePic.length < 10? IMAGE_PLACEHOLDER_HASH : record.profilePic}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{record.name}</Text>  
                         <Text type="secondary">{record.email}</Text>  

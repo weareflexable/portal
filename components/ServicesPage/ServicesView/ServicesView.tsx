@@ -569,7 +569,7 @@ interface EmptyStateProps{
 function EmptyState({children}:EmptyStateProps){
 
   return(
-    <div style={{border: '1px solid #d6d6d6', marginTop:'2rem', borderRadius:'4px', height:'50vh', display:'flex', justifyContent:'center', alignItems:'center', padding: '2rem'}}>
+    <div style={{border: '1px solid #d6d6d6', marginTop:'2rem', borderRadius:'4px', height:'40vh', display:'flex', justifyContent:'center', alignItems:'center', padding: '2rem'}}>
       <div style={{maxWidth:'350px', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
         <Title level={3}>Get Started</Title> 
         <Text style={{textAlign:'center'}}>Oops! We have found no active venues in your organization</Text>

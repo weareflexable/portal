@@ -7,7 +7,7 @@ const { Panel } = Collapse;
 
 
 const {Text,Title} = Typography;
-import {UploadOutlined,ArrowLeftOutlined,MinusCircleOutlined,InfoCircleOutlined,PlusCircleOutlined} from '@ant-design/icons'
+import {QuestionCircleOutlined,ArrowLeftOutlined,MinusCircleOutlined,InfoCircleOutlined,PlusCircleOutlined} from '@ant-design/icons'
 
 
 import { useRouter } from 'next/router';
@@ -511,6 +511,9 @@ function Artwork({onHandleArtwork}:ArtworkProps){
                 <Button type='link' style={{alignSelf:'flex-end'}} onClick={toggleDrawer}>Select a different artwork</Button>
                 <Image alt='artwork' objectFit='cover' height='400px' width='100px' style={{minWidth:'0'}}  src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${selectedArtwork}`}/>
                 <Text type='secondary'>This cover image will be used for listing on marketplace and Digital access token NFT</Text>
+                <Tooltip trigger={['click']} placement='right' title={<LogoTip/>}>
+                    <Button type="link">Show me <QuestionCircleOutlined /></Button>
+                </Tooltip>
             </div>
             <ArtworkPicker 
                 currentServiceItemType={currentServiceItemType}
@@ -588,3 +591,13 @@ const reservationHashes = [
     'bafkreigg636y3fh5robhm57fokgxnbnhclzjlw5lujzqw6b5lddper3xuu'
 ]
 
+
+
+function LogoTip(){
+    return(
+        <div>
+            <Image style={{objectFit:'cover'}} src={'/explainers/service-explainer.png'} alt='Service explainer as displayed on marketplace'/>
+            <Text style={{color:'white'}}>It is very important that you provide the requested the image size else, it will look distorted on marketplace.</Text>
+        </div>
+    ) 
+}
