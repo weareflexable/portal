@@ -1,106 +1,8 @@
 
-import BillingsForm from './CreateBankAccountForm/CreateBankAccountForm'
-import {PlusCircleOutlined} from '@ant-design/icons'
-import { useRouter } from 'next/router'
-import { BankAccount } from '../../types/BankAccount'
-import BankAccountsList from './BankAccountsList/BankAccountsList'
-import EditBankAccountForm from './EditBankAccountForm/EditBankAccountForm'
-import CreateBankAccountForm from './CreateBankAccountForm/CreateBankAccountForm'
-import useCrudDB from '../../hooks/useCrudDB'
-import { useOrgContext } from '../../context/OrgContext'
-
-// const mockBankAcounts: BankAccount[] = [
-// {
-//     id: '847847fdafdkvndaf2',
-//     beneficiaryName: 'Benjamin On Franklin',
-//     beneficiaryAddress: 'Syracuse new york',
-//     beneficiaryPhoneNumber: '+124574638',
-//     accountNo: 3748473833,
-//     bankName: 'Silver stone crest bank',
-//     swiftCode: '4875784738',
-//     routingNumber: 4959450837,
-//     currency:'USD',
-//     bankAddress:'West park, Bacon Hill syracuse NY'
-// }
-// ]
-    
-
-
-// export default function BillingsView(){
-
-//     const {back} = useRouter()
-//     const {currentOrg} = useOrgContext()
-
-//     const hookConfig = {
-//         mutateUrl:'/manager/org/bank',
-//         fetchUrl: `/manager/org/bank?key=org_id&value=${currentOrg.orgId}&pageNumber=0&pageSize=3`,
-//         patchUrl:`/manager/org/bank`
-//     }
-
-//     const {
-//          state,
-//          showCreateForm, 
-//          openCreateForm,
-//          showEditForm,
-//          itemToEdit,
-//          selectItemToEdit,
-//          isPatchingData,
-//          isLoading,
-//          isCreatingData,
-//          createItem,
-//          editItem,
-//          deleteItem,
-//          closeCreateForm,
-//          closeEditForm
-//         } = useCrudDB<BankAccount>(hookConfig,['banks'])
-
-
-//     return(
-//         <div >
-//             {/* <Row gutter={16}>
-//                 <Col span={12}>
-//                 <Statistic title="Account Balance (USD)" value={112893} precision={2} />
-//                 <Button disabled={bankDetails?false:true} style={{ marginTop: 16 }} type="primary">
-//                     Withdraw
-//                 </Button>
-//                 </Col>
-//             </Row> */}
-
-
-//             <Button type='link'  style={{display:'flex', alignItems:'center'}} icon={<PlusCircleOutlined />} onClick={openCreateForm}>Add new bank account</Button>
-//              <BankAccountsList
-//                 bankAccounts={state}
-//                 onCreateBankAccount={openCreateForm}
-//                 onDeleteBankAccount={deleteItem}
-//                 onSelectBankAccount={selectItemToEdit}
-//                 isLoading={isLoading}
-//             />
-            
-
-//              <Modal title="Create new bank acount" open={showCreateForm} footer={null} onCancel={closeCreateForm}>
-//                  <CreateBankAccountForm
-//                     onCreateBankAccount={createItem}
-//                     isCreatingData={isCreatingData}
-//                 />        
-//             </Modal>
-
-//              <Modal title="Edit bank account" open={showEditForm} footer={null} onCancel={closeEditForm}>
-//                  <EditBankAccountForm
-//                     onCloseEditForm={closeEditForm}
-//                     onEditBankAccount={editItem}
-//                     initValues={itemToEdit}
-//                     isPatchingData={isPatchingData}
-//                 />        
-//             </Modal>
-//         </div>
-//         )
-//     }
-    
-
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-const {Text} = Typography
+const {Text,Title} = Typography
 import { SearchOutlined, PlusOutlined } from '@ant-design/icons';
-import React, { useRef, useState } from 'react'
+import React, { ReactNode, useRef, useState } from 'react'
 import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form} from 'antd'
 import axios from 'axios';
 import {MoreOutlined,ReloadOutlined} from '@ant-design/icons'
@@ -112,6 +14,8 @@ import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { Bank } from "./Types/Banks.types";
 import { usePlacesWidget } from "react-google-autocomplete";
 import useUrlPrefix from '../../hooks/useUrlPrefix'
+import { useOrgContext } from "../../context/OrgContext";
+import { useRouter } from "next/router";
 const {TextArea} = Input
 
 
@@ -131,11 +35,23 @@ export default function BillingsView(){
     const [selectedBank, setSelelectedOrg] = useState<any|Bank>({})
     const [currentFilter, setCurrentStatus] = useState({id:'1',name: 'Verified'})
 
+    async function fetchAllBanks(){
+        const res = await axios({
+            method:'get',
+            //@ts-ignore
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank?pageNumber=0&pageSize=10`,
+            headers:{
+                "Authorization": paseto
+            }
+        })
+
+        return res.data;
+    }
     async function fetchBanks(){
         const res = await axios({
             method:'get',
             //@ts-ignore
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank?key=org_id&value=${currentOrg.orgId}&pageNumber=0&pageSize=10`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank?key=org_id&value=${currentOrg.orgId}&pageNumber=0&pageSize=10&key2=status&value2=${currentFilter.id}`,
             headers:{
                 "Authorization": paseto
             }
@@ -146,7 +62,7 @@ export default function BillingsView(){
 
     const urlPrefix = useUrlPrefix()
 
-    async function changeOrgStatus({bankId, statusNumber}:{bankId:string, statusNumber: string}){
+    async function changeStatus({bankId, statusNumber}:{bankId:string, statusNumber: string}){
         const res = await axios({
             method:'patch',
             url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank`,
@@ -163,7 +79,7 @@ export default function BillingsView(){
     }
 
     const changeStatusMutation = useMutation(['data'],{
-        mutationFn: changeOrgStatus,
+        mutationFn: changeStatus,
         onSuccess:(data:any)=>{
             queryClient.invalidateQueries({queryKey:['admin-banks',currentFilter]})
         },
@@ -186,9 +102,16 @@ export default function BillingsView(){
         changeStatusMutation.mutate({bankId:bank.id, statusNumber:'4'})
     }
 
+    
+      const allBanksQuery = useQuery({queryKey:['all-banks'], queryFn:fetchAllBanks, enabled:paseto !== '', staleTime:Infinity})
+      const allBanksLength = allBanksQuery.data && allBanksQuery.data.data.length
 
-    const banksQuery = useQuery({queryKey:['admin-banks', currentFilter], queryFn:fetchBanks, enabled:paseto !== ''})
+      console.log(allBanksLength)
+
+    const banksQuery = useQuery({queryKey:['banks', currentFilter], queryFn:fetchBanks, enabled:paseto !== '' && allBanksQuery.isFetched})
     const data = banksQuery.data && banksQuery.data.data
+
+    console.log(data)
   
   
 
@@ -285,20 +208,32 @@ export default function BillingsView(){
 
         return (
             <div>
-                <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
-                <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
-                    {bankFilters.map(bankFilter=>(
-                        <Radio.Button key={bankFilter.id} onClick={()=>setCurrentStatus(bankFilter)} value={bankFilter.id}>{bankFilter.name}</Radio.Button>
-                     )
-                    )}
-                </Radio.Group>
-                <div style={{width: "20%",display:'flex', marginTop:'2rem', justifyContent:'space-between', alignItems:'center'}}>
-                  <Button type='link' loading={banksQuery.isRefetching} onClick={()=>banksQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
-                  <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/services/billings/new')}>New Bank</Button>
-                </div>
-
-                </div>
-                <Table style={{width:'100%'}} key='dfadfe' loading={banksQuery.isLoading||banksQuery.isRefetching} columns={columns} dataSource={data} />
+               {  allBanksQuery.data && allBanksLength == 0? null : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+                  <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
+                      {bankFilters.map(bankFilter=>(
+                          <Radio.Button key={bankFilter.id} onClick={()=>setCurrentStatus(bankFilter)} value={bankFilter.id}>{bankFilter.name}</Radio.Button>
+                      )
+                      )}
+                  </Radio.Group>
+                  <div style={{width: "20%",display:'flex', marginTop:'2rem', justifyContent:'space-between', alignItems:'center'}}>
+                    <Button type='link' loading={banksQuery.isRefetching} onClick={()=>banksQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                    <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/services/billings/new')}>New Bank</Button>
+                  </div>
+                </div>}
+                {
+                  allBanksQuery.data && allBanksLength == 0
+                  ?<EmptyState>
+                    <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/services/billings/new')}>New Bank</Button>
+                  </EmptyState>
+                  : <Table 
+                  style={{width:'100%'}} 
+                  key='dfadfe' 
+                  loading={banksQuery.isLoading||banksQuery.isRefetching} 
+                  columns={columns} 
+                  dataSource={data} 
+                  />
+                }
+                
                 {
                   isDrawerOpen
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedBank={selectedBank}/>
@@ -701,14 +636,14 @@ const bankFilters = [
   },
   {
       id: '0',
-      name: 'De-activated'
+      name: 'Deactivated'
   },
 ]
 
 const verifiedBankActions = [
     {
         key: 'deActivate',
-        label: 'De-activate'
+        label: 'Deactivate'
     },
     {
         key: 'viewDetails',
@@ -738,3 +673,23 @@ const deActivatedBankActions = [
     },
 
 ]
+
+
+interface EmptyStateProps{
+  children: ReactNode
+}
+
+function EmptyState({children}:EmptyStateProps){
+
+  return(
+    <div style={{border: '1px solid #d6d6d6', marginTop:'2rem', borderRadius:'4px', height:'50vh', display:'flex', justifyContent:'center', alignItems:'center', padding: '2rem'}}>
+      <div style={{maxWidth:'350px', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
+        <Title level={3}>Get Started</Title> 
+        <Text style={{textAlign:'center'}}>Seems like you are yet to add a billing address</Text>
+        <div style={{marginTop:'1rem', display:'flex',justifyContent:'center'}}>
+            {children}
+        </div>
+      </div>
+    </div>
+  )
+}

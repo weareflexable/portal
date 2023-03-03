@@ -1941,6 +1941,11 @@
     "combined-stream" "^1.0.8"
     "mime-types" "^2.1.12"
 
+"format-money-js@^1.6.3":
+  "integrity" "sha512-neeYRPJ5zeepUooQaYmQQLmISmA4d8SbhyMGbr+dCXoQG0eVDYItWMK8HcMbBJTAn15l5Xf76pqJGoAtu+e8Vg=="
+  "resolved" "https://registry.npmjs.org/format-money-js/-/format-money-js-1.6.3.tgz"
+  "version" "1.6.3"
+
 "fraction.js@^4.2.0":
   "integrity" "sha512-MhLuK+2gUcnZe8ZHlaaINnQLl0xRIGRfcGk2yl8xoQAfHrSsL3rYu6FCmBdkdbhc9EPlwyGHewaRsvwRMJtAlA=="
   "resolved" "https://registry.npmjs.org/fraction.js/-/fraction.js-4.2.0.tgz"
