@@ -188,13 +188,7 @@ export default function ManagerBookingsView(){
           </div>
           )
         }
-      },
-      {
-        title: 'Type',
-        dataIndex: 'serviceItemType',
-        key: 'serviceItemType',
-      },
-      
+      }, 
       {
         title: 'Order Status',
         dataIndex: 'orderStatus',

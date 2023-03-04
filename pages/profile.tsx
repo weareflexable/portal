@@ -561,7 +561,6 @@ function EditableCountry({selectedRecord}:EditableProp){
     const america = countryList.getName('US')
     const sortedList = list.sort()
     const prioritizedList = [america, ...sortedList]
-    console.log(prioritizedList)
     
   
     function toggleEdit(){

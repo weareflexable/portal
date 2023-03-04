@@ -2,7 +2,10 @@
 export type Bank = {
     id: string,
     beneficiaryName: string,
-    beneficiaryAddress: string,
+    beneficiaryCountry: string,
+    beneficiaryState: string,
+    beneficiaryCity: string,
+    beneficiaryZipCode: string
     beneficiaryPhoneNumber: string,
     accountNo: number,
     accountType:string,
