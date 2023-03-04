@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 const {Text,Title} = Typography
 import { SearchOutlined, PlusOutlined } from '@ant-design/icons';
 import React, { ReactNode, useRef, useState } from 'react'
-import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form} from 'antd'
+import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Modal, notification} from 'antd'
 import axios from 'axios';
 import {MoreOutlined,ReloadOutlined} from '@ant-design/icons'
 import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
@@ -16,6 +16,7 @@ import { usePlacesWidget } from "react-google-autocomplete";
 import useUrlPrefix from '../../hooks/useUrlPrefix'
 import { useOrgContext } from "../../context/OrgContext";
 import { useRouter } from "next/router";
+import { useServicesContext } from "../../context/ServicesContext";
 const {TextArea} = Input
 
 
@@ -235,7 +236,7 @@ export default function BillingsView(){
                 
                 {
                   isDrawerOpen
-                  ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedBank={selectedBank}/>
+                  ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedRecord={selectedBank}/>
                   :null
                 }
             </div>
@@ -246,45 +247,112 @@ export default function BillingsView(){
 }
 
 interface DrawerProps{
-  selectedBank: Bank,
+  selectedRecord: Bank,
   isDrawerOpen: boolean,
   closeDrawer: (value:boolean)=>void
 }
-function DetailDrawer({selectedBank,isDrawerOpen,closeDrawer}:DrawerProps){
+
+function DetailDrawer({selectedRecord,isDrawerOpen,closeDrawer}:DrawerProps){
 
 const queryClient = useQueryClient()
+const router = useRouter()
+const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+// const {swi} = useOrgContext()
+const {paseto,currentUser} = useAuthContext()
 
 function closeDrawerHandler(){
-  queryClient.invalidateQueries(['banks'])
+  queryClient.invalidateQueries(['services']) 
   closeDrawer(!isDrawerOpen)
 }
 
+
+
+function toggleDeleteModal(){
+  setIsDeleteModalOpen(!isDeleteModalOpen)
+}
+
+function deleteService(){ 
+  console.log(selectedRecord.id)
+  // mutate record
+  deleteData.mutate(selectedRecord,{
+    onSuccess:()=>{
+      notification['success']({
+        message: 'Successfully deleted record!'
+      })
+      toggleDeleteModal()
+      closeDrawerHandler()
+
+    },
+    onError:(err)=>{
+        console.log(err)
+        notification['error']({
+            message: 'Encountered an error while deleting record custom custom dates',
+          });
+        // leave modal open
+    }
+  })
+}
+
+const urlPrefix = useUrlPrefix()
+
+const deleteDataHandler = async(record:Bank)=>{      
+  const {data} = await axios({
+    method:'patch',
+    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank`,
+    data: {
+        id:record.id,
+        key:'status',
+        value: "0"
+      },
+    headers:{
+          "Authorization": paseto 
+  }})
+  return data
+}
+
+const deleteData = useMutation(deleteDataHandler)
+
+const{isLoading:isDeletingItem} = deleteData
+
+
 return( 
-<Drawer title="Organization Details" width={640} placement="right" closable={true} onClose={closeDrawerHandler} open={isDrawerOpen}>
+<Drawer 
+  title="Venue Details" 
+  width={640} placement="right" 
+  closable={true} 
+  onClose={closeDrawerHandler} 
+  open={isDrawerOpen}
+>
   
-  <EditableName selectedBank={selectedBank}/>
-  <EditableAddress selectedBank={selectedBank}/>
-  <EditablePhone selectedBank={selectedBank}/>
+  <EditableName selectedRecord={selectedRecord}/>
 
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
-    <Divider/>
-    <Button danger type="link">De-activate Bank</Button>
-    <Divider/>
+    <Title level={3}>Danger zone</Title>
+    <Button danger onClick={toggleDeleteModal} style={{width:'30%'}} type="link">Deactivate Bank</Button>
   </div>
+
+  <DeleteRecordModal 
+  isDeletingItem={isDeletingItem} 
+  onCloseModal={toggleDeleteModal} 
+  onDeleteRecord={deleteService} 
+  isOpen={isDeleteModalOpen} 
+  selectedRecord={selectedRecord}
+  />
 
 </Drawer>
 )
 }
 
-
 interface EditableProp{
-  selectedBank: Bank
+  selectedRecord: Bank
 }
-function EditableName({selectedBank}:EditableProp){
-
-  const [state, setState] = useState(selectedBank)
+export function EditableName({selectedRecord}:EditableProp){
+  
+  const [state, setState] = useState(selectedRecord)
 
   const [isEditMode, setIsEditMode] = useState(false)
+
+  const urlPrefix = useUrlPrefix()
 
   const {paseto} = useAuthContext()
 
@@ -294,12 +362,10 @@ function EditableName({selectedBank}:EditableProp){
     setIsEditMode(!isEditMode)
   }
 
-  const urlPrefix = useUrlPrefix()
-
  
 
-  const nameMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank`,updatedItem,{
+  const mutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -307,33 +373,33 @@ function EditableName({selectedBank}:EditableProp){
     })
       return data;
   }
-  const nameMutation = useMutation({
-    mutationKey:['name'],
-    mutationFn: nameMutationHandler,
+  const mutation = useMutation({
+    mutationKey:['bankName'],
+    mutationFn: mutationHandler,
     onSuccess:()=>{
       toggleEdit()
     }
   })
 
-  function onFinish(updatedItem:any){
+  function onFinish(updatedItem:Bank){
     const payload = {
       key:'name',
-      value: updatedItem.name,
-      orgId: selectedBank.id
+      value: updatedItem.beneficiaryName,
+      id: selectedRecord.id
     }
-    const updatedOrg = {
-      ...selectedBank,
-      name: updatedItem.name
+    const updatedRecord = {
+      ...selectedRecord,
+      name: updatedItem.beneficiaryName
     }
-    setState(updatedOrg)
-    nameMutation.mutate(payload)
+    setState(updatedRecord)
+    mutation.mutate(payload)
   }
 
-  const {isLoading:isEditing} = nameMutation ;
+  const {isLoading:isEditing} = mutation;
 
   const readOnly = (
     <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Text>{state.bankName}</Text>
+      <Text>{state.beneficiaryName}</Text>
       <Button type="link" onClick={toggleEdit}>Edit</Button>
     </div>
 )
@@ -342,7 +408,7 @@ function EditableName({selectedBank}:EditableProp){
     <Form
      style={{ marginTop:'.5rem' }}
      name="editableName"
-     initialValues={selectedBank}
+     initialValues={selectedRecord}
      onFinish={onFinish}
      >
       <Row>
@@ -351,7 +417,7 @@ function EditableName({selectedBank}:EditableProp){
               name="name"
               rules={[{ required: true, message: 'Please input a valid service name' }]}
           >
-              <Input  disabled={isEditing} placeholder="Flexable org" />
+              <Input  disabled={isEditing} placeholder="Benjamins On Franklin Bar" />
           </Form.Item>
         </Col>
         <Col span={4}>
@@ -373,251 +439,77 @@ function EditableName({selectedBank}:EditableProp){
   )
   return(
     <div style={{width:'100%', display:'flex', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>Name</Text>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>Beneficiary Name</Text>
     {isEditMode?editable:readOnly}
     </div>
   )
 }
-function EditableAddress({selectedBank}:EditableProp){
-
-  const [state, setState] = useState(selectedBank)
-
-  const urlPrefix = useUrlPrefix()
-
-  const [isEditMode, setIsEditMode] = useState(false)
-  const antInputRef = useRef();
-  const [fullAddress, setFullAddress] = useState({
-    latitude:0,
-    longitude:0,
-    state: '',
-    country:'',
-    city:''
-})
-
-  const {paseto} = useAuthContext()
 
 
-  function toggleEdit(){
-    setIsEditMode(!isEditMode)
-  }
-
-  const [form]  = Form.useForm()
-
-  const extractFullAddress = (place:any)=>{
-    const addressComponents = place.address_components 
-        let addressObj = {
-            state:'',
-            country:'',
-            city:'',
-            latitude:place.geometry.location.lat(),
-            longitude:place.geometry.location.lng()
-        };
-        addressComponents.forEach((address:any)=>{
-            const type = address.types[0]
-            if(type==='country') addressObj.country = address.long_name
-            if(type === 'locality') addressObj.state = address.short_name
-            if(type === 'administrative_area_level_1') addressObj.city = address.short_name
-        })
-
-        return addressObj
+interface DeleteProp{
+  selectedRecord: Bank
+  isOpen: boolean
+  onCloseModal: ()=>void
+  onDeleteRecord: ()=>void
+  isDeletingItem: boolean
 }
+function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteRecord, onCloseModal}:DeleteProp){
 
-  const { ref: antRef } = usePlacesWidget({
-    apiKey: `${process.env.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API}`, // move this key to env
-    // apiKey: `AIzaSyB7ZUkMcIXpOKYU4r4iBMM9BFjCL5OpeeE`, // move this key to env
-    onPlaceSelected: (place) => {
-        // console.log(antInputRef.current.input)
-        form.setFieldValue('address',place?.formatted_address)
-        
-        const fullAddress = extractFullAddress(place)
-        setFullAddress(fullAddress)
-
-        //@ts-ignore
-      antInputRef.current.input.value = place?.formatted_address
-
-    },
-  });
-
-
-  const nameMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank`,updatedItem,{
-      headers:{
-          //@ts-ignore
-          "Authorization": paseto
-      }
-    })
-      return data;
-  }
-  const nameMutation = useMutation({
-    mutationKey:['address'],
-    mutationFn: nameMutationHandler,
-    onSuccess:()=>{
-      toggleEdit()
-    }
-  })
-
-  function onFinish(updatedItem:any){
-    const payload = {
-      key:'country',
-      value: updatedItem.country,
-      orgId: selectedBank.id
-    }
-    const updatedOrg = {
-      ...selectedBank,
-      name: updatedItem.country
-    }
-    setState(updatedOrg)
-    nameMutation.mutate(payload)
+  function onFinish(){
+    // call mutate function to delete record
+    onDeleteRecord()
   }
 
-  const {isLoading:isEditing} = nameMutation 
+  const [form] = Form.useForm()
 
-  const readOnly = (
-    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Text>{state.bankAddress}</Text>
-      <Button type="link" onClick={toggleEdit}>Edit</Button>
-    </div>
-)
-
-  const editable = (
-    <Form
-     style={{ marginTop:'.5rem' }}
-     name="editableAddress"
-     initialValues={selectedBank}
-     onFinish={onFinish}
-     form={form}
-     >
-      <Row>
-        <Col span={16} style={{height:'100%'}}>
-        <Form.Item 
-            name="address"
-            rules={[{ required: true, message: 'Please input a valid address!' }]}
-        >
-            {/* <TextArea rows={3} placeholder='Apt. 235 30B NorthPointsettia Street, Syracuse'/> */}
-            <Input ref={(c) => {
-                // @ts-ignore
-                antInputRef.current = c;
-                // @ts-ignore
-                if (c) antRef.current = c.input;
-                }} 
-                placeholder="Syracuse, United states" 
-                />
-        </Form.Item>
-
-        </Col>
-        <Col span={4}>
-          <Form.Item style={{ width:'100%'}}>
-              <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
-                      Cancel
-                  </Button>
-                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
-                      Apply changes
-                  </Button>
-              </Space>
-                        
-          </Form.Item>
-        </Col>
-      </Row>
-           
-    </Form>
-  )
   return(
-    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>Address</Text>
-    {isEditMode?editable:readOnly}
-    </div>
-  )
-}
-function EditablePhone({selectedBank}:EditableProp){
+    <Modal title="Are you absolutely sure?" footer={null} open={isOpen} onOk={()=>{}} onCancel={onCloseModal}>
+      {/* <Alert style={{marginBottom:'.5rem'}} showIcon message="Bad things will happen if you don't read this!" type="warning" /> */}
+      <Text >
+        {`This action will remove this venue’s listing from the marketplace and will deactivate any DATs that are attached to it. Venue can be reactivated in the future 
+        `}
+      </Text>
 
-  const [isEditMode, setIsEditMode] = useState(false)
+      <Form 
+      form={form} 
+      style={{marginTop:'1rem'}}
+      name="deleteServiceForm" 
+      layout='vertical'
+      onFinish={onFinish}>
+      <Form.Item
+        name="name"
+        style={{marginBottom:'.6rem'}}
+        label={`Please type "${selectedRecord.bankName}" to confirm`}
+        rules={[{ required: true, message: 'Please type correct service item name!' }]}
+      >
+        <Input size="large" disabled={isDeletingItem} />
+      </Form.Item>
 
-  const {paseto} = useAuthContext()
-  const urlPrefix = useUrlPrefix()
-
-  const queryClient = useQueryClient()
-
-  function toggleEdit(){
-    setIsEditMode(!isEditMode)
-  }
-
-  const readOnly = (
-      <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{selectedBank.beneficiaryPhoneNumber}</Text>
-        <Button type="link" onClick={toggleEdit}>Edit</Button>
-      </div>
-  )
-
-
-  const nameMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank`,updatedItem,{
-      headers:{
-          //@ts-ignore
-          "Authorization": paseto
-      }
-    })
-      return data;
-  }
-  const nameMutation = useMutation({
-    mutationKey:['phone'],
-    mutationFn: nameMutationHandler,
-    onSuccess:()=>{
-      toggleEdit()
-      queryClient.invalidateQueries(['banks'])
-    }
-  })
-
-  function onFinish(field:any){
-    const payload = {
-      key:'phone',
-      value: field.phone,
-      orgId: selectedBank.id
-    }
-    console.log(payload)
-    nameMutation.mutate(payload)
-  }
-
-  const {isLoading:isEditing} = nameMutation 
-
-  const editable = (
-    <Form
-     style={{ marginTop:'.5rem' }}
-     name="editablePhone"
-     initialValues={selectedBank}
-     onFinish={onFinish}
-     >
-      <Row>
-        <Col span={16}>
-          <Form.Item
-              name="phone"
-              rules={[{ required: true, message: 'Please input a valid phone number' }]}
+      <Form.Item
+        style={{marginBottom:'0'}}
+        shouldUpdate
+       >
+          {() => (
+          <Button
+            style={{width:'100%'}}
+            size='large'
+            danger
+            loading={isDeletingItem}
+            htmlType="submit"
+            disabled={
+              // !form.isFieldTouched('name') &&
+              form.getFieldValue('name') !== selectedRecord.bankName
+              // !!form.getFieldsError().filter(({ errors }) => errors.length).length
+            }
           >
-              <Input disabled={isEditing} placeholder="09023234857" />
-          </Form.Item>
-        </Col>
-        <Col span={4}>
-          <Form.Item style={{ width:'100%'}}>
-              <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
-                      Cancel
-                  </Button>
-                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
-                      Apply changes
-                  </Button>
-              </Space>
-                        
-          </Form.Item>
-        </Col>
-      </Row>
-           
+           I understand the consequences, delete permanently
+          </Button>
+        )}
+      </Form.Item>
+
     </Form>
-  )
-  return(
-    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>Phone</Text>
-      {isEditMode?editable:readOnly}
-    </div>
+
+  </Modal>
   )
 }
 
