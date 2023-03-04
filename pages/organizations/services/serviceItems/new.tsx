@@ -596,7 +596,7 @@ const reservationHashes = [
 function LogoTip(){
     return(
         <div>
-            <Image style={{objectFit:'cover'}} src={'/explainers/service-explainer.png'} alt='Service explainer as displayed on marketplace'/>
+            <Image style={{objectFit:'cover'}} src={'/explainers/serviceItem-explainer.png'} alt='Service explainer as displayed on marketplace'/>
             <Text style={{color:'white'}}>It is very important that you provide the requested the image size else, it will look distorted on marketplace.</Text>
         </div>
     ) 
