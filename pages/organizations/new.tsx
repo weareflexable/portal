@@ -175,7 +175,7 @@ export default function NewOrgForm(){
 
 
       const createDataHandler = async(newItem:any)=>{
-        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`, newItem,{
+        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/org`, newItem,{
             headers:{
                 "Authorization": paseto
             },
