@@ -5,6 +5,7 @@ export interface ManagerOrder {
     name: string;
     startTime: string
     serviceItemDetails: any[],
+    user: any[]
     targetDate: string,
     serviceDetails: any[],
     quantity: number,

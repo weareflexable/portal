@@ -110,7 +110,6 @@ export default function BillingsView(){
       const allBanksQuery = useQuery({queryKey:['all-banks'], queryFn:fetchAllBanks, enabled:paseto !== '', staleTime:Infinity})
       const allBanksLength = allBanksQuery.data && allBanksQuery.data.data.length
 
-      console.log(allBanksLength)
 
     const banksQuery = useQuery({queryKey:['banks', currentFilter], queryFn:fetchBanks, enabled:paseto !== '' && allBanksQuery.isFetched})
     const data = banksQuery.data && banksQuery.data.data
