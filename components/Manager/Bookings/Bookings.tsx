@@ -53,6 +53,7 @@ export default function ManagerBookingsView(){
     const {switchOrg} = useOrgs()
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const [pageNumber, setPageNumber] = useState<number|undefined>(0)
+    const [pageSize, setPageSize] = useState<number|undefined>(10)
   
 
     type DataIndex = keyof ServiceItem;
@@ -64,7 +65,7 @@ export default function ManagerBookingsView(){
     async function fetchBookings(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/bookings?pageNumber=${pageNumber}&pageSize=10`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/bookings?pageNumber=${pageNumber}&pageSize=${pageSize}`,
             headers:{
                 "Authorization": paseto
             }
@@ -81,7 +82,7 @@ export default function ManagerBookingsView(){
     
 
 
-    const bookingsQuery = useQuery({queryKey:['managerBookings'], queryFn:fetchBookings, enabled:paseto !== ''})
+    const bookingsQuery = useQuery({queryKey:['managerBookings',pageNumber,pageSize], queryFn:fetchBookings, enabled:paseto !== ''})
     const data = bookingsQuery.data && bookingsQuery.data.data
     const totalLength = bookingsQuery.data && bookingsQuery.data.dataLength;
 
@@ -90,8 +91,14 @@ export default function ManagerBookingsView(){
 
   
   
-    const handleChange: TableProps<ManagerOrder>['onChange'] = (pagination, filters, sorter) => {
-      console.log('Various parameters', pagination, filters, sorter);
+    const handleChange: TableProps<ManagerOrder>['onChange'] = (data) => {
+      // console.log('Various parameters', pagination, filters, sorter); 
+      console.log(data)
+      // @ts-ignore
+      setPageNumber(data.current-1)
+      setPageSize(data.pageSize)
+      // set new page
+      // set page number
       // setFilteredInfo(filters);
     };
   
@@ -153,12 +160,11 @@ export default function ManagerBookingsView(){
         title: 'Type',
         // dataIndex: 'unitPrice',
         key: 'unitPrice',
-        align:'right',
         render: (_,record)=>{
           const serviceItemType = record.serviceItemDetails[0].serviceItemType[0].name
           return(
           <div>
-            <Text style={{textTransform:'capitalize'}}>{serviceItemType}</Text>
+            <Tag style={{textTransform:'capitalize'}}>{serviceItemType}</Tag>
           </div>
         )}
       },
@@ -204,21 +210,20 @@ export default function ManagerBookingsView(){
       {
         title: 'Payment Status',
         dataIndex: 'paymentIntentStatus',
-        key: 'orderStatus',
-        render: (status)=>{
-          const statusText = status === '1'? 'Successful': 'In-complete'
-          return <Badge status="success" text={statusText} />
+        key: 'paymentIntentStatus',
+        render: (paymentStatus)=>{
+          return <Tag style={{textTransform:'capitalize'}}>{paymentStatus}</Tag>
         }
       },
-      {
-        title: 'Ticket Status',
-        dataIndex: 'ticketStatus',
-        key: 'ticketStatus',
-        render: (status)=>{
-          const statusText = status === '1'? 'Redeemed': 'Confirmed'
-          return <Badge status="success" text={statusText} />
-        }
-      },
+      // {
+      //   title: 'Ticket Status',
+      //   dataIndex: 'ticketStatus',
+      //   key: 'ticketStatus',
+      //   render: (status)=>{
+      //     const statusText = status === '1'? 'Redeemed': 'Confirmed'
+      //     return <Badge status="success" text={statusText} />
+      //   }
+      // },
       {
           title: 'Ticket Date',
           dataIndex: 'targeDate',
@@ -244,15 +249,10 @@ export default function ManagerBookingsView(){
 
         return (
             <div>
-                <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
-                {/* <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
-                    {serviceItemsFilters.map(filter=>(
-                        <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
-                     )
-                    )}
-                </Radio.Group> */}
-                <div style={{width: "20%",display:'flex', marginTop:'2rem', justifyContent:'space-between', alignItems:'center'}}>
-                  <Button type='link' loading={bookingsQuery.isRefetching} onClick={()=>bookingsQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'flex-end', alignItems:'center'}}>
+               
+                <div style={{display:'flex', marginTop:'2rem', justifyContent:'flex-end', alignItems:'center'}}>
+                  <Button shape="round"  loading={bookingsQuery.isRefetching} onClick={()=>bookingsQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
                 </div>
 
                 </div>
