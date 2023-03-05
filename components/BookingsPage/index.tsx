@@ -54,6 +54,7 @@ export default function BookingsView(){
     const {currentService} = useServicesContext()
     const [isDrawerOpen, setIsDrawerOpen] = useState(false) 
     const [pageNumber, setPageNumber] = useState<number|undefined>(0)
+    const [pageSize, setPageSize] = useState<number|undefined>(10)
 
     const urlPrefix = useUrlPrefix();
 
@@ -63,7 +64,7 @@ export default function BookingsView(){
     const res = await axios({
             method:'get',
             //@ts-ignore
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/bookings?key=service_id&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=10`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/bookings?key=service_id&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=${pageSize}`,
             headers:{
                 "Authorization": paseto
             } 
@@ -76,7 +77,7 @@ export default function BookingsView(){
   
 
 
-    const bookingsQuery = useQuery({queryKey:['Bookings',pageNumber], queryFn:fetchBookings, enabled:paseto !== ''})
+    const bookingsQuery = useQuery({queryKey:['Bookings',pageNumber,pageSize], queryFn:fetchBookings, enabled:paseto !== ''})
     const data = bookingsQuery.data && bookingsQuery.data.data
     const totalLength = bookingsQuery.data && bookingsQuery.data.dataLength;
 
@@ -88,6 +89,7 @@ export default function BookingsView(){
     const handleChange: TableProps<Order>['onChange'] = (data) => {
       //@ts-ignore
       setPageNumber(data.current-1);
+      setPageSize(data.pageSize)
     };
   
 
@@ -135,6 +137,17 @@ export default function BookingsView(){
         },
       },
       {
+        title: 'Type',
+        dataIndex: 'serviceItemType',
+        key: 'serviceItemType',
+        render:(_,record)=>{
+          const serviceItemType = record.serviceItemDetails[0].serviceItemType[0].name
+          return(
+            <Tag>{serviceItemType}</Tag>
+          )
+        }
+      },
+      {
         title: 'Unit price',
         dataIndex: 'unitPrice',
         key: 'unitPrice',
@@ -173,40 +186,30 @@ export default function BookingsView(){
           )
         }
       },
-      {
-        title: 'Type',
-        dataIndex: 'serviceItemType',
-        key: 'serviceItemType',
-        render:(_,record)=>{
-          const serviceItemType = record.serviceItemDetails[0].serviceItemType[0].name
-          return(
-            <Text>{serviceItemType}</Text>
-          )
-        }
-      },
+   
       
       {
-        title: 'Order Status',
-        dataIndex: 'orderStatus',
-        key: 'orderStatus',
-        render: (status)=>{
-          const statusText = status === '0'? 'Payment_initiated': 'Complete'
-          return <Badge status="processing" text={statusText} />
+        title: 'Payment Status',
+        dataIndex: 'paymentIntentStatus',
+        key: 'paymentIntentStatus',
+        render: (paymentStatus)=>{
+          return <Tag style={{textTransform:'capitalize'}}>{paymentStatus}</Tag>
         }
       },
-      {
-        title: 'Ticket Status',
-        dataIndex: 'ticketStatus',
-        key: 'ticketStatus',
-        render: (status)=>{
-          const statusText = status === '1'? 'Redeemed': 'Confirmed'
-          return (
-            <div>
-              <Badge style={{border:'1px solid #e7e7e7', padding:'.15rem .6rem', borderRadius:'4px'}} status="success" text={statusText} />
-            </div>
-          )
-        }
-      },
+
+      // {
+      //   title: 'Ticket Status',
+      //   dataIndex: 'ticketStatus',
+      //   key: 'ticketStatus',
+      //   render: (status)=>{
+      //     const statusText = status === '1'? 'Redeemed': 'Confirmed'
+      //     return (
+      //       <div>
+      //         <Badge style={{border:'1px solid #e7e7e7', padding:'.15rem .6rem', borderRadius:'4px'}} status="success" text={statusText} />
+      //       </div>
+      //     )
+      //   }
+      // },
       {
           title: 'Ticket Date',
           dataIndex: 'targetDate',
@@ -222,14 +225,15 @@ export default function BookingsView(){
 
         return (
             <div>
-               { data && data.length === 0
-               ?null 
-               :<div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
-                  <div style={{width: "20%",display:'flex', marginTop:'2rem', justifyContent:'space-between', alignItems:'center'}}>
-                    <Button type='link' loading={bookingsQuery.isRefetching} onClick={()=>bookingsQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
-                  </div>
-                </div>
-                }
+              <div style={{marginBottom:'1.5em', marginTop:'1rem', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+               
+               {/* <div style={{display:'flex', marginTop:'2rem', justifyContent:'space-between', alignItems:'center'}}> */}
+                 <Title style={{ margin:'0'}} level={2}>Bookings</Title>
+                 {/* <Button shape="round"  loading={bookingsQuery.isRefetching} onClick={()=>bookingsQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button> */}
+                 <Button shape="round" loading={bookingsQuery.isRefetching} onClick={()=>bookingsQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+               {/* </div> */}
+
+               </div>
 
                { 
                data && data.length === 0

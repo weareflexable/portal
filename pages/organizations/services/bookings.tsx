@@ -12,7 +12,6 @@ export default function Bookings(){
         <AppLayout>
             <Row>
                 <Col offset={1} span={22}>
-                    <Title style={{marginTop:'1em'}} level={2}>Bookings</Title>
                     <Content
                         style={{
                         // margin:'1em',
