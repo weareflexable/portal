@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useOrgs from "../../../hooks/useOrgs";
-const {Text} = Typography
+const {Text,Title} = Typography
 import React, { useRef, useState } from 'react'
 import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge} from 'antd'
 import { useRouter } from 'next/router'
@@ -249,11 +249,12 @@ export default function ManagerBookingsView(){
 
         return (
             <div>
-                <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'flex-end', alignItems:'center'}}>
+                <div style={{marginBottom:'1.5em', marginTop:'1rem', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                
-                <div style={{display:'flex', marginTop:'2rem', justifyContent:'flex-end', alignItems:'center'}}>
+                {/* <div style={{display:'flex', marginTop:'2rem', justifyContent:'space-between', alignItems:'center'}}> */}
+                  <Title style={{ margin:'0'}} level={2}>Bookings</Title>
                   <Button shape="round"  loading={bookingsQuery.isRefetching} onClick={()=>bookingsQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
-                </div>
+                {/* </div> */}
 
                 </div>
                 <Table 

@@ -13,6 +13,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useAuthContext } from "../../context/AuthContext";
 import {NewOrg, OrgPayload } from "../../types/OrganisationTypes";
+import useUrlPrefix from "../../hooks/useUrlPrefix";
 
 
 const getBase64 = (file: any): Promise<string> => 
@@ -46,6 +47,8 @@ export default function NewOrgForm(){
     const areaCodeRef = useRef<InputRef>(null)
     const centralOfficeCodeRef = useRef<InputRef>(null)
     const tailNoRef = useRef<InputRef>(null)
+
+    const urlPrefix = useUrlPrefix()
 
     function handleAreaCodeRef(e:any){
         if(e.target.value.length >= 3){ 
@@ -175,7 +178,7 @@ export default function NewOrgForm(){
 
 
       const createDataHandler = async(newItem:any)=>{
-        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/org`, newItem,{
+        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`, newItem,{
             headers:{
                 "Authorization": paseto
             },
