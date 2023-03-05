@@ -49,10 +49,12 @@ export default function AdminOrgsView(){
     const [selectedOrg, setSelelectedOrg] = useState<any|NewOrg>({})
     const [currentStatus, setCurrentStatus] = useState({id:'1',name: 'Approved'})
 
+    const urlPrefix = useUrlPrefix()
+
     async function fetchAllOrgs(){
       const res = await axios({
               method:'get',
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/orgs?pageNumber=${pageNumber}&pageSize=10`,
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?pageNumber=${pageNumber}&pageSize=10`,
               headers:{
                   "Authorization": paseto
               }
@@ -65,7 +67,7 @@ export default function AdminOrgsView(){
     async function fetchOrgs(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/orgs?key=status&value=${currentStatus.id}&pageNumber=${pageNumber}&pageSize=10`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?key=status&value=${currentStatus.id}&pageNumber=${pageNumber}&pageSize=10`,
             headers:{
                 "Authorization": paseto
             }
@@ -81,7 +83,7 @@ export default function AdminOrgsView(){
       console.log(orgId)
         const res = await axios({
             method:'patch',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/org`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
             data:{
                 key:'status',
                 value: statusNumber, // 0 means de-activated in db
@@ -553,11 +555,12 @@ function deleteServiceItem(){
 }
 
 // const urlPrefix = currentUser.role == 1 ? 'manager': 'admin'
+const urlPrefix = useUrlPrefix()
 
 const deleteDataHandler = async(record:NewOrg)=>{      
   const {data} = await axios({
     method:'patch',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/org`,
+    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
     data: {
         //@ts-ignore
         orgId:record.orgId,
@@ -687,6 +690,8 @@ function EditableName({selectedOrg}:EditableProp){
 
   const queryClient = useQueryClient()
 
+  const urlPrefix = useUrlPrefix()
+
   function toggleEdit(){
     setIsEditMode(!isEditMode)
   }
@@ -694,7 +699,7 @@ function EditableName({selectedOrg}:EditableProp){
  
 
   const nameMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/org`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -721,7 +726,7 @@ function EditableName({selectedOrg}:EditableProp){
       ...selectedOrg,
       name: updatedItem.name
     }
-    setState(updatedOrg)
+    setState(updatedOrg) // only update state when mutation is successful
     nameMutation.mutate(payload)
   }
 
@@ -817,6 +822,8 @@ function EditablePhone({selectedOrg}:EditableProp){
     setIsEditMode(!isEditMode)
   }
 
+  const urlPrefix = useUrlPrefix()
+
   const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
         <Text>{selectedOrg.contactNumber}</Text>
@@ -825,7 +832,7 @@ function EditablePhone({selectedOrg}:EditableProp){
   )
 
   const nameMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/org`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -906,6 +913,8 @@ function EditableZipCode({selectedOrg}:EditableProp){
     setIsEditMode(!isEditMode)
   }
 
+  const urlPrefix = useUrlPrefix()
+
   const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
         <Text>{selectedOrg.zipCode}</Text>
@@ -914,7 +923,7 @@ function EditableZipCode({selectedOrg}:EditableProp){
   )
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/org`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -996,6 +1005,8 @@ function EditableLogoImage({selectedOrg}:EditableProp){
     setIsEditMode(!isEditMode)
   }
 
+  const urlPrefix = useUrlPrefix()
+
   const readOnly = (
       <div style={{width:'100%', marginTop:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
         <Image style={{width:'170px', height:'170px', border:'1px solid #f2f2f2', borderRadius:'50%'}} alt='Logo image for organization' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedLogoImageHash}`}/>
@@ -1004,7 +1015,7 @@ function EditableLogoImage({selectedOrg}:EditableProp){
   )
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/org`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -1108,6 +1119,8 @@ function EditableCoverImage({selectedOrg}:EditableProp){
 
   const {paseto} = useAuthContext()
 
+  const urlPrefix = useUrlPrefix()
+
   function toggleEdit(){
     setIsEditMode(!isEditMode)
   }
@@ -1120,7 +1133,7 @@ function EditableCoverImage({selectedOrg}:EditableProp){
   )
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/org`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
