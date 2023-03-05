@@ -20,6 +20,8 @@ import { useOrgContext } from "../../../context/OrgContext";
 import { asyncStore } from "../../../utils/nftStorage";
 import { usePlacesWidget } from "react-google-autocomplete";
 import useUrlPrefix from "../../../hooks/useUrlPrefix";
+import { numberFormatter } from "../../../utils/numberFormatter";
+import { convertToAmericanFormat } from "../../../utils/phoneNumberFormatter";
 
 
 var relativeTime = require('dayjs/plugin/relativeTime')
@@ -54,7 +56,7 @@ export default function AdminOrgsView(){
     async function fetchAllOrgs(){
       const res = await axios({
               method:'get',
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?pageNumber=${pageNumber}&pageSize=10`,
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?pageNumber=${pageNumber}&pageSize=10&key2=created_by`,
               headers:{
                   "Authorization": paseto
               }
@@ -67,7 +69,7 @@ export default function AdminOrgsView(){
     async function fetchOrgs(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?key=status&value=${currentStatus.id}&pageNumber=${pageNumber}&pageSize=10`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?key=status&value=${currentStatus.id}&pageNumber=${pageNumber}&pageSize=10&key2=created_by`,
             headers:{
                 "Authorization": paseto
             }
@@ -426,6 +428,10 @@ export default function AdminOrgsView(){
         title: 'Contact',
         dataIndex: 'contactNumber',
         key: 'contactNumber',
+        render:(number)=>{
+          const formattedNumber = convertToAmericanFormat(number)
+          return <Text>{formattedNumber}</Text>
+        }
       },
       {
           title: 'Created On',
