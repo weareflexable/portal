@@ -143,11 +143,11 @@ export default function ManagerOrgsView(){
     };
   
    
-function gotoDashboard(service:Service){
+function gotoServiceItemsPage(service:Service){
   // switch org
   switchService(service)
   // navigate user to services page
-  router.push('/organizations/services/bookings') // redirect to dashboard later
+  router.push('/organizations/services/serviceItems') // redirect to dashboard later
 }
 
 
@@ -191,7 +191,7 @@ function gotoDashboard(service:Service){
                 <div style={{display:'flex',alignItems:'center'}}>
                     <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.logoImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
-                        <Button onClick={()=>gotoDashboard(record)} type='link'>{record.name}</Button>  
+                        <Button onClick={()=>gotoServiceItemsPage(record)} type='link'>{record.name}</Button>  
                     </div>
                 </div>
             )
@@ -382,7 +382,7 @@ function gotoServices(service:Service){
   // switch org
   switchService(service)
   // navigate user to services page
-  router.push('/organizations/services/bookings') // redirect to dashboard later
+  router.push('/organizations/services/serviceItems') // redirect to dashboard later
 }
 
 function toggleDeleteModal(){

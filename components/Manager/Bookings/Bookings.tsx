@@ -52,20 +52,19 @@ export default function ManagerBookingsView(){
     const router = useRouter()
     const {switchOrg} = useOrgs()
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+    const [pageNumber, setPageNumber] = useState<number|undefined>(0)
   
-    // const isFilterEmpty = Object.keys(filteredInfo).length === 0;
 
     type DataIndex = keyof ServiceItem;
 
     const [selectedServiceItem, setSelectedServiceItem] = useState<any|ServiceItem>({})
-    const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Approved'})
 
     const urlPrefix = useUrlPrefix()
     
     async function fetchBookings(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/bookings?pageNumber=0&pageSize=10`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/bookings?pageNumber=${pageNumber}&pageSize=10`,
             headers:{
                 "Authorization": paseto
             }
@@ -84,6 +83,7 @@ export default function ManagerBookingsView(){
 
     const bookingsQuery = useQuery({queryKey:['managerBookings'], queryFn:fetchBookings, enabled:paseto !== ''})
     const data = bookingsQuery.data && bookingsQuery.data.data
+    const totalLength = bookingsQuery.data && bookingsQuery.data.dataLength;
 
 
     
@@ -95,15 +95,6 @@ export default function ManagerBookingsView(){
       // setFilteredInfo(filters);
     };
   
-  
-
-    function seeFullDetails(serviceItem:ManagerOrder){
-      // set state
-      setSelectedServiceItem(serviceItem)
-      // opne drawer
-      setIsDrawerOpen(true)
-
-    }
   
     
       // const onMenuClick=(e:any, record:ManagerOrder) => {
@@ -178,7 +169,7 @@ export default function ManagerBookingsView(){
         align:'right',
         render: (unitPrice)=>(
           <div>
-            <Text type="secondary">$</Text>
+            <Text>$</Text> 
             <Text>{`${numberFormatter.from(unitPrice/100)}`}</Text>
           </div>
         )
@@ -188,9 +179,9 @@ export default function ManagerBookingsView(){
         dataIndex: 'quantity',
         key: 'quantity',
         align:'right',
-        render:(quantity)=>(
+        render:(quantity)=>( 
           <div>
-            <Text type="secondary">x</Text>
+            <Text >x</Text>
             <Text>{quantity}</Text>
           </div>
         )
@@ -204,15 +195,15 @@ export default function ManagerBookingsView(){
           const total = record.quantity * (record.unitPrice/100)
           return(
             <div>
-            <Text type="secondary">$</Text>
+            <Text>$</Text>
             <Text>{`${numberFormatter.from(total)}`}</Text>
           </div>
           )
         }
       }, 
       {
-        title: 'Order Status',
-        dataIndex: 'orderStatus',
+        title: 'Payment Status',
+        dataIndex: 'paymentIntentStatus',
         key: 'orderStatus',
         render: (status)=>{
           const statusText = status === '1'? 'Successful': 'In-complete'
@@ -270,6 +261,10 @@ export default function ManagerBookingsView(){
                   key='dfadfe' 
                   loading={bookingsQuery.isLoading||bookingsQuery.isRefetching} 
                   columns={columns} 
+                  pagination={{
+                    total:totalLength,  
+                    showTotal:(total) => `Total ${total} items`,
+                  }} 
                   onChange={handleChange} 
                   dataSource={data} 
                   />

@@ -7,6 +7,7 @@ export default function useRole(){
     const isManager = currentUser.role == 1;
     const isSupervisor = currentUser.role == 3;
     const isEmployee = currentUser.role == 4;
+    const isUser = currentUser.role == 5;
 
-    return {isAdmin, isManager, isSupervisor, isEmployee}
+    return {isAdmin, isManager, isSupervisor, isEmployee, isUser}
 }

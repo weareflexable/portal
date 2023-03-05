@@ -141,7 +141,7 @@ export default function BookingsView(){
         align:'right',
         render: (unitPrice)=>(
           <div>
-            <Text type="secondary">$</Text>
+            <Text>$</Text>
             <Text>{`${numberFormatter.from(unitPrice/100)}`}</Text>
           </div>
         )
@@ -153,7 +153,7 @@ export default function BookingsView(){
         align:'right',
         render:(quantity)=>(
           <div>
-            <Text type="secondary">x</Text>
+            <Text>x</Text>
             <Text>{quantity}</Text>
           </div>
         )
@@ -167,7 +167,7 @@ export default function BookingsView(){
           const total = record.quantity * (record.unitPrice/100)
           return(
             <div>
-            <Text type="secondary">$</Text>
+            <Text>$</Text>
             <Text>{`${numberFormatter.from(total)}`}</Text>
           </div>
           )
