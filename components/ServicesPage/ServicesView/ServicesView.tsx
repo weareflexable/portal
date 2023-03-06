@@ -307,20 +307,24 @@ function gotoServiceItemsPage(service:Service){
                </header>
 
                <Col offset={2} span={20}>
-                   <Title style={{marginBottom:'1em'}} level={2}>Launchpad</Title>
-                   {allServicesQuery.data && allServicesLength === 0 ? null : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+                   {allServicesQuery.data && allServicesLength === 0 
+                   ? null 
+                   : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
+                    <div style={{width:'100%',  marginBottom:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                      <Title style={{margin: '0'}} level={2}>Launchpad</Title>
+                      <div style={{display:'flex'}}>
+                        <Button shape='round' style={{marginRight:'1rem'}} loading={servicesQuery.isRefetching} onClick={()=>servicesQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                        <Dropdown.Button  trigger={['click']} type="primary"   icon={<PlusOutlined/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
+                      </div>
+                    </div>
                       <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
-                          {servicesFilter.map(filter=>(
+                          {servicesFilter.map((filter:any)=>(
                               <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
                           )
                           )}
                       </Radio.Group>
-                      <div style={{display:'flex',  justifyContent:'space-between', alignItems:'center'}}>
-                          <Button shape='round' style={{marginRight:'1rem'}} loading={servicesQuery.isRefetching} onClick={()=>servicesQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
-                          {/* <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/services/new')}>Launch New Service</Button> */}
-                          <Dropdown.Button  trigger={['click']} type="primary"   icon={<PlusOutlined/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
-                      </div>
-                   </div>}
+                   </div>
+                   }
                 
                 {
                   allServicesQuery.data && allServicesLength === 0
