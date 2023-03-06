@@ -71,6 +71,7 @@ export default function ServiceItemsView(){
     const serviceItemTypes = useServiceItemTypes()
 
     const items = serviceItemTypes && serviceItemTypes.map((item:any)=>({label:item.label, key:item.value}))
+    console.log(items)
 
     async function fetchAllServiceItems(){
     const res = await axios({

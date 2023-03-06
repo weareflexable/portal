@@ -3,6 +3,7 @@ import axios from 'axios'
 import {useEffect, useState} from 'react'
 import { useAuthContext } from '../context/AuthContext'
 import { useServicesContext } from '../context/ServicesContext'
+import useUrlPrefix from './useUrlPrefix'
 
 export default function useServiceItemTypes(){
     const {paseto} = useAuthContext()
@@ -18,9 +19,10 @@ export default function useServiceItemTypes(){
     //     setServiceTypeId(currentService.serviceType[0].id) 
     // }, [currentService.serviceType, hydrated])
 
+    const urlPrefix = useUrlPrefix()
 
     const fetchServiceItemTypes = async()=>{
-        const {data} = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-item-types?pageNumber=0&pageSize=10&key=service_type_id&value=${serviceTypeId}&key2=status&value2=1`,{
+        const {data} = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-item-types?pageNumber=0&pageSize=10&key=service_type_id&value=${serviceTypeId}&key2=status&value2=1`,{
             headers:{
                 //@ts-ignore
                 "Authorization":paseto

@@ -454,6 +454,7 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
                     >
                     {() => (
                      <Button
+                     size='large' 
                     type='primary'
                     shape='round'
                     loading={isCreatingData}
