@@ -198,13 +198,22 @@ function gotoServiceItemsPage(service:Service){
         },
       },
       {
-        title: 'Location',
+        title: 'Type',
+        dataIndex: 'serviceType',
+        key: 'serviceType',
+        render: (_,record)=>{
+          const type = record.serviceType[0]
+            return <Text>{type.name}</Text>
+        }
+      },
+      {
+        title: 'Address',
         // dataIndex: 'address',
         key: 'address',
         render:(_,record)=>(
           <div style={{display:'flex',flexDirection:'column'}}>
-              <Text style={{textTransform:'capitalize'}}>{record.country}</Text>  
-              <Text style={{textTransform:'capitalize'}} type='secondary'>{record.state} {record.city}</Text>  
+              <Text style={{textTransform:'capitalize'}}>{record.street}</Text>  
+              {/* <Text style={{textTransform:'capitalize'}} type='secondary'>{record.state} {record.city}</Text>   */}
           </div>
         )
       },
@@ -217,15 +226,7 @@ function gotoServiceItemsPage(service:Service){
               return <Text>{formatedNumber}</Text>
           }
         },
-        {
-          title: 'Type',
-          dataIndex: 'serviceType',
-          key: 'serviceType',
-          render: (_,record)=>{
-            const type = record.serviceType[0]
-              return <Text>{type.name}</Text>
-          }
-        },
+        
       {
         title: 'Timezone',
         dataIndex: 'timeZone',
@@ -238,16 +239,16 @@ function gotoServiceItemsPage(service:Service){
       //   key: 'currency',
       //   width:'70px',
       // },
-      {
-        title: 'Status',
-        dataIndex: 'status',
-        key: 'status',
-        width:'150px',
-        render:(status)=>{
-            const statusText = status? 'Active': 'Inactive' 
-            return <Badge status={status?'processing':'warning'} text={statusText} /> 
-        }
-      },
+      // {
+      //   title: 'Status',
+      //   dataIndex: 'status',
+      //   key: 'status',
+      //   width:'150px',
+      //   render:(status)=>{
+      //       const statusText = status? 'Active': 'Inactive' 
+      //       return <Badge status={status?'processing':'warning'} text={statusText} /> 
+      //   }
+      // },
       {
           title: 'Created On',
           dataIndex: 'createdAt',
@@ -336,7 +337,7 @@ function gotoServiceItemsPage(service:Service){
                       size='large' 
                       rowKey={(record)=>record.id}
                       onChange={handleChange} 
-                      loading={servicesQuery.isLoading} 
+                      loading={servicesQuery.isLoading || servicesQuery.isRefetching} 
                       columns={columns} 
                       dataSource={data||[]}
                       pagination={{
@@ -453,7 +454,7 @@ return(
     fieldName = 'name'
     title = 'Name'
     bankId = {selectedRecord.id}
-    options = {{queryKey:'services'}}
+    options = {{queryKey:'services',mutationUrl:'services'}}
   />
   <EditableAddress selectedRecord={selectedRecord}/>
   <EditablePhone selectedRecord={selectedRecord}/>

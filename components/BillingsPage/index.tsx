@@ -336,7 +336,7 @@ return(
     fieldName = 'beneficiaryName'
     title = 'Beneficiary Name'
     bankId = {selectedRecord.id}
-    options = {{queryKey:'banks'}}
+    options = {{queryKey:'banks',mutationUrl:'org-bank'}}
    />
 
   <EditableCountry
@@ -345,7 +345,7 @@ return(
     fieldName = 'beneficiaryCountry'
     title = 'Beneficiary Country'
     bankId = {selectedRecord.id}
-    options = {{queryKey:'banks'}}
+    options = {{queryKey:'banks',mutationUrl:'org-bank'}}
    />
 
   <EditableText
@@ -354,7 +354,7 @@ return(
     fieldName = 'beneficiaryState'
     title = 'Beneficiary State'
     bankId = {selectedRecord.id}
-    options = {{queryKey:'banks'}}
+    options = {{queryKey:'banks',mutationUrl:'org-bank'}}
    />
 
   <EditableText
@@ -363,7 +363,7 @@ return(
     fieldName = 'beneficiaryCity'
     title = 'Beneficiary City'
     bankId = {selectedRecord.id}
-    options = {{queryKey:'banks'}}
+    options = {{queryKey:'banks',mutationUrl:'org-bank'}}
    />
 
   <EditableText
@@ -372,7 +372,7 @@ return(
     fieldName = 'beneficiaryZipCode'
     title = 'Beneficiary Zip Code'
     bankId = {selectedRecord.id}
-    options = {{queryKey:'banks'}}
+    options = {{queryKey:'banks',mutationUrl:'org-bank'}}
    />
 
    <Title level={3}>Account Info</Title>
@@ -383,7 +383,7 @@ return(
     fieldName = 'accountType'
     title = 'Account Type'
     bankId = {selectedRecord.id}
-    options = {{queryKey:'banks'}}
+    options = {{queryKey:'banks',mutationUrl:'org-bank'}}
    />
 
   <EditableText
@@ -392,7 +392,7 @@ return(
     fieldName = 'accountNo'
     title = 'Account No'
     bankId = {selectedRecord.id}
-    options = {{queryKey:'banks'}}
+    options = {{queryKey:'banks',mutationUrl:'org-bank'}}
    />
 
    <Title style={{marginTop:'1.5rem'}} level={3}>Bank Info</Title>
@@ -403,7 +403,7 @@ return(
     fieldName = 'bankName'
     title = 'Bank Name'
     bankId = {selectedRecord.id}
-    options = {{queryKey:'banks'}}
+    options = {{queryKey:'banks',mutationUrl:'org-bank'}}
    />
 
   <EditableText
@@ -412,7 +412,7 @@ return(
     fieldName = 'bankAddress'
     title = 'Bank Address'
     bankId = {selectedRecord.id}
-    options = {{queryKey:'banks'}}
+    options = {{queryKey:'banks',mutationUrl:'org-bank'}}
    />
 
   <EditableText
@@ -421,7 +421,7 @@ return(
     fieldName = 'routingNo'
     title = 'Routing No'
     bankId = {selectedRecord.id}
-    options = {{queryKey:'banks'}}
+    options = {{queryKey:'banks',mutationUrl:'org-bank'}}
    />
 
 
