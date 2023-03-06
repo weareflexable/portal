@@ -457,7 +457,14 @@ return(
     options = {{queryKey:'services',mutationUrl:'services'}}
   />
   <EditableAddress selectedRecord={selectedRecord}/>
-  <EditablePhone selectedRecord={selectedRecord}/>
+  <EditableText
+    fieldKey="contact_number" // The way the field is named in DB
+    currentFieldValue={selectedRecord.contactNumber}
+    fieldName = 'contactNumber'
+    title = 'Contact Number'
+    bankId = {selectedRecord.id}
+    options = {{queryKey:'services',mutationUrl:'services'}}
+  />
   {/* <EditableCurrency selectedRecord={selectedRecord}/> */}
   <EditableLogoImage selectedRecord={selectedRecord}/>
   {/* <EditableCoverImage selectedRecord={selectedRecord}/> */}
