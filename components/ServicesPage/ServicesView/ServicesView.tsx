@@ -18,7 +18,7 @@ import { EditableAddress, EditableCoverImage, EditableCurrency, EditableLogoImag
 import CurrentUser from "../../Header/CurrentUser/CurrentUser";
 import useServiceTypes from "../../../hooks/useServiceTypes";
 import { convertToAmericanFormat } from "../../../utils/phoneNumberFormatter";
-
+import { EditableText} from "../../shared/Editables";
 
 var relativeTime = require('dayjs/plugin/relativeTime')
 dayjs.extend(relativeTime)
@@ -443,7 +443,14 @@ return(
   open={isDrawerOpen}
 >
   
-  <EditableName selectedRecord={selectedRecord}/>
+  <EditableText
+    fieldKey="name" // The way the field is named in DB
+    currentFieldValue={selectedRecord.name}
+    fieldName = 'name'
+    title = 'Name'
+    bankId = {selectedRecord.id}
+    options = {{queryKey:'services'}}
+  />
   <EditableAddress selectedRecord={selectedRecord}/>
   <EditablePhone selectedRecord={selectedRecord}/>
   {/* <EditableCurrency selectedRecord={selectedRecord}/> */}

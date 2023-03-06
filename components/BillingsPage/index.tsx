@@ -18,6 +18,7 @@ import useUrlPrefix from '../../hooks/useUrlPrefix'
 import { useOrgContext } from "../../context/OrgContext";
 import { useRouter } from "next/router";
 import { useServicesContext } from "../../context/ServicesContext";
+import { EditableCountry, EditableRadio, EditableText } from "../shared/Editables";
 const {TextArea} = Input
 
 const countryList = require('country-list')
@@ -217,8 +218,8 @@ export default function BillingsView(){
                       )
                       )}
                   </Radio.Group>
-                  <div style={{width: "20%",display:'flex', marginTop:'2rem', justifyContent:'space-between', alignItems:'center'}}>
-                    <Button type='link' loading={banksQuery.isRefetching} onClick={()=>banksQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                  <div style={{display:'flex', marginTop:'2rem', justifyContent:'space-between', alignItems:'center'}}>
+                    <Button shape="round" style={{marginRight:'1rem'}} loading={banksQuery.isRefetching} onClick={()=>banksQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
                     <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/services/billings/new')}>New Bank</Button>
                   </div>
                 </div>}
@@ -257,10 +258,9 @@ interface DrawerProps{
 function DetailDrawer({selectedRecord,isDrawerOpen,closeDrawer}:DrawerProps){
 
 const queryClient = useQueryClient()
-const router = useRouter()
+
 const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
-// const {swi} = useOrgContext()
-const {paseto,currentUser} = useAuthContext()
+const {paseto} = useAuthContext()
 
 function closeDrawerHandler(){
   queryClient.invalidateQueries(['services']) 
@@ -300,7 +300,7 @@ const urlPrefix = useUrlPrefix()
 const deleteDataHandler = async(record:Bank)=>{      
   const {data} = await axios({
     method:'patch',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/${urlPrefix}/org-bank`,
+    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank`,
     data: {
         id:record.id,
         key:'status',
@@ -443,323 +443,6 @@ return(
 )
 }
 
-interface EditableProps{
-  bankId: string,
-  currentFieldValue: string,
-  fieldKey: string,
-  fieldName: string
-  title: string,
-  options?:{queryKey:string}
-}
-export function EditableText({bankId, options, title, fieldName, currentFieldValue, fieldKey}:EditableProps){
-
-  // console.log(currentFieldValue)
-  
-  const [state, setState] = useState(currentFieldValue)
-
-  const [isEditMode, setIsEditMode] = useState(false)
-
-  const urlPrefix = useUrlPrefix()
-
-  const {paseto} = useAuthContext()
-
-  const queryClient = useQueryClient()
-
-  function toggleEdit(){
-    setIsEditMode(!isEditMode)
-  }
-
- 
-
-  const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank`,updatedItem,{
-      headers:{
-          //@ts-ignore
-          "Authorization": paseto
-      }
-    })
-      return data;
-  }
-  const mutation = useMutation({
-    mutationFn: mutationHandler,
-    onSuccess:()=>{
-      toggleEdit()
-    },
-    onSettled:(data)=>{
-      // update state here
-      setState(data.data[0][fieldName])
-      queryClient.invalidateQueries([options?.queryKey])
-    }
-  })
-
-  function onFinish(formData:any){
-    const payload = {
-      key:fieldKey, // pass in key
-      value: formData[fieldName], // pass in value
-      id: bankId // pass in bankId
-    }
-
-    mutation.mutate(payload)
-  }
-
-  const {isLoading:isEditing} = mutation;
-
-  const readOnly = (
-    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Text style={{textTransform:'capitalize'}}>{state}</Text>
-      <Button type="link" onClick={toggleEdit}>Edit</Button>
-    </div>
-)
-
-  const editable = (
-    <Form
-     style={{ marginTop:'.5rem' }}
-     name="beneficiaryName"
-     initialValues={{[fieldName]:currentFieldValue}}
-     onFinish={onFinish}
-     >
-      <Row>
-        <Col span={16} style={{height:'100%'}}>
-          <Form.Item
-              name={fieldName}
-              rules={[{ required: true, message: 'Please input a valid service name' }]}
-          >
-              <Input allowClear  disabled={isEditing} />
-          </Form.Item>
-        </Col>
-        <Col span={4}>
-          <Form.Item style={{ width:'100%'}}>
-              <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
-                      Cancel
-                  </Button>
-                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
-                      Apply changes
-                  </Button>
-              </Space>
-                        
-          </Form.Item>
-        </Col>
-      </Row>
-           
-    </Form>
-  )
-  return(
-    <div style={{width:'100%', display:'flex', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>{title}</Text>
-    {isEditMode?editable:readOnly}
-    </div>
-  )
-}
-
-function EditableCountry({bankId, options, fieldName, currentFieldValue, fieldKey, title}:EditableProps){
-
-  const [state, setState] = useState(currentFieldValue)
-
-  const [isEditMode, setIsEditMode] = useState(false)
-
-  const {paseto} = useAuthContext()
-
-  const list = countryList.getNames()
-  // console.log(countryList.getData())
-  const america = countryList.getName('US')
-  const sortedList = list.sort()
-  const prioritizedList = [america, ...sortedList]
-  
-
-  function toggleEdit(){
-    setIsEditMode(!isEditMode)
-  }
-
-  const urlPrefix = useUrlPrefix()
-
- const queryClient = useQueryClient()
-
-  const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank`,updatedItem,{
-      headers:{
-          //@ts-ignore
-          "Authorization": paseto
-      }
-    })
-      return data;
-  }
-  const mutation = useMutation({
-    mutationFn: mutationHandler,
-    onSuccess:()=>{
-      toggleEdit()
-    },
-    onSettled:(data)=>{
-      setState(data.data[0][fieldName])
-      queryClient.invalidateQueries({queryKey:[options?.queryKey]})
-    }
-  })
-
-  function onFinish(formData:any){
-    const payload = {
-      key:fieldKey,
-      value: formData[fieldName],
-      id: bankId
-    }
-    mutation.mutate(payload)
-  }
-
-  const {isLoading:isEditing} = mutation ;
-
-  const readOnly = (
-    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Text style={{textTransform:'capitalize'}}>{state}</Text>
-      <Button type="link" onClick={toggleEdit}>Edit</Button>
-    </div>
-)
-
-  const editable = (
-    <Form
-     style={{ marginTop:'.5rem' }}
-     name={fieldKey}
-     initialValues={{[fieldName]:currentFieldValue}}
-     onFinish={onFinish}
-     >
-      <Row>
-        <Col span={16} style={{height:'100%'}}>
-        <Form.Item
-          name={fieldName}
-          rules={[{ required: true, message: 'Please select your country !' }]}
-        >
-              <Select
-              placeholder="United states of America"
-              // defaultValue={'USA'}
-              allowClear
-              >
-                  {prioritizedList.map((country:any)=>(
-                      <Option key={country} value={country}>{country}</Option>
-                  ))}
-              </Select>
-          </Form.Item> 
-        </Col>
-        <Col span={4}>
-          <Form.Item style={{ width:'100%'}}>
-              <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
-                      Cancel
-                  </Button>
-                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
-                      Apply changes
-                  </Button>
-              </Space>
-                        
-          </Form.Item>
-        </Col>
-      </Row>
-           
-    </Form>
-  )
-
-  return(
-    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>{title}</Text>
-      {isEditMode?editable:readOnly}
-    </div>
-  )
-}
-function EditableRadio({bankId, options, fieldName, currentFieldValue, fieldKey, title}:EditableProps){
-
-  const [state, setState] = useState(currentFieldValue)
-
-  const [isEditMode, setIsEditMode] = useState(false)
-
-  const {paseto} = useAuthContext()
-
-  const urlPrefix = useUrlPrefix()
-
-  function toggleEdit(){
-    setIsEditMode(!isEditMode)
-  }
-
- const queryClient = useQueryClient()
-
-  const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank`,updatedItem,{
-      headers:{
-          //@ts-ignore
-          "Authorization": paseto
-      }
-    })
-      return data;
-  }
-  const mutation = useMutation({
-    mutationFn: mutationHandler,
-    onSuccess:()=>{
-      toggleEdit()
-    },
-    onSettled:(data)=>{
-      setState(data.data[0][fieldName])
-      queryClient.invalidateQueries({queryKey:[options?.queryKey]})
-    }
-  })
-
-  function onFinish(formData:any){
-    const payload = {
-      key:fieldKey,
-      value: formData[fieldName],
-      id: bankId
-    }
-    mutation.mutate(payload)
-  }
-
-  const {isLoading:isEditing} = mutation ;
-
-  const readOnly = (
-    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Text style={{textTransform:'capitalize'}}>{state}</Text>
-      <Button type="link" onClick={toggleEdit}>Edit</Button>
-    </div>
-)
-
-  const editable = (
-    <Form
-     style={{ marginTop:'.5rem' }}
-     initialValues={{[fieldName]:currentFieldValue}}
-     onFinish={onFinish}
-     >
-      <Row>
-        <Col span={16} style={{height:'100%'}}>
-          <Form.Item 
-              // label={title} 
-              name={fieldName}
-              rules={[{ required: true, message: 'Please select an accountType' }]}
-              >
-              <Radio.Group size='large'>
-                  <Radio.Button value="savings">Savings</Radio.Button>
-                  <Radio.Button value="checking">Checking</Radio.Button>
-              </Radio.Group>
-          </Form.Item>
-        </Col>
-        <Col span={4}>
-          <Form.Item style={{ width:'100%'}}>
-              <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
-                      Cancel
-                  </Button>
-                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
-                      Apply changes
-                  </Button>
-              </Space>
-                        
-          </Form.Item>
-        </Col>
-      </Row>
-           
-    </Form>
-  )
-
-  return(
-    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>{title}</Text>
-      {isEditMode?editable:readOnly}
-    </div>
-  )
-}
 
 interface DeleteProp{
   selectedRecord: Bank
@@ -888,7 +571,7 @@ function EmptyState({children}:EmptyStateProps){
     <div style={{border: '1px solid #d6d6d6', marginTop:'2rem', borderRadius:'4px', height:'50vh', display:'flex', justifyContent:'center', alignItems:'center', padding: '2rem'}}>
       <div style={{maxWidth:'350px', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
         <Title level={3}>Get Started</Title> 
-        <Text style={{textAlign:'center'}}>Seems like you are yet to add a billing address</Text>
+        <Text style={{textAlign:'center'}}>Seems like you are yet to add a bank</Text>
         <div style={{marginTop:'1rem', display:'flex',justifyContent:'center'}}>
             {children}
         </div>

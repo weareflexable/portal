@@ -53,12 +53,10 @@ export default function UsersView(){
    
     }
 
-    const usersQuery = useQuery({queryKey:['users'], queryFn:fetchUsers, enabled:paseto !== ''})
+    const usersQuery = useQuery({queryKey:['users',pageNumber], queryFn:fetchUsers, enabled:paseto !== ''})
     const data = usersQuery.data && usersQuery.data.data
     const totalLength = usersQuery.data && usersQuery.data.dataLength;
 
-
-    console.log(data)
     
   
   
