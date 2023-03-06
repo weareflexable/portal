@@ -24,7 +24,9 @@ const {TextArea} = Input
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import advanced from "dayjs/plugin/advancedFormat"
+import relativeTime from 'dayjs/plugin/relativeTime'
 
+dayjs.extend(relativeTime)
 dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.extend(advanced)
@@ -74,7 +76,9 @@ export default function BookingsView(){
             url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/bookings?key=service_id&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=${pageSize}`,
             headers:{
                 "Authorization": paseto
-            } 
+            }
+
+
         })
 
         return res.data;
@@ -84,7 +88,7 @@ export default function BookingsView(){
   
 
 
-    const bookingsQuery = useQuery({queryKey:['Bookings',pageNumber,pageSize], queryFn:fetchBookings, enabled:paseto !== ''})
+    const bookingsQuery = useQuery({queryKey:['Bookings',pageNumber,pageSize], queryFn:fetchBookings, enabled:paseto !== '',cacheTime: 3000})
     const data = bookingsQuery.data && bookingsQuery.data.data
     const totalLength = bookingsQuery.data && bookingsQuery.data.dataLength;
 
@@ -241,6 +245,7 @@ export default function BookingsView(){
                 <div>
                 <Text>{`Last Updated on - `}</Text>
                 <Text>{`${dayjs(bookingsQuery.dataUpdatedAt).tz('America/New_York').format("MMM D, YYYY HA z")}`}</Text>
+                <Text>{` · ${dayjs().diff(dayjs(bookingsQuery.dataUpdatedAt),'second',true)} seconds ago`}</Text>
                 </div>
                </div>
 
