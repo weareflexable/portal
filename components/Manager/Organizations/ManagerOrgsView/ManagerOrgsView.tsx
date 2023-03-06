@@ -609,7 +609,7 @@ return(
     currentFieldValue={selectedOrg.name}
     fieldName = 'name'
     title = 'Name'
-    bankId = {selectedOrg.id}
+    id = {selectedOrg.id}
     options = {{queryKey:'organizations',mutationUrl:'org'}}
 />
   <EditableAddress selectedOrg={selectedOrg}/>
@@ -618,7 +618,7 @@ return(
     currentFieldValue={selectedOrg.contactNumber} 
     fieldName = 'contactNumber'
     title = 'Contact Number'
-    bankId = {selectedOrg.id}
+    id = {selectedOrg.id}
     options = {{queryKey:'organizations',mutationUrl:'org'}}
 />
   <EditableLogoImage selectedOrg={selectedOrg}/>
