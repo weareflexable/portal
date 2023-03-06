@@ -232,7 +232,6 @@ interface EditableProp{
       toggleEdit()
     },
     onSettled:(data)=>{
-      console.log(data.data[0].street)
       updateState(data.data[0].street)
       queryClient.invalidateQueries(['services'])
     }
@@ -256,6 +255,7 @@ interface EditableProp{
       endTime: selectedRecord.end_time,
       latitude: String(selectedRecord.latitude),
       longitude: String(selectedRecord.longitude),
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, 
       // status: String(selectedRecord.status),
       orgId: selectedRecord.orgId
     }
@@ -512,6 +512,8 @@ interface EditableProp{
     const urlPrefix = useUrlPrefix()
   
     const {paseto} = useAuthContext()
+
+    const queryClient = useQueryClient()
   
     function toggleEdit(){
       setIsEditMode(!isEditMode)
@@ -538,6 +540,10 @@ interface EditableProp{
       mutationFn: mutationHandler,
       onSuccess:()=>{
         toggleEdit()
+      },
+      onSettled:(data)=>{
+        setUpdatedLogoImageHash(data.data[0].logoImageHash)
+        queryClient.invalidateQueries(['services'])
       }
     })
   
@@ -555,9 +561,8 @@ interface EditableProp{
       const payload = {
         key:'logo_image_hash',
         value: logoHash,
-        orgId: selectedRecord.id
+        id: selectedRecord.id
       }
-      setUpdatedLogoImageHash(logoHash)
       mutation.mutate(payload)
     }
   

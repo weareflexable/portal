@@ -471,7 +471,7 @@ export default function AdminOrgsView(){
             <div>
                 {allOrgsQuery && allOrgsTotal === 0  
                 ? null
-                : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
+                : <div style={{marginBottom:'2rem', marginTop:'1.5rem', display:'flex', width:'100%', flexDirection:'column'}}>
                   <div style={{width:'100%', marginBottom:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                       <Title style={{margin: '0'}} level={2}>Organizations</Title>
                       <div>
@@ -605,7 +605,8 @@ return(
     currentFieldValue={selectedOrg.name}
     fieldName = 'name'
     title = 'Name'
-    bankId = {selectedOrg.id}
+    // @ts-ignore
+    id = {selectedOrg.orgId}
     options = {{queryKey:'organizations',mutationUrl:'org'}}
 />
   <EditableAddress selectedOrg={selectedOrg}/>
@@ -614,7 +615,8 @@ return(
     currentFieldValue={selectedOrg.contactNumber} 
     fieldName = 'contactNumber'
     title = 'Contact Number'
-    bankId = {selectedOrg.id}
+    // @ts-ignore
+    id = {selectedOrg.orgId}
     options = {{queryKey:'organizations',mutationUrl:'org'}}
 />
   <EditableLogoImage selectedOrg={selectedOrg}/>

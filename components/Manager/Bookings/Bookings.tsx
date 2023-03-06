@@ -5,7 +5,7 @@ import React, { useRef, useState } from 'react'
 import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge} from 'antd'
 import { useRouter } from 'next/router'
 import axios from 'axios';
-import {MoreOutlined,ReloadOutlined} from '@ant-design/icons'
+import {MoreOutlined,ReloadOutlined, CheckOutlined,StopOutlined} from '@ant-design/icons'
 import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
 
 import { useAuthContext } from '../../../context/AuthContext';
@@ -212,7 +212,9 @@ export default function ManagerBookingsView(){
         dataIndex: 'paymentIntentStatus',
         key: 'paymentIntentStatus',
         render: (paymentStatus)=>{
-          return <Tag style={{textTransform:'capitalize'}}>{paymentStatus}</Tag>
+          const color = paymentStatus === 'successful'?'green':paymentStatus === 'failed'?'red':paymentStatus === 'cancelled'?'grey':'blue'
+          const icon = paymentStatus === 'successful'?<CheckOutlined />:paymentStatus === 'cancelled'?<StopOutlined />:null
+          return <Tag icon={icon} color={color} style={{textTransform:'capitalize'}}>{paymentStatus}</Tag>
         }
       },
       // {
@@ -249,17 +251,24 @@ export default function ManagerBookingsView(){
 
         return (
             <div>
-                <div style={{marginBottom:'1.5em', marginTop:'1rem', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
-               
-                {/* <div style={{display:'flex', marginTop:'2rem', justifyContent:'space-between', alignItems:'center'}}> */}
-                  <Title style={{ margin:'0'}} level={2}>Bookings</Title>
-                  <Button shape="round"  loading={bookingsQuery.isRefetching} onClick={()=>bookingsQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
-                {/* </div> */}
+                  <div style={{marginBottom:'2em', marginTop:'1rem', display:'flex', width:'100%', flexDirection:'column', alignItems:'center'}}>
+               <div style={{display:'flex', marginTop:'1rem', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+                 <Title style={{ margin:'0'}} level={2}>Bookings</Title>
+                 <Button shape="round" loading={bookingsQuery.isRefetching} onClick={()=>bookingsQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+               </div>
+               <div style={{display:'flex', marginTop:'.5rem', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+                  <div>
+                  <Text>{`Last Updated on - `}</Text>
+                  <Text>{`${dayjs(bookingsQuery.dataUpdatedAt).tz('America/New_York').format("MMM D, YYYY HA z")}`}</Text>
+                  {/* <Text>{` · ${dayjs().diff(dayjs(bookingsQuery.dataUpdatedAt),'second',true)} seconds ago`}</Text> */}
+                  </div>
+               </div>
 
-                </div>
+               </div>
                 <Table 
                   style={{width:'100%'}} 
                   key='dfadfe' 
+                  size='middle'   
                   loading={bookingsQuery.isLoading||bookingsQuery.isRefetching} 
                   columns={columns} 
                   pagination={{

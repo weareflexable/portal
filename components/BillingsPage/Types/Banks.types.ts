@@ -5,7 +5,7 @@ export type Bank = {
     beneficiaryCountry: string,
     beneficiaryState: string,
     beneficiaryCity: string,
-    beneficiaryZipCode: string
+    beneficiaryPostalCode: string
     beneficiaryPhoneNumber: string,
     accountNo: string,
     accountType:string,

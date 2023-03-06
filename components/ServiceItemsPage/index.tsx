@@ -427,7 +427,7 @@ return(
     currentFieldValue={selectedRecord.name}
     fieldName = 'name'
     title = 'Name'
-    bankId = {selectedRecord.id}
+    id = {selectedRecord.id}
     options = {{queryKey:'serviceItems',mutationUrl:'service-items'}}
   />
   <EditableDescription selectedRecord={selectedRecord}/>
@@ -438,7 +438,7 @@ return(
     currentFieldValue={selectedRecord.ticketsPerDay}
     fieldName = 'ticketsPerDay'
     title = 'Tickets Per Day'
-    bankId = {selectedRecord.id}
+    id = {selectedRecord.id}
     options = {{queryKey:'serviceItems',mutationUrl:'service-items'}}
   />
   <EditableCoverImage selectedRecord={selectedRecord}/>

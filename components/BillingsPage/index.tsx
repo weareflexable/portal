@@ -19,6 +19,7 @@ import { useOrgContext } from "../../context/OrgContext";
 import { useRouter } from "next/router";
 import { useServicesContext } from "../../context/ServicesContext";
 import { EditableCountry, EditableRadio, EditableText } from "../shared/Editables";
+import useRole from "../../hooks/useRole";
 const {TextArea} = Input
 
 const countryList = require('country-list')
@@ -29,6 +30,7 @@ export default function BillingsView(){
     const {paseto} = useAuthContext()
     const queryClient = useQueryClient()
     const {currentOrg} = useOrgContext()
+    const {isAdmin} = useRole()
 
     const router = useRouter()
 
@@ -67,14 +69,14 @@ export default function BillingsView(){
 
     const urlPrefix = useUrlPrefix()
 
-    async function changeStatus({bankId, statusNumber}:{bankId:string, statusNumber: string}){
+    async function changeStatus({id, statusNumber}:{id:string, statusNumber: string}){
         const res = await axios({
             method:'patch',
             url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank`,
             data:{
                 key:'status',
                 value: statusNumber, // 0 means de-activated in db
-                id: bankId 
+                id: id 
             },
             headers:{
                 "Authorization": paseto
@@ -95,16 +97,20 @@ export default function BillingsView(){
 
     function deActivateBankHandler(bank:Bank){
         // setSelelectedOrg(org.orgId)
-        changeStatusMutation.mutate({bankId: bank.id, statusNumber:'0'})
+        changeStatusMutation.mutate({id: bank.id, statusNumber:'0'})
     }
 
     function verifyBankHandler(bank:Bank){
         // setSelelectedOrg(org.orgId)
-        changeStatusMutation.mutate({bankId:bank.id, statusNumber:'1'})
+        changeStatusMutation.mutate({id:bank.id, statusNumber:'1'})
+    }
+    function rejectBankHandler(bank:Bank){
+        // setSelelectedOrg(org.orgId)
+        changeStatusMutation.mutate({id:bank.id, statusNumber:'4'})
     }
 
     function reActivateBankHandler(bank:Bank){
-        changeStatusMutation.mutate({bankId:bank.id, statusNumber:'4'})
+        changeStatusMutation.mutate({id:bank.id, statusNumber:'1'})
     }
 
     
@@ -123,7 +129,7 @@ export default function BillingsView(){
             // 1 = verified
             case '1': return verifiedBankActions 
             // 2 = unVerified
-            case '2': return unVerifiedBankActions  
+            case '2': return isAdmin? adminUnVerifiedBankActions: unVerifiedBankActions  
             // 0 = deActivated
             case '0': return deActivatedBankActions 
         }
@@ -145,7 +151,9 @@ export default function BillingsView(){
           break;
           case 'verify': verifyBankHandler(record)
           break;
-          case 'unVerify': reActivateBankHandler(record)
+          case 'reject': rejectBankHandler(record)
+          break;
+          case 'reActivate': reActivateBankHandler(record)
           break;
           case 'viewDetails': viewOrgDetails(record)
         }
@@ -204,7 +212,7 @@ export default function BillingsView(){
         return (
         <Dropdown trigger={['click']} menu={{ items , onClick: (e)=>onMenuClick(e,record) }}>
             <Button icon={<MoreOutlined />}/>
-            </Dropdown>)
+          </Dropdown>)
       } 
     }
     ];
@@ -218,7 +226,7 @@ export default function BillingsView(){
                       )
                       )}
                   </Radio.Group>
-                  <div style={{display:'flex', marginTop:'2rem', justifyContent:'space-between', alignItems:'center'}}>
+                  <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                     <Button shape="round" style={{marginRight:'1rem'}} loading={banksQuery.isRefetching} onClick={()=>banksQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
                     <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/services/billings/new')}>New Bank</Button>
                   </div>
@@ -285,6 +293,9 @@ function deleteService(){
       closeDrawerHandler()
 
     },
+    onSettled:()=>{
+      queryClient.invalidateQueries(['banks'])
+    },
     onError:(err)=>{
         console.log(err)
         notification['error']({
@@ -335,7 +346,7 @@ return(
     currentFieldValue={selectedRecord.beneficiaryName}
     fieldName = 'beneficiaryName'
     title = 'Beneficiary Name'
-    bankId = {selectedRecord.id}
+    id = {selectedRecord.id}
     options = {{queryKey:'banks',mutationUrl:'org-bank'}}
    />
 
@@ -344,7 +355,7 @@ return(
     currentFieldValue={selectedRecord.beneficiaryCountry}
     fieldName = 'beneficiaryCountry'
     title = 'Beneficiary Country'
-    bankId = {selectedRecord.id}
+    id = {selectedRecord.id}
     options = {{queryKey:'banks',mutationUrl:'org-bank'}}
    />
 
@@ -353,7 +364,7 @@ return(
     currentFieldValue={selectedRecord.beneficiaryState}
     fieldName = 'beneficiaryState'
     title = 'Beneficiary State'
-    bankId = {selectedRecord.id}
+    id = {selectedRecord.id}
     options = {{queryKey:'banks',mutationUrl:'org-bank'}}
    />
 
@@ -362,27 +373,27 @@ return(
     currentFieldValue={selectedRecord.beneficiaryCity}
     fieldName = 'beneficiaryCity'
     title = 'Beneficiary City'
-    bankId = {selectedRecord.id}
+    id = {selectedRecord.id}
     options = {{queryKey:'banks',mutationUrl:'org-bank'}}
    />
 
   <EditableText
-    fieldKey="beneficiary_zipCode" // The way the field is named in DB
-    currentFieldValue={selectedRecord.beneficiaryZipCode}
-    fieldName = 'beneficiaryZipCode'
-    title = 'Beneficiary Zip Code'
-    bankId = {selectedRecord.id}
+    fieldKey="beneficiary_postal_code" // The way the field is named in DB
+    currentFieldValue={selectedRecord.beneficiaryPostalCode}
+    fieldName = 'beneficiaryPostalCode'
+    title = 'Beneficiary Postal Code'
+    id = {selectedRecord.id}
     options = {{queryKey:'banks',mutationUrl:'org-bank'}}
    />
 
-   <Title level={3}>Account Info</Title>
+   <Title style={{marginTop:'1rem'}} level={3}>Account Info</Title>
 
   <EditableRadio
     fieldKey="account_type" // The way the field is named in DB
     currentFieldValue={selectedRecord.accountType}
     fieldName = 'accountType'
     title = 'Account Type'
-    bankId = {selectedRecord.id}
+    id = {selectedRecord.id}
     options = {{queryKey:'banks',mutationUrl:'org-bank'}}
    />
 
@@ -391,7 +402,7 @@ return(
     currentFieldValue={selectedRecord.accountNo}
     fieldName = 'accountNo'
     title = 'Account No'
-    bankId = {selectedRecord.id}
+    id = {selectedRecord.id}
     options = {{queryKey:'banks',mutationUrl:'org-bank'}}
    />
 
@@ -402,7 +413,7 @@ return(
     currentFieldValue={selectedRecord.bankName}
     fieldName = 'bankName'
     title = 'Bank Name'
-    bankId = {selectedRecord.id}
+    id = {selectedRecord.id}
     options = {{queryKey:'banks',mutationUrl:'org-bank'}}
    />
 
@@ -411,7 +422,7 @@ return(
     currentFieldValue={selectedRecord.bankAddress}
     fieldName = 'bankAddress'
     title = 'Bank Address'
-    bankId = {selectedRecord.id}
+    id = {selectedRecord.id}
     options = {{queryKey:'banks',mutationUrl:'org-bank'}}
    />
 
@@ -420,7 +431,7 @@ return(
     currentFieldValue={selectedRecord.routingNumber}
     fieldName = 'routingNo'
     title = 'Routing No'
-    bankId = {selectedRecord.id}
+    id = {selectedRecord.id}
     options = {{queryKey:'banks',mutationUrl:'org-bank'}}
    />
 
@@ -528,6 +539,10 @@ const bankFilters = [
       id: '0',
       name: 'Deactivated'
   },
+  {
+      id: '4',
+      name: 'Rejected'
+  },
 ]
 
 const verifiedBankActions = [
@@ -537,6 +552,13 @@ const verifiedBankActions = [
     },
 
 ]
+const adminUnVerifiedBankActions = [
+  {
+    key: 'viewDetails',
+    label: 'View details'
+},
+]
+
 const unVerifiedBankActions = [
     {
         key: 'verify',
@@ -548,10 +570,11 @@ const unVerifiedBankActions = [
     },
 
 ]
+
 const deActivatedBankActions = [
     {
         key: 'reActivate',
-        label: 'Re-activate'
+        label: 'Reactivate'
     },
     {
         key: 'viewDetails',

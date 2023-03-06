@@ -453,7 +453,7 @@ return(
     currentFieldValue={selectedRecord.name}
     fieldName = 'name'
     title = 'Name'
-    bankId = {selectedRecord.id}
+    id = {selectedRecord.id}
     options = {{queryKey:'services',mutationUrl:'services'}}
   />
   <EditableAddress selectedRecord={selectedRecord}/>
@@ -462,7 +462,7 @@ return(
     currentFieldValue={selectedRecord.contactNumber}
     fieldName = 'contactNumber'
     title = 'Contact Number'
-    bankId = {selectedRecord.id}
+    id = {selectedRecord.id}
     options = {{queryKey:'services',mutationUrl:'services'}}
   />
   {/* <EditableCurrency selectedRecord={selectedRecord}/> */}

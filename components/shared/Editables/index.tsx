@@ -13,14 +13,14 @@ const countryList = require('country-list')
 
 
 interface EditableProps{
-    bankId: string,
+    id: string,
     currentFieldValue: string | undefined | number,
     fieldKey: string,
     fieldName: string
     title: string,
     options?:{queryKey:string,mutationUrl:string}
   }
-  export function EditableText({bankId, options, title, fieldName, currentFieldValue, fieldKey}:EditableProps){
+  export function EditableText({id, options, title, fieldName, currentFieldValue, fieldKey}:EditableProps){
   
     // console.log(currentFieldValue)
     
@@ -66,7 +66,7 @@ interface EditableProps{
       const payload = {
         key:fieldKey, // pass in key
         value: formData[fieldName], // pass in value
-        id: bankId // pass in bankId
+        id: id // pass in id
       }
   
       mutation.mutate(payload)
@@ -122,7 +122,7 @@ interface EditableProps{
     )
   }
   
-  export function EditableCountry({bankId, options, fieldName, currentFieldValue, fieldKey, title}:EditableProps){
+  export function EditableCountry({id, options, fieldName, currentFieldValue, fieldKey, title}:EditableProps){
   
     const [state, setState] = useState(currentFieldValue)
   
@@ -169,7 +169,7 @@ interface EditableProps{
       const payload = {
         key:fieldKey,
         value: formData[fieldName],
-        id: bankId
+        id: id
       }
       mutation.mutate(payload)
     }
@@ -232,7 +232,7 @@ interface EditableProps{
       </div>
     )
   }
-  export function EditableRadio({bankId, options, fieldName, currentFieldValue, fieldKey, title}:EditableProps){
+  export function EditableRadio({id, options, fieldName, currentFieldValue, fieldKey, title}:EditableProps){
   
     const [state, setState] = useState(currentFieldValue)
   
@@ -272,7 +272,7 @@ interface EditableProps{
       const payload = {
         key:fieldKey,
         value: formData[fieldName],
-        id: bankId
+        id: id
       }
       mutation.mutate(payload)
     }
