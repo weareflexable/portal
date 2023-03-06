@@ -43,6 +43,7 @@ export default function AdminOrgsView(){
     const ticketSearchRef = useRef(null)
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const [pageNumber, setPageNumber] = useState<number|undefined>(0)
+    const [pageSize, setPageSize] = useState<number|undefined>(10)
   
     // const isFilterEmpty = Object.keys(filteredInfo).length === 0;
 
@@ -69,7 +70,7 @@ export default function AdminOrgsView(){
     async function fetchOrgs(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?key=status&value=${currentStatus.id}&pageNumber=${pageNumber}&pageSize=10&key2=created_by`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?key=status&value=${currentStatus.id}&pageNumber=${pageNumber}&pageSize=${pageSize}&key2=created_by`,
             headers:{
                 "Authorization": paseto
             }
@@ -187,6 +188,7 @@ export default function AdminOrgsView(){
     };
   
     const handleChange: TableProps<NewOrg>['onChange'] = (data) => {
+      setPageSize(data.pageSize)
       //@ts-ignore
       setPageNumber(data.current-1); 
     };
@@ -468,17 +470,21 @@ export default function AdminOrgsView(){
             <div>
                 {allOrgsQuery && allOrgsTotal === 0  
                 ? null
-                :<div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
-                    <Radio.Group defaultValue={currentStatus.id} buttonStyle="solid">
-                        {orgStatus.map(status=>(
-                            <Radio.Button key={status.id} onClick={()=>setCurrentStatus(status)} value={status.id}>{status.name}</Radio.Button>
-                        )
-                        )}
-                    </Radio.Group>
-                    <div>
-                      <Button shape='round' loading={orgQuery.isRefetching} style={{marginRight:'1rem'}} onClick={()=>orgQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
-                      <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/new')}>New Organization</Button>
-                    </div>
+                : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column',}}>
+                  <div style={{width:'100%', marginBottom:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                      <Title style={{margin: '0'}} level={2}>Organizations</Title>
+                      <div>
+                        <Button shape='round' style={{marginRight:'1rem'}} loading={orgQuery.isRefetching} onClick={()=>orgQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                        <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/manager/organizations/new')}>New Organization</Button>
+                      </div>
+                  </div>
+                  <Radio.Group defaultValue={currentStatus.id} buttonStyle="solid">
+                      {orgStatus.map(status=>(
+                          <Radio.Button key={status.id} onClick={()=>setCurrentStatus(status)} value={status.id}>{status.name}</Radio.Button>
+                      )
+                      )}
+                  </Radio.Group>
+
                 </div>
                 }
                 

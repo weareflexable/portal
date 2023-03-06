@@ -47,10 +47,6 @@ const Organizations: NextPage = () => {
             
             <Row style={{background: '#f4f4f4',height:'100%',minHeight:'100vh'}}>
                 <Col offset={1} span={22}>
-                    <div style={{width:'100%', display:'flex', marginTop:'2rem', marginBottom:'2rem', justifyContent:'space-between', alignItems:'center'}}>
-                        <Title style={{margin:'0'}} level={2}>My Organizations</Title>
-                        
-                    </div>
                     <Content 
                         style={{
                         width:`98%`,
