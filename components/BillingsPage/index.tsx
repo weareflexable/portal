@@ -149,7 +149,7 @@ export default function BillingsView(){
         switch(event){
           case 'deActivate': deActivateBankHandler(record);
           break;
-          case 'verify': verifyBankHandler(record)
+          case 'accept': verifyBankHandler(record)
           break;
           case 'reject': rejectBankHandler(record)
           break;
@@ -561,8 +561,12 @@ const adminUnVerifiedBankActions = [
 
 const unVerifiedBankActions = [
     {
-        key: 'verify',
-        label: 'Verify'
+        key: 'accept',
+        label: 'Accept'
+    },
+    {
+        key: 'reject',
+        label: 'Reject'
     },
     {
         key: 'viewDetails',
