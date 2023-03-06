@@ -1,5 +1,5 @@
 import React,{useEffect, useRef, useState} from 'react';
-import {Card,Form, Input,InputNumber, DatePicker,Upload,Button,notification, Space, Alert, Typography, TimePicker, Select, Row, Col, Steps, Radio, Tooltip, Popconfirm, message, Drawer, Collapse} from 'antd';
+import {Card,Form, Image as AntImage, Input,InputNumber, DatePicker,Upload,Button,notification, Space, Alert, Typography, TimePicker, Select, Row, Col, Steps, Radio, Tooltip, Popconfirm, message, Drawer, Collapse} from 'antd';
 const { TextArea } = Input;
 import Image from 'next/image'
 
@@ -7,7 +7,7 @@ const { Panel } = Collapse;
 
 
 const {Text,Title} = Typography;
-import {QuestionCircleOutlined,ArrowLeftOutlined,MinusCircleOutlined,InfoCircleOutlined,PlusCircleOutlined} from '@ant-design/icons'
+import {QuestionCircleOutlined,SelectOutlined,ArrowLeftOutlined,MinusCircleOutlined,InfoCircleOutlined,PlusCircleOutlined} from '@ant-design/icons'
 
 
 import { useRouter } from 'next/router';
@@ -506,14 +506,18 @@ function Artwork({onHandleArtwork}:ArtworkProps){
 
     return(
         <div>
-            <Title style={{marginTop:'4rem'}} level={3}>Artwork</Title>
-            <div style={{display:'flex', flexDirection:'column'}}>
-                <Button type='link' style={{alignSelf:'flex-end'}} onClick={toggleDrawer}>Select a different artwork</Button>
-                <Image alt='artwork' objectFit='cover' height='400px' width='100px' style={{minWidth:'0'}}  src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${selectedArtwork}`}/>
-                <Text type='secondary'>This cover image will be used for listing on marketplace and Digital access token NFT</Text>
+            <div style={{display:'flex', marginTop:'3rem',alignItems:'baseline'}}>
+                <Title style={{margin:'0'}} level={3}>Artwork</Title>
                 <Tooltip trigger={['click']} placement='right' title={<LogoTip/>}>
-                    <Button type="link">Show me <QuestionCircleOutlined /></Button>
+                        <Button type="link">Learn more<QuestionCircleOutlined /></Button>
                 </Tooltip>
+            </div>
+            <div style={{display:'flex',width:'400px', marginTop:'2rem', flexDirection:'column'}}>
+                <div style={{alignSelf:'flex-end',display:'flex'}}>
+                <Button shape='round' icon={<SelectOutlined />} style={{ marginBottom:'.5rem'}} onClick={toggleDrawer}>Select a different artwork</Button>
+                </div>
+                <AntImage alt='artwork'  style={{width:'400px', height:'400px', objectFit:'cover'}}  src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${selectedArtwork}`}/>
+                <Text type='secondary'>This cover image will be used for listing on marketplace and Digital access token NFT</Text>
             </div>
             <ArtworkPicker 
                 currentServiceItemType={currentServiceItemType}
@@ -596,7 +600,7 @@ const reservationHashes = [
 function LogoTip(){
     return(
         <div>
-            <Image style={{objectFit:'cover'}} src={'/explainers/serviceItem-explainer.png'} alt='Service explainer as displayed on marketplace'/>
+            <AntImage style={{objectFit:'cover'}}  src={'/explainers/serviceItem-explainer.png'} alt='Service explainer as displayed on marketplace'/>
             <Text style={{color:'white'}}>It is very important that you provide the requested the image size else, it will look distorted on marketplace.</Text>
         </div>
     ) 
