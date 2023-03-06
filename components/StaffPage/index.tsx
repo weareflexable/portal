@@ -203,26 +203,33 @@ export default function StaffView(){
 
         return (
             <div>
-                {data && allStaffLength === 0 ? null : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+                {data && allStaffLength === 0 ? null : 
+                <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
+                  <div style={{display:'flex', justifyContent:'space-between', width:'100%', alignItems:'center'}}>
+                    <Title style={{margin:'0', width:'100%'}} level={2}>Staff</Title>
+                    <div style={{width: "100%",display:'flex', marginTop:'1.5rem', justifyContent:'flex-end', alignItems:'center'}}>
+                      <Button shape="round" style={{marginRight:'1rem'}} loading={staffQuery.isRefetching} onClick={()=>staffQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                      <Button
+                        type="primary"
+                        icon={<PlusOutlined/>}
+                        onClick={() => {
+                          setShowForm(true)
+                        }}
+                      >
+                        New Staff
+                      </Button>
+                    </div>
+                  </div>
+                  
                   <Radio.Group defaultValue={currentFilter.id} style={{width:'100%'}} buttonStyle="solid">
                       {staffFilter.map(filter=>(
                           <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
                       )
                       )}
                   </Radio.Group>
-                  <div style={{width: "100%",display:'flex', justifyContent:'flex-end', alignItems:'center'}}>
-                    <Button type='link' loading={staffQuery.isRefetching} onClick={()=>staffQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
-                    <Button
-                      type="primary"
-                      icon={<PlusOutlined/>}
-                      onClick={() => {
-                        setShowForm(true)
-                      }}
-                    >
-                      New Staff
-                    </Button>
-                  </div>
-                </div>}
+                  
+                </div>
+                }
 
                 {
                   data && allStaffLength === 0

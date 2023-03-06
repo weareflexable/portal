@@ -19,7 +19,6 @@ export default function Staff(){
         <AppLayout>
                 <Row>
                     <Col offset={1} span={22}>
-                        <Title style={{marginTop:'1em'}} level={3}>Staff</Title>
                         <Content
                             style={{
                             // padding: '1em',
