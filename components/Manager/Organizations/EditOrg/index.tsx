@@ -110,9 +110,11 @@ interface EditableProp{
       </div>
     )
   }
+
+
   export function EditableAddress({selectedOrg}:EditableProp){
   
-    const [state, setState] = useState(selectedOrg)
+    const [state, setState] = useState(selectedOrg.street)
   
     const [isEditMode, setIsEditMode] = useState(false)
   
@@ -124,7 +126,7 @@ interface EditableProp{
   
     const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{`${state.street}`}</Text>
+        <Text>{state}</Text>
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
   )
@@ -133,7 +135,7 @@ interface EditableProp{
       <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
         <Text type="secondary" style={{ marginRight: '2rem',}}>Address</Text>
         {isEditMode
-        ?<AddressField toggleEdit={toggleEdit} selectedRecord={selectedOrg}/>
+        ?<AddressField currentFieldValue={state} updateState={setState} toggleEdit={toggleEdit} selectedRecord={selectedOrg}/>
         :readOnly
         }
       </div>
@@ -143,8 +145,10 @@ interface EditableProp{
   interface AddressFieldProp{
     selectedRecord: NewOrg
     toggleEdit: ()=>void
+    currentFieldValue: string
+    updateState: (value:any)=>void
   }
-  function AddressField({selectedRecord,toggleEdit}:AddressFieldProp){
+  function AddressField({currentFieldValue, updateState, selectedRecord,toggleEdit}:AddressFieldProp){
   
     // const [isEditMode, setIsEditMode] = useState(false)
     const antInputRef = useRef();
@@ -159,6 +163,7 @@ interface EditableProp{
   
    const {paseto} = useAuthContext()
   
+   const queryClient = useQueryClient()
   
     const [form]  = Form.useForm()
   
@@ -188,7 +193,7 @@ interface EditableProp{
     },
     onPlaceSelected: (place) => {
         // console.log(antInputRef.current.input)
-        form.setFieldValue('address',place?.formatted_address)
+        form.setFieldValue('street',place?.formatted_address)
   
         console.log(place)  
         
@@ -220,6 +225,10 @@ interface EditableProp{
     mutationFn: mutationHandler,
     onSuccess:()=>{
       toggleEdit()
+    },
+    onSettled:(data)=>{
+      updateState(data.data[0].street)
+      queryClient.invalidateQueries(['organizations'])
     }
   })
   
@@ -247,18 +256,17 @@ interface EditableProp{
     return(
       <Form
        style={{ marginTop:'.5rem' }}
-       name="editableAddress"
-       initialValues={selectedRecord}
+       initialValues={{street:currentFieldValue}}
        onFinish={onFinish}
        form={form}
        >
         <Row>
           <Col span={16} style={{height:'100%'}}>
           <Form.Item 
-              name="address"
+              name="street"
               rules={[{ required: true, message: 'Please input a valid address!' }]}
           >
-             <Input  ref={(c) => {
+             <Input allowClear  ref={(c) => {
                   // @ts-ignore
                   antInputRef.current = c;
               

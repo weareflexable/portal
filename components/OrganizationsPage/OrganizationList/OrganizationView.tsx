@@ -22,6 +22,7 @@ import { usePlacesWidget } from "react-google-autocomplete";
 import useUrlPrefix from "../../../hooks/useUrlPrefix";
 import { numberFormatter } from "../../../utils/numberFormatter";
 import { convertToAmericanFormat } from "../../../utils/phoneNumberFormatter";
+import { EditableText } from "../../shared/Editables";
 
 
 var relativeTime = require('dayjs/plugin/relativeTime')
@@ -528,7 +529,7 @@ const {paseto} = useAuthContext()
 const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
 function closeDrawerHandler(){
-  queryClient.invalidateQueries(['organizations'])
+  // queryClient.invalidateQueries(['organizations'])
   closeDrawer(!isDrawerOpen)
 }
 
@@ -599,10 +600,23 @@ return(
   open={isDrawerOpen}
 >
   
-  <EditableName selectedOrg={selectedOrg}/>
+<EditableText
+    fieldKey="name" // The way the field is named in DB
+    currentFieldValue={selectedOrg.name}
+    fieldName = 'name'
+    title = 'Name'
+    bankId = {selectedOrg.id}
+    options = {{queryKey:'organizations',mutationUrl:'org'}}
+/>
   <EditableAddress selectedOrg={selectedOrg}/>
-  <EditablePhone selectedOrg={selectedOrg}/>
-  <EditableZipCode selectedOrg={selectedOrg}/>
+  <EditableText
+    fieldKey="contact_number" // The way the field is named in DB
+    currentFieldValue={selectedOrg.contactNumber} 
+    fieldName = 'contactNumber'
+    title = 'Contact Number'
+    bankId = {selectedOrg.id}
+    options = {{queryKey:'organizations',mutationUrl:'org'}}
+/>
   <EditableLogoImage selectedOrg={selectedOrg}/>
   {/* <EditableCoverImage selectedOrg={selectedOrg}/> */}
 
@@ -692,109 +706,10 @@ interface EditableProp{
   selectedOrg: NewOrg
 }
 
-function EditableName({selectedOrg}:EditableProp){
-
-  const [state, setState] = useState(selectedOrg)
-
-  const [isEditMode, setIsEditMode] = useState(false)
-
-  const {paseto} = useAuthContext()
-
-  const queryClient = useQueryClient()
-
-  const urlPrefix = useUrlPrefix()
-
-  function toggleEdit(){
-    setIsEditMode(!isEditMode)
-  }
-
- 
-
-  const nameMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
-      headers:{
-          //@ts-ignore
-          "Authorization": paseto
-      }
-    })
-      return data;
-  }
-  const nameMutation = useMutation({
-    mutationKey:['name'],
-    mutationFn: nameMutationHandler,
-    onSuccess:()=>{
-      toggleEdit()
-    }
-  })
-
-  function onFinish(updatedItem:any){
-    const payload = {
-      key:'name',
-      value: updatedItem.name,
-      //@ts-ignore
-      orgId: selectedOrg.orgId
-    }
-    const updatedOrg = {
-      ...selectedOrg,
-      name: updatedItem.name
-    }
-    setState(updatedOrg) // only update state when mutation is successful
-    nameMutation.mutate(payload)
-  }
-
-  const {isLoading:isEditing} = nameMutation ;
-
-  const readOnly = (
-    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Text>{state.name}</Text>
-      <Button type="link" onClick={toggleEdit}>Edit</Button>
-    </div>
-)
-
-  const editable = (
-    <Form
-     style={{ marginTop:'.5rem' }}
-     name="editableName"
-     initialValues={selectedOrg}
-     onFinish={onFinish}
-     >
-      <Row>
-        <Col span={16} style={{height:'100%'}}>
-          <Form.Item
-              name="name"
-              rules={[{ required: true, message: 'Please input a valid service name' }]}
-          >
-              <Input  disabled={isEditing} placeholder="Flexable org" />
-          </Form.Item>
-        </Col>
-        <Col span={4}>
-          <Form.Item style={{ width:'100%'}}>
-              <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
-                      Cancel
-                  </Button>
-                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
-                      Apply changes
-                  </Button>
-              </Space>
-                        
-          </Form.Item>
-        </Col>
-      </Row>
-           
-    </Form>
-  )
-  return(
-    <div style={{width:'100%', display:'flex', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>Name</Text>
-    {isEditMode?editable:readOnly}
-    </div>
-  )
-}
 
 export function EditableAddress({selectedOrg}:EditableProp){
   
-  const [state, setState] = useState(selectedOrg)
+  const [state, setState] = useState(selectedOrg.street)
 
   const [isEditMode, setIsEditMode] = useState(false)
 
@@ -806,7 +721,7 @@ export function EditableAddress({selectedOrg}:EditableProp){
 
   const readOnly = (
     <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Text>{`${state.street}`}</Text>
+      <Text>{state}</Text>
       <Button type="link" onClick={toggleEdit}>Edit</Button>
     </div>
 )
@@ -815,194 +730,14 @@ export function EditableAddress({selectedOrg}:EditableProp){
     <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
       <Text type="secondary" style={{ marginRight: '2rem',}}>Address</Text>
       {isEditMode
-      ?<AddressField toggleEdit={toggleEdit} selectedRecord={selectedOrg}/>
+      ?<AddressField currentFieldValue={state} updateState={setState} toggleEdit={toggleEdit} selectedRecord={selectedOrg}/>
       :readOnly
       }
     </div>
   )
 }
 
-function EditablePhone({selectedOrg}:EditableProp){
 
-  const [isEditMode, setIsEditMode] = useState(false)
-
-  const {paseto} = useAuthContext()
-
-  const queryClient = useQueryClient()
-
-  function toggleEdit(){
-    setIsEditMode(!isEditMode)
-  }
-
-  const urlPrefix = useUrlPrefix()
-
-  const readOnly = (
-      <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{selectedOrg.contactNumber}</Text>
-        <Button type="link" onClick={toggleEdit}>Edit</Button>
-      </div>
-  )
-
-  const nameMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
-      headers:{
-          //@ts-ignore
-          "Authorization": paseto
-      }
-    })
-      return data;
-  }
-  const nameMutation = useMutation({
-    mutationKey:['contactNumber'],
-    mutationFn: nameMutationHandler,
-    onSuccess:()=>{
-      toggleEdit()
-      queryClient.invalidateQueries(['organizations'])
-    }
-  })
-
-  function onFinish(field:any){
-    const payload = {
-      key:'contact_number',
-      value: field.contactNumber,
-      orgId: selectedOrg.id
-    }
-    console.log(payload)
-    nameMutation.mutate(payload)
-  }
-
-  const {isLoading:isEditing} = nameMutation 
-
-  const editable = (
-    <Form
-     style={{ marginTop:'.5rem' }}
-     name="editablePhone"
-     initialValues={selectedOrg}
-     onFinish={onFinish}
-     >
-      <Row>
-        <Col span={16}>
-          <Form.Item
-              name="contactNumber"
-              rules={[{ required: true, message: 'Please input a valid phone number' }]}
-          >
-              <Input disabled={isEditing} placeholder="09023234857" />
-          </Form.Item>
-        </Col>
-        <Col span={4}>
-          <Form.Item style={{ width:'100%'}}>
-              <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
-                      Cancel
-                  </Button>
-                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
-                      Apply changes
-                  </Button>
-              </Space>
-                        
-          </Form.Item>
-        </Col>
-      </Row>
-           
-    </Form>
-  )
-  return(
-    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>Phone</Text>
-      {isEditMode?editable:readOnly}
-    </div>
-  )
-}
-function EditableZipCode({selectedOrg}:EditableProp){
-
-  const [isEditMode, setIsEditMode] = useState(false)
-
-  const queryClient = useQueryClient()
-
-  const {paseto} = useAuthContext()
-
-  function toggleEdit(){
-    setIsEditMode(!isEditMode)
-  }
-
-  const urlPrefix = useUrlPrefix()
-
-  const readOnly = (
-      <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{selectedOrg.zipCode}</Text>
-        <Button type="link" onClick={toggleEdit}>Edit</Button>
-      </div>
-  )
-
-  const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
-      headers:{
-          //@ts-ignore
-          "Authorization": paseto
-      }
-    })
-      return data;
-  }
-  const mutation = useMutation({
-    mutationKey:['zipCode'],
-    mutationFn: mutationHandler,
-    onSuccess:()=>{
-      toggleEdit()
-      queryClient.invalidateQueries(['organizations'])
-    }
-  })
-
-  function onFinish(field:any){
-    const payload = {
-      key:'zip_code',
-      value: field.zipCode,
-      orgId: selectedOrg.id
-    }
-    mutation.mutate(payload)
-  }
-
-  const {isLoading:isEditing} = mutation
-
-  const editable = (
-    <Form
-     style={{ marginTop:'.5rem' }}
-     name="editableZipCode"
-     initialValues={selectedOrg}
-     onFinish={onFinish}
-     >
-      <Row>
-        <Col span={10}>
-          <Form.Item
-              name="zipCode"
-              rules={[{ required: true, message: 'Please input a valid zip code' }]}
-          >
-              <Input disabled={isEditing} placeholder="937462" />
-          </Form.Item>
-        </Col>
-        <Col span={4}>
-          <Form.Item style={{ width:'100%'}}>
-              <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
-                      Cancel
-                  </Button>
-                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
-                      Apply changes
-                  </Button>
-              </Space>
-                        
-          </Form.Item>
-        </Col>
-      </Row>
-           
-    </Form>
-  )
-  return(
-    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>Zip Code</Text>
-      {isEditMode?editable:readOnly}
-    </div>
-  )
-}
 function EditableLogoImage({selectedOrg}:EditableProp){
 
   const [isEditMode, setIsEditMode] = useState(false)
@@ -1121,129 +856,15 @@ function EditableLogoImage({selectedOrg}:EditableProp){
     </div>
   )
 }
-function EditableCoverImage({selectedOrg}:EditableProp){
 
-  const [isEditMode, setIsEditMode] = useState(false)
-  const [isHashingImage, setIsHashingImage] = useState(false)
-  const [updatedCoverImageHash, setUpdatedCoverImageHash] = useState(selectedOrg.logoImageHash)
-
-  const queryClient = useQueryClient()
-
-  const {paseto} = useAuthContext()
-
-  const urlPrefix = useUrlPrefix()
-
-  function toggleEdit(){
-    setIsEditMode(!isEditMode)
-  }
-
-  const readOnly = (
-      <div style={{width:'100%', marginTop:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Image style={{width:'500px', height:'200px', objectFit:'cover', border:'1px solid #f2f2f2'}} alt='cover image for organization' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedCoverImageHash}`}/>
-        <Button type="link" onClick={toggleEdit}>Edit</Button>
-      </div>
-  )
-
-  const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
-      headers:{
-          //@ts-ignore
-          "Authorization": paseto
-      }
-    })
-      return data;
-  }
-  const mutation = useMutation({
-    mutationKey:['logoImage'],
-    mutationFn: mutationHandler,
-    onSuccess:()=>{
-      toggleEdit()
-    }
-  })
-
-  async function onFinish(field:any){
-
-    // hash it first
-    const coverImageRes = await field.coverImage
-
-    setIsHashingImage(true)
-    const coverImageHash = await asyncStore(coverImageRes[0].originFileObj)
-    setIsHashingImage(false)
-
-    console.log(coverImageHash)
-
-    const payload = {
-      key:'cover_image_hash',
-      value: coverImageHash,
-      orgId: selectedOrg.id
-    }
-    setUpdatedCoverImageHash(coverImageHash)
-    mutation.mutate(payload)
-  }
-
-  const {isLoading:isEditing} = mutation
-
-  const extractCoverImage = async(e: any) => {
-    console.log('Upload event:', e);
-    if (Array.isArray(e)) {
-    return e;
-    }
-
-   return e?.fileList;
-};
-
-
-  const editable = (
-    <Form
-     style={{ marginTop:'.5rem' }}
-     name="editableCoverImage"
-     initialValues={selectedOrg}
-     onFinish={onFinish}
-     >
-      <Row>
-        <Col span={10}>
-          <Form.Item
-              name="coverImage"
-              valuePropName="coverImage"
-              getValueFromEvent={extractCoverImage}
-              rules={[{ required: true, message: 'Please input a valid zip code' }]}
-          >
-              
-              <Upload name="coverImageHash" listType="picture" multiple={false}>
-                   <Button size='small' disabled={isHashingImage} type='link'>Upload cover image</Button>
-              </Upload>
-          </Form.Item>
-        </Col>
-        <Col span={4}>
-          <Form.Item style={{ width:'100%'}}>
-              <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
-                      Cancel
-                  </Button>
-                  <Button shape="round" loading={isEditing||isHashingImage} type="link" size="small"  htmlType="submit" >
-                      Apply changes
-                  </Button>
-              </Space>
-                        
-          </Form.Item>
-        </Col>
-      </Row>
-           
-    </Form>
-  )
-  return(
-    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>Cover Image</Text>
-      {isEditMode?editable:readOnly}
-    </div>
-  )
-}
 
 interface AddressFieldProp{
   selectedRecord: NewOrg
   toggleEdit: ()=>void
+  currentFieldValue: string
+  updateState: (value:any)=>void
 }
-function AddressField({selectedRecord,toggleEdit}:AddressFieldProp){
+function AddressField({selectedRecord, updateState, currentFieldValue,toggleEdit}:AddressFieldProp){
 
   // const [isEditMode, setIsEditMode] = useState(false)
   const antInputRef = useRef();
@@ -1258,6 +879,7 @@ const urlPrefix = useUrlPrefix()
 
  const {paseto} = useAuthContext()
 
+ const queryClient = useQueryClient()
 
   const [form]  = Form.useForm()
 
@@ -1287,7 +909,7 @@ const { ref: antRef } = usePlacesWidget({
   },
   onPlaceSelected: (place) => {
       // console.log(antInputRef.current.input)
-      form.setFieldValue('address',place?.formatted_address)
+      form.setFieldValue('street',place?.formatted_address)
 
       console.log(place)  
       
@@ -1319,6 +941,10 @@ const mutation = useMutation({
   mutationFn: mutationHandler,
   onSuccess:()=>{
     toggleEdit()
+  },
+  onSettled:(data)=>{
+    updateState(data.data[0].street)
+    queryClient.invalidateQueries(['organizations'])
   }
 })
 
@@ -1345,18 +971,17 @@ const {isLoading:isEditing} = mutation
   return(
     <Form
      style={{ marginTop:'.5rem' }}
-     name="editableAddress"
-     initialValues={selectedRecord}
+     initialValues={{street:currentFieldValue}}
      onFinish={onFinish}
      form={form}
      >
       <Row>
         <Col span={16} style={{height:'100%'}}>
         <Form.Item 
-            name="address"
+            name="street"
             rules={[{ required: true, message: 'Please input a valid address!' }]}
         >
-           <Input  ref={(c) => {
+           <Input allowClear ref={(c) => {
                 // @ts-ignore
                 antInputRef.current = c;
             

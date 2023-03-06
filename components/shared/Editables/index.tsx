@@ -3,7 +3,9 @@ import { Button, Form, Row, Col, Input, Space, Typography, Select, Radio } from 
 const {Text} = Typography
 const {Option} = Select
 import axios from "axios"
-import { useState } from "react"
+import { Service } from "nft.storage"
+import { useRef, useState } from "react"
+import { usePlacesWidget } from "react-google-autocomplete"
 import { useAuthContext } from "../../../context/AuthContext"
 import useUrlPrefix from "../../../hooks/useUrlPrefix"
 const countryList = require('country-list')
@@ -12,7 +14,7 @@ const countryList = require('country-list')
 
 interface EditableProps{
     bankId: string,
-    currentFieldValue: string,
+    currentFieldValue: string | undefined,
     fieldKey: string,
     fieldName: string
     title: string,

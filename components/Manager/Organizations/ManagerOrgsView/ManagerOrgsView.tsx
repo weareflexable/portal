@@ -20,6 +20,7 @@ import { asyncStore } from "../../../../utils/nftStorage";
 import { usePlacesWidget } from "react-google-autocomplete";
 import { EditableName, EditableAddress, EditablePhone, EditableZipCode, EditableLogoImage, EditableCoverImage } from "../EditOrg";
 import { convertToAmericanFormat } from "../../../../utils/phoneNumberFormatter";
+import { EditableText } from "../../../shared/Editables";
 
 
 var relativeTime = require('dayjs/plugin/relativeTime')
@@ -533,7 +534,7 @@ const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 const {paseto, currentUser} = useAuthContext()
 
 function closeDrawerHandler(){
-  queryClient.invalidateQueries(['organizations'])
+  // queryClient.invalidateQueries(['organizations'])
   closeDrawer(!isDrawerOpen)
 }
 
@@ -603,10 +604,23 @@ return(
   open={isDrawerOpen}
 >
   
-  <EditableName selectedOrg={selectedOrg}/>
+<EditableText
+    fieldKey="name" // The way the field is named in DB
+    currentFieldValue={selectedOrg.name}
+    fieldName = 'name'
+    title = 'Name'
+    bankId = {selectedOrg.id}
+    options = {{queryKey:'organizations',mutationUrl:'org'}}
+/>
   <EditableAddress selectedOrg={selectedOrg}/>
-  <EditablePhone selectedOrg={selectedOrg}/>
-  {/* <EditableZipCode selectedOrg={selectedOrg}/> */}
+  <EditableText
+    fieldKey="contact_number" // The way the field is named in DB
+    currentFieldValue={selectedOrg.contactNumber} 
+    fieldName = 'contactNumber'
+    title = 'Contact Number'
+    bankId = {selectedOrg.id}
+    options = {{queryKey:'organizations',mutationUrl:'org'}}
+/>
   <EditableLogoImage selectedOrg={selectedOrg}/>
   {/* <EditableCoverImage selectedOrg={selectedOrg}/> */}
 
