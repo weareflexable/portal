@@ -118,15 +118,17 @@ interface EditableProp{
     const [isEditMode, setIsEditMode] = useState(false)
   
     const {paseto} = useAuthContext()
+
+    const queryClient = useQueryClient()
   
     function toggleEdit(){
       setIsEditMode(!isEditMode)
     }
   
-  //  const transformedRecord = {
-  //   ...selectedRecord,
-  //   price: Number(selectedRecord.price)/100
-  //  }
+   const transformedRecord = {
+    ...selectedRecord,
+    price: Number(selectedRecord.price)/100
+   }
    const urlPrefix = useUrlPrefix()
   
     const recordMutationHandler = async(updatedItem:any)=>{
@@ -143,6 +145,11 @@ interface EditableProp{
       mutationFn: recordMutationHandler,
       onSuccess:()=>{
         toggleEdit()
+      },
+      onSettled:(data)=>{
+        console.log(data)
+        // setState(data.data[0].price)
+        queryClient.invalidateQueries(['service-items'])
       }
     })
   
@@ -156,7 +163,7 @@ interface EditableProp{
         ...selectedRecord,
         price: updatedItem.price
       }
-      setState(updatedRecord)
+      // setState(updatedRecord)
       recordMutation.mutate(payload)
     }
   
@@ -173,7 +180,7 @@ interface EditableProp{
       <Form
        style={{ marginTop:'.5rem' }}
        name="editablePrice"
-       initialValues={selectedRecord}
+       initialValues={transformedRecord}
        onFinish={onFinish}
        >
         <Row>
@@ -500,14 +507,14 @@ interface EditableProp{
 
     const readOnly = (
       <div style={{width:'100%', marginTop:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <AntImage style={{width:'500px', height:'200px', objectFit:'cover', border:'1px solid #f2f2f2'}} alt='cover image for serviceItem' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedCoverImageHash}`}/>
+        <AntImage style={{width:'300px', height:'300px', objectFit:'cover', border:'1px solid #f2f2f2'}} alt='cover image for serviceItem' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedCoverImageHash}`}/>
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
     )
 
     return(
       <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-        <Text type="secondary" style={{ marginRight: '2rem',}}>Cover Image</Text>
+        <Text type="secondary" style={{ marginRight: '2rem',}}>Artwork</Text>
         {isEditMode?editable:readOnly}
       </div>
     )

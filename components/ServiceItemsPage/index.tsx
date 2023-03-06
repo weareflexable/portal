@@ -17,6 +17,7 @@ import AvailabilitySection from "./Availability/Availability";
 import useUrlPrefix from "../../hooks/useUrlPrefix";
 import useRole from "../../hooks/useRole";
 import useServiceItemTypes from "../../hooks/useServiceItemTypes";
+import { EditableText } from "../shared/Editables";
 
 
 // const mockServiceItems:ServiceItem[]=[
@@ -271,17 +272,26 @@ export default function ServiceItemsView(){
 
         return (
             <div>
-               { servicesData && allServiceItemsLength === 0  ? null : <div style={{marginBottom:'2em', marginTop:'.5rem', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
-               { isManager? <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
-                    {serviceItemsFilters.map(filter=>(
-                        <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
-                     )
-                    )}
-                </Radio.Group>:null}
+               { servicesData && allServiceItemsLength === 0  
+               ? null 
+               : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
+                 <div style={{width:'100%',  marginBottom:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                      <Title style={{margin: '0'}} level={2}>Services</Title>
+                      <div style={{display:'flex'}}>
+                        <Button shape='round' style={{marginRight:'1rem'}} loading={serviceItemsQuery.isRefetching} onClick={()=>serviceItemsQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                        <Dropdown.Button  trigger={['click']} type="primary"   icon={<PlusOutlined/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
+                      </div>
+                    </div>
+                  <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
+                        {serviceItemsFilters.map(filter=>(
+                            <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
+                        )
+                        )}
+                  </Radio.Group>
 
                 <div style={{width: "20%",display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-                  <Button type='link' loading={serviceItemsQuery.isRefetching} onClick={()=>serviceItemsQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
-                  <Dropdown.Button trigger={['click']} type="primary"   icon={<PlusOutlined/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
+
+                  {/* <Dropdown.Button trigger={['click']} type="primary"   icon={<PlusOutlined/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button> */}
                 </div>
 
                 </div>}
@@ -406,14 +416,30 @@ const{isLoading:isDeletingItem} = deleteData
 return( 
 <Drawer title="Service Details" width={640} placement="right" closable={true} onClose={closeDrawerHandler} open={isDrawerOpen}>
   
-  <EditableName selectedRecord={selectedRecord}/>
+<EditableText
+    fieldKey="name" // The way the field is named in DB
+    currentFieldValue={selectedRecord.name}
+    fieldName = 'name'
+    title = 'Name'
+    bankId = {selectedRecord.id}
+    options = {{queryKey:'serviceItems',mutationUrl:'service-items'}}
+  />
   <EditableDescription selectedRecord={selectedRecord}/>
   <EditablePrice selectedRecord={selectedRecord}/>
-  <EditableTicketsPerDay selectedRecord={selectedRecord}/>
+
+  <EditableText
+    fieldKey="tickets_per_day" // The way the field is named in DB
+    currentFieldValue={selectedRecord.ticketsPerDay}
+    fieldName = 'ticketsPerDay'
+    title = 'Tickets Per Day'
+    bankId = {selectedRecord.id}
+    options = {{queryKey:'serviceItems',mutationUrl:'service-items'}}
+  />
   <EditableCoverImage selectedRecord={selectedRecord}/>
 
   {/* <Text>CUSTOM AVALABILITY</Text> */}
   <Title style={{marginTop:'3rem'}} level={3}>Custom Dates</Title>
+  
   <AvailabilitySection selectedServiceItem={selectedRecord} />
   {/* <AvailabilitySection selectedServiceItem={selectedRecord}/> */}
   

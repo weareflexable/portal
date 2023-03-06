@@ -14,7 +14,7 @@ const countryList = require('country-list')
 
 interface EditableProps{
     bankId: string,
-    currentFieldValue: string | undefined,
+    currentFieldValue: string | undefined | number,
     fieldKey: string,
     fieldName: string
     title: string,
