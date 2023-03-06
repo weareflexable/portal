@@ -476,7 +476,7 @@ export default function AdminOrgsView(){
                         )}
                     </Radio.Group>
                     <div>
-                      <Button type='link' loading={orgQuery.isRefetching} style={{marginRight:'1rem'}} onClick={()=>orgQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                      <Button shape='round' loading={orgQuery.isRefetching} style={{marginRight:'1rem'}} onClick={()=>orgQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
                       <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/new')}>New Organization</Button>
                     </div>
                 </div>

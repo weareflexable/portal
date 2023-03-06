@@ -7,13 +7,11 @@ export type Bank = {
     beneficiaryCity: string,
     beneficiaryZipCode: string
     beneficiaryPhoneNumber: string,
-    accountNo: number,
+    accountNo: string,
     accountType:string,
     bankAddress: string,
     bankName: string,
-    routingNumber: number,
-    swiftCode: string,
-    currency: string,
+    routingNumber: string,
     createdAt: string,
     updatedAt: string
 }

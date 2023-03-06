@@ -201,8 +201,8 @@ export default function BillingsView(){
       render:(_,record)=>{
         const items = getCurrentFilterActions()
         return (
-        <Dropdown menu={{ items , onClick: (e)=>onMenuClick(e,record) }}>
-            <MoreOutlined />
+        <Dropdown trigger={['click']} menu={{ items , onClick: (e)=>onMenuClick(e,record) }}>
+            <Button icon={<MoreOutlined />}/>
             </Dropdown>)
       } 
     }
@@ -317,6 +317,8 @@ const deleteData = useMutation(deleteDataHandler)
 const{isLoading:isDeletingItem} = deleteData
 
 
+
+
 return( 
 <Drawer 
   title="Bank Details" 
@@ -326,25 +328,100 @@ return(
   open={isDrawerOpen}
 >
   
+  <Title style={{marginBottom:'1.5rem'}} level={3}>Beneficiary Info</Title>
+
   <EditableText
     fieldKey="beneficiary_name" // The way the field is named in DB
     currentFieldValue={selectedRecord.beneficiaryName}
+    fieldName = 'beneficiaryName'
     title = 'Beneficiary Name'
     bankId = {selectedRecord.id}
+    options = {{queryKey:'banks'}}
    />
 
   <EditableCountry
     fieldKey="beneficiary_country" // The way the field is named in DB
     currentFieldValue={selectedRecord.beneficiaryCountry}
+    fieldName = 'beneficiaryCountry'
     title = 'Beneficiary Country'
     bankId = {selectedRecord.id}
+    options = {{queryKey:'banks'}}
    />
+
+  <EditableText
+    fieldKey="beneficiary_state" // The way the field is named in DB
+    currentFieldValue={selectedRecord.beneficiaryState}
+    fieldName = 'beneficiaryState'
+    title = 'Beneficiary State'
+    bankId = {selectedRecord.id}
+    options = {{queryKey:'banks'}}
+   />
+
+  <EditableText
+    fieldKey="beneficiary_city" // The way the field is named in DB
+    currentFieldValue={selectedRecord.beneficiaryCity}
+    fieldName = 'beneficiaryCity'
+    title = 'Beneficiary City'
+    bankId = {selectedRecord.id}
+    options = {{queryKey:'banks'}}
+   />
+
+  <EditableText
+    fieldKey="beneficiary_zipCode" // The way the field is named in DB
+    currentFieldValue={selectedRecord.beneficiaryZipCode}
+    fieldName = 'beneficiaryZipCode'
+    title = 'Beneficiary Zip Code'
+    bankId = {selectedRecord.id}
+    options = {{queryKey:'banks'}}
+   />
+
+   <Title level={3}>Account Info</Title>
 
   <EditableRadio
     fieldKey="account_type" // The way the field is named in DB
     currentFieldValue={selectedRecord.accountType}
+    fieldName = 'accountType'
     title = 'Account Type'
     bankId = {selectedRecord.id}
+    options = {{queryKey:'banks'}}
+   />
+
+  <EditableText
+    fieldKey="account_no" // The way the field is named in DB
+    currentFieldValue={selectedRecord.accountNo}
+    fieldName = 'accountNo'
+    title = 'Account No'
+    bankId = {selectedRecord.id}
+    options = {{queryKey:'banks'}}
+   />
+
+   <Title style={{marginTop:'1.5rem'}} level={3}>Bank Info</Title>
+
+  <EditableText
+    fieldKey="bank_name" // The way the field is named in DB
+    currentFieldValue={selectedRecord.bankName}
+    fieldName = 'bankName'
+    title = 'Bank Name'
+    bankId = {selectedRecord.id}
+    options = {{queryKey:'banks'}}
+   />
+
+  <EditableText
+    fieldKey="bank_address" // The way the field is named in DB
+    currentFieldValue={selectedRecord.bankAddress}
+    fieldName = 'bankAddress'
+    title = 'Bank Address'
+    bankId = {selectedRecord.id}
+    options = {{queryKey:'banks'}}
+   />
+
+  <EditableText
+    fieldKey="routing_no" // The way the field is named in DB
+    currentFieldValue={selectedRecord.routingNumber}
+    fieldName = 'routingNo'
+    title = 'Routing No'
+    bankId = {selectedRecord.id}
+    options = {{queryKey:'banks'}}
    />
 
 
@@ -370,9 +447,13 @@ interface EditableProps{
   bankId: string,
   currentFieldValue: string,
   fieldKey: string,
-  title: string
+  fieldName: string
+  title: string,
+  options?:{queryKey:string}
 }
-export function EditableText({bankId, title, currentFieldValue, fieldKey}:EditableProps){
+export function EditableText({bankId, options, title, fieldName, currentFieldValue, fieldKey}:EditableProps){
+
+  // console.log(currentFieldValue)
   
   const [state, setState] = useState(currentFieldValue)
 
@@ -404,19 +485,20 @@ export function EditableText({bankId, title, currentFieldValue, fieldKey}:Editab
     onSuccess:()=>{
       toggleEdit()
     },
-    onSettled:()=>{
-      queryClient.invalidateQueries(['banks'])
+    onSettled:(data)=>{
+      // update state here
+      setState(data.data[0][fieldName])
+      queryClient.invalidateQueries([options?.queryKey])
     }
   })
 
   function onFinish(formData:any){
     const payload = {
       key:fieldKey, // pass in key
-      value: formData.value, // pass in value
+      value: formData[fieldName], // pass in value
       id: bankId // pass in bankId
     }
 
-    setState(formData.value) //  update state with new value
     mutation.mutate(payload)
   }
 
@@ -424,7 +506,7 @@ export function EditableText({bankId, title, currentFieldValue, fieldKey}:Editab
 
   const readOnly = (
     <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Text>{state}</Text>
+      <Text style={{textTransform:'capitalize'}}>{state}</Text>
       <Button type="link" onClick={toggleEdit}>Edit</Button>
     </div>
 )
@@ -433,16 +515,16 @@ export function EditableText({bankId, title, currentFieldValue, fieldKey}:Editab
     <Form
      style={{ marginTop:'.5rem' }}
      name="beneficiaryName"
-     initialValues={{value: currentFieldValue}}
+     initialValues={{[fieldName]:currentFieldValue}}
      onFinish={onFinish}
      >
       <Row>
         <Col span={16} style={{height:'100%'}}>
           <Form.Item
-              name="value"
+              name={fieldName}
               rules={[{ required: true, message: 'Please input a valid service name' }]}
           >
-              <Input  disabled={isEditing} placeholder="Benjamins On Franklin Bar" />
+              <Input allowClear  disabled={isEditing} />
           </Form.Item>
         </Col>
         <Col span={4}>
@@ -470,7 +552,7 @@ export function EditableText({bankId, title, currentFieldValue, fieldKey}:Editab
   )
 }
 
-function EditableCountry({bankId, currentFieldValue, fieldKey, title}:EditableProps){
+function EditableCountry({bankId, options, fieldName, currentFieldValue, fieldKey, title}:EditableProps){
 
   const [state, setState] = useState(currentFieldValue)
 
@@ -507,18 +589,18 @@ function EditableCountry({bankId, currentFieldValue, fieldKey, title}:EditablePr
     onSuccess:()=>{
       toggleEdit()
     },
-    onSettled:()=>{
-      queryClient.invalidateQueries({queryKey:['banks']})
+    onSettled:(data)=>{
+      setState(data.data[0][fieldName])
+      queryClient.invalidateQueries({queryKey:[options?.queryKey]})
     }
   })
 
   function onFinish(formData:any){
     const payload = {
       key:fieldKey,
-      value: formData.value,
+      value: formData[fieldName],
       id: bankId
     }
-    setState(formData.value)
     mutation.mutate(payload)
   }
 
@@ -526,7 +608,7 @@ function EditableCountry({bankId, currentFieldValue, fieldKey, title}:EditablePr
 
   const readOnly = (
     <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Text>{state}</Text>
+      <Text style={{textTransform:'capitalize'}}>{state}</Text>
       <Button type="link" onClick={toggleEdit}>Edit</Button>
     </div>
 )
@@ -535,13 +617,13 @@ function EditableCountry({bankId, currentFieldValue, fieldKey, title}:EditablePr
     <Form
      style={{ marginTop:'.5rem' }}
      name={fieldKey}
-     initialValues={{value:currentFieldValue}}
+     initialValues={{[fieldName]:currentFieldValue}}
      onFinish={onFinish}
      >
       <Row>
         <Col span={16} style={{height:'100%'}}>
         <Form.Item
-          name="value"
+          name={fieldName}
           rules={[{ required: true, message: 'Please select your country !' }]}
         >
               <Select
@@ -580,7 +662,7 @@ function EditableCountry({bankId, currentFieldValue, fieldKey, title}:EditablePr
     </div>
   )
 }
-function EditableRadio({bankId, currentFieldValue, fieldKey, title}:EditableProps){
+function EditableRadio({bankId, options, fieldName, currentFieldValue, fieldKey, title}:EditableProps){
 
   const [state, setState] = useState(currentFieldValue)
 
@@ -610,18 +692,18 @@ function EditableRadio({bankId, currentFieldValue, fieldKey, title}:EditableProp
     onSuccess:()=>{
       toggleEdit()
     },
-    onSettled:()=>{
-      queryClient.invalidateQueries({queryKey:['banks']})
+    onSettled:(data)=>{
+      setState(data.data[0][fieldName])
+      queryClient.invalidateQueries({queryKey:[options?.queryKey]})
     }
   })
 
   function onFinish(formData:any){
     const payload = {
       key:fieldKey,
-      value: formData.value,
+      value: formData[fieldName],
       id: bankId
     }
-    setState(formData.value)
     mutation.mutate(payload)
   }
 
@@ -629,7 +711,7 @@ function EditableRadio({bankId, currentFieldValue, fieldKey, title}:EditableProp
 
   const readOnly = (
     <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Text>{state}</Text>
+      <Text style={{textTransform:'capitalize'}}>{state}</Text>
       <Button type="link" onClick={toggleEdit}>Edit</Button>
     </div>
 )
@@ -637,15 +719,14 @@ function EditableRadio({bankId, currentFieldValue, fieldKey, title}:EditableProp
   const editable = (
     <Form
      style={{ marginTop:'.5rem' }}
-     name={fieldKey}
-     initialValues={{value:currentFieldValue}}
+     initialValues={{[fieldName]:currentFieldValue}}
      onFinish={onFinish}
      >
       <Row>
         <Col span={16} style={{height:'100%'}}>
           <Form.Item 
-              label={title} 
-              name="value"
+              // label={title} 
+              name={fieldName}
               rules={[{ required: true, message: 'Please select an accountType' }]}
               >
               <Radio.Group size='large'>
@@ -687,6 +768,7 @@ interface DeleteProp{
   onDeleteRecord: ()=>void
   isDeletingItem: boolean
 }
+
 function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteRecord, onCloseModal}:DeleteProp){
 
   function onFinish(){
@@ -766,10 +848,6 @@ const bankFilters = [
 ]
 
 const verifiedBankActions = [
-    {
-        key: 'deActivate',
-        label: 'Deactivate'
-    },
     {
         key: 'viewDetails',
         label: 'View details'

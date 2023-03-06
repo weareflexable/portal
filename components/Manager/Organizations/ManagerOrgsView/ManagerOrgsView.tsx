@@ -477,7 +477,7 @@ export default function ManagerOrgsView(){
                      )
                     )}
                 </Radio.Group>
-                <Button type='link' loading={orgQuery.isRefetching} onClick={()=>orgQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                <Button shape='round' loading={orgQuery.isRefetching} onClick={()=>orgQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
 
                 </div>
                 }
