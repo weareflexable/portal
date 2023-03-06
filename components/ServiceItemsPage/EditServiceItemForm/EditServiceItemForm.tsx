@@ -113,7 +113,7 @@ interface EditableProp{
 
   export function EditablePrice({selectedRecord}:EditableProp){
   
-    const [state, setState] = useState(selectedRecord)
+    const [state, setState] = useState(selectedRecord.price)
   
     const [isEditMode, setIsEditMode] = useState(false)
   
@@ -147,8 +147,7 @@ interface EditableProp{
         toggleEdit()
       },
       onSettled:(data)=>{
-        console.log(data)
-        // setState(data.data[0].price)
+        setState(data.data[0].price)
         queryClient.invalidateQueries(['service-items'])
       }
     })
@@ -156,14 +155,9 @@ interface EditableProp{
     function onFinish(updatedItem:any){
       const payload = {
         key:'price',
-        value: updatedItem.price*100,
+        value: String(updatedItem.price*100),
         id: selectedRecord.id
       }
-      const updatedRecord = {
-        ...selectedRecord,
-        price: updatedItem.price
-      }
-      // setState(updatedRecord)
       recordMutation.mutate(payload)
     }
   
@@ -171,7 +165,7 @@ interface EditableProp{
   
     const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>${state.price/100}</Text> 
+        <Text>${state/100}</Text> 
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
   )
@@ -180,7 +174,7 @@ interface EditableProp{
       <Form
        style={{ marginTop:'.5rem' }}
        name="editablePrice"
-       initialValues={transformedRecord}
+       initialValues={{price: state/100}}
        onFinish={onFinish}
        >
         <Row>
