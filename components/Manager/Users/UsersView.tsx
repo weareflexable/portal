@@ -32,6 +32,7 @@ export default function UsersView(){
     const {switchOrg} = useOrgs()
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const [pageNumber, setPageNumber] = useState<number|undefined>(0)
+    const [pageSize, setPageSize] = useState<number|undefined>(10)
   
     // const isFilterEmpty = Object.keys(filteredInfo).length === 0;
 
@@ -43,7 +44,7 @@ export default function UsersView(){
     async function fetchUsers(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/users-list?key=status&value=1&pageNumber=${pageNumber}&pageSize=10`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/users-list?key=status&value=1&pageNumber=${pageNumber}&pageSize=${pageSize}`,
             headers:{
                 "Authorization": paseto
             }
@@ -86,6 +87,7 @@ export default function UsersView(){
       
       const handleChange: TableProps<User>['onChange'] = (data) => {
         console.log(data.current)
+        setPageSize(data.pageSize)
         //@ts-ignore
         setPageNumber(data.current-1); // Subtracting 1 because pageSize param in url starts counting from 0
       };
@@ -191,9 +193,10 @@ export default function UsersView(){
                      )
                     )}
                 </Radio.Group> */}
-                <div style={{width: "100%",display:'flex', marginTop:'2rem', justifyContent:'flex-end', alignItems:'center'}}>
-                  <Button type='link' loading={usersQuery.isRefetching} onClick={()=>usersQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
-                </div>
+                {/* <div style={{width: "100%",display:'flex', marginTop:'2rem', justifyContent:'flex-end', alignItems:'center'}}> */} 
+                  <Title style={{marginTop:'1em'}} level={2}>Users</Title>
+                  <Button shape="round" loading={usersQuery.isRefetching} onClick={()=>usersQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                {/* </div> */}
 
                 </div>
                 <Table 
