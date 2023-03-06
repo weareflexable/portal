@@ -18,6 +18,7 @@ import useUrlPrefix from "../../hooks/useUrlPrefix";
 import useRole from "../../hooks/useRole";
 import useServiceItemTypes from "../../hooks/useServiceItemTypes";
 import { EditableText } from "../shared/Editables";
+import { numberFormatter } from "../../utils/numberFormatter";
 
 
 // const mockServiceItems:ServiceItem[]=[
@@ -222,14 +223,8 @@ export default function ServiceItemsView(){
         key: 'serviceItemType',
         render:(_,record)=>{
           const type = record.serviceItemType[0]
-          return <Text style={{textTransform:'capitalize'}}>{type.name}</Text>
+          return <Tag style={{textTransform:'capitalize'}}>{type.name}</Tag>
         }
-      },
-      {
-        title: 'Tickets Per Day',
-        dataIndex: 'ticketsPerDay',
-        key: 'ticketsPerDay',
-        align: 'right'
       },
       {
         title: 'Price',
@@ -238,19 +233,30 @@ export default function ServiceItemsView(){
         align:'right',
         render: (price)=>(
           <div>
-            <Text type="secondary">$</Text>
+            <Text>$</Text>
             <Text>{price/100}</Text>
           </div>
         )
       },
+      {
+        title: 'Tickets Per Day',
+        dataIndex: 'ticketsPerDay',
+        key: 'ticketsPerDay',
+        align: 'right',
+        render:(ticketsPerDay)=>{
+          const formatted = numberFormatter.from(ticketsPerDay)
+          return <Text>{`${formatted}`}</Text>
+        }
+      },
+     
       
       {
-        title: 'Status',
-        dataIndex: 'status',
-        key: 'status',
-        render: (status)=>{
-          const statusText = status ? 'Active': 'Inactive'
-          return <Badge status="processing" text={statusText} />
+        title: 'Custom Dates',
+        // dataIndex: 'status',
+        key: 'customDates',
+        render: (_,record)=>{
+          const customDatesLength = record.availability.length
+          return <Text>{`${customDatesLength}`}</Text>
         }
       },
       {
@@ -260,7 +266,7 @@ export default function ServiceItemsView(){
           render: (_,record)=>{
               const date = dayjs(record.createdAt).format('MMM DD, YYYY')
               return(
-            <Text>{date}</Text>
+            <Text type="secondary">{date}</Text>
             )
         },
     },
@@ -439,7 +445,7 @@ return(
 
   {/* <Text>CUSTOM AVALABILITY</Text> */}
   <Title style={{marginTop:'3rem'}} level={3}>Custom Dates</Title>
-  
+
   <AvailabilitySection selectedServiceItem={selectedRecord} />
   {/* <AvailabilitySection selectedServiceItem={selectedRecord}/> */}
   

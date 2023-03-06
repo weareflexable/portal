@@ -21,6 +21,13 @@ import useUrlPrefix from "../../hooks/useUrlPrefix";
 import { numberFormatter } from "../../utils/numberFormatter";
 import { IMAGE_PLACEHOLDER_HASH } from "../../constants";
 const {TextArea} = Input
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+import advanced from "dayjs/plugin/advancedFormat"
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.extend(advanced)
 
 
 // const mockServiceItems:ServiceItem[]=[
@@ -217,7 +224,7 @@ export default function BookingsView(){
           render: (_,record)=>{
               const date = dayjs(record.targetDate).format('MMM DD, YYYY')
               return(
-            <Text>{date}</Text>
+            <Text type="secondary">{date}</Text>
             )
         },
     },
@@ -225,13 +232,17 @@ export default function BookingsView(){
 
         return (
             <div>
-              <div style={{marginBottom:'1.5em', marginTop:'1rem', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
-               
-               {/* <div style={{display:'flex', marginTop:'2rem', justifyContent:'space-between', alignItems:'center'}}> */}
+              <div style={{marginBottom:'1.5em', marginTop:'1rem', display:'flex', width:'100%', flexDirection:'column', alignItems:'center'}}>
+               <div style={{display:'flex', marginTop:'1rem', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                  <Title style={{ margin:'0'}} level={2}>Bookings</Title>
-                 {/* <Button shape="round"  loading={bookingsQuery.isRefetching} onClick={()=>bookingsQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button> */}
                  <Button shape="round" loading={bookingsQuery.isRefetching} onClick={()=>bookingsQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
-               {/* </div> */}
+               </div>
+               <div style={{display:'flex', marginTop:'1rem', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+                <div>
+                <Text>{`Last Updated on - `}</Text>
+                <Text>{`${dayjs(bookingsQuery.dataUpdatedAt).tz('America/New_York').format("MMM D, YYYY HA z")}`}</Text>
+                </div>
+               </div>
 
                </div>
 
