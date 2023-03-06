@@ -194,7 +194,7 @@ export default function UsersView(){
                     )}
                 </Radio.Group> */}
                 {/* <div style={{width: "100%",display:'flex', marginTop:'2rem', justifyContent:'flex-end', alignItems:'center'}}> */} 
-                  <Title style={{marginTop:'1em'}} level={2}>Users</Title>
+                  <Title style={{margin:'0'}} level={2}>Users</Title>
                   <Button shape="round" loading={usersQuery.isRefetching} onClick={()=>usersQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
                 {/* </div> */}
 
