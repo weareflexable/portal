@@ -106,7 +106,7 @@ export default function BillingsView(){
     }
     function rejectBankHandler(bank:Bank){
         // setSelelectedOrg(org.orgId)
-        changeStatusMutation.mutate({id:bank.id, statusNumber:'4'})
+        changeStatusMutation.mutate({id:bank.id, statusNumber:'3'})
     }
 
     function reActivateBankHandler(bank:Bank){
@@ -540,7 +540,7 @@ const bankFilters = [
       name: 'Deactivated'
   },
   {
-      id: '4',
+      id: '3',
       name: 'Rejected'
   },
 ]
