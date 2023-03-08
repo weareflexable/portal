@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import {Typography,Avatar,Button, Dropdown} from 'antd'
+import {Typography,Avatar,Button, Dropdown, Badge, Tag} from 'antd'
 import {DownOutlined,LogoutOutlined} from '@ant-design/icons'
 import { useAuthContext } from '../../../context/AuthContext'
 import { useOrgContext } from '../../../context/OrgContext'
@@ -132,11 +132,15 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
             justifyContent:'center', 
             alignItems:'center',
           }}>
-          <Avatar src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${currentUser.profilePic}`}/>
+            
+             <Avatar src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${currentUser.profilePic}`}/>
+            
+          <Badge count={currentUser.userRoleName} offset={[10, 10]}> 
           <div style={{display:'flex', marginLeft:'.4rem', flexDirection:'column'}}>
             <Text ellipsis  style={{width:'100%', marginTop:'0', marginLeft:'.3em'}}>{currentUser.name}</Text>
             <Text type='secondary' ellipsis style={{width:'150px', marginBottom:'0', marginTop:'0', marginRight:'.5em', marginLeft:'.3em'}}>{currentUser.email}</Text>
           </div>
+            </Badge>
      </div>
     </Dropdown>
     )
