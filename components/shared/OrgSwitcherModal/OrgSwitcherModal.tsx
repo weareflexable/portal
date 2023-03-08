@@ -1,4 +1,4 @@
-import {Modal,List,Typography, Button, Tag} from 'antd'
+import {Modal,List,Typography, Button, Tag, Avatar} from 'antd'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { useOrgContext } from '../../../context/OrgContext'
@@ -12,7 +12,6 @@ interface OrgSwitcherModalProps{
 export default function OrgSwitcherModal({isModalOpen, onCloseModal}:OrgSwitcherModalProps){
 
     const {orgs,isLoadingOrgs} =  useFetchUserOrgs()
-    const uniqueOrgs: ActiveOrgs[] = orgs?.filter((item, i) => orgs.findIndex((org)=>item.id===org.id)===i); 
 
     const {switchOrg} = useOrgContext()
     const router = useRouter()
@@ -33,13 +32,16 @@ export default function OrgSwitcherModal({isModalOpen, onCloseModal}:OrgSwitcher
             <List
                 size='small'
                 loading={isLoadingOrgs}
-                dataSource={uniqueOrgs && uniqueOrgs}
+                dataSource={orgs}
                 renderItem={(item) => (
                     <List.Item style={{border: 'none', marginBottom:'0'}}>
                         <div style={{width:'100%', borderRadius:'4px', background:'#f8f8f8', display:'flex', justifyContent: 'space-between', alignItems:'center', padding: '1.3em'}}>
-                            <div>
-                             <Typography.Text>{item.name}</Typography.Text>
-                             {/* <Tag style={{marginLeft:'.4em'}}>{item.role}</Tag> .\ */}
+                        <div style={{display:'flex',alignItems:'center'}}>
+                                <Avatar style={{marginRight:'.7rem'}} src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${item.logoImageHash}`}/>
+                                <div style={{display:'flex', flexDirection:'column'}}>
+                                <Typography.Text>{item.name}</Typography.Text>
+                                {/* <Typography.Text type='secondary'>{item.serviceType[0].name}</Typography.Text> */}
+                                </div>
                             </div>
                              {item.isActive?<Typography.Text type='secondary'>Logged in</Typography.Text>:<Button type='link' loading={targetOrg?.id===item.id} onClick={()=>switchOrgHandler(item)} shape='round'  size='small'>Switch to Org</Button>}
                         </div>

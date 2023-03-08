@@ -122,7 +122,6 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
       //@ts-ignore
       <Dropdown trigger={['click']} menu={{items}} >
       <div
-        onClick={()=>console.log('show modal to switch')} 
           style={
             {
               display:'flex', 

@@ -46,7 +46,7 @@ export default function ServiceSwitcherModal({isModalOpen, onCloseModal}:Service
                                 </div>
                             </div>
                              {item.isActive?<Typography.Text type='secondary'>Logged in</Typography.Text>:<Button type='link' loading={targetService?.id===item.id} onClick={()=>switchServiceHandler(item)} shape='round'  size='small'>Switch to Service</Button>}
-                        </div>
+                        </div> 
                     </List.Item>
                 )}
     />
