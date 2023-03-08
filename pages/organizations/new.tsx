@@ -50,6 +50,8 @@ export default function NewOrgForm(){
 
     const urlPrefix = useUrlPrefix()
 
+    console.log(urlPrefix)
+
     function handleAreaCodeRef(e:any){
         if(e.target.value.length >= 3){ 
             centralOfficeCodeRef.current!.focus()
