@@ -65,12 +65,14 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
     }else{
       items = getAdminMenu()
     }
-  }else{
+  }else if(currentUser.role == 1) {
     if(isVenueRoute){
       items = getVenueRoutes()
     }else{
       items = getManagerMenu()
     }
+  }else{
+    items = getAdminMenu()
   }
 
   // console.log(isVenueRoute)
