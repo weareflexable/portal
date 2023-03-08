@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react'
-import {Form,Input,Col, Image, Row, Select, Upload, Button, Layout, Typography, Avatar, Spin, Space, Radio, Skeleton} from 'antd'
+import {Form,Input,Col, Image, Row, Select, Upload, Button, Layout, Typography, Avatar, Spin, Space, Radio, Skeleton, Tag} from 'antd'
 import {UploadOutlined, ArrowLeftOutlined} from '@ant-design/icons'
 import {QueryClient, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 
@@ -119,6 +119,10 @@ export default function Profile(){
                     ?<Skeleton.Input active size={'large'}  block />
                     :<EditableImage selectedRecord={userQuery.data&&userQuery.data[0]}/>
                     }
+                    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+                      <Text type="secondary" style={{ marginRight: '2rem',}}>Role</Text>
+                      <Tag color={userQuery.data&&userQuery.data[0].userRoleName === 'Manager' ? 'purple': userQuery.data&&userQuery.data[0].userRoleName==='Admin'? 'volcano': userQuery.data&&userQuery.data[0].userRoleName === 'Supervisor'?'cyan':'blue'} style={{width:'max-content'}}>{userQuery.data && userQuery.data[0].userRoleName}</Tag>
+                    </div>
                     <EditableEmail selectedRecord={userQuery.data&&userQuery.data[0]}/>
                     <EditableName selectedRecord={userQuery.data&&userQuery.data[0]}/>
                     <EditablePhone selectedRecord={userQuery.data&&userQuery.data[0]}/>
