@@ -13,6 +13,8 @@ interface CurrentUserProps{
     openOrgSwitcher?: ()=>void
 }
 
+const venueRoutes = ['serviceItems','dashboard','staff','bookings']
+
 
 export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
 
@@ -21,10 +23,22 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
     const router = useRouter()
     const {orgUserRole} = useOrgContext()
     const [isManagerRoute, setIsManagerRoute] = useState(false)
+    const [isVenueRoute,setIsVenueRoute] = useState<any>(false)
 
    
     useEffect(() => {
       const isManagerRoute = router.isReady? router.asPath.includes('/manager'): false
+      if(router.isReady){
+        let exist = false
+        venueRoutes.forEach(route=>{
+          if(router.asPath.includes(route) === true){
+            exist = true
+            return
+          }
+        })
+        setIsVenueRoute(exist)
+      }
+      
       setIsManagerRoute(isManagerRoute)
     }, [])
 
@@ -40,36 +54,68 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
    }
   
 
-  const items = currentUser.role == 1 ? getManagerMenu() :getAdminMenu()
+  // const items = currentUser.role == 1 ? getManagerMenu() :getAdminMenu()
+
+  let items = []
+
+  console.log(isVenueRoute)
+
+  if(currentUser.role == 2){
+    if(isVenueRoute){
+        items = getVenueRoutes()
+    }else{
+      items = getAdminMenu()
+    }
+  }else{
+    if(isVenueRoute){
+      items = getVenueRoutes()
+    }else{
+      items = getManagerMenu()
+    }
+  }
+
+  // console.log(isVenueRoute)
 
   function getAdminMenu(){
     return[
-      {label:<Text onClick={navigateBackToServices}  >Back to services</Text>, key:'servicesPage'},
-    {label:<Text onClick={navigateBackToOrgs} >Back to organizations</Text>, key:'organizationsPage'},
-    {type:'divider', key:'divider0'},
-    {label:<Text onClick={openOrgSwitcher}  >Switch organization</Text>, key:'switchOrganizations'},
+      // {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateBackToServices}  >Back to launchpad</Text>, key:'servicesPage'},
+    // {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateBackToOrgs} >Back to organizations</Text>, key:'organizationsPage'},
+    // {type:'divider', key:'divider0'},
+    // {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={openOrgSwitcher}  >Switch organization</Text>, key:'switchOrganizations'},
     {type:'divider', key:'divider1'},
-    {label:<Text onClick={navigateToProfile}  >Profile</Text>, key:'profile'},
+    {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateToProfile}  >Profile</Text>, key:'profile'},
     {type:'divider', key:'divider2'},
     {label:<Button onClick={logout} danger type='link'>Logout</Button>, key:'logout'},
     ]
   }
 
+  function getVenueRoutes(){
+    return[
+      {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateBackToServices}  >Back to launchpad</Text>, key:'servicesPage'},
+    {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateBackToOrgs} >Back to organizations</Text>, key:'organizationsPage'},
+    {type:'divider', key:'divider0'},
+    {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={openOrgSwitcher}  >Switch organization</Text>, key:'switchOrganizations'},
+    {type:'divider', key:'divider1'},
+    {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateToProfile}  >Profile</Text>, key:'profile'},
+    {type:'divider', key:'divider2'},
+    {label:<Button onClick={logout} danger type='link'>Logout</Button>, key:'logout'},
+    ]
+  }
   
 
   
 
   function getManagerMenu(){
     return[
-    {label:<Text hidden={isManagerRoute} onClick={navigateBackToServices}>Back to launchpad</Text>, key:'servicesPage'},
-    {label:<Text onClick={()=>router.push('/manager/organizations')} >Back to organizations</Text>, key:'organizationsPage'},
-    {type:'divider', key:'divider0'},
-    {label:<Text onClick={navigateToProfile}  >Profile</Text>, key:'profile'},
+    // {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateBackToServices}>Back to launchpad</Text>, key:'servicesPage'},
+    // {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={()=>router.push('/manager/organizations')} >Back to organizations</Text>, key:'organizationsPage'},
+    // {type:'divider', key:'divider0'},
+    {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateToProfile}  >Profile</Text>, key:'profile'},
     {type:'divider', key:'divider2'},
     {label:<Button onClick={logout} danger type='link'>Logout</Button>, key:'logout'},
     ]
   }
-
+ 
 
     return(
       //@ts-ignore
