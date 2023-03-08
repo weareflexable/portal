@@ -50,7 +50,7 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
    }
 
    const navigateToProfile=()=>{
-    router.replace('/profile')
+    router.push('/profile')
    }
   
 
@@ -58,7 +58,6 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
 
   let items = []
 
-  console.log(isVenueRoute)
 
   if(currentUser.role == 2){
     if(isVenueRoute){

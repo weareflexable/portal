@@ -69,8 +69,10 @@ export default function Profile(){
     useEffect(()=>{
         setTimeout(()=>{
             setIsLoadingProfile(false)
-        },3000)
+        },2000)
     })
+
+    console.log(router.route) 
 
     // check if user has uploaded profile picture
     const isProfilePic = profilePic !== placeholder
