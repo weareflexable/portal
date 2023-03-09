@@ -125,7 +125,7 @@ export default function Profile(){
                       <Text type="secondary" style={{ marginRight: '2rem',}}>Role</Text>
                       <Tag color={userQuery.data&&userQuery.data[0].userRoleName === 'Manager' ? 'purple': userQuery.data&&userQuery.data[0].userRoleName==='Admin'? 'volcano': userQuery.data&&userQuery.data[0].userRoleName === 'Supervisor'?'cyan':'blue'} style={{width:'max-content'}}>{userQuery.data && userQuery.data[0].userRoleName}</Tag>
                     </div>
-                    <EditableEmail selectedRecord={userQuery.data&&userQuery.data[0]}/>
+                    <EditableEmail isReadOnly selectedRecord={userQuery.data&&userQuery.data[0]}/>
                     <EditableName selectedRecord={userQuery.data&&userQuery.data[0]}/>
                     <EditablePhone selectedRecord={userQuery.data&&userQuery.data[0]}/>
                     <EditableGender selectedRecord={userQuery.data&&userQuery.data[0]}/>
@@ -159,9 +159,10 @@ function getPrefixSelector(userCountry:any){
 //   );
 interface EditableProp{
     selectedRecord: User
+    isReadOnly?: boolean
 }
 
-function EditableEmail({selectedRecord}:EditableProp){
+function EditableEmail({selectedRecord, isReadOnly}:EditableProp){
 
 
     // const [state, setState] = useState(selectedRecord)
@@ -211,7 +212,7 @@ function EditableEmail({selectedRecord}:EditableProp){
     const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
         <Text>{selectedRecord.email}</Text>
-        <Button type="link" onClick={toggleEdit}>Edit</Button>
+        {isReadOnly?null:<Button type="link" onClick={toggleEdit}>Edit</Button>}
       </div>
   )
   
