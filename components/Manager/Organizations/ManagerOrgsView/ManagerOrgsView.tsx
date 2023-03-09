@@ -89,7 +89,7 @@ export default function ManagerOrgsView(){
             data:{
                 key:'status',
                 value: statusNumber, // 0 means de-activated in db
-                orgId: orgId 
+                id: orgId 
             },
             headers:{
                 "Authorization": paseto
@@ -381,8 +381,31 @@ export default function ManagerOrgsView(){
         }
         console.log('click', record);
       };
+
+        
+    async function reActivateOrgHandler(record:NewOrg){
+      console.log(record)
+      const res = await axios({
+          method:'patch',
+          url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,
+          data:{
+              key:'status',
+              value: '1', 
+              //@ts-ignore
+              id: record.orgId  
+          },
+          headers:{
+              "Authorization": paseto
+          }
+      })
+      return res; 
+  }
       
-  
+      const reactivateOrg = useMutation(reActivateOrgHandler,{
+        onSettled:()=>{
+          queryClient.invalidateQueries({queryKey:['organizations']})
+        }
+      })
     const columns: ColumnsType<NewOrg> = [
       {
         title: 'Name',
@@ -458,11 +481,12 @@ export default function ManagerOrgsView(){
     {
       dataIndex: 'actions', 
       key: 'actions',
-      render:(_,record)=>{
-        const items = getCurrentStatusActionItems()
-        return (<Dropdown trigger={["click"]} menu={{ items , onClick: (e)=>onMenuClick(e,record) }}>
-          <Button type='text' icon={<MoreOutlined/>}/>
-        </Dropdown>)
+      render:(_,record:NewOrg)=>{
+        if(currentStatus.name !== 'Deactivated'){
+          return (<Button type='text' onClick={()=>viewOrgDetails(record)} icon={<MoreOutlined/>}/>)
+        }else{
+          return (<Button onClick={()=>reactivateOrg.mutate(record)}>Reactivate</Button>)
+        }
       }
     }
     ];
@@ -550,7 +574,7 @@ function toggleDeleteModal(){
   setIsDeleteModalOpen(!isDeleteModalOpen)
 }
 
-function deleteServiceItem(){ 
+function deleteOrg(){ 
 
   // mutate record
   deleteData.mutate(selectedOrg,{
@@ -572,7 +596,29 @@ function deleteServiceItem(){
   })
 }
 
-// const urlPrefix = currentUser.role == 1 ? 'manager': 'admin'
+async function reActivateOrgHandler(record:NewOrg){
+  console.log(record)
+  const res = await axios({
+      method:'patch',
+      url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,
+      data:{
+          key:'status',
+          value: '1', 
+          //@ts-ignore
+          id: record.orgId  
+      },
+      headers:{
+          "Authorization": paseto
+      }
+  })
+  return res; 
+}
+
+const reactivateOrg = useMutation(reActivateOrgHandler,{
+onSettled:()=>{
+  queryClient.invalidateQueries({queryKey:['organizations']})
+}
+})
 
 const deleteDataHandler = async(record:NewOrg)=>{      
   const {data} = await axios({
@@ -580,7 +626,7 @@ const deleteDataHandler = async(record:NewOrg)=>{
     url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,
     data: {
         //@ts-ignore
-        orgId:record.orgId,
+        id:record.orgId,
         key:'status',
         value: '0'
       },
@@ -629,7 +675,7 @@ return(
     <Button danger onClick={toggleDeleteModal} style={{width:'30%'}} type="link">Deactivate organization</Button>
   </div>
 
-  <DeleteRecordModal isDeletingItem={isDeletingItem} onCloseModal={toggleDeleteModal} onDeleteRecord={deleteServiceItem} isOpen={isDeleteModalOpen} selectedRecord={selectedOrg}/>
+  <DeleteRecordModal isDeletingItem={isDeletingItem} onCloseModal={toggleDeleteModal} onDeleteRecord={deleteOrg} isOpen={isDeleteModalOpen} selectedRecord={selectedOrg}/>
 
 
 </Drawer>
@@ -666,7 +712,7 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
       <Form 
       form={form} 
       style={{marginTop:'1rem'}}
-      name="deleteServiceItemForm" 
+      name="deleteOrgForm" 
       layout='vertical'
       onFinish={onFinish}>
       <Form.Item
