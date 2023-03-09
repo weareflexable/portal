@@ -519,6 +519,7 @@ export default function AdminOrgsView(){
                 :<Table 
                   style={{width:'100%'}} 
                   key='dfadfe' 
+                  size="middle"
                   loading={orgQuery.isLoading||orgQuery.isRefetching} 
                   columns={columns} 
                   onChange={handleChange} 

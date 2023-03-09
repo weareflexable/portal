@@ -521,6 +521,7 @@ export default function ManagerOrgsView(){
                 ?<EmptyState/>
                 :<Table 
                   style={{width:'100%'}} 
+                  size='middle'
                   // rowKey={(record)=>record.id}  
                   loading={orgQuery.isLoading||orgQuery.isRefetching} 
                   columns={columns} 
@@ -655,7 +656,8 @@ return(
     currentFieldValue={selectedOrg.name}
     fieldName = 'name'
     title = 'Name'
-    id = {selectedOrg.id}
+    // @ts-ignore
+    id = {selectedOrg.orgId}
     options = {{queryKey:'organizations',mutationUrl:'org'}}
 />
   <EditableAddress selectedOrg={selectedOrg}/>
@@ -664,7 +666,8 @@ return(
     currentFieldValue={selectedOrg.contactNumber} 
     fieldName = 'contactNumber'
     title = 'Contact Number'
-    id = {selectedOrg.id}
+    // @ts-ignore
+    id = {selectedOrg.orgId}
     options = {{queryKey:'organizations',mutationUrl:'org'}}
 />
   <EditableLogoImage selectedOrg={selectedOrg}/>
