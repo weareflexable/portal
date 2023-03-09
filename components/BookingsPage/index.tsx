@@ -148,7 +148,7 @@ export default function BookingsView(){
         },
       },
       {
-        title: 'Type',
+        title: 'Service Type',
         dataIndex: 'serviceItemType',
         key: 'serviceItemType',
         render:(_,record)=>{
@@ -183,7 +183,7 @@ export default function BookingsView(){
         )
       },
       {
-        title: 'Total price',
+        title: 'Total Price',
         // dataIndex: 'totalPrice',
         key: 'totalPrice',
         align:'right',
@@ -257,7 +257,7 @@ export default function BookingsView(){
                data && data.length === 0
                ?<EmptyState/>
                :<Table 
-                 size='middle'
+                 size='small'
                   style={{width:'100%'}} 
                   key='dfadfe' 
                   loading={bookingsQuery.isLoading||bookingsQuery.isRefetching} 

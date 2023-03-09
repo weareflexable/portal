@@ -128,7 +128,7 @@ export default function ManagerBookingsView(){
   
     const columns: ColumnsType<ManagerOrder> = [
       {
-        title: 'Name',
+        title: 'Service',
         dataIndex: 'name',
         key: 'name',
         render:(_,record)=>{
@@ -167,7 +167,7 @@ export default function ManagerBookingsView(){
         },
       },
       {
-        title: 'Type',
+        title: 'Service Type',
         // dataIndex: 'unitPrice',
         key: 'unitPrice',
         render: (_,record)=>{
@@ -203,7 +203,7 @@ export default function ManagerBookingsView(){
         )
       },
       {
-        title: 'Total price',
+        title: 'Total Price',
         // dataIndex: 'totalPrice',
         key: 'totalPrice',
         align:'right',
@@ -243,7 +243,7 @@ export default function ManagerBookingsView(){
           render: (_,record)=>{
               const date = dayjs(record.targetDate).format('MMM DD, YYYY')
               return(
-            <Text>{date}</Text>
+            <Text type='secondary'>{date}</Text>
             )
         },
     },
@@ -278,7 +278,7 @@ export default function ManagerBookingsView(){
                 <Table 
                   style={{width:'100%'}} 
                   key='dfadfe' 
-                  size='middle'   
+                  size='small'   
                   loading={bookingsQuery.isLoading||bookingsQuery.isRefetching} 
                   columns={columns} 
                   pagination={{
