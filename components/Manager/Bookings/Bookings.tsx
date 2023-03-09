@@ -11,7 +11,6 @@ import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/i
 import { useAuthContext } from '../../../context/AuthContext';
 import { useServicesContext } from '../../../context/ServicesContext';
 import {PlusOutlined} from '@ant-design/icons'
-import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { useOrgContext } from "../../../context/OrgContext";
 import { asyncStore } from "../../../utils/nftStorage";
@@ -21,6 +20,17 @@ import useUrlPrefix from "../../../hooks/useUrlPrefix";
 const {TextArea} = Input
 import {numberFormatter} from '../../../utils/numberFormatter'
 import { IMAGE_PLACEHOLDER_HASH } from "../../../constants";
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+import advanced from "dayjs/plugin/advancedFormat"
+import relativeTime from 'dayjs/plugin/relativeTime'
+
+dayjs.extend(relativeTime)
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.extend(advanced)
+
 
 
 // const mockServiceItems:ServiceItem[]=[
@@ -259,7 +269,7 @@ export default function ManagerBookingsView(){
                <div style={{display:'flex', marginTop:'.5rem', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                   <div>
                   <Text>{`Last Updated on - `}</Text> 
-                  <Text>{`${dayjs(bookingsQuery.dataUpdatedAt).format("MMM D, YYYY")}`}</Text>
+                  <Text>{`${dayjs(bookingsQuery.dataUpdatedAt).tz('America/New_York').format("MMM D, YYYY HA z")}`}</Text>
                   {/* <Text>{` · ${dayjs().diff(dayjs(bookingsQuery.dataUpdatedAt),'second',true)} seconds ago`}</Text> */}
                   </div>
                </div>
