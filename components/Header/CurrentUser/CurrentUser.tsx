@@ -67,7 +67,7 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
     }
   }else if(currentUser && currentUser.role == 1) {
     if(isVenueRoute){
-      items = getVenueRoutes()
+      items = getManagerVenueRoutes()
     }else{
       items = getManagerMenu()
     }
@@ -96,6 +96,19 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
     {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateBackToOrgs} >Back to organizations</Text>, key:'organizationsPage'},
     {type:'divider', key:'divider0'},
     {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={openOrgSwitcher}  >Switch organization</Text>, key:'switchOrganizations'},
+    {type:'divider', key:'divider1'},
+    {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateToProfile}  >Profile</Text>, key:'profile'},
+    {type:'divider', key:'divider2'},
+    {label:<Button onClick={logout} danger type='link'>Logout</Button>, key:'logout'},
+    ]
+  }
+  
+
+  function getManagerVenueRoutes(){
+    return[
+      {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateBackToServices}  >Back to launchpad</Text>, key:'servicesPage'},
+    {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={()=>router.replace('/manager/organizations')} >Back to organizations</Text>, key:'organizationsPage'},
+    {type:'divider', key:'divider0'},
     {type:'divider', key:'divider1'},
     {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateToProfile}  >Profile</Text>, key:'profile'},
     {type:'divider', key:'divider2'},
