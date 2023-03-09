@@ -25,7 +25,7 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
     const [isManagerRoute, setIsManagerRoute] = useState(false)
     const [isVenueRoute,setIsVenueRoute] = useState<any>(false)
 
-   
+   console.log('from header',currentUser)
     useEffect(() => {
       const isManagerRoute = router.isReady? router.asPath.includes('/manager'): false
       if(router.isReady){
@@ -59,13 +59,13 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
   let items = []
 
 
-  if(currentUser.role == 2){
+  if(currentUser && currentUser.role == 2){
     if(isVenueRoute){
         items = getVenueRoutes()
     }else{
       items = getAdminMenu()
     }
-  }else if(currentUser.role == 1) {
+  }else if(currentUser && currentUser.role == 1) {
     if(isVenueRoute){
       items = getVenueRoutes()
     }else{
@@ -133,12 +133,12 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
             alignItems:'center',
           }}>
             
-             <Avatar src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${currentUser.profilePic}`}/>
+             <Avatar src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${currentUser && currentUser.profilePic}`}/>
             
-          <Badge count={currentUser.userRoleName} offset={[10, 10]}> 
+          <Badge count={currentUser && currentUser.userRoleName} offset={[10, 10]}> 
           <div style={{display:'flex', marginLeft:'.4rem', flexDirection:'column'}}>
-            <Text ellipsis  style={{width:'100%', marginTop:'0', marginLeft:'.3em'}}>{currentUser.name}</Text>
-            <Text type='secondary' ellipsis style={{width:'150px', marginBottom:'0', marginTop:'0', marginRight:'.5em', marginLeft:'.3em'}}>{currentUser.email}</Text>
+            <Text ellipsis  style={{width:'100%', marginTop:'0', marginLeft:'.3em'}}>{currentUser && currentUser.name}</Text>
+            <Text type='secondary' ellipsis style={{width:'150px', marginBottom:'0', marginTop:'0', marginRight:'.5em', marginLeft:'.3em'}}>{currentUser && currentUser.email}</Text>
           </div>
             </Badge>
      </div>
