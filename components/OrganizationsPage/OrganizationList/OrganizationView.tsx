@@ -84,7 +84,6 @@ export default function AdminOrgsView(){
    
 
     async function changeOrgStatus({orgId, statusNumber}:{orgId:string, statusNumber: string}){
-      console.log(orgId)
         const res = await axios({
             method:'patch',
             url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
@@ -353,6 +352,7 @@ export default function AdminOrgsView(){
     }
 
     function viewOrgDetails(org:NewOrg){
+      console.log(org)
       // set state
       setSelelectedOrg(org)
       // opne drawer
@@ -452,20 +452,45 @@ export default function AdminOrgsView(){
     }
     ];
 
+  
+    async function reActivateOrgHandler(record:NewOrg){
+      console.log(record)
+      const res = await axios({
+          method:'patch',
+          url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
+          data:{
+              key:'status',
+              value: '1', 
+              //@ts-ignore
+              id: record.orgId  
+          },
+          headers:{
+              "Authorization": paseto
+          }
+      })
+      return res; 
+  }
+
+  const reactivateOrg = useMutation(reActivateOrgHandler,{
+    onSettled:()=>{
+      queryClient.invalidateQueries({queryKey:['organizations']})
+    }
+  })
+
     function getTableActions(){
-        if(currentStatus.name === 'Approved'){
             return {
                 dataIndex: 'actions', 
                 key: 'actions',
                 //@ts-ignore
                 render:(_,record:NewOrg)=>{
-                  const items = getCurrentStatusActionItems()
-                  return (<Button type='text' onClick={()=>viewOrgDetails(record)} icon={<MoreOutlined/>}/>)
+                  if(currentStatus.name !== 'Deactivated'){
+                    return (<Button type='text' onClick={()=>viewOrgDetails(record)} icon={<MoreOutlined/>}/>)
+                  }else{
+                    return (<Button onClick={()=>reactivateOrg.mutate(record)}>Reactivate</Button>)
+                  }
                 }
-              }
         }
-        return {}
-    }
+      }
 
         return (
             <div>
@@ -503,10 +528,13 @@ export default function AdminOrgsView(){
                     showTotal:(total) => `Total: ${total} items`,
                   }} 
                 />}
-                {
+                {/* {
                   isDrawerOpen && currentStatus.name === 'Approved'
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedOrg={selectedOrg}/>
                   :null
+                } */}
+                {
+                  isDrawerOpen?<DetailDrawer  isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedOrg={selectedOrg}/>:null
                 }
             </div>
     )
@@ -522,6 +550,8 @@ interface DrawerProps{
 }
 function DetailDrawer({selectedOrg,isDrawerOpen,closeDrawer}:DrawerProps){
 
+  console.log('selected org',selectedOrg)
+
 const queryClient = useQueryClient()
 const router = useRouter()
 const {switchOrg} = useOrgContext()
@@ -534,8 +564,7 @@ function closeDrawerHandler(){
 }
 
 function gotoServices(org:NewOrg){
-  console.log(org)
-  // switch org
+
   switchOrg(org)
   // navigate user to services page
   router.push('/organizations/services/')
@@ -545,16 +574,18 @@ function toggleDeleteModal(){
   setIsDeleteModalOpen(!isDeleteModalOpen)
 }
 
-function deleteServiceItem(){ 
-
+function deleteOrg(){  
   // mutate record
   deleteData.mutate(selectedOrg,{
     onSuccess:()=>{
       notification['success']({
-        message: 'Successfully deleted record!'
+        message: 'Successfully deactivate organization!'
     })  
       toggleDeleteModal()
       closeDrawerHandler()
+    },
+    onSettled:()=>{
+      queryClient.invalidateQueries(['organizations'])
     },
 
   onError:(err)=>{
@@ -570,13 +601,13 @@ function deleteServiceItem(){
 // const urlPrefix = currentUser.role == 1 ? 'manager': 'admin'
 const urlPrefix = useUrlPrefix()
 
-const deleteDataHandler = async(record:NewOrg)=>{      
+const deleteDataHandler = async(record:NewOrg)=>{  
   const {data} = await axios({
     method:'patch',
     url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
     data: {
         //@ts-ignore
-        orgId:record.orgId,
+        id:record.orgId,
         key:'status',
         value: '0'
       },
@@ -589,6 +620,7 @@ const deleteDataHandler = async(record:NewOrg)=>{
 const deleteData = useMutation(deleteDataHandler)
 
 const{isLoading:isDeletingItem} = deleteData
+
 
 return( 
 <Drawer 
@@ -629,7 +661,7 @@ return(
 
 
 
-  <DeleteRecordModal isDeletingItem={isDeletingItem} onCloseModal={toggleDeleteModal} onDeleteRecord={deleteServiceItem} isOpen={isDeleteModalOpen} selectedRecord={selectedOrg}/>
+ { isDeleteModalOpen? <DeleteRecordModal isDeletingItem={isDeletingItem} onCloseModal={toggleDeleteModal} onDeleteRecord={deleteOrg} isOpen={isDeleteModalOpen} selectedRecord={selectedOrg}/>:null}
 
 </Drawer>
 )
@@ -662,7 +694,7 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
       <Form 
       form={form} 
       style={{marginTop:'1rem'}}
-      name="deleteServiceItemForm" 
+      name="deleteOrgForm" 
       layout='vertical'
       onFinish={onFinish}>
       <Form.Item

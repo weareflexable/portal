@@ -178,7 +178,6 @@ function gotoServiceItemsPage(service:Service){
                   }
                 }
               }
-        
     }
   
     const columns: ColumnsType<Service> = [
@@ -266,18 +265,7 @@ function gotoServiceItemsPage(service:Service){
     ];
 
 
-    // const items = [
-    //   {
-    //     key:'dafa930434',
-    //     label:'Bar'
-    //   },
-    //   {
-    //     key:'dafa9304fd3534',
-    //     label:'Restaurant'
-    //   }
-
-    // ]
-
+    
     
 
     const onLaunchButtonClick: MenuProps['onClick'] = (e) => {
