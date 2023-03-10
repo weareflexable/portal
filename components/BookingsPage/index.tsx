@@ -247,7 +247,7 @@ export default function BookingsView(){
                   <div>
                   <Text>{`Last Updated on - `}</Text>
                   <Text>{`${dayjs(bookingsQuery.dataUpdatedAt).tz('America/New_York').format("MMM D, YYYY HA z")}`}</Text>
-                  {/* <Text>{` · ${dayjs().diff(dayjs(bookingsQuery.dataUpdatedAt),'second',true)} seconds ago`}</Text> */}
+                  <Text>{` · ${dayjs(bookingsQuery.dataUpdatedAt).tz('America/New_York').format('HH:mm:ss')} secs ago`}</Text>
                   </div>
                </div>
 

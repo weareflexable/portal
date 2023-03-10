@@ -425,22 +425,22 @@ export default function ManagerOrgsView(){
         render:(_,record)=>(
           <div style={{display:'flex',flexDirection:'column'}}>
               <Text style={{textTransform:'capitalize'}}>{record.country}</Text>  
-              <Text type="secondary">{record.city}</Text>
+              <Text type="secondary">{record.street}</Text>
           </div>
         )
       },
       
+      // {
+      //   title: 'Zip Code',
+      //   dataIndex: 'zipCode',
+      //   key: 'zipCode',
+      //   render:(_,record)=>{
+      //     const zipCode = record.zipCode  === ""? <Text>--</Text>: <Text>{record.zipCode}</Text>
+      //     return zipCode
+      // }
+      // },
       {
-        title: 'Zip Code',
-        dataIndex: 'zipCode',
-        key: 'zipCode',
-        render:(_,record)=>{
-          const zipCode = record.zipCode  === ""? <Text>--</Text>: <Text>{record.zipCode}</Text>
-          return zipCode
-      }
-      },
-      {
-        title: 'Contact',
+        title: 'Contact Number',
         dataIndex: 'contactNumber',
         key: 'contactNumber',
         render: (_,record)=>(
@@ -455,7 +455,7 @@ export default function ManagerOrgsView(){
           render: (_,record)=>{
               const date = dayjs(record.createdAt).format('MMM DD, YYYY')
               return(
-            <Text>{date}</Text>
+            <Text type='secondary'>{date}</Text>
             )
         },
     },
