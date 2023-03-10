@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { NewOrg } from "../../../../types/OrganisationTypes";
 import useOrgs from "../../../../hooks/useOrgs";
 const {Text,Title} = Typography
-import { SearchOutlined, PlusOutlined } from '@ant-design/icons';
+import { SearchOutlined, PlusOutlined, LikeOutlined, DislikeOutlined } from '@ant-design/icons';
 import type { FilterConfirmProps } from 'antd/es/table/interface';
 import React, { useRef, useState } from 'react'
 import {Typography,Button,Avatar, Alert, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Modal, notification} from 'antd'
@@ -357,13 +357,6 @@ export default function ManagerOrgsView(){
 
     }
   
-    function gotoServices(org:NewOrg){
-      console.log(org)
-      // switch org
-      switchOrg(org)
-      // navigate user to services page
-      router.push('/organizations/services')
-    }
     
     
       const onMenuClick=(e:any, record:NewOrg) => {
@@ -379,7 +372,6 @@ export default function ManagerOrgsView(){
           break;
           case 'viewDetails': viewOrgDetails(record)
         }
-        console.log('click', record);
       };
 
         
@@ -406,6 +398,7 @@ export default function ManagerOrgsView(){
           queryClient.invalidateQueries({queryKey:['organizations']})
         }
       })
+
     const columns: ColumnsType<NewOrg> = [
       {
         title: 'Name',
@@ -483,13 +476,18 @@ export default function ManagerOrgsView(){
       key: 'actions',
       render:(_,record:NewOrg)=>{
         if(currentStatus.name !== 'Deactivated'){
-          return (<Button type='text' onClick={()=>viewOrgDetails(record)} icon={<MoreOutlined/>}/>)
+          const items = getCurrentStatusActionItems()
+          return (<Dropdown trigger={["click"]} menu={{ items , onClick: (e)=>onMenuClick(e,record) }}>
+          <Button type='text' icon={<MoreOutlined/>}/>
+        </Dropdown>)
         }else{
           return (<Button onClick={()=>reactivateOrg.mutate(record)}>Reactivate</Button>)
         }
       }
     }
     ];
+
+ 
 
         return (
             <div>
@@ -799,11 +797,13 @@ const deActivatedOrgsActions = [
 const inReviewOrgsActions = [
     {
         key: 'accept',
-        label: 'Accept'
+        label: "Accept",
+        icon: <LikeOutlined />
     },
     {
         key: 'reject',
-        label: 'Reject'
+        label: 'Reject',
+        icon:<DislikeOutlined />
     },
     {
         key: 'viewDetails',
