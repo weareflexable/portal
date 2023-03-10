@@ -198,7 +198,7 @@ export default function UsersView(){
       key: 'actions',
       render:(_,record)=>{
         // const items = getTableRecordActions()
-        return (<Button icon={<MoreOutlined/>} onClick={()=>viewUserDetails(record)}/>)
+        return (<Button icon={<MoreOutlined/>} type='text' onClick={()=>viewUserDetails(record)}/>)
       } 
     }
     ];
@@ -219,6 +219,7 @@ export default function UsersView(){
 
                 </div>
                 <Table 
+                  size="middle"
                   style={{width:'100%'}} 
                   key='dfadfe' 
                   pagination={{
@@ -447,7 +448,7 @@ function EditableRole({selectedUser}:EditableProp){
   )
   return(
     <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>Address</Text>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>User Role</Text>
     {isEditMode?editable:readOnly}
     </div>
   )
