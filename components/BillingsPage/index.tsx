@@ -2,7 +2,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 const {Text,Title} = Typography
 const {Option} = Select
-import { SearchOutlined, PlusOutlined } from '@ant-design/icons';
+import { SearchOutlined, PlusOutlined, LikeOutlined, DislikeOutlined } from '@ant-design/icons';
 import React, { ReactNode, useRef, useState } from 'react'
 import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Modal, notification, Select} from 'antd'
 import axios from 'axios';
@@ -108,6 +108,10 @@ export default function BillingsView(){
         // setSelelectedOrg(org.orgId)
         changeStatusMutation.mutate({id:bank.id, statusNumber:'3'})
     }
+    function reviewBankHandler(bank:Bank){
+        // setSelelectedOrg(org.orgId)
+        changeStatusMutation.mutate({id:bank.id, statusNumber:'2'})
+    }
 
     function reActivateBankHandler(bank:Bank){
         changeStatusMutation.mutate({id:bank.id, statusNumber:'1'})
@@ -128,10 +132,15 @@ export default function BillingsView(){
         switch(currentFilter.id){
             // 1 = verified
             case '1': return verifiedBankActions 
+            break;
             // 2 = unVerified
             case '2': return isAdmin? adminUnVerifiedBankActions: unVerifiedBankActions  
+            break;
             // 0 = deActivated
             case '0': return deActivatedBankActions 
+            break;
+            case '3': return rejectedBankActions 
+            default: return verifiedBankActions
         }
     }
 
@@ -152,6 +161,8 @@ export default function BillingsView(){
           case 'accept': verifyBankHandler(record)
           break;
           case 'reject': rejectBankHandler(record)
+          break;
+          case 'review': reviewBankHandler(record)
           break;
           case 'reActivate': reActivateBankHandler(record)
           break;
@@ -178,16 +189,17 @@ export default function BillingsView(){
         },
       },
       {
-        title: 'Account No',
-        dataIndex: 'accountNo',
-        key: 'accountNo',
-      },
-      
-      {
         title: 'Account Name',
         dataIndex: 'beneficiaryName',
         key: 'beneficiaryName'
       },
+
+      {
+        title: 'Account No',
+        dataIndex: 'accountNo',
+        key: 'accountNo',
+      },
+     
       // {
       //   title: 'Currency',
       //   dataIndex: 'currency',
@@ -211,7 +223,7 @@ export default function BillingsView(){
         const items = getCurrentFilterActions()
         return (
         <Dropdown trigger={['click']} menu={{ items , onClick: (e)=>onMenuClick(e,record) }}>
-            <Button icon={<MoreOutlined />}/>
+            <Button type='text' icon={<MoreOutlined />}/>
           </Dropdown>)
       } 
     }
@@ -533,7 +545,7 @@ const bankFilters = [
   },
   {
       id: '2',
-      name: 'Unverified'
+      name: 'In Review'
   },
   {
       id: '0',
@@ -562,11 +574,13 @@ const adminUnVerifiedBankActions = [
 const unVerifiedBankActions = [
     {
         key: 'accept',
-        label: 'Accept'
+        label: 'Accept',
+        icon: <LikeOutlined/>
     },
     {
         key: 'reject',
-        label: 'Reject'
+        label: 'Reject',
+        icon: <DislikeOutlined/>
     },
     {
         key: 'viewDetails',
@@ -579,6 +593,17 @@ const deActivatedBankActions = [
     {
         key: 'reActivate',
         label: 'Reactivate'
+    },
+    {
+        key: 'viewDetails',
+        label: 'View details'
+    },
+
+]
+const rejectedBankActions = [
+    {
+        key: 'review',
+        label: 'Review'
     },
     {
         key: 'viewDetails',
