@@ -6,14 +6,10 @@ import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, Input
 import { useRouter } from 'next/router'
 import axios from 'axios';
 import {MoreOutlined,ReloadOutlined, CheckOutlined,StopOutlined} from '@ant-design/icons'
-import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
 
 import { useAuthContext } from '../../../context/AuthContext';
-import { useServicesContext } from '../../../context/ServicesContext';
 import {PlusOutlined} from '@ant-design/icons'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
-import { useOrgContext } from "../../../context/OrgContext";
-import { asyncStore } from "../../../utils/nftStorage";
 import { ServiceItem } from "../../../types/Services";
 import { ManagerOrder } from "./Bookings.types";
 import useUrlPrefix from "../../../hooks/useUrlPrefix";
@@ -33,42 +29,16 @@ dayjs.extend(advanced)
 
 
 
-// const mockServiceItems:ServiceItem[]=[
-//   {
-//      id:"dfadfafd",
-//     name: "Classic Line skip",
-//     imageHash: '',
-//     serviceItemType: "line-skip",
-//     description: "Best bar in the middle of new york",
-//     updatedAt: "Jan 22, 2022",
-//     createdAt: "Jan 24, 2022",
-// },
-//   {
-//      id:"dfadfafd",
-//     name: "Bottle service rosto",
-//     imageHash: '',
-//     serviceItemType: "line-skip",
-//     description: "Best bar in the middle of new york",
-//     updatedAt: "Jan 22, 2022",
-//     createdAt: "Jan 24, 2022",
-// },
-// ]
-
 
 export default function ManagerBookingsView(){
 
     const {paseto} = useAuthContext()
-    const queryClient = useQueryClient()
-    const router = useRouter()
-    const {switchOrg} = useOrgs()
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const [pageNumber, setPageNumber] = useState<number|undefined>(0)
     const [pageSize, setPageSize] = useState<number|undefined>(10)
   
 
     type DataIndex = keyof ServiceItem;
 
-    const [selectedServiceItem, setSelectedServiceItem] = useState<any|ServiceItem>({})
 
     const urlPrefix = useUrlPrefix()
     
@@ -84,12 +54,6 @@ export default function ManagerBookingsView(){
         return res.data;
    
     }
-
-   
-
-    
-
-    
 
 
     const bookingsQuery = useQuery({queryKey:['managerBookings',pageNumber,pageSize], queryFn:fetchBookings, enabled:paseto !== ''})
@@ -113,19 +77,7 @@ export default function ManagerBookingsView(){
     };
   
   
-    
-      // const onMenuClick=(e:any, record:ManagerOrder) => {
-      //   const event = e.key
-      //   switch(event){
-      //     case 'inActive': inActiveItemsHandler(record);
-      //     break;
-      //     case 'active': activeItemsHandler(record)
-      //     break;
-      //     case 'viewDetails': seeFullDetails(record)
-      //   }
-      // };
-      
-  
+
     const columns: ColumnsType<ManagerOrder> = [
       {
         title: 'Service',
@@ -263,14 +215,21 @@ export default function ManagerBookingsView(){
             <div>
                   <div style={{marginBottom:'2em', marginTop:'1rem', display:'flex', width:'100%', flexDirection:'column', alignItems:'center'}}>
                <div style={{display:'flex', marginTop:'1rem', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+                 <div style={{display:'flex', alignItems:'baseline'}}>
                  <Title style={{ margin:'0'}} level={2}>Bookings</Title>
+                 {/* <div style={{marginLeft:'1rem'}}>
+                  <Text>{`Last Updated on - `}</Text> 
+                  <Text>{`${dayjs(bookingsQuery.dataUpdatedAt).tz('America/New_York').format("MMM D, YYYY z")}`}</Text>
+                  <Text>{` · ${dayjs(bookingsQuery.dataUpdatedAt).tz('America/New_York').format('HH:mm:ss')} secs ago`}</Text>
+                  </div> */}
+                 </div>
                  <Button shape="round" loading={bookingsQuery.isRefetching} onClick={()=>bookingsQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
                </div>
                <div style={{display:'flex', marginTop:'.5rem', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                   <div>
                   <Text>{`Last Updated on - `}</Text> 
-                  <Text>{`${dayjs(bookingsQuery.dataUpdatedAt).tz('America/New_York').format("MMM D, YYYY HA z")}`}</Text>
-                  {/* <Text>{` · ${dayjs().diff(dayjs(bookingsQuery.dataUpdatedAt),'second',true)} seconds ago`}</Text> */}
+                  <Text>{`${dayjs(bookingsQuery.dataUpdatedAt).tz('America/New_York').format("MMM D, YYYY z")}`}</Text>
+                  <Text>{` · ${dayjs(bookingsQuery.dataUpdatedAt).tz('America/New_York').format('HH:mm:ss')} secs ago`}</Text>
                   </div>
                </div>
 
