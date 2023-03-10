@@ -175,28 +175,17 @@ export default function StaffView(){
           render: (_,record)=>{
               const date = dayjs(record.createdAt).format('MMM DD, YYYY')
               return(
-            <Text>{date}</Text>
+            <Text type="secondary">{date}</Text>
             )
         },
       },
-    //   {
-    //       title: 'UpdatedAt',
-    //       dataIndex: 'updatedAt',
-    //       key: 'updatedAt',
-    //       render: (_,record)=>{
-    //           const date = dayjs(record.updatedAt).format('MMM DD, YYYY')
-    //           return(
-    //         <Text>{date}</Text>
-    //         )
-    //     },
-    // },
-
+ 
     {
       dataIndex: 'actions', 
       key: 'actions',
       render:(_,record)=>{
         // const items = getTableRecordActions()
-        return (<Button icon={<MoreOutlined/>} onClick={()=>viewStaffDetails(record)}/>)
+        return (<Button type="text" icon={<MoreOutlined/>} onClick={()=>viewStaffDetails(record)}/>)
       } 
     }
     ];

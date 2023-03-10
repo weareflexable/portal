@@ -255,7 +255,7 @@ function gotoServiceItemsPage(service:Service){
           render: (_,record)=>{
               const date = dayjs(record.createdAt).format('MMM DD, YYYY')
               return(
-            <Text>{date}</Text>
+            <Text type='secondary'>{date}</Text>
             )
         },
     },
