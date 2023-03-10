@@ -404,6 +404,8 @@ export default function ManagerOrgsView(){
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
+        fixed:'left',
+        ellipsis:true,
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
@@ -474,6 +476,8 @@ export default function ManagerOrgsView(){
     {
       dataIndex: 'actions', 
       key: 'actions',
+      width:'100px',
+      // fixed:'right',
       render:(_,record:NewOrg)=>{
         if(currentStatus.name !== 'Deactivated'){
           const items = getCurrentStatusActionItems()
@@ -520,6 +524,7 @@ export default function ManagerOrgsView(){
                 :<Table 
                   style={{width:'100%'}} 
                   size='middle'
+                  scroll={{ x: 'calc(700px + 50%)'}}
                   // rowKey={(record)=>record.id}  
                   loading={orgQuery.isLoading||orgQuery.isRefetching} 
                   columns={columns} 

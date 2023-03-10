@@ -83,6 +83,8 @@ export default function ManagerBookingsView(){
         title: 'Service',
         dataIndex: 'name',
         key: 'name',
+        ellipsis:true,
+        fixed:'left',
         render:(_,record)=>{
           const serviceItemName = record.serviceItemDetails[0].name
           const serviceName = record.serviceDetails[0].name
@@ -93,26 +95,6 @@ export default function ManagerBookingsView(){
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{serviceItemName}</Text>  
                         <Text type="secondary">{serviceName}</Text>  
-                    </div>
-                </div>
-            )
-        },
-      },
-      {
-        title: 'Customer',
-        // dataIndex: 'customer',
-        key: 'customer',
-        render:(_,record)=>{
-          const user = record.user[0]
-          const email = user.email
-          const name = user.name
-          const profilePicHash = user.profilePic
-            return(
-                <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${profilePicHash.length < 10? IMAGE_PLACEHOLDER_HASH : profilePicHash}`}/>
-                    <div style={{display:'flex',flexDirection:'column'}}>
-                        <Text>{name}</Text>  
-                        <Text type="secondary">{email}</Text>  
                     </div>
                 </div>
             )
@@ -131,7 +113,29 @@ export default function ManagerBookingsView(){
         )}
       },
       {
-        title: 'Unit price',
+        title: 'Customer',
+        // dataIndex: 'customer',
+        ellipsis:true,
+        key: 'customer',
+        render:(_,record)=>{
+          const user = record.user[0]
+          const email = user.email
+          const name = user.name
+          const profilePicHash = user.profilePic
+            return(
+                <div style={{display:'flex',alignItems:'center'}}>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${profilePicHash.length < 10? IMAGE_PLACEHOLDER_HASH : profilePicHash}`}/>
+                    <div style={{display:'flex',flexDirection:'column'}}>
+                        <Text>{name}</Text>  
+                        <Text type="secondary">{email}</Text>  
+                    </div>
+                </div>
+            )
+        },
+      },
+    
+      {
+        title: 'Unit Price',
         dataIndex: 'unitPrice',
         key: 'unitPrice',
         align:'right',
@@ -169,16 +173,7 @@ export default function ManagerBookingsView(){
           )
         }
       }, 
-      {
-        title: 'Payment Status',
-        dataIndex: 'paymentIntentStatus',
-        key: 'paymentIntentStatus',
-        render: (paymentStatus)=>{
-          const color = paymentStatus === 'successful'?'green':paymentStatus === 'failed'?'red':paymentStatus === 'cancelled'?'grey':'blue'
-          const icon = paymentStatus === 'successful'?<CheckOutlined />:paymentStatus === 'cancelled'?<StopOutlined />:null
-          return <Tag icon={icon} color={color} style={{textTransform:'capitalize'}}>{paymentStatus}</Tag>
-        }
-      },
+      
       // {
       //   title: 'Ticket Status',
       //   dataIndex: 'ticketStatus',
@@ -188,17 +183,30 @@ export default function ManagerBookingsView(){
       //     return <Badge status="success" text={statusText} />
       //   }
       // },
-      {
-          title: 'Ticket Date',
-          dataIndex: 'targeDate',
-          key: 'targetDate',
-          render: (_,record)=>{
-              const date = dayjs(record.targetDate).format('MMM DD, YYYY')
-              return(
-            <Text type='secondary'>{date}</Text>
-            )
-        },
+     
+    {
+      title: 'Payment Status',
+      dataIndex: 'paymentIntentStatus',
+      key: 'paymentIntentStatus',
+      fixed:'right',
+      render: (paymentStatus)=>{
+        const color = paymentStatus === 'successful'?'green':paymentStatus === 'failed'?'red':paymentStatus === 'cancelled'?'grey':'blue'
+        const icon = paymentStatus === 'successful'?<CheckOutlined />:paymentStatus === 'cancelled'?<StopOutlined />:null
+        return <Tag icon={icon} color={color} style={{textTransform:'capitalize'}}>{paymentStatus}</Tag>
+      }
     },
+    {
+      title: 'Ticket Date',
+      dataIndex: 'targeDate',
+      key: 'targetDate',
+      fixed:'right',
+      render: (_,record)=>{
+          const date = dayjs(record.targetDate).format('MMM DD, YYYY')
+          return(
+        <Text type='secondary'>{date}</Text>
+        )
+    },
+},
 
     // {
     //   dataIndex: 'actions', 
@@ -237,7 +245,8 @@ export default function ManagerBookingsView(){
                 <Table 
                   style={{width:'100%'}} 
                   key='dfadfe' 
-                  size='small'   
+                  size='small'  
+                  scroll={{ x: 'calc(700px + 50%)'}} 
                   loading={bookingsQuery.isLoading||bookingsQuery.isRefetching} 
                   columns={columns} 
                   pagination={{

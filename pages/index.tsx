@@ -20,7 +20,7 @@ export default function Login(){
 
     useEffect(() => {
       if(isAuthenticated && currentUser.id){
-        if(currentUser.role == 1){
+        if(currentUser.role == 1 || currentU){
             replace('/manager/organizations')
         }else(
             replace('/organizations')
