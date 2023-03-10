@@ -581,10 +581,13 @@ function deleteOrg(){
   deleteData.mutate(selectedOrg,{
     onSuccess:()=>{
       notification['success']({
-        message: 'Successfully deleted record!'
+        message: 'Successfully deactivated organization!'
     })  
       toggleDeleteModal()
       closeDrawerHandler()
+    },
+    onSettled:()=>{
+      queryClient.invalidateQueries(['organizations'])
     },
 
   onError:(err)=>{
