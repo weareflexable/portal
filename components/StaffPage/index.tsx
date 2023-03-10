@@ -297,6 +297,10 @@ const createData = useMutation(createDataHandler,{
     message = status == 0 ? `Staff could not be added because they aren't registered. A registration link has beens sent to ${user.email} to register and will be added automatically to as ${user.userRoleName} after registration`:`User has been added to service as a ${user.userRoleName}`
     notification['success']({
         message: message,
+        style:{
+          width:600
+        },
+        duration:0
       });
       onCancel()
    },
