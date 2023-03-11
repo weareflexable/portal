@@ -112,6 +112,9 @@ export default function BookingsView(){
         title: 'Service',
         dataIndex: 'name',
         key: 'name',
+        fixed: 'left',
+        width: '270px',
+        ellipsis:true,
         render:(_,record)=>{
           const serviceItemName = record.serviceItemDetails[0].name
           const serviceName = record.serviceDetails[0].name
@@ -131,6 +134,8 @@ export default function BookingsView(){
         title: 'Customer',
         // dataIndex: 'customer',
         key: 'customer',
+        width: '200px',
+        ellipsis:true,
         render:(_,record)=>{
           const user = record.user[0]
           const email = user.email
@@ -151,6 +156,7 @@ export default function BookingsView(){
         title: 'Service Type',
         dataIndex: 'serviceItemType',
         key: 'serviceItemType',
+        width: '150px',
         render:(_,record)=>{
           const serviceItemType = record.serviceItemDetails[0].serviceItemType[0].name
           return(
@@ -163,6 +169,7 @@ export default function BookingsView(){
         dataIndex: 'unitPrice',
         key: 'unitPrice',
         align:'right',
+        width: '120px',
         render: (unitPrice)=>(
           <div>
             <Text>$</Text>
@@ -175,6 +182,7 @@ export default function BookingsView(){
         dataIndex: 'quantity',
         key: 'quantity',
         align:'right',
+        width: '120px',
         render:(quantity)=>(
           <div>
             <Text>x</Text>
@@ -187,6 +195,7 @@ export default function BookingsView(){
         // dataIndex: 'totalPrice',
         key: 'totalPrice',
         align:'right',
+        width: '120px',
         render: (_,record)=>{
           const total = record.quantity * (record.unitPrice/100)
           return(
@@ -203,6 +212,8 @@ export default function BookingsView(){
         title: 'Payment Status',
         dataIndex: 'paymentIntentStatus',
         key: 'paymentIntentStatus',
+        width: '120px',
+        fixed:'right',
         render: (paymentStatus)=>{
           const color = paymentStatus === 'successful'?'green':paymentStatus === 'failed'?'red':paymentStatus === 'cancelled'?'grey':'blue'
           const icon = paymentStatus === 'successful'?<CheckOutlined />:paymentStatus === 'cancelled'?<StopOutlined />:null
@@ -228,6 +239,7 @@ export default function BookingsView(){
           dataIndex: 'targetDate',
           key: 'targetDate',
           width: '120px',
+          fixed: 'right',
           render: (_,record)=>{
               const date = dayjs(record.targetDate).format('MMM DD, YYYY')
               return(
@@ -261,6 +273,7 @@ export default function BookingsView(){
                  size='small'
                   style={{width:'100%'}} 
                   key='dfadfe' 
+                  scroll={{ x: 'calc(500px + 50%)'}} 
                   loading={bookingsQuery.isLoading||bookingsQuery.isRefetching} 
                   columns={columns} 
                   pagination={{
