@@ -101,6 +101,8 @@ export default function ServiceItemTypesView(){
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
+        fixed: 'left',
+        width:'250px',
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
@@ -117,6 +119,7 @@ export default function ServiceItemTypesView(){
         title: 'Status',
         dataIndex: 'status',
         key: 'status',
+        width:'200px',
         render: (status)=>{
           const statusText = status == 1 ? "Active": "In-active";
           return(
@@ -137,13 +140,14 @@ export default function ServiceItemTypesView(){
     //   },
 
       {
-          title: 'CreatedAt',
+          title: 'Created On',
           dataIndex: 'createdAt',
           key: 'createdAt',
+          width:'120px',
           render: (_,record)=>{
               const date = dayjs(record.createdAt).format('MMM DD, YYYY')
               return(
-            <Text>{date}</Text>
+            <Text type='secondary'>{date}</Text>
             )
         },
       },
@@ -162,9 +166,10 @@ export default function ServiceItemTypesView(){
     {
       dataIndex: 'actions', 
       key: 'actions',
+      width:'70px',
       render:(_,record)=>{
         // const items = getTableRecordActions()
-        return (<Button icon={<MoreOutlined/>} onClick={()=>viewServiceItemTypeDetails(record)}/>)
+        return (<Button type="text" icon={<MoreOutlined/>} onClick={()=>viewServiceItemTypeDetails(record)}/>)
       } 
     }
     ];
@@ -196,6 +201,7 @@ export default function ServiceItemTypesView(){
                 </div>
                 <Table 
                 style={{width:'100%'}}
+                scroll={{ x: 'calc(500px + 50%)'}} 
                  key='dfadfe' 
                  loading={serviceItemTypesQuery.isLoading||serviceItemTypesQuery.isRefetching} 
                  columns={columns}  

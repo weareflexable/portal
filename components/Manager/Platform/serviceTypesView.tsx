@@ -102,6 +102,7 @@ export default function ServiceTypesView(){
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
+        fixed: 'left',
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
@@ -127,13 +128,14 @@ export default function ServiceTypesView(){
       },
 
       {
-          title: 'CreatedAt',
+          title: 'Created On',
           dataIndex: 'createdAt',
           key: 'createdAt',
+          width:'120px',
           render: (_,record)=>{
               const date = dayjs(record.createdAt).format('MMM DD, YYYY')
               return(
-            <Text>{date}</Text>
+            <Text type="secondary">{date}</Text>
             )
         },
       },
@@ -152,9 +154,10 @@ export default function ServiceTypesView(){
     {
       dataIndex: 'actions', 
       key: 'actions',
+      width:'70px',
       render:(_,record)=>{
         // const items = getTableRecordActions()
-        return (<Button icon={<MoreOutlined/>} onClick={()=>viewServiceTypeDetails(record)}/>)
+        return (<Button type="text" icon={<MoreOutlined/>} onClick={()=>viewServiceTypeDetails(record)}/>)
       } 
     }
     ];
@@ -184,6 +187,7 @@ export default function ServiceTypesView(){
                 </div>
                 <Table 
                   style={{width:'100%'}} 
+                  scroll={{ x: 'calc(500px + 50%)'}} 
                   key='dfadfe' 
                   loading={ServiceTypesQuery.isLoading||ServiceTypesQuery.isRefetching} 
                   columns={columns}  
