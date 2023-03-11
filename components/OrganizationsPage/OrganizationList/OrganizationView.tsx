@@ -410,6 +410,7 @@ export default function AdminOrgsView(){
         title: 'Address',
         // dataIndex: 'address',
         key: 'address',
+        ellipsis:true,
         render:(_,record)=>(
           <div style={{display:'flex',flexDirection:'column'}}>
               <Text style={{textTransform:'capitalize'}}>{record.country}</Text>  
@@ -440,6 +441,7 @@ export default function AdminOrgsView(){
           title: 'Created On',
           dataIndex: 'createdAt',
           key: 'createdAt',
+          width:'120px',
           render: (_,record)=>{
               const date = dayjs(record.createdAt).format('MMM DD, YYYY')
               return(
@@ -481,6 +483,7 @@ export default function AdminOrgsView(){
             return {
                 dataIndex: 'actions', 
                 key: 'actions',
+                width: currentStatus.name !== 'Deactivated'?'70px':'150px',
                 //@ts-ignore
                 render:(_,record:NewOrg)=>{
                   if(currentStatus.name !== 'Deactivated'){
