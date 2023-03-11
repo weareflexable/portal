@@ -478,7 +478,7 @@ export default function ManagerOrgsView(){
     {
       dataIndex: 'actions', 
       key: 'actions',
-      width:'100px',
+      width:'200px',
       // fixed:'right',
       render:(_,record:NewOrg)=>{
         if(currentStatus.name !== 'Deactivated'){
@@ -526,7 +526,7 @@ export default function ManagerOrgsView(){
                 :<Table 
                   style={{width:'100%'}} 
                   size='middle'
-                  scroll={{ x: 'calc(700px + 50%)'}}
+                  scroll={{ x: 'calc(500px + 50%)'}}
                   // rowKey={(record)=>record.id}  
                   loading={orgQuery.isLoading||orgQuery.isRefetching} 
                   columns={columns} 

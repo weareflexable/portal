@@ -246,7 +246,7 @@ export default function ManagerBookingsView(){
                   style={{width:'100%'}} 
                   key='dfadfe' 
                   size='small'  
-                  scroll={{ x: 'calc(700px + 50%)'}} 
+                  scroll={{ x: 'calc(500px + 50%)'}} 
                   loading={bookingsQuery.isLoading||bookingsQuery.isRefetching} 
                   columns={columns} 
                   pagination={{
