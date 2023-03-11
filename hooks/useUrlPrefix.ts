@@ -3,7 +3,8 @@ import useRole from "./useRole";
 
 export default function useUrlPrefix(){
     const {currentUser} =  useAuthContext()
-    const {isAdmin, isManager } = useRole()
-    const urlPrefix = isManager? 'manager': isAdmin?'admin': 'users'
+    const {isAdmin, isManager, isSuperAdmin } = useRole()
+    
+    const urlPrefix = isManager || isSuperAdmin ? 'manager': isAdmin?'admin': 'users'
     return urlPrefix;
 } 
