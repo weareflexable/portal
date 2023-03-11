@@ -42,6 +42,7 @@ export default function ManagerOrgsView(){
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const [pageNumber, setPageNumber] = useState<number|undefined>(0)
+    const [pageSize, setPageSize] = useState<number|undefined>(10)
 
     const serviceTypes = useServiceTypes()
 
@@ -78,7 +79,7 @@ export default function ManagerOrgsView(){
       const res = await axios({
               method:'get',
               //@ts-ignore
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services?key=org_id&value=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=10&key2=status&value2=${currentFilter.id}`,
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services?key=org_id&value=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&key2=status&value2=${currentFilter.id}`,
 
               headers:{
                   "Authorization": paseto
@@ -138,6 +139,7 @@ export default function ManagerOrgsView(){
 
 
     const handleChange: TableProps<Service>['onChange'] = (data) => {
+      setPageSize(data.pageSize)
       //@ts-ignore
       setPageNumber(data.current-1); // Subtracting 1 because pageSize param in url starts counting from 0
     };
@@ -165,26 +167,16 @@ function gotoServiceItemsPage(service:Service){
         console.log('click', record);
       };
 
-      function getTableActions(){
-            return {
-                dataIndex: 'actions', 
-                key: 'actions',
-                //@ts-ignore
-                render:(_,record:Service)=>{
-                  if(currentFilter.name === 'In-active'){
-                    return (<Button  onClick={()=>reactivateService.mutate(record)}>Reactivate</Button>)
-                  }else{
-                    return <Button onClick= {()=>onMenuClick(record)} type="text" icon={<MoreOutlined/>}/> 
-                  }
-                }
-              }
-    }
+  
   
     const columns: ColumnsType<Service> = [
       {
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
+        fixed:'left',
+        width:'250px',
+        ellipsis:true,
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
@@ -200,6 +192,7 @@ function gotoServiceItemsPage(service:Service){
         title: 'Type',
         dataIndex: 'serviceType',
         key: 'serviceType',
+        width:'120px',
         render: (_,record)=>{
           const type = record.serviceType[0]
             return <Text>{type.name}</Text>
@@ -209,6 +202,7 @@ function gotoServiceItemsPage(service:Service){
         title: 'Address',
         // dataIndex: 'address',
         key: 'address',
+        width:'300px',
         render:(_,record)=>(
           <div style={{display:'flex',flexDirection:'column'}}>
               <Text style={{textTransform:'capitalize'}}>{record.street}</Text>  
@@ -220,6 +214,7 @@ function gotoServiceItemsPage(service:Service){
           title: 'Contact Number',
           dataIndex: 'contactNumber',
           key: 'contactNumber',
+          width:'200px',
           render: (_,record)=>{
             const formatedNumber = convertToAmericanFormat(record.contactNumber)
               return <Text>{formatedNumber}</Text>
@@ -230,6 +225,7 @@ function gotoServiceItemsPage(service:Service){
         title: 'Timezone',
         dataIndex: 'timeZone',
         key: 'timeZone',
+        width:'120px',
 
       },
       // {
@@ -252,6 +248,7 @@ function gotoServiceItemsPage(service:Service){
           title: 'Created On',
           dataIndex: 'createdAt',
           key: 'createdAt',
+          width:'120px',
           render: (_,record)=>{
               const date = dayjs(record.createdAt).format('MMM DD, YYYY')
               return(
@@ -260,7 +257,18 @@ function gotoServiceItemsPage(service:Service){
         },
     },
     {
-      ...getTableActions()
+      dataIndex: 'actions', 
+      key: 'actions',
+      fixed: 'right',
+      width:currentFilter.name === 'In-active'?'150px':'70px',
+      //@ts-ignore
+      render:(_,record:Service)=>{
+        if(currentFilter.name === 'In-active'){
+          return (<Button  onClick={()=>reactivateService.mutate(record)}>Reactivate</Button>)
+        }else{
+          return <Button onClick= {()=>onMenuClick(record)} type="text" icon={<MoreOutlined/>}/> 
+        }
+      }
     }
     ];
 
@@ -278,7 +286,7 @@ function gotoServiceItemsPage(service:Service){
             <div style={{background:'#f7f7f7', minHeight:'100vh'}}>
                 <Row style={{marginTop:'.5em'}} gutter={[16,16]}>
                <header style={{width:'100%', padding:'1rem 0' , background:'#ffffff'}}>
-                   <Col style={{display:'flex', justifyContent:'space-between'}} offset={2} span={22}>
+                   <Col style={{display:'flex', justifyContent:'space-between'}} offset={1} span={22}>
                        <div style={{display:'flex', flex:'7',alignItems:'center'}}> 
                            <Button style={{display:'flex', padding: '0', margin:'0', alignItems:'center', textAlign:'left'}} onClick={()=>router.replace('/')} icon={<ArrowLeftOutlined />} type='link'/>
                            {isHydrated ? <Title style={{margin:'0'}} level={4}>{currentOrg.name}</Title>:<Skeleton.Input active size='default'/> } 
@@ -286,7 +294,7 @@ function gotoServiceItemsPage(service:Service){
 
                        {
                        isHydrated
-                        ?<div style={{ display:'flex', flex:'3', justifyContent:'space-end', alignItems:'center'}}>
+                        ?<div style={{ display:'flex', flex:'3', justifySelf:'flex-end', alignItems:'center'}}>
                           <Button type="link" style={{marginRight:'2rem'}} onClick={gotoBillingsPage} >Billings</Button>
                           <CurrentUser/>
                        </div>
@@ -295,7 +303,7 @@ function gotoServiceItemsPage(service:Service){
                    </Col>
                </header>
 
-               <Col offset={2} span={20}>
+               <Col offset={1} span={22}>
                    {allServicesQuery.data && allServicesLength === 0 
                    ? null 
                    : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
@@ -322,6 +330,7 @@ function gotoServiceItemsPage(service:Service){
                   </EmptyState> 
                   : <Table 
                       style={{width:'100%'}} 
+                      scroll={{ x: 'calc(500px + 50%)'}} 
                       size='large' 
                       rowKey={(record)=>record.id}
                       onChange={handleChange} 
