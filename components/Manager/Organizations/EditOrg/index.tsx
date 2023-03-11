@@ -22,6 +22,8 @@ interface EditableProp{
     const {paseto} = useAuthContext()
   
     const queryClient = useQueryClient()
+
+    const urlPrefix = useUrlPrefix()
   
     function toggleEdit(){
       setIsEditMode(!isEditMode)
@@ -30,7 +32,7 @@ interface EditableProp{
    
   
     const nameMutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -304,7 +306,9 @@ interface EditableProp{
     const {paseto} = useAuthContext()
   
     const queryClient = useQueryClient()
-  
+
+    const urlPrefix = useUrlPrefix()
+   
     function toggleEdit(){
       setIsEditMode(!isEditMode)
     }
@@ -317,7 +321,7 @@ interface EditableProp{
     )
   
     const nameMutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -393,6 +397,8 @@ interface EditableProp{
     const queryClient = useQueryClient()
   
     const {paseto} = useAuthContext()
+
+    const urlPrefix = useUrlPrefix()
   
     function toggleEdit(){
       setIsEditMode(!isEditMode)
@@ -406,7 +412,7 @@ interface EditableProp{
     )
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -483,6 +489,8 @@ interface EditableProp{
     const queryClient = useQueryClient()
   
     const {paseto} = useAuthContext()
+
+    const urlPrefix =  useUrlPrefix()
   
     function toggleEdit(){
       setIsEditMode(!isEditMode)
@@ -496,7 +504,7 @@ interface EditableProp{
     )
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -599,6 +607,8 @@ interface EditableProp{
     const queryClient = useQueryClient()
   
     const {paseto} = useAuthContext()
+
+    const urlPrefix = useUrlPrefix()
   
     function toggleEdit(){
       setIsEditMode(!isEditMode)
@@ -612,7 +622,7 @@ interface EditableProp{
     )
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto

@@ -21,6 +21,7 @@ import { usePlacesWidget } from "react-google-autocomplete";
 import { EditableName, EditableAddress, EditablePhone, EditableZipCode, EditableLogoImage, EditableCoverImage } from "../EditOrg";
 import { convertToAmericanFormat } from "../../../../utils/phoneNumberFormatter";
 import { EditableText } from "../../../shared/Editables";
+import useUrlPrefix from "../../../../hooks/useUrlPrefix";
 
 
 var relativeTime = require('dayjs/plugin/relativeTime')
@@ -56,7 +57,7 @@ export default function ManagerOrgsView(){
     async function fetchAllOrgs(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/orgs?pageNumber=${pageNumber}&pageSize=10`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?pageNumber=${pageNumber}&pageSize=10`,
             headers:{
                 "Authorization": paseto
             }
@@ -69,7 +70,7 @@ export default function ManagerOrgsView(){
     async function fetchOrgs(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/orgs?key=status&value=${currentStatus.id}&pageNumber=${pageNumber}&pageSize=${pageSize}`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?key=status&value=${currentStatus.id}&pageNumber=${pageNumber}&pageSize=${pageSize}`,
             headers:{
                 "Authorization": paseto
             }
@@ -85,7 +86,7 @@ export default function ManagerOrgsView(){
       console.log(orgId)
         const res = await axios({
             method:'patch',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
             data:{
                 key:'status',
                 value: statusNumber, // 0 means de-activated in db
@@ -374,12 +375,13 @@ export default function ManagerOrgsView(){
         }
       };
 
+      const urlPrefix = useUrlPrefix()
         
     async function reActivateOrgHandler(record:NewOrg){
       console.log(record)
       const res = await axios({
           method:'patch',
-          url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,
+          url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
           data:{
               key:'status',
               value: '1', 
@@ -607,7 +609,7 @@ async function reActivateOrgHandler(record:NewOrg){
   console.log(record)
   const res = await axios({
       method:'patch',
-      url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,
+      url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
       data:{
           key:'status',
           value: '1', 
@@ -621,6 +623,8 @@ async function reActivateOrgHandler(record:NewOrg){
   return res; 
 }
 
+const urlPrefix = useUrlPrefix()
+
 const reactivateOrg = useMutation(reActivateOrgHandler,{
 onSettled:()=>{
   queryClient.invalidateQueries({queryKey:['organizations']})
@@ -630,7 +634,7 @@ onSettled:()=>{
 const deleteDataHandler = async(record:NewOrg)=>{      
   const {data} = await axios({
     method:'patch',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,
+    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
     data: {
         //@ts-ignore
         id:record.orgId,

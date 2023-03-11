@@ -10,6 +10,7 @@ import { useServicesContext } from '../../../context/ServicesContext';
 import {PlusOutlined} from '@ant-design/icons'
 import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
+import useUrlPrefix from "../../../hooks/useUrlPrefix";
 const {TextArea} = Input 
 
 
@@ -24,6 +25,8 @@ export default function ServiceItemTypesView(){
 
 
     const [pageNumber, setPageNumber] = useState(0)
+
+    const urlPrefix = useUrlPrefix()
   
 
     type ServiceType ={
@@ -40,7 +43,7 @@ export default function ServiceItemTypesView(){
     async function fetchServiceType(){
       const res = await axios({
               method:'get',
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-types?pageNumber=0&pageSize=10  `,
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-types?pageNumber=0&pageSize=10  `,
               headers:{
                   "Authorization": paseto
               }
@@ -53,7 +56,7 @@ export default function ServiceItemTypesView(){
     async function fetchServiceItemType(){
       const res = await axios({
               method:'get',
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-item-types?pageNumber=0&pageSize=10&key=service_type_id&value=${selectedFilter.id}`,
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-item-types?pageNumber=0&pageSize=10&key=service_type_id&value=${selectedFilter.id}`,
               headers:{
                   "Authorization": paseto
               }
@@ -226,9 +229,11 @@ const AddServiceItemTypeForm: React.FC<ServiceItemTypeFormProps> = ({
   const {paseto} = useAuthContext()
   const {currentService} = useServicesContext()
 
+  const urlPrefix = useUrlPrefix()
+
 
   const createDataHandler = async(newItem:any)=>{
-    const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-item-types`, newItem,{
+    const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-item-types`, newItem,{
         headers:{
             "Authorization": paseto
         },
@@ -341,6 +346,7 @@ const queryClient = useQueryClient()
 
 const {currentUser,paseto} = useAuthContext()
 const {currentService} = useServicesContext()
+const urlPrefix = useUrlPrefix()
 
 const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
@@ -379,7 +385,7 @@ function deleteService(){
 const deleteDataHandler = async(record:ServiceItemType)=>{      
   const {data} = await axios({
     method:'delete',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-item-types`,
+    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-item-types`,
     data: {
         id:record.id,
         serviceId: currentService.id
@@ -430,6 +436,8 @@ function EditableRole({selectedServiceItemType}:EditableProp){
 
   const {paseto} = useAuthContext()
 
+  const urlPrefix = useUrlPrefix()
+
 
   function toggleEdit(){
     setIsEditMode(!isEditMode)
@@ -440,7 +448,7 @@ function EditableRole({selectedServiceItemType}:EditableProp){
 
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-item-types`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-item-types`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto

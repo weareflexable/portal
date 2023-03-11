@@ -19,6 +19,7 @@ import { ServiceItem } from "../../../types/Services";
 import { User } from "./Users.types";
 import { IMAGE_PLACEHOLDER_HASH } from "../../../constants";
 import { convertToAmericanFormat } from "../../../utils/phoneNumberFormatter";
+import useUrlPrefix from "../../../hooks/useUrlPrefix";
 const {TextArea} = Input
 
 
@@ -35,6 +36,7 @@ export default function UsersView(){
     const [pageNumber, setPageNumber] = useState<number|undefined>(0)
     const [pageSize, setPageSize] = useState<number|undefined>(10)
   
+    const urlPrefix = useUrlPrefix()
     // const isFilterEmpty = Object.keys(filteredInfo).length === 0;
 
     type DataIndex = keyof ServiceItem;
@@ -45,7 +47,7 @@ export default function UsersView(){
     async function fetchUsers(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/users-list?key=status&value=1&pageNumber=${pageNumber}&pageSize=${pageSize}`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/users-list?key=status&value=1&pageNumber=${pageNumber}&pageSize=${pageSize}`,
             headers:{
                 "Authorization": paseto
             }
@@ -256,6 +258,8 @@ const {currentUser,paseto} = useAuthContext()
 
 const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
+const urlPrefix = useUrlPrefix()
+
 function closeDrawerHandler(){
   closeDrawer(!isDrawerOpen)
 }
@@ -292,7 +296,7 @@ function deleteService(){
 const deleteDataHandler = async(record:User)=>{      
   const {data} = await axios({
     method:'patch',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/users-role`,
+    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/users-role`,
     data: {
         targetUserId:record.id,
         key:'status',
@@ -348,6 +352,8 @@ function EditableRole({selectedUser}:EditableProp){
 
   const queryClient = useQueryClient()
 
+  const urlPrefix = useUrlPrefix()
+
 
   function toggleEdit(){
     setIsEditMode(!isEditMode)
@@ -359,7 +365,7 @@ function EditableRole({selectedUser}:EditableProp){
 
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/users-role`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/users-role`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
