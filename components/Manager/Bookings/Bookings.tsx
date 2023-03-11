@@ -84,6 +84,7 @@ export default function ManagerBookingsView(){
         dataIndex: 'name',
         key: 'name',
         ellipsis:true,
+        width:'270px',
         fixed:'left',
         render:(_,record)=>{
           const serviceItemName = record.serviceItemDetails[0].name
@@ -104,6 +105,7 @@ export default function ManagerBookingsView(){
         title: 'Service Type',
         // dataIndex: 'unitPrice',
         key: 'unitPrice',
+        width:'120px',
         render: (_,record)=>{
           const serviceItemType = record.serviceItemDetails[0].serviceItemType[0].name
           return(
@@ -116,6 +118,7 @@ export default function ManagerBookingsView(){
         title: 'Customer',
         // dataIndex: 'customer',
         ellipsis:true,
+        width:'270px',
         key: 'customer',
         render:(_,record)=>{
           const user = record.user[0]
@@ -138,6 +141,7 @@ export default function ManagerBookingsView(){
         title: 'Unit Price',
         dataIndex: 'unitPrice',
         key: 'unitPrice',
+        width:'100px',
         align:'right',
         render: (unitPrice)=>(
           <div>
@@ -150,6 +154,7 @@ export default function ManagerBookingsView(){
         title: 'Quantity',
         dataIndex: 'quantity',
         key: 'quantity',
+        width:'100px',
         align:'right',
         render:(quantity)=>( 
           <div>
@@ -162,6 +167,7 @@ export default function ManagerBookingsView(){
         title: 'Total Price',
         // dataIndex: 'totalPrice',
         key: 'totalPrice',
+        width:'120px',
         align:'right',
         render: (_,record)=>{
           const total = record.quantity * (record.unitPrice/100)
@@ -188,6 +194,7 @@ export default function ManagerBookingsView(){
       title: 'Payment Status',
       dataIndex: 'paymentIntentStatus',
       key: 'paymentIntentStatus',
+      width:'150px',
       fixed:'right',
       render: (paymentStatus)=>{
         const color = paymentStatus === 'successful'?'green':paymentStatus === 'failed'?'red':paymentStatus === 'cancelled'?'grey':'blue'

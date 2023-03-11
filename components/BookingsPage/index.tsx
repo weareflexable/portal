@@ -113,7 +113,7 @@ export default function BookingsView(){
         dataIndex: 'name',
         key: 'name',
         fixed: 'left',
-        width: '270px',
+        width: '250px',
         ellipsis:true,
         render:(_,record)=>{
           const serviceItemName = record.serviceItemDetails[0].name
@@ -134,7 +134,7 @@ export default function BookingsView(){
         title: 'Customer',
         // dataIndex: 'customer',
         key: 'customer',
-        width: '200px',
+        width: '250px',
         ellipsis:true,
         render:(_,record)=>{
           const user = record.user[0]
@@ -156,7 +156,7 @@ export default function BookingsView(){
         title: 'Service Type',
         dataIndex: 'serviceItemType',
         key: 'serviceItemType',
-        width: '150px',
+        width: '100px',
         render:(_,record)=>{
           const serviceItemType = record.serviceItemDetails[0].serviceItemType[0].name
           return(
