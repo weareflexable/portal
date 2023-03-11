@@ -101,6 +101,9 @@ export default function UsersView(){
         title: 'User',
         dataIndex: 'name',
         key: 'name',
+        ellipsis:true, 
+        fixed: 'left',
+        width: '300px',
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
@@ -119,6 +122,7 @@ export default function UsersView(){
         title: 'Role',
         dataIndex: 'userRoleName',
         key: 'userRoleName',
+        width:'100px',
         render:(userRoleName)=>{
           const color = userRoleName === 'Manager' ? 'purple': userRoleName==='Admin'? 'volcano': userRoleName === 'Supervisor'?'cyan':'blue'
           return <Tag color={color}>{userRoleName}</Tag>
@@ -128,6 +132,7 @@ export default function UsersView(){
         title: 'Country',
         dataIndex: 'country',
         key: 'country',
+        width:'250px',
         render: (_,record)=>{
           return record.country !== '' ? <Text style={{textTransform:'capitalize'}}>{record.country}</Text> : <DashOutlined/>
           // <div style={{display:'flex',flexDirection:'column'}}>
@@ -142,6 +147,7 @@ export default function UsersView(){
         title: 'Gender',
         dataIndex: 'gender',
         key: 'gender',
+        width:'100px',
         render: (gender)=>{
 
           return gender !== '' ? <Text>{gender}</Text> : <DashOutlined />
@@ -151,6 +157,7 @@ export default function UsersView(){
         title: 'Phone',
         dataIndex: 'contactNumber',
         key: 'contactNumber',
+        width:'200px',
         render:(contactNumber)=>{
           return contactNumber !== ''? <Text>{convertToAmericanFormat(contactNumber)}</Text> : <DashOutlined/>
         }
@@ -166,6 +173,7 @@ export default function UsersView(){
         title: 'User Type',
         dataIndex: 'userType',
         key: 'userType',
+        width:'100px',
         render: (userType)=>{
           return userType !== '' ? <Tag style={{textTransform:'capitalize'}}>{userType}</Tag> : <DashOutlined />
         }
@@ -187,6 +195,7 @@ export default function UsersView(){
           title: 'Registered On',
           dataIndex: 'createdAt',
           key: 'createdAt',
+          width:'120px',
           render: (_,record)=>{
               const date = dayjs(record.createdAt).format('MMM DD, YYYY')
               return(
@@ -198,6 +207,8 @@ export default function UsersView(){
     {
       dataIndex: 'actions', 
       key: 'actions',
+      width:'70px',
+      fixed: 'right',
       render:(_,record)=>{
         // const items = getTableRecordActions()
         return (<Button icon={<MoreOutlined/>} type='text' onClick={()=>viewUserDetails(record)}/>)
@@ -221,7 +232,8 @@ export default function UsersView(){
 
                 </div>
                 <Table 
-                  size="middle"
+                  size="small"
+                  scroll={{ x: 'calc(500px + 50%)'}} 
                   style={{width:'100%'}} 
                   key='dfadfe' 
                   pagination={{
