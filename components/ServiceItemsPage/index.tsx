@@ -66,6 +66,8 @@ export default function ServiceItemsView(){
     const [selectedRecord, setSelectedServiceItem] = useState<any|ServiceItem>({})
     const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Active'})
     const [pageNumber, setPageNumber] = useState<number|undefined>(0)
+    const [pageSize, setPageSize] = useState<number|undefined>(10)
+    
     const {isManager} = useRole()
 
     const serviceItemTypes = useServiceItemTypes()
@@ -88,7 +90,7 @@ export default function ServiceItemsView(){
     async function fetchServiceItems(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items?key=org_service_id&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=10&key2=status&value2=${currentFilter.id}`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items?key=org_service_id&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=${pageSize}&key2=status&value2=${currentFilter.id}`,
             headers:{
                 "Authorization": paseto
             }
@@ -147,7 +149,7 @@ export default function ServiceItemsView(){
 
   
     const handleChange: TableProps<ServiceItem>['onChange'] = (data) => {
-      console.log(data.current)
+      setPageSize(data.pageSize)
       //@ts-ignore
       setPageNumber(data.current-1); // Subtracting 1 because pageSize param in url starts counting from 0
     };
@@ -186,27 +188,15 @@ export default function ServiceItemsView(){
 
     
     
-    function getTableActions(){
-      return {
-          dataIndex: 'actions', 
-          key: 'actions',
-          //@ts-ignore
-          render:(_,record:Service)=>{
-            if(currentFilter.name === 'In-active'){
-              return (<Button   onClick={()=>reactivateService.mutate(record)}>Reactivate</Button>)
-            }else{
-              return <Button type="text" onClick={()=>viewDetails(record)} icon={<MoreOutlined/>}/> 
-            }
-          }
-        }
-  
-  }
   
     const columns: ColumnsType<ServiceItem> = [
       {
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
+        width:'270px',
+        ellipsis:true,
+        fixed:'left',
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
@@ -222,6 +212,7 @@ export default function ServiceItemsView(){
         title: 'Type',
         dataIndex: 'serviceItemType',
         key: 'serviceItemType',
+        width:'120px',
         render:(_,record)=>{
           const type = record.serviceItemType[0]
           return <Tag style={{textTransform:'capitalize'}}>{type.name}</Tag>
@@ -232,6 +223,7 @@ export default function ServiceItemsView(){
         dataIndex: 'price',
         key: 'price',
         align:'right',
+        width:'120px',
         render: (price)=>(
           <div>
             <Text>$</Text>
@@ -244,6 +236,7 @@ export default function ServiceItemsView(){
         dataIndex: 'ticketsPerDay',
         key: 'ticketsPerDay',
         align: 'right',
+        width:'150px',
         render:(ticketsPerDay)=>{
           const formatted = numberFormatter.from(ticketsPerDay)
           return <Text>{`${formatted}`}</Text>
@@ -255,6 +248,7 @@ export default function ServiceItemsView(){
         title: 'Custom Dates',
         // dataIndex: 'status',
         key: 'customDates',
+        width:'150px',
         render: (_,record)=>{
           const customDatesLength = record.availability.length
           return <Text>{`${customDatesLength}`}</Text>
@@ -264,6 +258,7 @@ export default function ServiceItemsView(){
           title: 'Created On',
           dataIndex: 'createdAt',
           key: 'createdAt',
+          width:'120px',
           render: (_,record)=>{
               const date = dayjs(record.createdAt).format('MMM DD, YYYY')
               return(
@@ -273,7 +268,18 @@ export default function ServiceItemsView(){
     },
       
     {
-      ...getTableActions()
+      dataIndex: 'actions', 
+      key: 'actions',
+      fixed:'right',
+      width:currentFilter.name === 'In-active'?'150px':'70px',
+      //@ts-ignore
+      render:(_,record:Service)=>{
+        if(currentFilter.name === 'In-active'){
+          return (<Button   onClick={()=>reactivateService.mutate(record)}>Reactivate</Button>)
+        }else{
+          return <Button type="text" onClick={()=>viewDetails(record)} icon={<MoreOutlined/>}/> 
+        }
+      }
     }
     ];
 
@@ -309,6 +315,7 @@ export default function ServiceItemsView(){
                   </EmptyState>
                   :<Table 
                   style={{width:'100%'}} 
+                  scroll={{ x: 'calc(500px + 50%)'}} 
                   key='dfadfe' 
                   pagination={{
                     total:totalLength,  

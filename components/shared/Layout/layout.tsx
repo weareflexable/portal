@@ -81,12 +81,12 @@ const {Text} = Typography
         />:null}
 
           <Row>
-                <Header style={{background:'#f7f7f7',borderBottom:'1px solid', borderBottomColor:'#e3e3e3', width:'100%', display:'flex', flex: '3', justifyContent:'space-between', alignItems:'center'}}>
+          <Header style={{background:'#f7f7f7',borderBottom:'1px solid', borderBottomColor:'#e3e3e3', justifyContent:'space-between', width:'100%', display:'flex', alignItems:'center'}}>
                   
-            <Col offset={1} span={4}>
-                <div style={{display:'flex', width:'100%', height:'100%', justifyContent:'space-between'}}>
+            <Col  span={4}>
+                <div style={{display:'flex', width:'100%', height:'100%', marginLeft:'.5rem', justifyContent:'space-between'}}>
                   {/* <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/dashboard`} ><a style={{color:`${selectedRoute==='dashboard'?'#1890ff':'black'}`}}>Dashboard</a></Link> </div> */}
-                  <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/serviceItems`} ><a style={{color:`${selectedRoute==='serviceItems'?'#1890ff':'black'}`}}>Services</a></Link></div> 
+                  <div style={{height:'100%',display:'flex',alignItems:'flex-start'}}> <Link  href={`${pageRoutes.basePath}/serviceItems`} ><a style={{color:`${selectedRoute==='serviceItems'?'#1890ff':'black'}`}}>Services</a></Link></div> 
                   <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/bookings`} ><a style={{color:`${selectedRoute==='bookings'?'#1890ff':'black'}`}}>Bookings</a></Link> </div>
                   <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/staff`} ><a style={{color:`${selectedRoute==='staff'?'#1890ff':'black'}`}}>Staff</a></Link> </div>
                   {/* <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/billings`} ><a style={{color:`${selectedRoute==='billings'?'#1890ff':'black'}`}}>Billings</a></Link> </div> */}
