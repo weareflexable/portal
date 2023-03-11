@@ -227,6 +227,7 @@ export default function BookingsView(){
           title: 'Ticket Date',
           dataIndex: 'targetDate',
           key: 'targetDate',
+          width: '120px',
           render: (_,record)=>{
               const date = dayjs(record.targetDate).format('MMM DD, YYYY')
               return(

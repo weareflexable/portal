@@ -200,6 +200,7 @@ export default function ManagerBookingsView(){
       dataIndex: 'targeDate',
       key: 'targetDate',
       fixed:'right',
+      width: '120px',
       render: (_,record)=>{
           const date = dayjs(record.targetDate).format('MMM DD, YYYY')
           return(
