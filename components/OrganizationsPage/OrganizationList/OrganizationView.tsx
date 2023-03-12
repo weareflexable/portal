@@ -90,7 +90,7 @@ export default function AdminOrgsView(){
             data:{
                 key:'status',
                 value: statusNumber, // 0 means de-activated in db
-                orgId: orgId 
+                id: orgId 
             },
             headers:{
                 "Authorization": paseto
@@ -831,7 +831,7 @@ function EditableLogoImage({selectedOrg}:EditableProp){
       key:'logo_image_hash',
       value: logoHash,
       //@ts-ignore
-      orgId: selectedOrg.orgId
+      id: selectedOrg.orgId
     }
     setUpdatedLogoImageHash(logoHash)
     mutation.mutate(payload)
