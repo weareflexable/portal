@@ -25,7 +25,6 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
     const [isManagerRoute, setIsManagerRoute] = useState(false)
     const [isVenueRoute,setIsVenueRoute] = useState<any>(false)
 
-   console.log('from header',currentUser)
     useEffect(() => {
       const isManagerRoute = router.isReady? router.asPath.includes('/manager'): false
       if(router.isReady){
