@@ -127,7 +127,6 @@ export default function NewOrgForm(){
             logoImageHash: logoHash,
             coverImageHash: '',
             contactNumber: formatedContact,
-            status: "1",
             // orgId:currentOrg.orgId,
         }
         // remove address field since because we have extracted
