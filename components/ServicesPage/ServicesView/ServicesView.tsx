@@ -227,7 +227,6 @@ function gotoServiceItemsPage(service:Service){
         dataIndex: 'timeZone',
         key: 'timeZone',
         width:'200px',
-
       },
       // {
       //   title: 'Currency',
