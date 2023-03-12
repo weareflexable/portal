@@ -123,10 +123,10 @@ export default function UsersView(){
         dataIndex: 'walletaddress',
         key: 'walletaddress',
         width:'200px',
-        render:(walletaddress)=>{
+        render:(walletaddress)=>{ 
 
           return <Tag >
-             <Paragraph style={{margin:'0'}} copyable={{ text: walletaddress }}>{`${walletaddress.substring(0,5)}....${walletaddress.slice(-6)}`}</Paragraph>
+             <Paragraph style={{margin:'0'}} copyable={{ text: walletaddress }}>{`${walletaddress.substring(0,6)}....${walletaddress.slice(-4)}`}</Paragraph>
           </Tag>
         }
       },

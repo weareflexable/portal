@@ -70,8 +70,10 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
     }else{
       items = getManagerMenu()
     }
+  }else if(currentUser && currentUser.role == 0){
+    items = getSuperAdminRoutes()
   }else{
-    items = getAdminMenu()
+    items = getManagerMenu()
   }
 
   // console.log(isVenueRoute)
@@ -108,7 +110,17 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
       {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateBackToServices}  >Back to launchpad</Text>, key:'servicesPage'},
     {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={()=>router.replace('/manager/organizations')} >Back to organizations</Text>, key:'organizationsPage'},
     {type:'divider', key:'divider0'},
-    {type:'divider', key:'divider1'},
+    {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateToProfile}  >Profile</Text>, key:'profile'},
+    {type:'divider', key:'divider2'},
+    {label:<Button onClick={logout} danger type='link'>Logout</Button>, key:'logout'},
+    ]
+  }
+
+  function getSuperAdminRoutes(){
+    return[
+      {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateBackToServices}  >Back to launchpad</Text>, key:'servicesPage'},
+    {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={()=>router.replace('/manager/organizations')} >Back to organizations</Text>, key:'organizationsPage'},
+    {type:'divider', key:'divider0'},
     {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateToProfile}  >Profile</Text>, key:'profile'},
     {type:'divider', key:'divider2'},
     {label:<Button onClick={logout} danger type='link'>Logout</Button>, key:'logout'},
