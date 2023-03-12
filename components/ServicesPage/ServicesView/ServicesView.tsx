@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useOrgs from "../../../hooks/useOrgs";
 const {Text, Title} = Typography;
 import React, { ReactNode, useEffect, useRef, useState } from 'react'
-import {Typography,Button, Skeleton, Badge, Image, Table, Input, Radio,  Drawer, Row, Col, Form, Modal, Alert, notification, Dropdown, MenuProps} from 'antd'
+import {Typography,Button, Skeleton, Badge, Image, Table, Input, Radio,  Drawer, Row, Col, Form, Modal, Alert, notification, Dropdown, MenuProps, Tag} from 'antd'
 import { useRouter } from 'next/router'
 import axios from 'axios';
 import { MoreOutlined, ReloadOutlined, ArrowLeftOutlined, PlusOutlined} from '@ant-design/icons'
@@ -196,12 +196,13 @@ function gotoServiceItemsPage(service:Service){
         width:'120px',
         render: (_,record)=>{
           const type = record.serviceType[0]
-            return <Text>{type.name}</Text>
+            return <Tag>{type.name}</Tag>
         }
       },
       {
         title: 'Address',
         // dataIndex: 'address',
+        ellipsis:true,
         key: 'address',
         width:'300px',
         render:(_,record)=>(
@@ -222,12 +223,12 @@ function gotoServiceItemsPage(service:Service){
           }
         },
         
-      {
-        title: 'Timezone',
-        dataIndex: 'timeZone',
-        key: 'timeZone',
-        width:'200px',
-      },
+      // {
+      //   title: 'Timezone',
+      //   dataIndex: 'timeZone',
+      //   key: 'timeZone',
+      //   width:'200px',
+      // },
       // {
       //   title: 'Currency',
       //   dataIndex: 'currency',
