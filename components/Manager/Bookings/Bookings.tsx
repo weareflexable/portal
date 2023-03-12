@@ -189,6 +189,18 @@ export default function ManagerBookingsView(){
       //     return <Badge status="success" text={statusText} />
       //   }
       // },
+      {
+        title: 'Booking Date',
+        dataIndex: 'createdAt',
+        key: 'createdAt',
+        width: '110px',
+        render: (bookingDate)=>{
+            const date = dayjs(bookingDate).format('MMM DD, YYYY')
+            return(
+          <Text type='secondary'>{date}</Text>
+          )
+      },
+  },
      
     {
       title: 'Payment Status',
@@ -204,17 +216,18 @@ export default function ManagerBookingsView(){
     },
     {
       title: 'Ticket Date',
-      dataIndex: 'targeDate',
-      key: 'targetDate',
+      dataIndex: 'target_date',
+      key: 'target_date',
       fixed:'right',
       width: '110px',
-      render: (_,record)=>{
-          const date = dayjs(record.targetDate).format('MMM DD, YYYY')
+      render: (targetDate)=>{
+          const date = dayjs(targetDate).format('MMM DD, YYYY')
           return(
         <Text type='secondary'>{date}</Text>
         )
-    },
-},
+    }
+  },
+    
 
     // {
     //   dataIndex: 'actions', 

@@ -113,7 +113,7 @@ export default function BookingsView(){
         dataIndex: 'name',
         key: 'name',
         fixed: 'left',
-        width: '250px',
+        width: '270px',
         ellipsis:true,
         render:(_,record)=>{
           const serviceItemName = record.serviceItemDetails[0].name
@@ -134,7 +134,7 @@ export default function BookingsView(){
         title: 'Customer',
         // dataIndex: 'customer',
         key: 'customer',
-        width: '250px',
+        width: '270px',
         ellipsis:true,
         render:(_,record)=>{
           const user = record.user[0]
@@ -156,7 +156,7 @@ export default function BookingsView(){
         title: 'Service Type',
         dataIndex: 'serviceItemType',
         key: 'serviceItemType',
-        width: '100px',
+        width: '120px',
         render:(_,record)=>{
           const serviceItemType = record.serviceItemDetails[0].serviceItemType[0].name
           return(
@@ -207,12 +207,23 @@ export default function BookingsView(){
         }
       },
    
-      
+      {
+        title: 'Booking Date',
+        dataIndex: 'createdAt',
+        key: 'createdAt',
+        width: '110px',
+        render: (bookingDate)=>{
+            const date = dayjs(bookingDate).format('MMM DD, YYYY')
+            return(
+          <Text type='secondary'>{date}</Text>
+          )
+      },
+  },
       {
         title: 'Payment Status',
         dataIndex: 'paymentIntentStatus',
         key: 'paymentIntentStatus',
-        width: '120px',
+        width: '150px',
         fixed:'right',
         render: (paymentStatus)=>{
           const color = paymentStatus === 'successful'?'green':paymentStatus === 'failed'?'red':paymentStatus === 'cancelled'?'grey':'blue'
@@ -240,8 +251,8 @@ export default function BookingsView(){
           key: 'targetDate',
           width: '120px',
           fixed: 'right',
-          render: (_,record)=>{
-              const date = dayjs(record.targetDate).format('MMM DD, YYYY')
+          render: (ticketDate)=>{
+              const date = dayjs(ticketDate).format('MMM DD, YYYY')
               return(
             <Text type="secondary">{date}</Text>
             )
@@ -273,7 +284,7 @@ export default function BookingsView(){
                  size='small'
                   style={{width:'100%'}} 
                   key='dfadfe' 
-                  scroll={{ x: 'calc(500px + 50%)'}} 
+                  scroll={{ x: 'calc(600px + 50%)'}} 
                   loading={bookingsQuery.isLoading||bookingsQuery.isRefetching} 
                   columns={columns} 
                   pagination={{
