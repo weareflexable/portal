@@ -196,8 +196,6 @@ interface EditableProp{
     onPlaceSelected: (place) => {
         // console.log(antInputRef.current.input)
         form.setFieldValue('street',place?.formatted_address)
-  
-        console.log(place)  
         
         const fullAddress = extractFullAddress(place)
         // add street address
@@ -235,12 +233,14 @@ interface EditableProp{
   })
   
   function onFinish(updatedItem:any){
+
+
   
     const payload = {
       ...fullAddress,
       //@ts-ignore
       id: selectedRecord.orgId,
-      name: selectedRecord.name,
+      // name: selectedRecord.name,
       email: selectedRecord.email,
       zipCode: selectedRecord.zipCode,
       coverImageHash: selectedRecord.coverImageHash,
@@ -249,7 +249,7 @@ interface EditableProp{
     }
   
 
-    mutation.mutate(payload)
+    // mutation.mutate(payload)  
   }
   
   const {isLoading:isEditing} = mutation 

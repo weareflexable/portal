@@ -19,6 +19,7 @@ import CurrentUser from "../../Header/CurrentUser/CurrentUser";
 import useServiceTypes from "../../../hooks/useServiceTypes";
 import { convertToAmericanFormat } from "../../../utils/phoneNumberFormatter";
 import { EditableText} from "../../shared/Editables";
+import useUrlPrefix from "../../../hooks/useUrlPrefix";
 
 var relativeTime = require('dayjs/plugin/relativeTime')
 dayjs.extend(relativeTime)
@@ -57,7 +58,7 @@ export default function ManagerOrgsView(){
       setIsHydrated(true)
     }, [])
 
-    const urlPrefix = currentUser.role == 1 ? 'manager': 'admin'
+   const urlPrefix = useUrlPrefix()
 
   
     async function fetchAllServices(){
@@ -189,7 +190,7 @@ function gotoServiceItemsPage(service:Service){
         },
       },
       {
-        title: 'Type',
+        title: 'Service Type',
         dataIndex: 'serviceType',
         key: 'serviceType',
         width:'120px',
@@ -214,7 +215,7 @@ function gotoServiceItemsPage(service:Service){
           title: 'Contact Number',
           dataIndex: 'contactNumber',
           key: 'contactNumber',
-          width:'200px',
+          width:'170px',
           render: (_,record)=>{
             const formatedNumber = convertToAmericanFormat(record.contactNumber)
               return <Text>{formatedNumber}</Text>
@@ -225,7 +226,7 @@ function gotoServiceItemsPage(service:Service){
         title: 'Timezone',
         dataIndex: 'timeZone',
         key: 'timeZone',
-        width:'120px',
+        width:'200px',
 
       },
       // {

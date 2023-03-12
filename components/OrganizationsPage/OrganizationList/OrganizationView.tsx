@@ -752,7 +752,7 @@ export function EditableAddress({selectedOrg}:EditableProp){
   const [isEditMode, setIsEditMode] = useState(false)
 
 
-  function toggleEdit(){
+  function toggleEdit(){ 
     setIsEditMode(!isEditMode)
   }
 
