@@ -1,11 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useOrgs from "../../../hooks/useOrgs";
-const {Text,Title} = Typography
+const {Text,Title,Paragraph} = Typography
 import React, { useRef, useState } from 'react'
 import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Modal, Alert, notification} from 'antd'
 import { useRouter } from 'next/router'
 import axios from 'axios';
-import {MoreOutlined,ReloadOutlined,DashOutlined} from '@ant-design/icons'
+import {MoreOutlined,ReloadOutlined,DashOutlined,MobileOutlined,LaptopOutlined} from '@ant-design/icons'
 import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
 
 import { useAuthContext } from '../../../context/AuthContext';
@@ -119,10 +119,22 @@ export default function UsersView(){
         },
       },
       {
+        title: 'Wallet Address',
+        dataIndex: 'walletaddress',
+        key: 'walletaddress',
+        width:'200px',
+        render:(walletaddress)=>{
+
+          return <Tag >
+             <Paragraph style={{margin:'0'}} copyable={{ text: walletaddress }}>{`${walletaddress.substring(1,7)}....${walletaddress.substring(8,16)}`}</Paragraph>
+          </Tag>
+        }
+      },
+      {
         title: 'Role',
         dataIndex: 'userRoleName',
         key: 'userRoleName',
-        width:'100px',
+        width:'120px',
         render:(userRoleName)=>{
           const color = userRoleName === 'Manager' ? 'purple': userRoleName==='Admin'? 'volcano': userRoleName === 'Supervisor'?'cyan':'blue'
           return <Tag color={color}>{userRoleName}</Tag>
@@ -132,7 +144,7 @@ export default function UsersView(){
         title: 'Country',
         dataIndex: 'country',
         key: 'country',
-        width:'250px',
+        width:'150px',
         render: (_,record)=>{
           return record.country !== '' ? <Text style={{textTransform:'capitalize'}}>{record.country}</Text> : <DashOutlined/>
           // <div style={{display:'flex',flexDirection:'column'}}>
@@ -168,6 +180,18 @@ export default function UsersView(){
       //   key: 'walletaddress',
       // },
      
+
+      {
+        title: 'Device Type',
+        dataIndex: 'deviceType',
+        key: 'deviceType',
+        width:'120px',
+        render: (deviceType)=>{
+          const deviceIcon = deviceType === 'mobile' ? <MobileOutlined /> : <LaptopOutlined />
+          return deviceType !== '' ? <Tag icon={deviceIcon} style={{textTransform:'capitalize'}}>{deviceType}</Tag> : <DashOutlined />
+        }
+        
+      },
 
       {
         title: 'User Type',
