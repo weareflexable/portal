@@ -83,7 +83,6 @@ export default function ManagerOrgsView(){
    
 
     async function changeOrgStatus({orgId, statusNumber}:{orgId:string, statusNumber: string}){
-      console.log(orgId)
         const res = await axios({
             method:'patch',
             url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
@@ -91,6 +90,21 @@ export default function ManagerOrgsView(){
                 key:'status',
                 value: statusNumber, // 0 means de-activated in db
                 id: orgId 
+            },
+            headers:{
+                "Authorization": paseto
+            }
+        })
+        return res; 
+    }
+    async function changeOrgOwnerToAdmin({userId}:{userId:string}){
+        const res = await axios({
+            method:'patch',
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/users-role`,
+            data:{
+                key:'role',
+                value: '2', // 2 is for admin
+                targetUserId: userId 
             },
             headers:{
                 "Authorization": paseto
@@ -112,11 +126,28 @@ export default function ManagerOrgsView(){
         }
     })
 
+    const changeOrgOwnerToAdminMutation = useMutation({
+        mutationFn: changeOrgOwnerToAdmin,
+        onSuccess:(data:any)=>{
+            queryClient.invalidateQueries({queryKey:['organizations',currentStatus]})
+        },
+        onError:()=>{
+            console.log('Error changing status')
+        }
+    })
+
 
     function deActivateOrgHandler(org:NewOrg){
         // setSelelectedOrg(org.orgId)
         // @ts-ignore
         changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'0'})
+      }
+
+    function changeOwnerToAdmin (org:NewOrg){
+      console.log(org)
+        // setSelelectedOrg(org.orgId)
+        // @ts-ignore
+        // changeOrgOwnerToAdminMutation.mutate({userId:''})
       }
       
       function reviewHandler(org:NewOrg){
@@ -133,10 +164,15 @@ export default function ManagerOrgsView(){
     function acceptOrgHandler(org:NewOrg){
       // setSelelectedOrg(org.orgId)
 
-      // @ts-ignore
-        changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'1'})
-
-        // Change user role to admin after accepting an org
+      changeOrgOwnerToAdminMutation.mutate({userId:org.createdBy},{
+        onSuccess:()=>{
+          // @ts-ignore
+          changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'1'})
+        },
+        onError:()=>{
+          console.log('error upgrading owner role to admin')
+        }
+      })
     }
 
     const orgQuery = useQuery({queryKey:['organizations', currentStatus], queryFn:fetchOrgs, enabled:paseto !== ''})
@@ -409,6 +445,7 @@ export default function ManagerOrgsView(){
         dataIndex: 'name',
         key: 'name',
         fixed:'left',
+        width:'250px',
         ellipsis:true,
         render:(_,record)=>{
             return(
@@ -428,6 +465,7 @@ export default function ManagerOrgsView(){
         title: 'Address',
         dataIndex: 'address',
         key: 'address',
+        width:'370px',
         ellipsis: true,
         render:(_,record)=>(
           <div style={{display:'flex',flexDirection:'column'}}>
@@ -450,6 +488,7 @@ export default function ManagerOrgsView(){
         title: 'Contact Number',
         dataIndex: 'contactNumber',
         key: 'contactNumber',
+        width:'150px',
         render: (_,record)=>(
           //@ts-ignore
           <Text>{convertToAmericanFormat(record.contactNumber)}</Text> 

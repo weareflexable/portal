@@ -169,19 +169,47 @@ export default function NewOrgForm(){
         return data
     }
 
+    const changeOrgStatusHandler = async(newItem:any)=>{
+        const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`, newItem,{
+            headers:{
+                "Authorization": paseto
+            },
+        })
+        return data
+    }
+
+    const orgStatusMutation = useMutation(changeOrgStatusHandler,{
+        onSuccess:()=>{
+            queryClient.invalidateQueries(['organizations'])
+            router.back()
+        },
+        onError:()=>{
+            notification['error']({
+                message: 'Encountered an error while changing organization status for manager or superadmin',
+              });
+        }
+    })
+
     const createData = useMutation(createDataHandler,{
-       onSuccess:()=>{
+       onSuccess:(data)=>{
+        const orgId = data.data[0].orgId
         notification['success']({
             message: 'Successfully created new organization!'
         })
-            router.back()
+          // change status
+          const orgStatusPayload = {
+            key:'status',
+            value: '1', // 0 means de-activated in db
+            id: orgId 
+          }
+          orgStatusMutation.mutate(orgStatusPayload)
        },
        onSettled:()=>{
             queryClient.invalidateQueries(['all-orgs'])
        },
         onError:()=>{
             notification['error']({
-                message: 'Encountered an error while creating record',
+                message: 'Encountered an error while creating organization',
               });
             // leave modal open
         } 
