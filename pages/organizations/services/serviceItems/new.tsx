@@ -199,27 +199,29 @@ function BasicForm({nextStep}:BasicInfoProps){
             <TextArea allowClear maxLength={500} size='large' showCount  placeholder='Tell us more about this service' rows={2} />
         </Form.Item>
 
-        <Form.Item
-            name="price"
-            label='Price'
-            style={{width:'100%'}}
-            rules={[{ required: true, message: 'Please input a valid price!' }]}
-        >
-            <div style={{display:'flex', alignItems:'center'}}>
-            <Input style={{width:'400px'}} size='large' suffix='Per ticket'  prefix="$"  placeholder="0.00" /> 
-            </div>
-        </Form.Item> 
-
-        <Form.Item
-            name="ticketsPerDay"
-            label='Tickets per day'
-            
-            rules={[{ required: true, message: 'Please input a valid number!' }]}
-            >
-            <div style={{display:'flex', alignItems:'center'}}>
-                <Input style={{width:'400px'}} suffix='Tickets per day'  size='large' placeholder="250" />
-            </div>
-        </Form.Item>
+          {/* price and tickets per day */}
+          <Row>
+            <Col span={11} style={{height:'100%'}}>
+                <Form.Item
+                    name='price'
+                    label='Price'
+                    style={{width:'100%'}}
+                    rules={[{ required: true, message: 'Please input a valid price!' }]}
+                >
+                    <Input size='large' style={{width:'100%'}} suffix='Per ticket' prefix="$" placeholder="0.00" /> 
+                </Form.Item> 
+            </Col>
+            <Col offset={1} span={12}>
+                <Form.Item
+                    name='ticketsPerDay'
+                    label='Tickets per day'
+                    style={{width:'100%'}}
+                    rules={[{ required: true, message: 'Please input a valid number!' }]}
+                    >
+                    <Input size='large' suffix='Tickets Per day' style={{width:'100%'}} placeholder="20" />
+                </Form.Item>
+            </Col>
+        </Row>
 
 
         <Artwork onHandleArtwork={handleArtworkChange}/>
