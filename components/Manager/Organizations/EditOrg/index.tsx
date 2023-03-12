@@ -53,7 +53,7 @@ interface EditableProp{
         key:'name',
         value: updatedItem.name,
         //@ts-ignore
-        orgId: selectedOrg.orgId
+        id: selectedOrg.orgId
       }
       const updatedOrg = {
         ...selectedOrg,
@@ -342,7 +342,7 @@ interface EditableProp{
       const payload = {
         key:'contact_number',
         value: field.contactNumber,
-        orgId: selectedOrg.id
+        id: selectedOrg.id
       }
       console.log(payload)
       nameMutation.mutate(payload)
@@ -433,7 +433,7 @@ interface EditableProp{
       const payload = {
         key:'zip_code',
         value: field.zipCode,
-        orgId: selectedOrg.id
+        id: selectedOrg.id
       }
       mutation.mutate(payload)
     }
@@ -517,6 +517,9 @@ interface EditableProp{
       mutationFn: mutationHandler,
       onSuccess:()=>{
         toggleEdit()
+      },
+      onSettled:()=>{
+        queryClient.invalidateQueries(['organizations'])
       }
     })
   
@@ -535,7 +538,7 @@ interface EditableProp{
         key:'logo_image_hash',
         value: logoHash,
         //@ts-ignore
-        orgId: selectedOrg.orgId
+        id: selectedOrg.orgId
       }
       setUpdatedLogoImageHash(logoHash)
       mutation.mutate(payload)
@@ -652,7 +655,7 @@ interface EditableProp{
       const payload = {
         key:'cover_image_hash',
         value: coverImageHash,
-        orgId: selectedOrg.id
+        id: selectedOrg.id
       }
       setUpdatedCoverImageHash(coverImageHash)
       mutation.mutate(payload)
