@@ -445,6 +445,7 @@ export default function ManagerOrgsView(){
         dataIndex: 'name',
         key: 'name',
         fixed:'left',
+        width:'250px',
         ellipsis:true,
         render:(_,record)=>{
             return(
@@ -464,6 +465,7 @@ export default function ManagerOrgsView(){
         title: 'Address',
         dataIndex: 'address',
         key: 'address',
+        width:'370px',
         ellipsis: true,
         render:(_,record)=>(
           <div style={{display:'flex',flexDirection:'column'}}>
@@ -486,6 +488,7 @@ export default function ManagerOrgsView(){
         title: 'Contact Number',
         dataIndex: 'contactNumber',
         key: 'contactNumber',
+        width:'150px',
         render: (_,record)=>(
           //@ts-ignore
           <Text>{convertToAmericanFormat(record.contactNumber)}</Text> 
@@ -519,7 +522,7 @@ export default function ManagerOrgsView(){
       dataIndex: 'actions', 
       key: 'actions',
       width: currentStatus.name !== 'Deactivated'?'70px':'150px',
-      // fixed:'right',
+      fixed:'right',
       render:(_,record:NewOrg)=>{
         if(currentStatus.name !== 'Deactivated'){
           const items = getCurrentStatusActionItems()
