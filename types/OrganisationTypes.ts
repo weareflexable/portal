@@ -49,6 +49,7 @@ export interface OrgPayload{
     phone: string,
     street: string,
     contactNumber: string,
+    status?: string,
     city: string,
     country: string,
     zipCode: string,

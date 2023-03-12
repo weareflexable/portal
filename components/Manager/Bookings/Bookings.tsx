@@ -84,7 +84,7 @@ export default function ManagerBookingsView(){
         dataIndex: 'name',
         key: 'name',
         ellipsis:true,
-        width:'270px',
+        width:'250px',
         fixed:'left',
         render:(_,record)=>{
           const serviceItemName = record.serviceItemDetails[0].name
@@ -118,7 +118,7 @@ export default function ManagerBookingsView(){
         title: 'Customer',
         // dataIndex: 'customer',
         ellipsis:true,
-        width:'270px',
+        width:'250px',
         key: 'customer',
         render:(_,record)=>{
           const user = record.user[0]
@@ -194,7 +194,7 @@ export default function ManagerBookingsView(){
       title: 'Payment Status',
       dataIndex: 'paymentIntentStatus',
       key: 'paymentIntentStatus',
-      width:'150px',
+      width:'125px',
       fixed:'right',
       render: (paymentStatus)=>{
         const color = paymentStatus === 'successful'?'green':paymentStatus === 'failed'?'red':paymentStatus === 'cancelled'?'grey':'blue'
@@ -207,7 +207,7 @@ export default function ManagerBookingsView(){
       dataIndex: 'targeDate',
       key: 'targetDate',
       fixed:'right',
-      width: '120px',
+      width: '110px',
       render: (_,record)=>{
           const date = dayjs(record.targetDate).format('MMM DD, YYYY')
           return(
@@ -254,7 +254,7 @@ export default function ManagerBookingsView(){
                   style={{width:'100%'}} 
                   key='dfadfe' 
                   size='small'  
-                  scroll={{ x: 'calc(500px + 50%)'}} 
+                  scroll={{ x: 'calc(450px + 50%)'}} 
                   loading={bookingsQuery.isLoading||bookingsQuery.isRefetching} 
                   columns={columns} 
                   pagination={{

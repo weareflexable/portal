@@ -135,6 +135,8 @@ export default function ManagerOrgsView(){
 
       // @ts-ignore
         changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'1'})
+
+        // Change user role to admin after accepting an org
     }
 
     const orgQuery = useQuery({queryKey:['organizations', currentStatus], queryFn:fetchOrgs, enabled:paseto !== ''})
@@ -481,7 +483,7 @@ export default function ManagerOrgsView(){
       dataIndex: 'actions', 
       key: 'actions',
       width: currentStatus.name !== 'Deactivated'?'70px':'150px',
-      // fixed:'right',
+      fixed:'right',
       render:(_,record:NewOrg)=>{
         if(currentStatus.name !== 'Deactivated'){
           const items = getCurrentStatusActionItems()
