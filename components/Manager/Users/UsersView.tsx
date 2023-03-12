@@ -126,7 +126,7 @@ export default function UsersView(){
         render:(walletaddress)=>{
 
           return <Tag >
-             <Paragraph style={{margin:'0'}} copyable={{ text: walletaddress }}>{`${walletaddress.substring(1,7)}....${walletaddress.substring(8,16)}`}</Paragraph>
+             <Paragraph style={{margin:'0'}} copyable={{ text: walletaddress }}>{`${walletaddress.substring(0,5)}....${walletaddress.slice(-6)}`}</Paragraph>
           </Tag>
         }
       },
