@@ -322,11 +322,6 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
     const {isError, isLoading:isCreatingData, isSuccess:isDataCreated, data:createdData} = createData
 
 
-    const cancel = (e: React.MouseEvent<HTMLElement>) => {
-        console.log(e);
-        message.success('keep custom date');
-      };
-
 
     return(
         <>
@@ -489,7 +484,7 @@ function Artwork({onHandleArtwork}:ArtworkProps){
     const router = useRouter()
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const [currentServiceItemType, setCurrentServiceItemType] = useState<null|string|string[]|undefined>(undefined)
-    const [selectedArtwork, setSelectedArtwork] = useState(lineSkipHashes[0]) // 
+    const [selectedArtwork, setSelectedArtwork] = useState('') // 
 
     function toggleDrawer(){
         setIsDrawerOpen(!isDrawerOpen)
@@ -499,6 +494,7 @@ function Artwork({onHandleArtwork}:ArtworkProps){
         if(router.isReady){
             setCurrentServiceItemType(router.query.label)
             setSelectedArtwork(router.query.label === 'Bottle service'?bottleServiceHashes[0]:router.query.label == 'Reservation'?reservationHashes[0]:lineSkipHashes[0])
+            onHandleArtwork(router.query.label === 'Bottle service'?bottleServiceHashes[0]:router.query.label == 'Reservation'?reservationHashes[0]:lineSkipHashes[0])
         }
     }, [router.isReady, router.query.label])
 
