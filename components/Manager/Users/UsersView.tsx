@@ -136,7 +136,7 @@ export default function UsersView(){
         key: 'userRoleName',
         width:'120px',
         render:(userRoleName)=>{
-          const color = userRoleName === 'Manager' ? 'purple': userRoleName==='Admin'? 'volcano': userRoleName === 'Supervisor'?'cyan':'blue'
+          const color = userRoleName === 'Manager' ? 'purple': userRoleName==='Admin'? 'volcano': userRoleName === 'Supervisor'?'cyan': userRoleName === 'Superadmin'?'blue':'green'
           return <Tag color={color}>{userRoleName}</Tag>
         }
       },
