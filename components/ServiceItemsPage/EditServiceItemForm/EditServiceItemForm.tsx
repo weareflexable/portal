@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { QueryClient, useMutation, useQueryClient } from "@tanstack/react-query"
 import { Button, Col, Form, Typography, Image as AntImage, Input, Row, Space, Upload } from "antd"
 const {TextArea} = Input
 const {Text} = Typography
@@ -411,7 +411,6 @@ interface EditableProp{
   export function EditableCoverImage({selectedRecord}:EditableProp){
   
     const [isEditMode, setIsEditMode] = useState(false) 
-    const [isHashingImage, setIsHashingImage] = useState(false)
     const [updatedCoverImageHash, setUpdatedCoverImageHash] = useState(selectedRecord.logoImageHash)
     const [artwork, setArtwork] = useState(selectedRecord.logoImageHash)
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
@@ -419,6 +418,8 @@ interface EditableProp{
 
     const serviceItemTypeName = selectedRecord.serviceItemType[0].name
     const urlPrefix = useUrlPrefix()
+
+    const queryClient = useQueryClient()
   
     function toggleEdit(){
       setIsEditMode(!isEditMode)
@@ -447,6 +448,10 @@ interface EditableProp{
       mutationFn: mutationHandler,
       onSuccess:()=>{
         toggleEdit()
+      },
+      onSettled:(data)=>{
+        setUpdatedCoverImageHash(data.data[0].logoImageHash)
+        queryClient.invalidateQueries(['serviceItems'])
       }
     })
 
