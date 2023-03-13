@@ -12,7 +12,6 @@ interface ServiceSwitcherProps{
 export default function ServiceSwitcher({onOpenSwitcher}:ServiceSwitcherProps){
 
   const {currentService} =  useServicesContext()
-  const {currentUser} = useAuthContext()
   const {isManager, isSuperAdmin} = useRole()
     
     return (

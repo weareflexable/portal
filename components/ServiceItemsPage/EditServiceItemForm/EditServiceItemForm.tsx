@@ -7,7 +7,7 @@ import { useState } from "react"
 import { useAuthContext } from "../../../context/AuthContext"
 import useUrlPrefix from "../../../hooks/useUrlPrefix"
 import { ServiceItem } from "../../../types/Services"
-import { asyncStore } from "../../../utils/nftStorage"
+import {SelectOutlined} from "@ant-design/icons"
 import { ArtworkPicker } from "../Artwork"
 import Image from 'next/image'
 
@@ -473,7 +473,7 @@ interface EditableProp{
         <Row>
           <Col span={10}>
            <Image alt='Artwork preview' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${artwork}`} height='300px' width='300px'/>
-            <Button onClick={toggleDrawer}>Change artwork</Button>
+           <Button shape='round' icon={<SelectOutlined />} style={{ marginTop:'.5rem'}} onClick={toggleDrawer}>Select a different artwork</Button>
             <ArtworkPicker
               currentServiceItemType={serviceItemTypeName}
               isOpen ={isDrawerOpen}
