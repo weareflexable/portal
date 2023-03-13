@@ -417,7 +417,7 @@ function deleteService(){
 
     },
     onSettled:()=>{
-      queryClient.invalidateQueries('staff')
+      queryClient.invalidateQueries(['staff'])
     },
     onError:(err)=>{
         console.log(err)
