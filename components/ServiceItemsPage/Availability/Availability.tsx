@@ -122,6 +122,7 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
     function onFinish(record:any){
       const payload = {
         ...record,
+        ticketsPerDay: Number(record.ticketsPerDay),
         price: record.price*100,
         serviceItemId: selectedServiceItem.id, 
         id: availability.id, 
