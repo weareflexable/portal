@@ -176,12 +176,15 @@ export default function BillingsView(){
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
+        fixed:'left',
+        width:'270px',
+        ellipsis:true,
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
                     {/* <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={'/favicon.ico'}/> */}
                     <div style={{display:'flex',flexDirection:'column'}}>
-                        <Text>{record.bankName}</Text>  
+                        <Text style={{textTransform:'capitalize'}}>{record.bankName}</Text>  
                         <Text style={{textTransform:'capitalize'}} type="secondary">{record.accountType}</Text>
                     </div>
                 </div>
@@ -191,13 +194,15 @@ export default function BillingsView(){
       {
         title: 'Account Name',
         dataIndex: 'beneficiaryName',
-        key: 'beneficiaryName'
+        key: 'beneficiaryName',
+        width:'200px',
       },
 
       {
         title: 'Account No',
         dataIndex: 'accountNo',
         key: 'accountNo',
+        width:'150px'
       },
      
       // {
@@ -209,18 +214,24 @@ export default function BillingsView(){
           title: 'Created On',
           dataIndex: 'createdAt',
           key: 'createdAt',
+          width:'120px',
           render: (_,record)=>{
               const date = dayjs(record.createdAt).format('MMM DD, YYYY')
               return(
-            <Text>{date}</Text>
+            <Text type="secondary">{date}</Text>
             )
         },
     },
     {
       dataIndex: 'actions', 
       key: 'actions',
+      fixed:'right',
+      width: currentFilter.id == '0' ? '120px' : '70px',
       render:(_,record)=>{
         const items = getCurrentFilterActions()
+        if(currentFilter.id == '0'){
+          return (<Button   onClick={()=>reActivateBankHandler(record)}>Reactivate</Button>)
+        }
         return (
         <Dropdown trigger={['click']} menu={{ items , onClick: (e)=>onMenuClick(e,record) }}>
             <Button type='text' icon={<MoreOutlined />}/>
@@ -250,6 +261,7 @@ export default function BillingsView(){
                   </EmptyState>
                   : <Table 
                   style={{width:'100%'}} 
+                  scroll={{ x: 'calc(500px + 50%)'}} 
                   key='dfadfe' 
                   loading={banksQuery.isLoading||banksQuery.isRefetching} 
                   columns={columns} 

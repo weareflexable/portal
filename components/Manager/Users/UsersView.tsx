@@ -463,6 +463,7 @@ function EditableRole({selectedUser}:EditableProp){
         >
           <Radio.Group >
             <Space direction="vertical">
+              <Radio value={0}>Superadmin</Radio>
               <Radio value={1}>Manager</Radio>
               <Radio value={2}>Admin</Radio>
               <Radio value={3}>Supervisor</Radio>

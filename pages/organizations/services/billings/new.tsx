@@ -94,7 +94,7 @@ export default function CreateBankAccountForm(){
             </div>
             
             <Row>
-                <Col offset={2} span={10}>
+                <Col offset={2} span={13}> 
                 <Form
                     name="billingsForm"
                     initialValues={{ remember: true }}
@@ -112,7 +112,7 @@ export default function CreateBankAccountForm(){
                         label='Name'
                         rules={[{ required: true, message: 'Please input name used on card' }]}
                     >
-                        <Input size='large' placeholder="Bill Cage" />
+                        <Input allowClear size='large' placeholder="Bill Cage" />
                     </Form.Item>
                     <Form.Item
                         name="beneficiaryStreet"
@@ -120,7 +120,7 @@ export default function CreateBankAccountForm(){
                         style={{marginBottom:'0'}}
                         rules={[{ required: true, message: 'Please enter valid address' }]}
                     >
-                        <Input size='large' placeholder="89, Highstreet" />
+                        <Input allowClear size='large' placeholder="89, Highstreet" />
                     </Form.Item>
 
 
@@ -163,7 +163,7 @@ export default function CreateBankAccountForm(){
                                 style={{marginBottom:'0'}}
                                 rules={[{ required: true, message: 'Please select a city' }]}
                             >
-                                <Input size='large' placeholder="City" />
+                                <Input allowClear size='large' placeholder="City" />
                             </Form.Item>
                         </Col>
                         <Col offset={1} span={12}>
@@ -173,7 +173,7 @@ export default function CreateBankAccountForm(){
                                 style={{marginBottom:'0'}}
                                 rules={[{ required: true, message: 'Please enter valid postcode' }]}
                             >
-                                <Input size='large' placeholder="Postal Code" />
+                                <Input allowClear size='large' placeholder="Postal Code" />
                             </Form.Item>
                         </Col>
                     </Row>
@@ -226,7 +226,7 @@ export default function CreateBankAccountForm(){
                     label='Name'
                     rules={[{ required: true, message: 'Please enter valid bank name' }]}
                 >
-                    <Input size='large' placeholder="Silvergate crest bank" />
+                    <Input allowClear size='large' placeholder="Silvergate crest bank" />
                 </Form.Item>
 
 
@@ -235,7 +235,7 @@ export default function CreateBankAccountForm(){
                     label='Address'
                     rules={[{ required: true, message: 'Please enter valid address' }]}
                 >
-                    <Input size='large' placeholder="89, Highstreet Boston" />
+                    <Input allowClear size='large' placeholder="89, Highstreet Boston" />
                 </Form.Item>
 {/* 
                 <Form.Item
@@ -252,7 +252,7 @@ export default function CreateBankAccountForm(){
                     label='Routing Number'
                     rules={[{ required: true, message: 'Please input a valid routing number' }]}
                 >
-                    <Input size='large' placeholder="623852453 1234567 001" />
+                    <Input allowClear size='large' placeholder="623852453 1234567 001" />
                 </Form.Item>
 
                 </div>
