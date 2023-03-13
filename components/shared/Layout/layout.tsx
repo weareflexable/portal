@@ -83,28 +83,28 @@ const {Text} = Typography
           <Row>
           <Header style={{background:'#f7f7f7',borderBottom:'1px solid', borderBottomColor:'#e3e3e3', justifyContent:'space-between', width:'100%', display:'flex', alignItems:'center'}}>
                   
-            <Col  span={4}>
-                <div style={{display:'flex', width:'100%', height:'100%', marginLeft:'.5rem', justifyContent:'space-between'}}>
+            <Col style={{display:'flex', justifyContent:'space-between',alignItems:'center'}} span={24}>
+                <div style={{display:'flex', width:'200px',  height:'100%', justifyContent:'space-between'}}>
                   {/* <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/dashboard`} ><a style={{color:`${selectedRoute==='dashboard'?'#1890ff':'black'}`}}>Dashboard</a></Link> </div> */}
                   <div style={{height:'100%',display:'flex',alignItems:'flex-start'}}> <Link  href={`${pageRoutes.basePath}/serviceItems`} ><a style={{color:`${selectedRoute==='serviceItems'?'#1890ff':'black'}`}}>Services</a></Link></div> 
                   <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/bookings`} ><a style={{color:`${selectedRoute==='bookings'?'#1890ff':'black'}`}}>Bookings</a></Link> </div>
                   <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/staff`} ><a style={{color:`${selectedRoute==='staff'?'#1890ff':'black'}`}}>Staff</a></Link> </div>
                   {/* <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/billings`} ><a style={{color:`${selectedRoute==='billings'?'#1890ff':'black'}`}}>Billings</a></Link> </div> */}
+                </div> 
+
+                <div style={{display:'flex', justifyContent:'flex-end'}}>
+                  {
+                      !isAuthenticated ? <Button type='primary' onClick={()=>{location.href=`${process.env.NEXT_PUBLIC_AUTH}/login?redirect_to='portal`}}>Login</Button>
+                      :(
+                        <div style={{display:'flex'}}>
+                          <ServiceSwitcherButton onOpenSwitcher={()=>setSwitcherModal(!showSwitcherModal)}/>
+                          <CurrentUser openOrgSwitcher={()=>setShowOrgSwitcher(!showOrgSwitcher)} user={{email:'mbappai@yahoo.com',role:'admin'}}/>
+                        </div>
+                        )
+                   }
                 </div>
             </Col>
 
-            <Col offset={3} span={8}>
-                  {
-                    !isAuthenticated ? <Button type='primary' onClick={()=>{location.href=`${process.env.NEXT_PUBLIC_AUTH}/login?redirect_to='portal`}}>Login</Button>
-                    :(
-                      <div style={{display:'flex',flex:'2'}}>
-                        <ServiceSwitcherButton onOpenSwitcher={()=>setSwitcherModal(!showSwitcherModal)}/>
-                        <CurrentUser openOrgSwitcher={()=>setShowOrgSwitcher(!showOrgSwitcher)} user={{email:'mbappai@yahoo.com',role:'admin'}}/>
-                      </div>
-                      )
-                    }
-      
-                    </Col>
                 </Header> 
                     
               
