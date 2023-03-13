@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 const {Text,Title} = Typography
 import React, { useRef, useState } from 'react'
-import {Typography,Button,Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Modal, Alert, notification, Empty} from 'antd'
+import {Typography,Button,Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Modal, Alert, notification, Empty, Tag} from 'antd'
 import axios from 'axios';
 import {MoreOutlined,ReloadOutlined} from '@ant-design/icons'
 import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
@@ -138,6 +138,8 @@ export default function StaffView(){
         title: 'Staff',
         dataIndex: 'name',
         key: 'name',
+        width:'350px',
+        ellipsis:true,
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
@@ -155,6 +157,11 @@ export default function StaffView(){
         title: 'Role',
         dataIndex: 'userRoleName',
         key: 'userRoleName',
+
+        render:(userRoleName)=>{
+          const color = userRoleName === 'Manager' ? 'purple': userRoleName==='Admin'? 'volcano': userRoleName === 'Supervisor'?'cyan':'blue'
+          return <Tag color={color}>{userRoleName}</Tag>
+        }
       },
       // {
       //   title: 'Status',
@@ -172,6 +179,7 @@ export default function StaffView(){
           title: 'Created On',
           dataIndex: 'createdAt',
           key: 'createdAt',
+          width:'120px',
           render: (_,record)=>{
               const date = dayjs(record.createdAt).format('MMM DD, YYYY')
               return(
@@ -183,6 +191,8 @@ export default function StaffView(){
     {
       dataIndex: 'actions', 
       key: 'actions',
+      width:'70px',
+      // width: currentFilter.name == 'pending'
       render:(_,record)=>{
         // const items = getTableRecordActions()
         return (<Button type="text" icon={<MoreOutlined/>} onClick={()=>viewStaffDetails(record)}/>)
@@ -406,6 +416,9 @@ function deleteService(){
       closeDrawerHandler()
 
     },
+    onSettled:()=>{
+      queryClient.invalidateQueries('staff')
+    },
     onError:(err)=>{
         console.log(err)
         notification['error']({
@@ -606,8 +619,8 @@ function DeleteRecordModal({selectedStaff, isOpen, isDeletingItem, onDeleteRecor
       <Form.Item
         name="name"
         style={{marginBottom:'.6rem'}}
-        label={`Please type "${selectedStaff.name}" to confirm`}
-        rules={[{ required: true, message: 'Please type correct service item name!' }]}
+        label={`Please type "${selectedStaff.email}" to confirm`}
+        rules={[{ required: true, message: 'Please type correct staff email' }]}
       >
         <Input disabled={isDeletingItem} />
       </Form.Item>
@@ -624,11 +637,11 @@ function DeleteRecordModal({selectedStaff, isOpen, isDeletingItem, onDeleteRecor
             htmlType="submit"
             disabled={
               // !form.isFieldTouched('name') &&
-              form.getFieldValue('name') !== selectedStaff.name
+              form.getFieldValue('name') !== selectedStaff.email
               // !!form.getFieldsError().filter(({ errors }) => errors.length).length
             }
           >
-           I understand the consequences, block user
+           I understand the consequences, remove staff
           </Button>
         )}
       </Form.Item>

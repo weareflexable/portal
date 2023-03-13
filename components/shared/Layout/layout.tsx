@@ -83,7 +83,7 @@ const {Text} = Typography
           <Row>
           <Header style={{background:'#f7f7f7',borderBottom:'1px solid', borderBottomColor:'#e3e3e3', justifyContent:'space-between', width:'100%', display:'flex', alignItems:'center'}}>
                   
-            <Col style={{display:'flex', justifyContent:'space-between',alignItems:'center'}} span={24}>
+            <Col style={{display:'flex', justifyContent:'space-between',alignItems:'center'}} span={23}>
                 <div style={{display:'flex', width:'200px',  height:'100%', justifyContent:'space-between'}}>
                   {/* <div style={{height:'100%',display:'flex',alignItems:'center'}}> <Link  href={`${pageRoutes.basePath}/dashboard`} ><a style={{color:`${selectedRoute==='dashboard'?'#1890ff':'black'}`}}>Dashboard</a></Link> </div> */}
                   <div style={{height:'100%',display:'flex',alignItems:'flex-start'}}> <Link  href={`${pageRoutes.basePath}/serviceItems`} ><a style={{color:`${selectedRoute==='serviceItems'?'#1890ff':'black'}`}}>Services</a></Link></div> 
