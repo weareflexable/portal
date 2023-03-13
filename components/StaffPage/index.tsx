@@ -304,7 +304,6 @@ const createData = useMutation(createDataHandler,{
       onCancel()
    },
     onError:(data:any)=>{
-      console.log(data)
         notification['error']({
             message:data.message ,
           });
@@ -405,7 +404,6 @@ function toggleDeleteModal(){
 }
 
 function deleteService(){ 
-  console.log(selectedStaff.id)
   // mutate record
   deleteMutation.mutate(selectedStaff,{
     onSuccess:()=>{
@@ -424,7 +422,6 @@ function deleteService(){
         notification['error']({
             message: 'Encountered an error while deleting record custom custom dates',
           });
-        // leave modal open
     }
   })
 }
@@ -451,7 +448,15 @@ const deleteMutation = useMutation(deleteDataHandler)
 return( 
 <Drawer title={"Staff details"} width={640} placement="right" closable={true} onClose={closeDrawerHandler} open={isDrawerOpen}>
   
-  <EditableRole selectedStaff={selectedStaff}/>
+  <EditableRadio
+    id={selectedStaff.id}
+    currentFieldValue = {selectedStaff.userRoleName}
+    fieldKey ='role'
+    selectedItem={selectedStaff.role}
+    fieldName="role"
+    title = 'Staff Role'
+    options ={{queryKey:'staff'}}
+  /> 
 
   
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
@@ -471,29 +476,32 @@ return(
 )
 }
 
-
-interface EditableProp{
-  selectedStaff: Staff
+interface EditableProps{
+  id: string,
+  selectedItem: string,
+  currentFieldValue: string | undefined | number,
+  fieldKey: string,
+  fieldName: string
+  title: string,
+  options?:{queryKey:string,mutationUrl?:string}
 }
 
 
-function EditableRole({selectedStaff}:EditableProp){
-
-  const [state, setState] = useState(selectedStaff)
+export function EditableRadio({id, options, selectedItem, fieldName, currentFieldValue, fieldKey, title}:EditableProps){
+  
+  const [state, setState] = useState(currentFieldValue)
 
   const [isEditMode, setIsEditMode] = useState(false)
 
   const {paseto} = useAuthContext()
 
+  const urlPrefix = useUrlPrefix()
 
   function toggleEdit(){
     setIsEditMode(!isEditMode)
   }
 
-  const [form]  = Form.useForm()
-
- const urlPrefix = useUrlPrefix()
-
+ const queryClient = useQueryClient()
 
   const mutationHandler = async(updatedItem:any)=>{
     const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff`,updatedItem,{
@@ -505,61 +513,55 @@ function EditableRole({selectedStaff}:EditableProp){
       return data;
   }
   const mutation = useMutation({
-    mutationKey:['role'],
     mutationFn: mutationHandler,
     onSuccess:()=>{
       toggleEdit()
+    },
+    onSettled:(data)=>{
+      setState(data.data[0].userRoleName)
+      queryClient.invalidateQueries({queryKey:[options?.queryKey]})
     }
   })
 
-  function onFinish(updatedItem:any){
-    console.log(updatedItem)
+  function onFinish(formData:any){
     const payload = {
-      key:'role',
-      value: String(updatedItem.role),
-      id: selectedStaff.id
+      key:fieldKey,
+      value: formData[fieldName],
+      id: id
     }
-    const updatedRecord = {
-      ...selectedStaff,
-      role: updatedItem.role
-    }
-    setState(updatedRecord)
     mutation.mutate(payload)
   }
 
-  const {isLoading:isEditing} = mutation 
+  const {isLoading:isEditing} = mutation ;
 
   const readOnly = (
     <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Text>{state.userRoleName}</Text>
-      <Button type="link"
-       onClick={toggleEdit}>Edit</Button>
+      <Text style={{textTransform:'capitalize'}}>{state}</Text>
+      <Button type="link" onClick={toggleEdit}>Edit</Button>
     </div>
 )
 
   const editable = (
     <Form
-     style={{ marginTop:'.8rem' }}
-     name="editableRole"
-     initialValues={selectedStaff}
+     style={{ marginTop:'.5rem' }}
+     initialValues={{[fieldName]:currentFieldValue}}
      onFinish={onFinish}
-     form={form}
      >
       <Row>
         <Col span={16} style={{height:'100%'}}>
-        <Form.Item 
-            name="role"
-            rules={[{ required: true, message: 'Please input a description for service item!' }]}
-        >
-          <Radio.Group >
-            <Space direction="vertical">
-              <Radio value={3}>Supervisor</Radio>
-              <Radio value={4}>Employee</Radio>
-            </Space>
-          </Radio.Group>
-        </Form.Item>
-
+          <Form.Item 
+              // label={title} 
+              name={fieldName}
+              initialValue={{[fieldName]:selectedItem}}
+              rules={[{ required: true, message: 'Please select an accountType' }]}
+              >
+              <Radio.Group defaultValue={selectedItem} size='large'>
+                  <Radio.Button value="3">Supervisor</Radio.Button>
+                  <Radio.Button value="4">Employee</Radio.Button>
+              </Radio.Group>
+          </Form.Item>
         </Col>
+        <Col span={4}>
           <Form.Item style={{ width:'100%'}}>
               <Space >
                   <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
@@ -571,17 +573,20 @@ function EditableRole({selectedStaff}:EditableProp){
               </Space>
                         
           </Form.Item>
+        </Col>
       </Row>
            
     </Form>
   )
+
   return(
     <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>Staff role</Text>
-    {isEditMode?editable:readOnly}
+      <Text type="secondary" style={{ marginRight: '2rem',}}>{title}</Text>
+      {isEditMode?editable:readOnly}
     </div>
   )
 }
+
 
 
 
