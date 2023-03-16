@@ -747,9 +747,12 @@ interface EditableProp{
 
 export function EditableAddress({selectedOrg}:EditableProp){
   
+
   const [state, setState] = useState(selectedOrg.street)
 
   const [isEditMode, setIsEditMode] = useState(false)
+
+  // You'll probably need to parse the address here.
 
 
   function toggleEdit(){ 
@@ -966,6 +969,7 @@ const { ref: antRef } = usePlacesWidget({
 });
 
 const mutationHandler = async(updatedItem:any)=>{
+  // call a put api here instead
   const {data} = await axios.put(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
     headers:{
         //@ts-ignore
@@ -988,17 +992,18 @@ const mutation = useMutation({
 
 function onFinish(updatedItem:any){
 
+  // only take fullAddress and stringify it
   const payload = {
-    ...fullAddress,
     //@ts-ignore
     id: selectedRecord.orgId,
-    name: selectedRecord.name,
-    email: selectedRecord.email,
-    zipCode: selectedRecord.zipCode,
-    coverImageHash: selectedRecord.coverImageHash,
-    logoImageHash: selectedRecord.logoImageHash,
-    contactNumber: selectedRecord.contactNumber,
+    // name: selectedRecord.name,
+    address: 'yes',
+    street:fullAddress.street,
+    city: fullAddress.city,
+    country: fullAddress.country,
+    zipCode: '46843',
   }
+
 
   mutation.mutate(payload)
 }

@@ -66,7 +66,7 @@ interface EditableProps{
       const payload = {
         key:fieldKey, // pass in key
         value: formData[fieldName], // pass in value
-        id: id // pass in id
+        id: id, // pass in id,
       }
   
       mutation.mutate(payload)
@@ -85,7 +85,7 @@ interface EditableProps{
       <Form
        style={{ marginTop:'.5rem' }}
        name="beneficiaryName"
-       initialValues={{[fieldName]:currentFieldValue}}
+       initialValues={{[fieldName]:state}}
        onFinish={onFinish}
        >
         <Row>

@@ -212,7 +212,7 @@ interface EditableProp{
   });
   
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.put(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -237,19 +237,18 @@ interface EditableProp{
 
   
     const payload = {
-      ...fullAddress,
       //@ts-ignore
       id: selectedRecord.orgId,
       // name: selectedRecord.name,
-      email: selectedRecord.email,
-      zipCode: selectedRecord.zipCode,
-      coverImageHash: selectedRecord.coverImageHash,
-      logoImageHash: selectedRecord.logoImageHash,
-      contactNumber: selectedRecord.contactNumber,
+      address: 'yes',
+      street:fullAddress.street,
+      city: fullAddress.city,
+      country: fullAddress.country,
+      zipCode: '46843',
     }
   
 
-    // mutation.mutate(payload)  
+    mutation.mutate(payload)  
   }
   
   const {isLoading:isEditing} = mutation 
