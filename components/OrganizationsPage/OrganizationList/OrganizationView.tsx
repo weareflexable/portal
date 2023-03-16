@@ -913,7 +913,8 @@ function AddressField({selectedRecord, updateState, currentFieldValue,toggleEdit
     state: '',
     country:'',
     city:'',
-    street:''
+    street:'',
+    postalCode: ''
 })
 
 const urlPrefix = useUrlPrefix()
@@ -929,12 +930,14 @@ const urlPrefix = useUrlPrefix()
         let addressObj = {
             state:'',
             country:'',
-            city:''
+            city:'',
+            postalCode:''
         };
         addressComponents.forEach((address:any)=>{
             const type = address.types[0]
             if(type==='country') addressObj.country = address.long_name
             if(type === 'locality') addressObj.state = address.short_name
+            if(type === 'postal_code') addressObj.postalCode = address.short_name
             if(type === 'administrative_area_level_1') addressObj.city = address.short_name
         })
 
@@ -970,7 +973,7 @@ const { ref: antRef } = usePlacesWidget({
 
 const mutationHandler = async(updatedItem:any)=>{
   // call a put api here instead
-  const {data} = await axios.put(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
+  const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
     headers:{
         //@ts-ignore
         "Authorization": paseto
@@ -1001,7 +1004,7 @@ function onFinish(updatedItem:any){
     street:fullAddress.street,
     city: fullAddress.city,
     country: fullAddress.country,
-    zipCode: '46843',
+    zipCode: fullAddress.postalCode,
   }
 
 

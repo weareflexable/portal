@@ -158,7 +158,8 @@ interface EditableProp{
       state: '',
       country:'',
       city:'',
-      street:''
+      street:'',
+      postalCode:''
   })
   
   const urlPrefix = useUrlPrefix()
@@ -175,11 +176,13 @@ interface EditableProp{
               state:'',
               country:'',
               city:'',
+              postalCode:''
           };
           addressComponents.forEach((address:any)=>{
               const type = address.types[0]
               if(type==='country') addressObj.country = address.long_name
               if(type === 'locality') addressObj.state = address.short_name
+              if(type === 'postal_code') addressObj.postalCode = address.short_name
               if(type === 'administrative_area_level_1') addressObj.city = address.short_name
           })
   
@@ -194,7 +197,7 @@ interface EditableProp{
         fields: ['address_components','geometry','formatted_address','name']
     },
     onPlaceSelected: (place) => {
-        // console.log(antInputRef.current.input)
+        console.log(place)
         form.setFieldValue('street',place?.formatted_address)
         
         const fullAddress = extractFullAddress(place)
@@ -244,7 +247,7 @@ interface EditableProp{
       street:fullAddress.street,
       city: fullAddress.city,
       country: fullAddress.country,
-      zipCode: '46843',
+      zipCode: fullAddress.postalCode,
     }
   
 
