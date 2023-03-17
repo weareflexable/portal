@@ -157,7 +157,8 @@ interface EditableProp{
       state: '',
       country:'',
       city:'',
-      street:''
+      street:'',
+      postalCode: ''
   })
 
   const queryClient = useQueryClient()
@@ -175,6 +176,7 @@ interface EditableProp{
               state:'',
               country:'',
               city:'',
+              postalCode: '',
               latitude:place.geometry.location.lat(),
               longitude:place.geometry.location.lng()
           };
@@ -182,6 +184,7 @@ interface EditableProp{
               const type = address.types[0]
               if(type==='country') addressObj.country = address.long_name
               if(type === 'locality') addressObj.state = address.short_name
+              if(type === 'postal_code') addressObj.postalCode = address.short_name
               if(type === 'administrative_area_level_1') addressObj.city = address.short_name
           })
   
@@ -216,7 +219,7 @@ interface EditableProp{
   });
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.put(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -239,25 +242,37 @@ interface EditableProp{
 
   function onFinish(updatedItem:any){
   
-    const payload = {
-      // ...selectedRecord,
-      // ...fullAddress,
+    // const payload = {
+    //   // ...selectedRecord,
+    //   // ...fullAddress,
+    //   id: selectedRecord.id,
+    //   serviceTypeId: selectedRecord.serviceType[0].id,
+    //   country: fullAddress.country,
+    //   city: fullAddress.city,
+    //   state: fullAddress.state,
+    //   street: fullAddress.street,
+    //   coverImageHash: selectedRecord.coverImageHash,
+    //   logoImageHash: selectedRecord.logoImageHash,
+    //   contactNumber: selectedRecord.contactNumber,
+    //   startTime: selectedRecord.start_time,
+    //   endTime: selectedRecord.end_time,
+    //   latitude: String(selectedRecord.latitude),
+    //   longitude: String(selectedRecord.longitude),
+    //   timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, 
+    //   // status: String(selectedRecord.status),
+    //   orgId: selectedRecord.orgId
+    // }
+
+    const payload = { 
+      //@ts-ignore
       id: selectedRecord.id,
-      serviceTypeId: selectedRecord.serviceType[0].id,
-      country: fullAddress.country,
+      // name: selectedRecord.name,
+      address: 'yes',
+      street:fullAddress.street,
       city: fullAddress.city,
+      country: fullAddress.country,
       state: fullAddress.state,
-      street: fullAddress.street,
-      coverImageHash: selectedRecord.coverImageHash,
-      logoImageHash: selectedRecord.logoImageHash,
-      contactNumber: selectedRecord.contactNumber,
-      startTime: selectedRecord.start_time,
-      endTime: selectedRecord.end_time,
-      latitude: String(selectedRecord.latitude),
-      longitude: String(selectedRecord.longitude),
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, 
-      // status: String(selectedRecord.status),
-      orgId: selectedRecord.orgId
+      zipCode: fullAddress.postalCode
     }
     // setState(updatedRecord)
     mutation.mutate(payload)

@@ -703,6 +703,8 @@ return(
   onClose={closeDrawerHandler} 
   open={isDrawerOpen}
 >
+
+  
   
 <EditableText
     fieldKey="name" // The way the field is named in DB
