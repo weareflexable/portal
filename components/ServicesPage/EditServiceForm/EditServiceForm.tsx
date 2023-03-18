@@ -117,7 +117,6 @@ interface EditableProp{
   
     const [isEditMode, setIsEditMode] = useState(false)
   
-  
     function toggleEdit(){
       setIsEditMode(!isEditMode)
     }
@@ -242,26 +241,7 @@ interface EditableProp{
 
   function onFinish(updatedItem:any){
   
-    // const payload = {
-    //   // ...selectedRecord,
-    //   // ...fullAddress,
-    //   id: selectedRecord.id,
-    //   serviceTypeId: selectedRecord.serviceType[0].id,
-    //   country: fullAddress.country,
-    //   city: fullAddress.city,
-    //   state: fullAddress.state,
-    //   street: fullAddress.street,
-    //   coverImageHash: selectedRecord.coverImageHash,
-    //   logoImageHash: selectedRecord.logoImageHash,
-    //   contactNumber: selectedRecord.contactNumber,
-    //   startTime: selectedRecord.start_time,
-    //   endTime: selectedRecord.end_time,
-    //   latitude: String(selectedRecord.latitude),
-    //   longitude: String(selectedRecord.longitude),
-    //   timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, 
-    //   // status: String(selectedRecord.status),
-    //   orgId: selectedRecord.orgId
-    // }
+    
 
     const payload = { 
       //@ts-ignore

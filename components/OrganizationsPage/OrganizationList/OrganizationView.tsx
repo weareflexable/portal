@@ -999,9 +999,9 @@ function onFinish(updatedItem:any){
   const payload = {
     //@ts-ignore
     id: selectedRecord.orgId,
-    // name: selectedRecord.name,
     address: 'yes',
     street:fullAddress.street,
+    state: fullAddress.state,
     city: fullAddress.city,
     country: fullAddress.country,
     zipCode: fullAddress.postalCode,

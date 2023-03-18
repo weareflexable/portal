@@ -451,9 +451,9 @@ return(
    />
 
   <EditableText
-    fieldKey="routing_no" // The way the field is named in DB
+    fieldKey="routing_number" // The way the field is named in DB
     currentFieldValue={selectedRecord.routingNumber}
-    fieldName = 'routingNo'
+    fieldName = 'routingNumber'
     title = 'Routing No'
     id = {selectedRecord.id}
     options = {{queryKey:'banks',mutationUrl:'org-bank'}}

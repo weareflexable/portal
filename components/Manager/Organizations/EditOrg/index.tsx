@@ -237,7 +237,6 @@ interface EditableProp{
   
   function onFinish(updatedItem:any){
 
-
   
     const payload = {
       //@ts-ignore
@@ -245,6 +244,7 @@ interface EditableProp{
       // name: selectedRecord.name,
       address: 'yes',
       street:fullAddress.street,
+      state: fullAddress.state,
       city: fullAddress.city,
       country: fullAddress.country,
       zipCode: fullAddress.postalCode,
