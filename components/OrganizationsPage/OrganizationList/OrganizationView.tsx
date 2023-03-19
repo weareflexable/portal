@@ -502,7 +502,7 @@ export default function AdminOrgsView(){
 
         return (
             <div>
-              {isUser && currentStatus.id == '1' && (orgs && orgs.length > 0) 
+              {/* {isUser && currentStatus.id == '1' && (orgs && orgs.length > 0) 
                ? <Alert
                   style={{marginBottom:'1rem', marginTop:'1rem'}} 
                   type='warning'
@@ -510,7 +510,7 @@ export default function AdminOrgsView(){
                   description="Congratulations! One or more of your organizations have been reviewed and accepted. Please logout and log back into your account in order to visit your organization and start launching venues and services."
                   banner
                   closable
-                />:null}
+                />:null} */}
                 {allOrgsQuery && allOrgsTotal === 0  
                 ? null
                 : <div style={{marginBottom:'2rem', marginTop:'1.5rem', display:'flex', width:'100%', flexDirection:'column'}}>
