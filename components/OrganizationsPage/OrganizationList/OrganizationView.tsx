@@ -393,6 +393,9 @@ export default function AdminOrgsView(){
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
+        fixed:'left',
+        width:'250px',
+        ellipsis:true,
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
@@ -412,6 +415,7 @@ export default function AdminOrgsView(){
         title: 'Address',
         // dataIndex: 'address',
         key: 'address',
+        width:'370px',
         ellipsis:true,
         render:(_,record)=>(
           <div style={{display:'flex',flexDirection:'column'}}>
@@ -434,6 +438,7 @@ export default function AdminOrgsView(){
         title: 'Contact Number',
         dataIndex: 'contactNumber',
         key: 'contactNumber',
+        width:'150px',
         render:(number)=>{
           const formattedNumber = convertToAmericanFormat(number)
           return <Text>{formattedNumber}</Text>
@@ -452,8 +457,19 @@ export default function AdminOrgsView(){
         },
     },
     {
-        ...getTableActions()
-    }
+      dataIndex: 'actions', 
+      key: 'actions',
+      fixed:'right',
+      width: currentStatus.name !== 'Deactivated'?'70px':'150px',
+      //@ts-ignore
+      render:(_,record:NewOrg)=>{
+        if(currentStatus.name !== 'Deactivated'){
+          return (<Button type='text' onClick={()=>viewOrgDetails(record)} icon={<MoreOutlined/>}/>)
+        }else{
+          return (<Button onClick={()=>reactivateOrg.mutate(record)}>Reactivate</Button>)
+        }
+      }
+}
     ];
 
   
@@ -499,9 +515,9 @@ export default function AdminOrgsView(){
 
         return (
             <div>
-              {isUser && (orgQuery && totalLength > 0) 
+              {isUser && currentStatus.id == '1' && (orgQuery && orgQuery.data.data.length > 0) 
                ? <Alert
-                  style={{marginBottom:'1rem'}} 
+                  style={{marginBottom:'1rem', marginTop:'1rem'}} 
                   type='warning'
                   message = 'Organization accepted!'
                   description="Congratulations! One or more of your organizations have been reviewed and accepted. Please logout and log back into your account in order to visit your organization and start launching venues and services."
@@ -534,6 +550,7 @@ export default function AdminOrgsView(){
                   style={{width:'100%'}} 
                   key='dfadfe' 
                   size="middle"
+                  scroll={{ x: 'calc(500px + 50%)'}}
                   loading={orgQuery.isLoading||orgQuery.isRefetching} 
                   columns={columns} 
                   onChange={handleChange} 
@@ -565,7 +582,7 @@ interface DrawerProps{
 }
 function DetailDrawer({selectedOrg,isDrawerOpen,closeDrawer}:DrawerProps){
 
-  console.log('selected org',selectedOrg)
+console.log('selected org',selectedOrg)
 
 const queryClient = useQueryClient()
 const router = useRouter()
