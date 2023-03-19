@@ -22,6 +22,7 @@ import { EditableName, EditableAddress, EditablePhone, EditableZipCode, Editable
 import { convertToAmericanFormat } from "../../../../utils/phoneNumberFormatter";
 import { EditableText } from "../../../shared/Editables";
 import useUrlPrefix from "../../../../hooks/useUrlPrefix";
+import useRole from "../../../../hooks/useRole";
 
 
 var relativeTime = require('dayjs/plugin/relativeTime')
@@ -36,6 +37,7 @@ export default function ManagerOrgsView(){
     const queryClient = useQueryClient()
     const router = useRouter()
     const {switchOrg} = useOrgs()
+    const {isUser} = useRole()
 
     const [searchText, setSearchText] = useState('');
     const [filteredInfo, setFilteredInfo] = useState<Record<string, FilterValue | null>>({});
@@ -544,6 +546,7 @@ export default function ManagerOrgsView(){
                 <title>Flexable|Portal</title>
                 <link rel="icon" href="/favicon.png" />
                </Head>
+              
                { allOrgsQuery && allOrgsTotal === 0 
                ? null 
                : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column',}}>
@@ -698,7 +701,7 @@ return(
 <Drawer 
   title="Organization Details" 
   width={640} placement="right" 
-  extra={selectedOrg.status === 1?<Button size='large' onClick={()=>gotoServices(selectedOrg)}>Visit organization</Button>:null}
+  extra={selectedOrg.status === 1?<Button shape='round' onClick={()=>gotoServices(selectedOrg)}>Visit organization</Button>:null}
   closable={true} 
   onClose={closeDrawerHandler} 
   open={isDrawerOpen}

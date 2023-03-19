@@ -6,7 +6,7 @@ const {Text,Title} = Typography
 import { SearchOutlined, PlusOutlined } from '@ant-design/icons';
 import type { FilterConfirmProps } from 'antd/es/table/interface';
 import React, { useRef, useState } from 'react'
-import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Modal, notification, Empty} from 'antd'
+import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Modal, notification, Empty, Alert} from 'antd'
 import { useRouter } from 'next/router'
 import Highlighter from 'react-highlight-words'
 import axios from 'axios';
@@ -23,6 +23,7 @@ import useUrlPrefix from "../../../hooks/useUrlPrefix";
 import { numberFormatter } from "../../../utils/numberFormatter";
 import { convertToAmericanFormat } from "../../../utils/phoneNumberFormatter";
 import { EditableText } from "../../shared/Editables";
+import useRole from "../../../hooks/useRole";
 
 
 var relativeTime = require('dayjs/plugin/relativeTime')
@@ -35,6 +36,7 @@ export default function AdminOrgsView(){
     const queryClient = useQueryClient()
     const router = useRouter()
     const {switchOrg} = useOrgs()
+    const {isUser} = useRole()
 
     const [searchText, setSearchText] = useState('');
     const [filteredInfo, setFilteredInfo] = useState<Record<string, FilterValue | null>>({});
@@ -69,7 +71,7 @@ export default function AdminOrgsView(){
       }
 
     async function fetchOrgs(){
-    const res = await axios({
+        const res = await axios({
             method:'get',
             url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?key=status&value=${currentStatus.id}&pageNumber=${pageNumber}&pageSize=${pageSize}&key2=created_by`,
             headers:{
@@ -497,6 +499,15 @@ export default function AdminOrgsView(){
 
         return (
             <div>
+              {isUser && (orgQuery && totalLength > 0) 
+               ? <Alert
+                  style={{marginBottom:'1rem'}} 
+                  type='warning'
+                  message = 'Organization accepted!'
+                  description="Congratulations! One or more of your organizations have been reviewed and accepted. Please logout and log back into your account in order to visit your organization and start launching venues and services."
+                  banner
+                  closable
+                />:null}
                 {allOrgsQuery && allOrgsTotal === 0  
                 ? null
                 : <div style={{marginBottom:'2rem', marginTop:'1.5rem', display:'flex', width:'100%', flexDirection:'column'}}>
@@ -561,6 +572,7 @@ const router = useRouter()
 const {switchOrg} = useOrgContext()
 const {paseto} = useAuthContext()
 const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+const {isUser} = useRole()
 
 function closeDrawerHandler(){
   // queryClient.invalidateQueries(['organizations'])
@@ -630,7 +642,7 @@ return(
 <Drawer 
   title="Organization Details" 
   width={640} placement="right" 
-  extra={selectedOrg.status === 1?<Button size='large' onClick={()=>gotoServices(selectedOrg)}>Visit organization</Button>:null}
+  extra={selectedOrg.status === 1?<Button disabled={isUser} shape='round' onClick={()=>gotoServices(selectedOrg)}>Visit organization</Button>:null}
   closable={true} 
   onClose={closeDrawerHandler} 
   open={isDrawerOpen}
