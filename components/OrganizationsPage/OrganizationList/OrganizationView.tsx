@@ -148,7 +148,7 @@ export default function AdminOrgsView(){
     const allOrgsTotal = allOrgsQuery.data && allOrgsQuery.data.dataLength;
 
 
-    
+
   
     const handleSearch = (
       selectedKeys: string[],
@@ -362,30 +362,30 @@ export default function AdminOrgsView(){
 
     }
   
-    function gotoServices(org:NewOrg){
-      console.log(org)
-      // switch org
-      switchOrg(org)
-      // navigate user to services page
-      router.push('/organizations/services/')
-    }
+    // function gotoServices(org:NewOrg){
+    //   console.log(org)
+    //   // switch org
+    //   switchOrg(org)
+    //   // navigate user to services page
+    //   router.push('/organizations/services/')
+    // }
     
     
-      const onMenuClick=(e:any, record:NewOrg) => {
-        const event = e.key
-        switch(event){
-          case 'deActivate': deActivateOrgHandler(record);
-          break;
-          case 'review': reviewHandler(record)
-          break;
-          case 'accept': acceptOrgHandler(record)
-          break;
-          case 'reject': rejectOrgHandler(record)
-          break;
-          case 'viewDetails': viewOrgDetails(record)
-        }
-        console.log('click', record);
-      };
+      // const onMenuClick=(e:any, record:NewOrg) => {
+      //   const event = e.key
+      //   switch(event){
+      //     case 'deActivate': deActivateOrgHandler(record);
+      //     break;
+      //     case 'review': reviewHandler(record)
+      //     break;
+      //     case 'accept': acceptOrgHandler(record)
+      //     break;
+      //     case 'reject': rejectOrgHandler(record)
+      //     break;
+      //     case 'viewDetails': viewOrgDetails(record)
+      //   }
+      //   console.log('click', record);
+      // };
       
   
     const columns: ColumnsType<NewOrg> = [
@@ -497,25 +497,12 @@ export default function AdminOrgsView(){
     }
   })
 
-    function getTableActions(){
-            return {
-                dataIndex: 'actions', 
-                key: 'actions',
-                width: currentStatus.name !== 'Deactivated'?'70px':'150px',
-                //@ts-ignore
-                render:(_,record:NewOrg)=>{
-                  if(currentStatus.name !== 'Deactivated'){
-                    return (<Button type='text' onClick={()=>viewOrgDetails(record)} icon={<MoreOutlined/>}/>)
-                  }else{
-                    return (<Button onClick={()=>reactivateOrg.mutate(record)}>Reactivate</Button>)
-                  }
-                }
-        }
-      }
+   
+  
 
         return (
             <div>
-              {isUser && currentStatus.id == '1' && (orgQuery && orgQuery.data.data.length > 0) 
+              {isUser && currentStatus.id == '1' && (orgs && orgs.length > 0) 
                ? <Alert
                   style={{marginBottom:'1rem', marginTop:'1rem'}} 
                   type='warning'
