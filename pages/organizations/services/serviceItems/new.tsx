@@ -266,7 +266,7 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
      const res = customDates.map(date=>{ 
           const updatedDate = {
               ...date,
-              date: dayjs(date.date).format('MMM DD, YYYY'),
+              date: dayjs(date.date).format(),
               ticketsPerDay: Number(date.ticketsPerDay),
               price: date.price*100
           }

@@ -127,7 +127,7 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
         serviceItemId: selectedServiceItem.id, 
         id: availability.id, 
         //@ts-ignore
-        date: dayjs.utc(record.date).format(),
+        date: dayjs(record.date).format(),
       }
 
 
@@ -315,7 +315,7 @@ export function NewAvailability({selectedServiceItem}:NewAvailabilityProps){
         // of the request payload.
         const transformedItem = {
             //@ts-ignore
-            date: dayjs.utc(updatedItem.date).format(), // provide it in utc
+            date: dayjs(updatedItem.date).format(),
             name: updatedItem.name,
             price: updatedItem.price*100,
             ticketsperday: Number(updatedItem.ticketsPerDay) 
