@@ -216,8 +216,8 @@ export default function ManagerBookingsView(){
     },
     {
       title: 'Ticket Date',
-      dataIndex: 'target_date',
-      key: 'target_date',
+      dataIndex: 'targetDate',
+      key: 'targetDate',
       fixed:'right',
       width: '110px',
       render: (targetDate)=>{
