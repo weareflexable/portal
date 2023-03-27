@@ -274,6 +274,7 @@ export default function NewService(){
                         // name="contactNumber"
                         label="Contact Number"
                         required
+                        style={{marginBottom:'0'}}
                         rules={[{ required: true, message: 'Please input a valid phone number' }]}
                     >
                         <Input.Group compact>
