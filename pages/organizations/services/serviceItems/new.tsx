@@ -117,7 +117,7 @@ function BasicForm({nextStep}:BasicInfoProps){
 
    
 
-     const onFinish = async (formData:ServiceItem)=>{
+     const onFinish = async (formData:any)=>{
 
         // availability should return empty array whenever user decides not to add custom dates
         // const transformedAvailability = formData.availability?convertDates(formData.availability):[]
@@ -130,7 +130,9 @@ function BasicForm({nextStep}:BasicInfoProps){
                 description:formData.description,
                 orgServiceId: currentService.id,
                 serviceItemTypeId: router.query.key, // TODO: Get this value from context,
-                logoImageHash: artworkRef.current
+                logoImageHash: artworkRef.current,
+                validityStartDate: dayjs(formData.validity.start).format(),
+                validityEndDate: dayjs(formData.validity.end).format()
             }
 
             createData.mutate(formObject)
@@ -222,6 +224,28 @@ function BasicForm({nextStep}:BasicInfoProps){
                 </Form.Item>
             </Col>
         </Row>
+
+        <Form.Item
+            label="Validity Period"
+            hasFeedback
+            required
+            style={{marginBottom:'0'}}
+            extra={`Enter a timeframe you want your DAT to be redeemable by customers. This may vary based on your industry and service you provide. Eg: a "Saturday Night Line Skip" at a bar might be valid from 7pm on Saturday night until 4am Sunday morning, to allow the late night partygoers a chance to redeem their tickets. A restaurant DAT for a "Last Minute Saturday Reservation" might only need to have validity period of 12 noon - 12 midnight`} 
+            rules={[{required: true, message: 'Please select a time period' }]}
+        >
+            <Input.Group  compact>
+            <Form.Item  rules={[{required:true, message:'Please provide a start time'}]}  name={['validity','start']} noStyle>
+                <TimePicker  use12Hours placeholder="Start"  format="h A" size="large" />
+            </Form.Item>
+            <Form.Item  rules={[{required:true, message:'Please provide a end time'}]}  name={['validity','end']} noStyle>
+                <TimePicker use12Hours placeholder="End"  format="h A" size="large" />
+            </Form.Item>
+
+            </Input.Group>
+            {/* <Text style={{marginLeft:'1rem'}}>9 hrs interval for all tickets</Text>   */}
+
+        </Form.Item> 
+
 
 
         <Artwork onHandleArtwork={handleArtworkChange}/>

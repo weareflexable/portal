@@ -142,9 +142,9 @@ export default function NewService(){
             orgId:currentOrg.orgId,
             timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // get user timezone
             //@ts-ignore
-            startTime: dayjs(formData.validity.start).format(),
+            startTime: "2023-03-24T13:47:59.064351Z",
             //@ts-ignore
-            endTime: dayjs(formData.validity.end).format()
+            endTime: "2023-03-24T13:47:59.064351Z"
         }
         //@ts-ignore
         delete formObject.validityPeriod
@@ -295,7 +295,7 @@ export default function NewService(){
                         </Input.Group>
                     </Form.Item>
 
-
+{/* 
                     <Form.Item
                         label="Validity Period"
                         hasFeedback
@@ -315,7 +315,7 @@ export default function NewService(){
                         </Input.Group>
                         {/* <Text style={{marginLeft:'1rem'}}>9 hrs interval for all tickets</Text>   */}
 
-                    </Form.Item> 
+                    {/* </Form.Item>   */}
 
                     
                 </div>
