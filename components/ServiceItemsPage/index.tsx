@@ -73,7 +73,6 @@ export default function ServiceItemsView(){
     const serviceItemTypes = useServiceItemTypes()
 
     const items = serviceItemTypes && serviceItemTypes.map((item:any)=>({label:item.label, key:item.value}))
-    console.log(items)
 
     async function fetchAllServiceItems(){
     const res = await axios({
@@ -316,7 +315,7 @@ export default function ServiceItemsView(){
                   :<Table 
                   style={{width:'100%'}} 
                   scroll={{ x: 'calc(500px + 50%)'}} 
-                  key='dfadfe' 
+                  rowKey={(record) => record.id}
                   pagination={{
                     total:totalLength,  
                     showTotal:(total) => `Total ${total} items`,

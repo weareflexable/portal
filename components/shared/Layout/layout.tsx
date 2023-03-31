@@ -15,6 +15,9 @@ import ErrorBoundary from '../ErrorBoundary/ErrorBoundary';
 import OrgSwitcherModal from '../OrgSwitcherModal/OrgSwitcherModal';
 import ServicesSwitcherModal from '../ServicesSwitcherModal/ServicesSwitcherModal';
 import UnAuthenticatedView from '../UnAuthenticated/UnAuthenticatedView';
+//@ts-ignore
+import {PasetoV4Public} from 'paseto-browser'
+import nacl from 'tweetnacl'
 
 
 
@@ -34,7 +37,7 @@ const {Text} = Typography
   const AppLayout: React.FC<LayoutProps> = ({children}) => {
     
     const {asPath, isReady} = useRouter()  
-    const {isAuthenticated, currentUser} = useAuthContext()
+    const {isAuthenticated, currentUser, paseto} = useAuthContext()
     const [showSwitcherModal, setSwitcherModal] = useState(false) 
     const [showOrgSwitcher, setShowOrgSwitcher] = useState(false) 
     const [pageRoutes, setPageRoutes] = useState<PageRoute>({basePath:'',selectedRoute:'dashboard'})
@@ -42,9 +45,33 @@ const {Text} = Typography
     
     // console.log('from layout',asPath)
 
+    useEffect(()=>{
+
+      async function decodePaseto(paseto:any){
+
+        const keypair = nacl.sign.keyPair()
+        const sk = keypair.secretKey
+        const pk = keypair.publicKey
+
+        console.log(sk)
+
+        let signer = new PasetoV4Public(pk, sk)
+        // const signer = PasetoV4Public.generate()
+        signer = PasetoV4Public.generate()
+
+        const decoded = await signer.decode(paseto)
+        console.log(decoded) 
+        // return decoded; 
+      }
+      if(paseto){
+        // deconde paseto
+        // const res = decodePaseto(paseto)
+        // decodePaseto(paseto)
+        // console.log(paseto)
+      }
+    },[])
 
     const splittedRoutes = asPath.split('/')
-    console.log(splittedRoutes) 
     // console.log('is re-rendering layout')
     const selectedRoute = splittedRoutes && splittedRoutes[3]
     splittedRoutes.pop() 
