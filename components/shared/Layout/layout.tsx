@@ -15,9 +15,7 @@ import ErrorBoundary from '../ErrorBoundary/ErrorBoundary';
 import OrgSwitcherModal from '../OrgSwitcherModal/OrgSwitcherModal';
 import ServicesSwitcherModal from '../ServicesSwitcherModal/ServicesSwitcherModal';
 import UnAuthenticatedView from '../UnAuthenticated/UnAuthenticatedView';
-//@ts-ignore
-import {PasetoV4Public} from 'paseto-browser'
-import nacl from 'tweetnacl'
+
 
 
 
@@ -44,32 +42,6 @@ const {Text} = Typography
 
     
     // console.log('from layout',asPath)
-
-    useEffect(()=>{
-
-      async function decodePaseto(paseto:any){
-
-        const keypair = nacl.sign.keyPair()
-        const sk = keypair.secretKey
-        const pk = keypair.publicKey
-
-        console.log(sk)
-
-        let signer = new PasetoV4Public(pk, sk)
-        // const signer = PasetoV4Public.generate()
-        signer = PasetoV4Public.generate()
-
-        const decoded = await signer.decode(paseto)
-        console.log(decoded) 
-        // return decoded; 
-      }
-      if(paseto){
-        // deconde paseto
-        // const res = decodePaseto(paseto)
-        // decodePaseto(paseto)
-        // console.log(paseto)
-      }
-    },[])
 
     const splittedRoutes = asPath.split('/')
     // console.log('is re-rendering layout')
