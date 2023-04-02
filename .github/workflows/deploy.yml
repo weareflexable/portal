@@ -90,6 +90,7 @@ jobs:
           script: |
             pwd
             cd ~
+            echo ${{ secrets.GHCR_TOKEN }} | podman login ghcr.io -u secrets.GHCR_USERNAME --password-stdin
             podman pull ghcr.io/weareflexable/portal:main
             podman stop portal
             podman rm portal
@@ -106,6 +107,7 @@ jobs:
           script: |
             pwd
             cd ~
+            echo ${{ secrets.GHCR_TOKEN }} | podman login ghcr.io -u secrets.GHCR_USERNAME --password-stdin
             podman pull ghcr.io/weareflexable/portal:staging
             podman stop portal
             podman rm portal
@@ -122,6 +124,7 @@ jobs:
           script: |
             pwd
             cd ~
+            echo ${{ secrets.GHCR_TOKEN }} | podman login ghcr.io -u secrets.GHCR_USERNAME --password-stdin
             podman pull ghcr.io/weareflexable/portal:prod
             podman stop portal
             podman rm portal
