@@ -1,11 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useOrgs from "../../../hooks/useOrgs";
-const {Text,Title} = Typography
+const {Text,Title,Paragraph} = Typography
 import React, { useRef, useState } from 'react'
 import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Modal, Alert, notification} from 'antd'
 import { useRouter } from 'next/router'
 import axios from 'axios';
-import {MoreOutlined,ReloadOutlined} from '@ant-design/icons'
+import {MoreOutlined,ReloadOutlined,DashOutlined,MobileOutlined,LaptopOutlined} from '@ant-design/icons'
 import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
 
 import { useAuthContext } from '../../../context/AuthContext';
@@ -17,6 +17,9 @@ import { useOrgContext } from "../../../context/OrgContext";
 import { asyncStore } from "../../../utils/nftStorage";
 import { ServiceItem } from "../../../types/Services";
 import { User } from "./Users.types";
+import { IMAGE_PLACEHOLDER_HASH } from "../../../constants";
+import { convertToAmericanFormat } from "../../../utils/phoneNumberFormatter";
+import useUrlPrefix from "../../../hooks/useUrlPrefix";
 const {TextArea} = Input
 
 
@@ -26,12 +29,14 @@ const {TextArea} = Input
 export default function UsersView(){
 
     const {paseto} = useAuthContext()
-    const queryClient = useQueryClient()
+    const queryClient = useQueryClient() 
     const router = useRouter()
     const {switchOrg} = useOrgs()
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const [pageNumber, setPageNumber] = useState<number|undefined>(0)
+    const [pageSize, setPageSize] = useState<number|undefined>(10)
   
+    const urlPrefix = useUrlPrefix()
     // const isFilterEmpty = Object.keys(filteredInfo).length === 0;
 
     type DataIndex = keyof ServiceItem;
@@ -42,7 +47,7 @@ export default function UsersView(){
     async function fetchUsers(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/users-list?key=status&value=1&pageNumber=${pageNumber}&pageSize=10`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/users-list?key=status&value=1&pageNumber=${pageNumber}&pageSize=${pageSize}`,
             headers:{
                 "Authorization": paseto
             }
@@ -52,12 +57,10 @@ export default function UsersView(){
    
     }
 
-    const usersQuery = useQuery({queryKey:['users'], queryFn:fetchUsers, enabled:paseto !== ''})
+    const usersQuery = useQuery({queryKey:['users',pageNumber], queryFn:fetchUsers, enabled:paseto !== ''})
     const data = usersQuery.data && usersQuery.data.data
     const totalLength = usersQuery.data && usersQuery.data.dataLength;
 
-
-    console.log(data)
     
   
   
@@ -87,6 +90,7 @@ export default function UsersView(){
       
       const handleChange: TableProps<User>['onChange'] = (data) => {
         console.log(data.current)
+        setPageSize(data.pageSize)
         //@ts-ignore
         setPageNumber(data.current-1); // Subtracting 1 because pageSize param in url starts counting from 0
       };
@@ -97,11 +101,15 @@ export default function UsersView(){
         title: 'User',
         dataIndex: 'name',
         key: 'name',
+        ellipsis:true, 
+        fixed: 'left',
+        width: '300px',
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
                     {/* <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.profilePic}`}/> */}
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.profilePic}`}/>
+                    {/* <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.profilePic}`}/>     */}
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.profilePic.length < 10? IMAGE_PLACEHOLDER_HASH : record.profilePic}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{record.name}</Text>  
                         <Text type="secondary">{record.email}</Text>  
@@ -111,63 +119,111 @@ export default function UsersView(){
         },
       },
       {
+        title: 'Wallet Address',
+        dataIndex: 'walletaddress',
+        key: 'walletaddress',
+        width:'200px',
+        render:(walletaddress)=>{ 
+
+          return <Tag >
+             <Paragraph style={{margin:'0'}} copyable={{ text: walletaddress }}>{`${walletaddress.substring(0,6)}....${walletaddress.slice(-4)}`}</Paragraph>
+          </Tag>
+        }
+      },
+      {
+        title: 'Role',
+        dataIndex: 'userRoleName',
+        key: 'userRoleName',
+        width:'120px',
+        render:(userRoleName)=>{
+          const color = userRoleName === 'Manager' ? 'purple': userRoleName==='Admin'? 'volcano': userRoleName === 'Supervisor'?'cyan': userRoleName === 'Superadmin'?'blue':'green'
+          return <Tag color={color}>{userRoleName}</Tag>
+        }
+      },
+      {
         title: 'Country',
         dataIndex: 'country',
         key: 'country',
-        render: (_,record)=>(
-          <div style={{display:'flex',flexDirection:'column'}}>
-            <Text>{record.country}</Text>
-            <Text type="secondary">{record.city}</Text>
-          </div>
-        )
+        width:'150px',
+        render: (_,record)=>{
+          return record.country !== '' ? <Text style={{textTransform:'capitalize'}}>{record.country}</Text> : <DashOutlined/>
+          // <div style={{display:'flex',flexDirection:'column'}}>
+          //   <Text>{record.country}</Text>
+          //   {/* <Text type="secondary">{record.city}</Text> */}
+          // </div>
+        }
+        
       },
      
       {
         title: 'Gender',
         dataIndex: 'gender',
         key: 'gender',
+        width:'100px',
+        render: (gender)=>{
+
+          return gender !== '' ? <Text>{gender}</Text> : <DashOutlined />
+        }
       },
       {
         title: 'Phone',
-        dataIndex: 'mobileNumber',
-        key: 'mobileNumber',
+        dataIndex: 'contactNumber',
+        key: 'contactNumber',
+        width:'200px',
+        render:(contactNumber)=>{
+          return contactNumber !== ''? <Text>{convertToAmericanFormat(contactNumber)}</Text> : <DashOutlined/>
+        }
       },
       // {
       //   title: 'Wallet address',
       //   dataIndex: 'walletaddress',
       //   key: 'walletaddress',
       // },
+     
+
       {
-        title: 'Role',
-        dataIndex: 'userRoleName',
-        key: 'userRoleName',
+        title: 'Device Type',
+        dataIndex: 'deviceType',
+        key: 'deviceType',
+        width:'120px',
+        render: (deviceType)=>{
+          const deviceIcon = deviceType === 'mobile' ? <MobileOutlined /> : <LaptopOutlined />
+          return deviceType !== '' ? <Tag icon={deviceIcon} style={{textTransform:'capitalize'}}>{deviceType}</Tag> : <DashOutlined />
+        }
+        
       },
 
       {
         title: 'User Type',
         dataIndex: 'userType',
         key: 'userType',
-      },
-      {
-        title: 'Status',
-        dataIndex: 'status',
-        key: 'status',
-        render: (status)=>{
-          const statusText = status? "Active": "In-active";
-          return(
-            <Badge status="success" text={statusText}/>
-          )
+        width:'100px',
+        render: (userType)=>{
+          return userType !== '' ? <Tag style={{textTransform:'capitalize'}}>{userType}</Tag> : <DashOutlined />
         }
+        
       },
+      // {
+      //   title: 'Status',
+      //   dataIndex: 'status',
+      //   key: 'status',
+      //   render: (status)=>{
+      //     const statusText = status? "Active": "In-active";
+      //     return(
+      //       <Badge status="success" text={statusText}/>
+      //     )
+      //   }
+      // },
 
       {
-          title: 'Created On',
+          title: 'Registered On',
           dataIndex: 'createdAt',
           key: 'createdAt',
+          width:'120px',
           render: (_,record)=>{
               const date = dayjs(record.createdAt).format('MMM DD, YYYY')
               return(
-            <Text>{date}</Text>
+            <Text type="secondary">{date}</Text>
             )
         },
       },
@@ -175,9 +231,11 @@ export default function UsersView(){
     {
       dataIndex: 'actions', 
       key: 'actions',
+      width:'70px',
+      fixed: 'right',
       render:(_,record)=>{
         // const items = getTableRecordActions()
-        return (<Button icon={<MoreOutlined/>} onClick={()=>viewUserDetails(record)}/>)
+        return (<Button icon={<MoreOutlined/>} type='text' onClick={()=>viewUserDetails(record)}/>)
       } 
     }
     ];
@@ -191,12 +249,15 @@ export default function UsersView(){
                      )
                     )}
                 </Radio.Group> */}
-                <div style={{width: "100%",display:'flex', marginTop:'2rem', justifyContent:'flex-end', alignItems:'center'}}>
-                  <Button type='link' loading={usersQuery.isRefetching} onClick={()=>usersQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
-                </div>
+                {/* <div style={{width: "100%",display:'flex', marginTop:'2rem', justifyContent:'flex-end', alignItems:'center'}}> */} 
+                  <Title style={{margin:'0'}} level={2}>Users</Title>
+                  <Button shape="round" loading={usersQuery.isRefetching} onClick={()=>usersQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                {/* </div> */}
 
                 </div>
                 <Table 
+                  size="small"
+                  scroll={{ x: 'calc(500px + 50%)'}} 
                   style={{width:'100%'}} 
                   key='dfadfe' 
                   pagination={{
@@ -233,8 +294,9 @@ const {currentUser,paseto} = useAuthContext()
 
 const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
+const urlPrefix = useUrlPrefix()
+
 function closeDrawerHandler(){
-  queryClient.invalidateQueries(['users'])
   closeDrawer(!isDrawerOpen)
 }
 
@@ -248,12 +310,13 @@ function deleteService(){
   deleteData.mutate(selectedUser,{
     onSuccess:()=>{
       notification['success']({
-        message: 'Successfully deleted record!'
+        message: 'Successfully blocked the user!'
       })
       toggleDeleteModal()
       closeDrawerHandler()
 
     },
+    
     onError:(err)=>{
         console.log(err)
         notification['error']({
@@ -269,7 +332,7 @@ function deleteService(){
 const deleteDataHandler = async(record:User)=>{      
   const {data} = await axios({
     method:'patch',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/users-role`,
+    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/users-role`,
     data: {
         targetUserId:record.id,
         key:'status',
@@ -314,7 +377,8 @@ interface EditableProp{
   selectedUser: User
 }
 
-function EditableName({selectedUser}:EditableProp){
+
+function EditableRole({selectedUser}:EditableProp){
 
   const [state, setState] = useState(selectedUser)
 
@@ -324,98 +388,7 @@ function EditableName({selectedUser}:EditableProp){
 
   const queryClient = useQueryClient()
 
-  function toggleEdit(){
-    setIsEditMode(!isEditMode)
-  }
-
-
-  const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/users-role`,updatedItem,{
-      headers:{
-          //@ts-ignore
-          "Authorization": paseto
-      }
-    })
-      return data;
-  }
-  const mutation = useMutation({
-    mutationKey:['name'],
-    mutationFn: mutationHandler,
-    onSuccess:()=>{
-      toggleEdit()
-    }
-  })
-
-  function onFinish(updatedItem:User){
-    const payload = {
-      key:'name',
-      value: updatedItem.name,
-      targetUserId: selectedUser.id
-    }
-    const updatedRecord = {
-      ...selectedUser,
-      name: updatedItem.name
-    }
-    setState(updatedRecord)
-    mutation.mutate(payload)
-  }
-
-  const {isLoading:isEditing} = mutation;
-
-  const readOnly = (
-    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Text>{state.name}</Text>
-      <Button type="link" onClick={toggleEdit}>Edit</Button>
-    </div>
-)
-
-  const editable = (
-    <Form
-     style={{ marginTop:'.5rem' }}
-     name="editableName"
-     initialValues={selectedUser}
-     onFinish={onFinish}
-     >
-      <Row>
-        <Col span={16} style={{height:'100%'}}>
-          <Form.Item
-              name="name"
-              rules={[{ required: true, message: 'Please input a valid service name' }]}
-          >
-              <Input  disabled={isEditing} placeholder="Flexable serviceItem" />
-          </Form.Item>
-        </Col>
-        <Col span={4}>
-          <Form.Item style={{ width:'100%'}}>
-              <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
-                      Cancel
-                  </Button>
-                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
-                      Apply changes
-                  </Button>
-              </Space>
-                        
-          </Form.Item>
-        </Col>
-      </Row>
-           
-    </Form>
-  )
-  return(
-    <div style={{width:'100%', display:'flex', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>Name</Text>
-    {isEditMode?editable:readOnly}
-    </div>
-  )
-}
-function EditableRole({selectedUser}:EditableProp){
-
-  const [state, setState] = useState(selectedUser)
-
-  const [isEditMode, setIsEditMode] = useState(false)
-
-  const {paseto} = useAuthContext()
+  const urlPrefix = useUrlPrefix()
 
 
   function toggleEdit(){
@@ -428,7 +401,7 @@ function EditableRole({selectedUser}:EditableProp){
 
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/users-role`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/users-role`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -441,7 +414,12 @@ function EditableRole({selectedUser}:EditableProp){
     mutationFn: mutationHandler,
     onSuccess:()=>{
       toggleEdit()
-    }
+    },
+    onSettled:(data)=>{
+      setState(data.data.target_user_details[0])
+      queryClient.invalidateQueries(['users'])
+      // update state here
+      }
   })
 
   function onFinish(updatedItem:any){
@@ -455,7 +433,7 @@ function EditableRole({selectedUser}:EditableProp){
       ...selectedUser,
       role: updatedItem.role
     }
-    setState(updatedRecord)
+    // setState(updatedRecord)
     mutation.mutate(payload)
   }
 
@@ -471,7 +449,7 @@ function EditableRole({selectedUser}:EditableProp){
 
   const editable = (
     <Form
-     style={{ marginTop:'.8rem' }}
+     style={{ marginTop:'.8rem' }}    
      name="editableRole"
      initialValues={selectedUser}
      onFinish={onFinish}
@@ -485,6 +463,7 @@ function EditableRole({selectedUser}:EditableProp){
         >
           <Radio.Group >
             <Space direction="vertical">
+              <Radio value={0}>Superadmin</Radio>
               <Radio value={1}>Manager</Radio>
               <Radio value={2}>Admin</Radio>
               <Radio value={3}>Supervisor</Radio>
@@ -512,7 +491,7 @@ function EditableRole({selectedUser}:EditableProp){
   )
   return(
     <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>Address</Text>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>User Role</Text>
     {isEditMode?editable:readOnly}
     </div>
   )

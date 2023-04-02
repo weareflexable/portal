@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useOrgs from "../../../hooks/useOrgs";
 const {Text, Title} = Typography;
 import React, { ReactNode, useEffect, useRef, useState } from 'react'
-import {Typography,Button, Skeleton, Badge, Image, Table, Input, Radio,  Drawer, Row, Col, Form, Modal, Alert, notification, Dropdown, MenuProps} from 'antd'
+import {Typography,Button, Skeleton, Badge, Image, Table, Input, Radio,  Drawer, Row, Col, Form, Modal, Alert, notification, Dropdown, MenuProps, Tag} from 'antd'
 import { useRouter } from 'next/router'
 import axios from 'axios';
 import { MoreOutlined, ReloadOutlined, ArrowLeftOutlined, PlusOutlined} from '@ant-design/icons'
@@ -17,10 +17,17 @@ import { Service } from "../Services.types";
 import { EditableAddress, EditableCoverImage, EditableCurrency, EditableLogoImage, EditableName, EditablePhone } from "../EditServiceForm/EditServiceForm";
 import CurrentUser from "../../Header/CurrentUser/CurrentUser";
 import useServiceTypes from "../../../hooks/useServiceTypes";
-
+import { convertToAmericanFormat } from "../../../utils/phoneNumberFormatter";
+import { EditableText} from "../../shared/Editables";
+import useUrlPrefix from "../../../hooks/useUrlPrefix";
 
 var relativeTime = require('dayjs/plugin/relativeTime')
 dayjs.extend(relativeTime)
+
+type ServiceMenu={
+  label:string,
+  key:string
+}
 
 
 export default function ManagerOrgsView(){
@@ -36,6 +43,7 @@ export default function ManagerOrgsView(){
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const [pageNumber, setPageNumber] = useState<number|undefined>(0)
+    const [pageSize, setPageSize] = useState<number|undefined>(10)
 
     const serviceTypes = useServiceTypes()
 
@@ -50,7 +58,7 @@ export default function ManagerOrgsView(){
       setIsHydrated(true)
     }, [])
 
-    const urlPrefix = currentUser.role == 1 ? 'manager': 'admin'
+   const urlPrefix = useUrlPrefix()
 
   
     async function fetchAllServices(){
@@ -69,28 +77,28 @@ export default function ManagerOrgsView(){
     }
   
     async function fetchServices(){
-    const res = await axios({
-            method:'get',
-            //@ts-ignore
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services?key=org_id&value=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=10&key2=status&value2=${currentFilter.id}`,
+      const res = await axios({
+              method:'get',
+              //@ts-ignore
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services?key=org_id&value=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&key2=status&value2=${currentFilter.id}`,
 
-            headers:{
-                "Authorization": paseto
-            }
-        })
+              headers:{
+                  "Authorization": paseto
+              }
+          })
 
-        return res.data;
-   
+          return res.data;
+    
     }
 
-    async function changeOrgStatus({serviceId, statusNumber}:{serviceId:string, statusNumber: string}){
+    async function reActivateServiceHandler(record:Service){
         const res = await axios({
             method:'patch',
             url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,
             data:{
                 key:'status',
-                value: statusNumber, // 0 means de-activated in db
-                id: serviceId 
+                value: '1', 
+                id: record.id  
             },
             headers:{
                 "Authorization": paseto
@@ -99,20 +107,14 @@ export default function ManagerOrgsView(){
         return res; 
     }
 
-    const changeStatusMutation = useMutation(['services'],{
-        mutationFn: changeOrgStatus,
-        onSuccess:(data:any)=>{
-            queryClient.invalidateQueries({queryKey:['services',currentFilter]})
-        },
-        onError:()=>{
-            console.log('Error changing status')
-        }
+
+    const reactivateService = useMutation(reActivateServiceHandler,{
+      onSettled:()=>{
+        queryClient.invalidateQueries({queryKey:['services']})
+      }
     })
 
-    function deActivateRecordHandler(service:Service){
-        // setSelectedRecord(org.orgId)
-        changeStatusMutation.mutate({serviceId:service.id, statusNumber:'0'})
-    }
+   
 
     // const shouldFetch = paseto !== '' && urlPrefix != undefined
 
@@ -138,16 +140,17 @@ export default function ManagerOrgsView(){
 
 
     const handleChange: TableProps<Service>['onChange'] = (data) => {
+      setPageSize(data.pageSize)
       //@ts-ignore
       setPageNumber(data.current-1); // Subtracting 1 because pageSize param in url starts counting from 0
     };
   
    
-function gotoDashboard(service:Service){
+function gotoServiceItemsPage(service:Service){
   // switch org
   switchService(service)
   // navigate user to services page
-  router.push('/organizations/services/bookings') // redirect to dashboard later
+  router.push('/organizations/services/serviceItems') // redirect to dashboard later
 }
 
 
@@ -165,103 +168,114 @@ function gotoDashboard(service:Service){
         console.log('click', record);
       };
 
-      
+  
   
     const columns: ColumnsType<Service> = [
       {
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
+        fixed:'left',
+        width:'250px',
+        ellipsis:true,
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
                     <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.logoImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
-                        <Button onClick={()=>gotoDashboard(record)} type='link'>{record.name}</Button>  
+                        <Button onClick={()=>gotoServiceItemsPage(record)} type='link'>{record.name}</Button>  
                     </div>
                 </div>
             )
         },
       },
       {
+        title: 'Service Type',
+        dataIndex: 'serviceType',
+        key: 'serviceType',
+        width:'120px',
+        render: (_,record)=>{
+          const type = record.serviceType[0]
+            return <Tag>{type.name}</Tag>
+        }
+      },
+      {
         title: 'Address',
         // dataIndex: 'address',
+        ellipsis:true,
         key: 'address',
+        width:'300px',
         render:(_,record)=>(
           <div style={{display:'flex',flexDirection:'column'}}>
-              <Text style={{textTransform:'capitalize'}}>{record.country}</Text>  
-              <Text style={{textTransform:'capitalize'}} type='secondary'>{record.city}</Text>  
+              <Text style={{textTransform:'capitalize'}}>{record.street}</Text>  
+              {/* <Text style={{textTransform:'capitalize'}} type='secondary'>{record.state} {record.city}</Text>   */}
           </div>
         )
       },
         {
-          title: 'Type',
-          dataIndex: 'serviceType',
-          key: 'serviceType',
+          title: 'Contact Number',
+          dataIndex: 'contactNumber',
+          key: 'contactNumber',
+          width:'170px',
           render: (_,record)=>{
-            const type = record.serviceType[0]
-              return <Text>{type.name}</Text>
+            const formatedNumber = convertToAmericanFormat(record.contactNumber)
+              return <Text>{formatedNumber}</Text>
           }
         },
-      {
-        title: 'Timezone',
-        dataIndex: 'timeZone',
-        key: 'timeZone',
-
-      },
-      {
-        title: 'Currency',
-        dataIndex: 'currency',
-        key: 'currency',
-        width:'70px',
-      },
-      {
-        title: 'Status',
-        dataIndex: 'status',
-        key: 'status',
-        width:'150px',
-        render:(status)=>{
-            const statusText = status? 'Active': 'Inactive' 
-            return <Badge status={status?'processing':'warning'} text={statusText} /> 
-        }
-      },
+        
+      // {
+      //   title: 'Timezone',
+      //   dataIndex: 'timeZone',
+      //   key: 'timeZone',
+      //   width:'200px',
+      // },
+      // {
+      //   title: 'Currency',
+      //   dataIndex: 'currency',
+      //   key: 'currency',
+      //   width:'70px',
+      // },
+      // {
+      //   title: 'Status',
+      //   dataIndex: 'status',
+      //   key: 'status',
+      //   width:'150px',
+      //   render:(status)=>{
+      //       const statusText = status? 'Active': 'Inactive' 
+      //       return <Badge status={status?'processing':'warning'} text={statusText} /> 
+      //   }
+      // },
       {
           title: 'Created On',
           dataIndex: 'createdAt',
           key: 'createdAt',
+          width:'120px',
           render: (_,record)=>{
               const date = dayjs(record.createdAt).format('MMM DD, YYYY')
               return(
-            <Text>{date}</Text>
+            <Text type='secondary'>{date}</Text>
             )
         },
     },
     {
       dataIndex: 'actions', 
       key: 'actions',
-      width:'70px',
-      render:(_,record)=>{
-        return (<Button onClick= {()=>onMenuClick(record)} type="text" icon={<MoreOutlined/>}/> )
+      fixed: 'right',
+      width:currentFilter.name === 'In-active'?'150px':'70px',
+      //@ts-ignore
+      render:(_,record:Service)=>{
+        if(currentFilter.name === 'In-active'){
+          return (<Button  onClick={()=>reactivateService.mutate(record)}>Reactivate</Button>)
+        }else{
+          return <Button onClick= {()=>onMenuClick(record)} type="text" icon={<MoreOutlined/>}/> 
+        }
       }
     }
     ];
 
-    // const items = [
-    //   {
-    //     key:'dafa930434',
-    //     label:'Bar'
-    //   },
-    //   {
-    //     key:'dafa9304fd3534',
-    //     label:'Restaurant'
-    //   }
 
-    // ]
-
-    type ServiceMenu={
-      label:string,
-      key:string
-    }
+    
+    
 
     const onLaunchButtonClick: MenuProps['onClick'] = (e) => {
       const key = e.key
@@ -273,7 +287,7 @@ function gotoDashboard(service:Service){
             <div style={{background:'#f7f7f7', minHeight:'100vh'}}>
                 <Row style={{marginTop:'.5em'}} gutter={[16,16]}>
                <header style={{width:'100%', padding:'1rem 0' , background:'#ffffff'}}>
-                   <Col style={{display:'flex', justifyContent:'space-between'}} offset={2} span={22}>
+                   <Col style={{display:'flex', justifyContent:'space-between'}} offset={1} span={22}>
                        <div style={{display:'flex', flex:'7',alignItems:'center'}}> 
                            <Button style={{display:'flex', padding: '0', margin:'0', alignItems:'center', textAlign:'left'}} onClick={()=>router.replace('/')} icon={<ArrowLeftOutlined />} type='link'/>
                            {isHydrated ? <Title style={{margin:'0'}} level={4}>{currentOrg.name}</Title>:<Skeleton.Input active size='default'/> } 
@@ -281,7 +295,7 @@ function gotoDashboard(service:Service){
 
                        {
                        isHydrated
-                        ?<div style={{ display:'flex', flex:'3', justifyContent:'space-end', alignItems:'center'}}>
+                        ?<div style={{ display:'flex', flex:'3', justifySelf:'flex-end', alignItems:'center'}}>
                           <Button type="link" style={{marginRight:'2rem'}} onClick={gotoBillingsPage} >Billings</Button>
                           <CurrentUser/>
                        </div>
@@ -290,21 +304,25 @@ function gotoDashboard(service:Service){
                    </Col>
                </header>
 
-               <Col offset={2} span={20}>
-                   <Title style={{marginBottom:'1em'}} level={2}>Launchpad</Title>
-                   {allServicesQuery.data && allServicesLength === 0 ? null : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+               <Col offset={1} span={22}>
+                   {allServicesQuery.data && allServicesLength === 0 
+                   ? null 
+                   : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
+                    <div style={{width:'100%',  marginBottom:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                      <Title style={{margin: '0'}} level={2}>Launchpad</Title>
+                      <div style={{display:'flex'}}>
+                        <Button shape='round' style={{marginRight:'1rem'}} loading={servicesQuery.isRefetching} onClick={()=>servicesQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                        <Dropdown.Button  trigger={['click']} type="primary"   icon={<PlusOutlined/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
+                      </div>
+                    </div>
                       <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
-                          {servicesFilter.map(filter=>(
+                          {servicesFilter.map((filter:any)=>(
                               <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
                           )
                           )}
                       </Radio.Group>
-                      <div style={{display:'flex',  justifyContent:'space-between', alignItems:'center'}}>
-                          <Button type='link' loading={servicesQuery.isRefetching} onClick={()=>servicesQuery.refetch()} icon={<ReloadOutlined />}>{servicesQuery.isRefetching? 'Refreshing...':'Refresh'}</Button>
-                          {/* <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/services/new')}>Launch New Service</Button> */}
-                          <Dropdown.Button  trigger={['click']} type="primary"   icon={<PlusOutlined/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
-                      </div>
-                   </div>}
+                   </div>
+                   }
                 
                 {
                   allServicesQuery.data && allServicesLength === 0
@@ -313,10 +331,11 @@ function gotoDashboard(service:Service){
                   </EmptyState> 
                   : <Table 
                       style={{width:'100%'}} 
+                      scroll={{ x: 'calc(500px + 50%)'}} 
                       size='large' 
                       rowKey={(record)=>record.id}
                       onChange={handleChange} 
-                      loading={servicesQuery.isLoading} 
+                      loading={servicesQuery.isLoading || servicesQuery.isRefetching} 
                       columns={columns} 
                       dataSource={data||[]}
                       pagination={{
@@ -366,7 +385,7 @@ function gotoServices(service:Service){
   // switch org
   switchService(service)
   // navigate user to services page
-  router.push('/organizations/services/bookings') // redirect to dashboard later
+  router.push('/organizations/services/serviceItems') // redirect to dashboard later
 }
 
 function toggleDeleteModal(){
@@ -427,9 +446,23 @@ return(
   open={isDrawerOpen}
 >
   
-  <EditableName selectedRecord={selectedRecord}/>
+  <EditableText
+    fieldKey="name" // The way the field is named in DB
+    currentFieldValue={selectedRecord.name}
+    fieldName = 'name'
+    title = 'Name'
+    id = {selectedRecord.id}
+    options = {{queryKey:'services',mutationUrl:'services'}}
+  />
   <EditableAddress selectedRecord={selectedRecord}/>
-  <EditablePhone selectedRecord={selectedRecord}/>
+  <EditableText
+    fieldKey="contact_number" // The way the field is named in DB
+    currentFieldValue={selectedRecord.contactNumber}
+    fieldName = 'contactNumber'
+    title = 'Contact Number'
+    id = {selectedRecord.id}
+    options = {{queryKey:'services',mutationUrl:'services'}}
+  />
   {/* <EditableCurrency selectedRecord={selectedRecord}/> */}
   <EditableLogoImage selectedRecord={selectedRecord}/>
   {/* <EditableCoverImage selectedRecord={selectedRecord}/> */}
@@ -553,7 +586,7 @@ interface EmptyStateProps{
 function EmptyState({children}:EmptyStateProps){
 
   return(
-    <div style={{border: '1px solid #d6d6d6', marginTop:'2rem', borderRadius:'4px', height:'50vh', display:'flex', justifyContent:'center', alignItems:'center', padding: '2rem'}}>
+    <div style={{border: '1px solid #d6d6d6', marginTop:'2rem', borderRadius:'4px', height:'40vh', display:'flex', justifyContent:'center', alignItems:'center', padding: '2rem'}}>
       <div style={{maxWidth:'350px', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
         <Title level={3}>Get Started</Title> 
         <Text style={{textAlign:'center'}}>Oops! We have found no active venues in your organization</Text>

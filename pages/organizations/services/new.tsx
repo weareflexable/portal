@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import {Form, Row, Col, Image, Tooltip, Input,Upload,Button,notification, Typography, Space, Select, Radio, Divider, TimePicker, InputRef} from 'antd';
-import {UploadOutlined,MinusOutlined, ArrowLeftOutlined, InfoCircleOutlined,  InboxOutlined} from '@ant-design/icons'
+import {UploadOutlined,MinusOutlined, QuestionCircleOutlined, ArrowLeftOutlined, InfoCircleOutlined,  InboxOutlined} from '@ant-design/icons'
 const {Title,Text} = Typography
 const {TextArea} = Input
 import dayjs from 'dayjs'
@@ -17,6 +17,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useAuthContext } from "../../../context/AuthContext";
 import loadConfig from "next/dist/server/config";
+import useUrlPrefix from "../../../hooks/useUrlPrefix";
 
 const getBase64 = (file: any): Promise<string> => 
 new Promise((resolve, reject) => {
@@ -32,7 +33,6 @@ export default function NewService(){
 
     const queryClient = useQueryClient()
 
-    const menuItems = useServiceTypes()
 
     const {paseto} = useAuthContext()
     const {currentOrg} = useOrgContext()
@@ -49,8 +49,6 @@ export default function NewService(){
     const [logoImage, setLogoImage] = useState(PLACEHOLDER_IMAGE)
 
     const router = useRouter() 
-
-    console.log(router.isReady, router.query)
 
     const antInputRef = useRef();
     const areaCodeRef = useRef<InputRef>(null)
@@ -124,6 +122,7 @@ export default function NewService(){
         // const coverImageHash = await asyncStore(formData.coverImageHash[0].originFileObj)
         setIsHashingAssets(false)
 
+
         // format phoneNumber
         const contact = formData.contact
         const formatedContact = `${contact.countryCode}${contact.areaCode}${contact.centralOfficeCode}${contact.tailNumber}`
@@ -143,9 +142,9 @@ export default function NewService(){
             orgId:currentOrg.orgId,
             timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // get user timezone
             //@ts-ignore
-            startTime: dayjs(formData.validityPeriod[0]).format(),
+            startTime: "2023-03-24T13:47:59.064351Z",
             //@ts-ignore
-            endTime: dayjs(formData.validityPeriod[1]).format()
+            endTime: "2023-03-24T13:47:59.064351Z"
         }
         //@ts-ignore
         delete formObject.validityPeriod
@@ -157,6 +156,7 @@ export default function NewService(){
         createData.mutate(formObject)
     }
 
+    const urlPrefix = useUrlPrefix()
 
     const extractLogoImage = async(e: any) => {
         // e.preventDefault()
@@ -176,7 +176,7 @@ export default function NewService(){
   };
 
       const createDataHandler = async(newItem:any)=>{
-        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/services`, newItem,{
+        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`, newItem,{
             headers:{
                 "Authorization": paseto
             },
@@ -196,7 +196,10 @@ export default function NewService(){
                 message: 'Encountered an error while creating record',
               });
             // leave modal open
-        } 
+        },
+        onSettled:()=>{
+            queryClient.invalidateQueries(['all-services'])
+       },
     })
 
     const {isError, isLoading:isCreatingData, isSuccess:isDataCreated, data:createdData} = createData
@@ -215,7 +218,7 @@ export default function NewService(){
                 </Row>
             </div>
             <Row >
-                <Col offset={3} span={11}>
+                <Col offset={3} span={13}>
                     
                     <Form
                     name="serviceForm"
@@ -236,10 +239,11 @@ export default function NewService(){
                     <Form.Item
                         name="name"
                         label="Name" 
+                        
                         // extra="The name you provide here will be used as display on marketplace listing"
                         rules={[{ required: true, message: 'Please input a valid service name' }]}
                     >
-                        <Input size="large" placeholder="Bill Cage coffee" />
+                        <Input allowClear size="large" placeholder="Bill Cage coffee" />
                     </Form.Item>
 
                     <Form.Item  
@@ -255,6 +259,7 @@ export default function NewService(){
                             //     </Tooltip>
                             //   }
                             size="large" 
+                            allowClear
                             ref={(c) => {
                             // @ts-ignore
                             antInputRef.current = c;
@@ -269,17 +274,18 @@ export default function NewService(){
                         // name="contactNumber"
                         label="Contact Number"
                         required
+                        style={{marginBottom:'0'}}
                         rules={[{ required: true, message: 'Please input a valid phone number' }]}
                     >
                         <Input.Group compact>
                             <Form.Item initialValue={'+1'} name={['contact','countryCode']} noStyle>
-                                <Input style={{width:'10%'}} disabled size="large"/>
+                                <Input allowClear style={{width:'10%'}} disabled size="large"/>
                             </Form.Item>
                             <Form.Item name={['contact','areaCode']} noStyle>
-                                <Input ref={areaCodeRef} maxLength={3} onChange={handleAreaCodeRef} style={{width:'20%'}} size="large" placeholder="235" />
+                                <Input allowClear ref={areaCodeRef} maxLength={3} onChange={handleAreaCodeRef} style={{width:'20%'}} size="large" placeholder="235" />
                             </Form.Item>
                             <Form.Item name={['contact','centralOfficeCode']} noStyle>
-                                <Input ref={centralOfficeCodeRef} onChange={handleCentralOfficeCode} maxLength={3} style={{width:'20%'}} size="large" placeholder="380" />
+                                <Input allowClear ref={centralOfficeCodeRef} onChange={handleCentralOfficeCode} maxLength={3} style={{width:'20%'}} size="large" placeholder="380" />
                             </Form.Item>
                             <div style={{height:'40px',margin:'0 .3rem 0 .3rem', display:'inline-flex', alignItems:'center',  verticalAlign:'center'}}>
                             <MinusOutlined style={{color:"#e7e7e7"}} />
@@ -290,18 +296,29 @@ export default function NewService(){
                         </Input.Group>
                     </Form.Item>
 
-
+{/* 
                     <Form.Item
                         label="Validity Period"
-                        name={'validityPeriod'}
+                        hasFeedback
+                        required
                         style={{marginBottom:'0'}}
                         extra={`Enter a timeframe you want your DAT to be redeemable by customers. This may vary based on your industry and service you provide. Eg: a "Saturday Night Line Skip" at a bar might be valid from 7pm on Saturday night until 4am Sunday morning, to allow the late night partygoers a chance to redeem their tickets. A restaurant DAT for a "Last Minute Saturday Reservation" might only need to have validity period of 12 noon - 12 midnight`} 
-                        // rules={[{ type: 'object' as const, required: true, message: 'Please select a time period' }]}
+                        rules={[{required: true, message: 'Please select a time period' }]}
                     >
-                        <TimePicker.RangePicker  format="h A" size="large" />
+                        <Input.Group  compact>
+                        <Form.Item  rules={[{required:true, message:'Please provide a start time'}]}  name={['validity','start']} noStyle>
+                            <TimePicker  use12Hours placeholder="Start"  format="h A" size="large" />
+                        </Form.Item>
+                        <Form.Item  rules={[{required:true, message:'Please provide a end time'}]}  name={['validity','end']} noStyle>
+                            <TimePicker use12Hours placeholder="End"  format="h A" size="large" />
+                        </Form.Item>
+
+                        </Input.Group>
                         {/* <Text style={{marginLeft:'1rem'}}>9 hrs interval for all tickets</Text>   */}
 
-                    </Form.Item> 
+                    {/* </Form.Item>   */}
+
+                    
                 </div>
 
                 
@@ -309,6 +326,9 @@ export default function NewService(){
                     <div style={{marginBottom:'2rem', marginTop:'3rem'}}>
                         <Title level={3}>Image Upload</Title>
                         <Text >Your logo and artwork will be visible on marketplace</Text>
+                        <Tooltip trigger={['click']} placement='right' title={<LogoTip/>}>
+                            <Button type="link">Show me <QuestionCircleOutlined /></Button>
+                        </Tooltip>
                     </div>
 
                     {/* <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}>  */}
@@ -366,4 +386,15 @@ export default function NewService(){
             </Row>
        </div>    
     )
+}
+
+
+
+function LogoTip(){
+    return(
+        <div>
+            <Image style={{objectFit:'cover'}} src={'/explainers/service-explainer.png'} alt='Service explainer as displayed on marketplace'/>
+            <Text style={{color:'white'}}>It is very important that you provide the requested the image size else, it will look distorted on marketplace.</Text>
+        </div>
+    ) 
 }

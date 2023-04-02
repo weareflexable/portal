@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { QueryClient, useMutation, useQueryClient } from "@tanstack/react-query"
 import { Button, Col, Form, Typography, Image as AntImage, Input, Row, Space, Upload } from "antd"
 const {TextArea} = Input
 const {Text} = Typography
@@ -7,7 +7,7 @@ import { useState } from "react"
 import { useAuthContext } from "../../../context/AuthContext"
 import useUrlPrefix from "../../../hooks/useUrlPrefix"
 import { ServiceItem } from "../../../types/Services"
-import { asyncStore } from "../../../utils/nftStorage"
+import {SelectOutlined} from "@ant-design/icons"
 import { ArtworkPicker } from "../Artwork"
 import Image from 'next/image'
 
@@ -113,20 +113,22 @@ interface EditableProp{
 
   export function EditablePrice({selectedRecord}:EditableProp){
   
-    const [state, setState] = useState(selectedRecord)
+    const [state, setState] = useState(selectedRecord.price)
   
     const [isEditMode, setIsEditMode] = useState(false)
   
     const {paseto} = useAuthContext()
+
+    const queryClient = useQueryClient()
   
     function toggleEdit(){
       setIsEditMode(!isEditMode)
     }
   
-  //  const transformedRecord = {
-  //   ...selectedRecord,
-  //   price: Number(selectedRecord.price)/100
-  //  }
+   const transformedRecord = {
+    ...selectedRecord,
+    price: Number(selectedRecord.price)/100
+   }
    const urlPrefix = useUrlPrefix()
   
     const recordMutationHandler = async(updatedItem:any)=>{
@@ -143,20 +145,19 @@ interface EditableProp{
       mutationFn: recordMutationHandler,
       onSuccess:()=>{
         toggleEdit()
+      },
+      onSettled:(data)=>{
+        setState(data.data[0].price)
+        queryClient.invalidateQueries(['service-items'])
       }
     })
   
     function onFinish(updatedItem:any){
       const payload = {
         key:'price',
-        value: updatedItem.price*100,
+        value: String(updatedItem.price*100),
         id: selectedRecord.id
       }
-      const updatedRecord = {
-        ...selectedRecord,
-        price: updatedItem.price
-      }
-      setState(updatedRecord)
       recordMutation.mutate(payload)
     }
   
@@ -164,7 +165,7 @@ interface EditableProp{
   
     const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>${state.price/100}</Text> 
+        <Text>${state/100}</Text> 
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
   )
@@ -173,7 +174,7 @@ interface EditableProp{
       <Form
        style={{ marginTop:'.5rem' }}
        name="editablePrice"
-       initialValues={selectedRecord}
+       initialValues={{price: state/100}}
        onFinish={onFinish}
        >
         <Row>
@@ -410,7 +411,6 @@ interface EditableProp{
   export function EditableCoverImage({selectedRecord}:EditableProp){
   
     const [isEditMode, setIsEditMode] = useState(false) 
-    const [isHashingImage, setIsHashingImage] = useState(false)
     const [updatedCoverImageHash, setUpdatedCoverImageHash] = useState(selectedRecord.logoImageHash)
     const [artwork, setArtwork] = useState(selectedRecord.logoImageHash)
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
@@ -418,6 +418,8 @@ interface EditableProp{
 
     const serviceItemTypeName = selectedRecord.serviceItemType[0].name
     const urlPrefix = useUrlPrefix()
+
+    const queryClient = useQueryClient()
   
     function toggleEdit(){
       setIsEditMode(!isEditMode)
@@ -446,6 +448,10 @@ interface EditableProp{
       mutationFn: mutationHandler,
       onSuccess:()=>{
         toggleEdit()
+      },
+      onSettled:(data)=>{
+        setUpdatedCoverImageHash(data.data[0].logoImageHash)
+        queryClient.invalidateQueries(['serviceItems'])
       }
     })
 
@@ -472,7 +478,7 @@ interface EditableProp{
         <Row>
           <Col span={10}>
            <Image alt='Artwork preview' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${artwork}`} height='300px' width='300px'/>
-            <Button onClick={toggleDrawer}>Change artwork</Button>
+           <Button shape='round' icon={<SelectOutlined />} style={{ marginTop:'.5rem'}} onClick={toggleDrawer}>Select a different artwork</Button>
             <ArtworkPicker
               currentServiceItemType={serviceItemTypeName}
               isOpen ={isDrawerOpen}
@@ -500,14 +506,14 @@ interface EditableProp{
 
     const readOnly = (
       <div style={{width:'100%', marginTop:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <AntImage style={{width:'500px', height:'200px', objectFit:'cover', border:'1px solid #f2f2f2'}} alt='cover image for serviceItem' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedCoverImageHash}`}/>
+        <AntImage style={{width:'300px', height:'300px', objectFit:'cover', border:'1px solid #f2f2f2'}} alt='cover image for serviceItem' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedCoverImageHash}`}/>
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
     )
 
     return(
       <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-        <Text type="secondary" style={{ marginRight: '2rem',}}>Cover Image</Text>
+        <Text type="secondary" style={{ marginRight: '2rem',}}>Artwork</Text>
         {isEditMode?editable:readOnly}
       </div>
     )

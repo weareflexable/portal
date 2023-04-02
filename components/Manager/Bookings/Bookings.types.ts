@@ -3,7 +3,11 @@ export interface ManagerOrder {
     userId: string,
     serviceName: string;
     name: string;
-    startTime: string;
+    startTime: string
+    serviceItemDetails: any[],
+    user: any[]
+    targetDate: string,
+    serviceDetails: any[],
     quantity: number,
     orderStatus: string,
     ticketStatus: string,

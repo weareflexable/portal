@@ -113,27 +113,59 @@ interface EditableProp{
   }
   export function EditableAddress({selectedRecord}:EditableProp){
   
-    const [state, setState] = useState(selectedRecord)
+    const [state, setState] = useState(selectedRecord.street)
   
     const [isEditMode, setIsEditMode] = useState(false)
+  
+    function toggleEdit(){
+      setIsEditMode(!isEditMode)
+    }
+
+  
+    const readOnly = (
+      <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+        <Text>{state}</Text>
+        <Button type="link" onClick={toggleEdit}>Edit</Button>
+      </div>
+  )
+  
+    return(
+      <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+        <Text type="secondary" style={{ marginRight: '2rem',}}>Address</Text>
+        {isEditMode
+        ?<AddressField currentFieldValue={state} updateState={setState} toggleEdit={toggleEdit} selectedRecord={selectedRecord}/>
+        :readOnly
+        }
+      </div>
+    )
+  }
+
+  interface AddressFieldProp{
+    selectedRecord: Service
+    toggleEdit: ()=>void,
+    updateState: (value:any)=>void
+    currentFieldValue: string
+  }
+  function AddressField({selectedRecord, currentFieldValue, toggleEdit,updateState}:AddressFieldProp){
+  
+    // const [isEditMode, setIsEditMode] = useState(false)
     const antInputRef = useRef();
-    const [focused, setFocused] = useState(false)
     const [fullAddress, setFullAddress] = useState({
       latitude:0,
       longitude:0,
       state: '',
       country:'',
-      city:''
+      city:'',
+      street:'',
+      postalCode: ''
   })
+
+  const queryClient = useQueryClient()
 
   const urlPrefix = useUrlPrefix()
   
-    const {paseto} = useAuthContext()
-  
-  
-    function toggleEdit(){
-      setIsEditMode(!isEditMode)
-    }
+   const {paseto} = useAuthContext()
+
   
     const [form]  = Form.useForm()
   
@@ -143,6 +175,7 @@ interface EditableProp{
               state:'',
               country:'',
               city:'',
+              postalCode: '',
               latitude:place.geometry.location.lat(),
               longitude:place.geometry.location.lng()
           };
@@ -150,6 +183,7 @@ interface EditableProp{
               const type = address.types[0]
               if(type==='country') addressObj.country = address.long_name
               if(type === 'locality') addressObj.state = address.short_name
+              if(type === 'postal_code') addressObj.postalCode = address.short_name
               if(type === 'administrative_area_level_1') addressObj.city = address.short_name
           })
   
@@ -157,7 +191,7 @@ interface EditableProp{
   }
 
   const { ref: antRef } = usePlacesWidget({
-    apiKey: 'AIzaSyAxBDdnJsmCX-zQa-cO9iy-v5pn53vXEFA', // move this key to env
+    apiKey: process.env.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API,  // move this key to env
     options:{
         componentRestrictions:{country:'us'},
         types: ['address'],
@@ -165,84 +199,83 @@ interface EditableProp{
     },
     onPlaceSelected: (place) => {
         // console.log(antInputRef.current.input)
-        form.setFieldValue('address',place?.formatted_address)
+        form.setFieldValue('street',place?.formatted_address)
 
         console.log(place)  
         
         const fullAddress = extractFullAddress(place)
         // add street address
-        // const addressWithStreet={
-        //     ...fullAddress,
-        //     street: place?.formatted_address
-        // }
-        setFullAddress(fullAddress)
+        const addressWithStreet={
+            ...fullAddress,
+            street: place?.formatted_address
+        }
+        setFullAddress(addressWithStreet)
 
         //@ts-ignore
       antInputRef.current.input.value = place?.formatted_address
 
     },
   });
-  
-  function focusHandler(){
-    setFocused(true)
-  }
-  
 
-    const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
-        headers:{
-            //@ts-ignore
-            "Authorization": paseto
-        }
-      })
-        return data;
-    }
-    const mutation = useMutation({
-      mutationKey:['address'],
-      mutationFn: mutationHandler,
-      onSuccess:()=>{
-        toggleEdit()
+  const mutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,updatedItem,{
+      headers:{
+          //@ts-ignore
+          "Authorization": paseto
       }
     })
-  
-    function onFinish(updatedItem:any){
-      const payload = {
-        key:'country',
-        value: updatedItem.country,
-        orgId: selectedRecord.id
-      }
-      const updatedRecord = {
-        ...selectedRecord,
-        name: updatedItem.country
-      }
-      setState(updatedRecord)
-      mutation.mutate(payload)
+      return data;
+  }
+
+  const mutation = useMutation({
+    mutationKey:['address'],
+    mutationFn: mutationHandler,
+    onSuccess:()=>{
+      toggleEdit()
+    },
+    onSettled:(data)=>{
+      updateState(data.data[0].street)
+      queryClient.invalidateQueries(['services'])
     }
+  })
+
+  function onFinish(updatedItem:any){
   
-    const {isLoading:isEditing} = mutation 
+    
+
+    const payload = { 
+      //@ts-ignore
+      id: selectedRecord.id,
+      // name: selectedRecord.name,
+      address: 'yes',
+      street:fullAddress.street,
+      city: fullAddress.city,
+      country: fullAddress.country,
+      state: fullAddress.state,
+      zipCode: fullAddress.postalCode
+    }
+    // setState(updatedRecord)
+    mutation.mutate(payload)
+  }
+
+  const {isLoading:isEditing} = mutation 
+
   
-    const readOnly = (
-      <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{`${state.country}, ${state.city}`}</Text>
-        <Button type="link" onClick={toggleEdit}>Edit</Button>
-      </div>
-  )
-  
-    const editable = (
+    return(
       <Form
        style={{ marginTop:'.5rem' }}
        name="editableAddress"
-       initialValues={selectedRecord}
+       initialValues={{street:currentFieldValue}}
        onFinish={onFinish}
        form={form}
        >
         <Row>
           <Col span={16} style={{height:'100%'}}>
           <Form.Item 
-              name="address"
+              name="street"
               rules={[{ required: true, message: 'Please input a valid address!' }]}
           >
-             <Input onFocus={focusHandler} ref={(c) => {
+             <Input allowClear  ref={(c) => {
                   // @ts-ignore
                   antInputRef.current = c;
               
@@ -270,12 +303,6 @@ interface EditableProp{
         </Row>
              
       </Form>
-    )
-    return(
-      <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-        <Text type="secondary" style={{ marginRight: '2rem',}}>Address</Text>
-      {isEditMode?editable:readOnly}
-      </div>
     )
   }
 
@@ -480,6 +507,8 @@ interface EditableProp{
     const urlPrefix = useUrlPrefix()
   
     const {paseto} = useAuthContext()
+
+    const queryClient = useQueryClient()
   
     function toggleEdit(){
       setIsEditMode(!isEditMode)
@@ -506,6 +535,10 @@ interface EditableProp{
       mutationFn: mutationHandler,
       onSuccess:()=>{
         toggleEdit()
+      },
+      onSettled:(data)=>{
+        setUpdatedLogoImageHash(data.data[0].logoImageHash)
+        queryClient.invalidateQueries(['services'])
       }
     })
   
@@ -523,9 +556,8 @@ interface EditableProp{
       const payload = {
         key:'logo_image_hash',
         value: logoHash,
-        orgId: selectedRecord.id
+        id: selectedRecord.id
       }
-      setUpdatedLogoImageHash(logoHash)
       mutation.mutate(payload)
     }
   

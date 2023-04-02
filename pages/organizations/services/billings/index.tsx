@@ -16,8 +16,8 @@ export default function Billings(){
         <div style={{background:'#f6f6f6', height:'100%', minHeight:'100vh'}}>
             <Row>
                 <Col offset={1} span={22}> 
-                    <div style={{display:'flex', flex:'7',   marginTop:'1rem', marginBottom:'2rem', flexDirection:'column'}}> 
-                        <Button style={{display:'flex', padding: '0', margin:'0', alignItems:'center', textAlign:'left'}} onClick={()=>router.back()} icon={<ArrowLeftOutlined />} type='link'>Back to services</Button>
+                    <div style={{display:'flex', flex:'7',   marginTop:'1rem', marginBottom:'2rem', alignItems:'center', flexDirection:'row'}}> 
+                        <Button style={{display:'flex', padding: '0', margin:'0', justifyContent:'center', alignItems:'center'}} onClick={()=>router.back()} icon={<ArrowLeftOutlined />} type='link'/>
                         <Title style={{margin:0}} level={2}> Billings </Title>    
                     </div>
                 </Col> 

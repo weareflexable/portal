@@ -29,7 +29,7 @@ export interface NewOrg{
     name: string,
     email: string,
     phone: string,
-    contactNumber?:string,
+    contactNumber?:string|undefined,
     street: string,
     city: string,
     country: string,

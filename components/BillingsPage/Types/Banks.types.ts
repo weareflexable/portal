@@ -2,15 +2,16 @@
 export type Bank = {
     id: string,
     beneficiaryName: string,
-    beneficiaryAddress: string,
+    beneficiaryCountry: string,
+    beneficiaryState: string,
+    beneficiaryCity: string,
+    beneficiaryPostalCode: string
     beneficiaryPhoneNumber: string,
-    accountNo: number,
+    accountNo: string,
     accountType:string,
     bankAddress: string,
     bankName: string,
-    routingNumber: number,
-    swiftCode: string,
-    currency: string,
+    routingNumber: string,
     createdAt: string,
     updatedAt: string
 }

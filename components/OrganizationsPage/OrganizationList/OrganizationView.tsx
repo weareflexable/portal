@@ -6,7 +6,7 @@ const {Text,Title} = Typography
 import { SearchOutlined, PlusOutlined } from '@ant-design/icons';
 import type { FilterConfirmProps } from 'antd/es/table/interface';
 import React, { useRef, useState } from 'react'
-import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Modal, notification, Empty} from 'antd'
+import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Modal, notification, Empty, Alert} from 'antd'
 import { useRouter } from 'next/router'
 import Highlighter from 'react-highlight-words'
 import axios from 'axios';
@@ -19,6 +19,11 @@ import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { useOrgContext } from "../../../context/OrgContext";
 import { asyncStore } from "../../../utils/nftStorage";
 import { usePlacesWidget } from "react-google-autocomplete";
+import useUrlPrefix from "../../../hooks/useUrlPrefix";
+import { numberFormatter } from "../../../utils/numberFormatter";
+import { convertToAmericanFormat } from "../../../utils/phoneNumberFormatter";
+import { EditableText } from "../../shared/Editables";
+import useRole from "../../../hooks/useRole";
 
 
 var relativeTime = require('dayjs/plugin/relativeTime')
@@ -31,6 +36,7 @@ export default function AdminOrgsView(){
     const queryClient = useQueryClient()
     const router = useRouter()
     const {switchOrg} = useOrgs()
+    const {isUser} = useRole()
 
     const [searchText, setSearchText] = useState('');
     const [filteredInfo, setFilteredInfo] = useState<Record<string, FilterValue | null>>({});
@@ -40,6 +46,7 @@ export default function AdminOrgsView(){
     const ticketSearchRef = useRef(null)
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const [pageNumber, setPageNumber] = useState<number|undefined>(0)
+    const [pageSize, setPageSize] = useState<number|undefined>(10)
   
     // const isFilterEmpty = Object.keys(filteredInfo).length === 0;
 
@@ -48,10 +55,12 @@ export default function AdminOrgsView(){
     const [selectedOrg, setSelelectedOrg] = useState<any|NewOrg>({})
     const [currentStatus, setCurrentStatus] = useState({id:'1',name: 'Approved'})
 
+    const urlPrefix = useUrlPrefix()
+
     async function fetchAllOrgs(){
       const res = await axios({
               method:'get',
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/orgs?pageNumber=${pageNumber}&pageSize=10`,
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?pageNumber=${pageNumber}&pageSize=10&key2=created_by`,
               headers:{
                   "Authorization": paseto
               }
@@ -62,9 +71,9 @@ export default function AdminOrgsView(){
       }
 
     async function fetchOrgs(){
-    const res = await axios({
+        const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/orgs?key=status&value=${currentStatus.id}&pageNumber=${pageNumber}&pageSize=10`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?key=status&value=${currentStatus.id}&pageNumber=${pageNumber}&pageSize=${pageSize}&key2=created_by`,
             headers:{
                 "Authorization": paseto
             }
@@ -77,14 +86,13 @@ export default function AdminOrgsView(){
    
 
     async function changeOrgStatus({orgId, statusNumber}:{orgId:string, statusNumber: string}){
-      console.log(orgId)
         const res = await axios({
             method:'patch',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/org`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
             data:{
                 key:'status',
                 value: statusNumber, // 0 means de-activated in db
-                orgId: orgId 
+                id: orgId 
             },
             headers:{
                 "Authorization": paseto
@@ -140,7 +148,7 @@ export default function AdminOrgsView(){
     const allOrgsTotal = allOrgsQuery.data && allOrgsQuery.data.dataLength;
 
 
-    
+
   
     const handleSearch = (
       selectedKeys: string[],
@@ -182,6 +190,7 @@ export default function AdminOrgsView(){
     };
   
     const handleChange: TableProps<NewOrg>['onChange'] = (data) => {
+      setPageSize(data.pageSize)
       //@ts-ignore
       setPageNumber(data.current-1); 
     };
@@ -345,6 +354,7 @@ export default function AdminOrgsView(){
     }
 
     function viewOrgDetails(org:NewOrg){
+      console.log(org)
       // set state
       setSelelectedOrg(org)
       // opne drawer
@@ -352,30 +362,30 @@ export default function AdminOrgsView(){
 
     }
   
-    function gotoServices(org:NewOrg){
-      console.log(org)
-      // switch org
-      switchOrg(org)
-      // navigate user to services page
-      router.push('/organizations/services/')
-    }
+    // function gotoServices(org:NewOrg){
+    //   console.log(org)
+    //   // switch org
+    //   switchOrg(org)
+    //   // navigate user to services page
+    //   router.push('/organizations/services/')
+    // }
     
     
-      const onMenuClick=(e:any, record:NewOrg) => {
-        const event = e.key
-        switch(event){
-          case 'deActivate': deActivateOrgHandler(record);
-          break;
-          case 'review': reviewHandler(record)
-          break;
-          case 'accept': acceptOrgHandler(record)
-          break;
-          case 'reject': rejectOrgHandler(record)
-          break;
-          case 'viewDetails': viewOrgDetails(record)
-        }
-        console.log('click', record);
-      };
+      // const onMenuClick=(e:any, record:NewOrg) => {
+      //   const event = e.key
+      //   switch(event){
+      //     case 'deActivate': deActivateOrgHandler(record);
+      //     break;
+      //     case 'review': reviewHandler(record)
+      //     break;
+      //     case 'accept': acceptOrgHandler(record)
+      //     break;
+      //     case 'reject': rejectOrgHandler(record)
+      //     break;
+      //     case 'viewDetails': viewOrgDetails(record)
+      //   }
+      //   console.log('click', record);
+      // };
       
   
     const columns: ColumnsType<NewOrg> = [
@@ -383,6 +393,9 @@ export default function AdminOrgsView(){
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
+        fixed:'left',
+        width:'250px',
+        ellipsis:true,
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
@@ -402,74 +415,119 @@ export default function AdminOrgsView(){
         title: 'Address',
         // dataIndex: 'address',
         key: 'address',
+        width:'370px',
+        ellipsis:true,
         render:(_,record)=>(
           <div style={{display:'flex',flexDirection:'column'}}>
               <Text style={{textTransform:'capitalize'}}>{record.country}</Text>  
-              <Text type="secondary">{record.city}</Text>
+              <Text type="secondary">{record.street}</Text>
           </div>
         )
       },
       
+      // {
+      //   title: 'Zip Code',
+      //   dataIndex: 'zipCode',
+      //   key: 'zipCode',
+      //   render:(_,record)=>{
+      //     const zipCode = record.zipCode  === ""? <Text>--</Text>: <Text>{record.zipCode}</Text>
+      //     return zipCode
+      // }
+      // },
       {
-        title: 'Zip Code',
-        dataIndex: 'zipCode',
-        key: 'zipCode',
-        render:(_,record)=>{
-          const zipCode = record.zipCode  === ""? <Text>--</Text>: <Text>{record.zipCode}</Text>
-          return zipCode
-      }
-      },
-      {
-        title: 'Contact',
+        title: 'Contact Number',
         dataIndex: 'contactNumber',
         key: 'contactNumber',
+        width:'150px',
+        render:(number)=>{
+          const formattedNumber = convertToAmericanFormat(number)
+          return <Text>{formattedNumber}</Text>
+        }
       },
       {
           title: 'Created On',
           dataIndex: 'createdAt',
           key: 'createdAt',
+          width:'120px',
           render: (_,record)=>{
               const date = dayjs(record.createdAt).format('MMM DD, YYYY')
               return(
-            <Text>{date}</Text>
+            <Text type="secondary">{date}</Text>
             )
         },
     },
     {
-        ...getTableActions()
-    }
+      dataIndex: 'actions', 
+      key: 'actions',
+      fixed:'right',
+      width: currentStatus.name !== 'Deactivated'?'70px':'150px',
+      //@ts-ignore
+      render:(_,record:NewOrg)=>{
+        if(currentStatus.name !== 'Deactivated'){
+          return (<Button type='text' onClick={()=>viewOrgDetails(record)} icon={<MoreOutlined/>}/>)
+        }else{
+          return (<Button onClick={()=>reactivateOrg.mutate(record)}>Reactivate</Button>)
+        }
+      }
+}
     ];
 
-    function getTableActions(){
-        if(currentStatus.name === 'Approved'){
-            return {
-                dataIndex: 'actions', 
-                key: 'actions',
-                //@ts-ignore
-                render:(_,record:NewOrg)=>{
-                  const items = getCurrentStatusActionItems()
-                  return (<Button type='text' onClick={()=>viewOrgDetails(record)} icon={<MoreOutlined/>}/>)
-                }
-              }
-        }
-        return {}
+  
+    async function reActivateOrgHandler(record:NewOrg){
+      console.log(record)
+      const res = await axios({
+          method:'patch',
+          url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
+          data:{
+              key:'status',
+              value: '1', 
+              //@ts-ignore
+              id: record.orgId  
+          },
+          headers:{
+              "Authorization": paseto
+          }
+      })
+      return res; 
+  }
+
+  const reactivateOrg = useMutation(reActivateOrgHandler,{
+    onSettled:()=>{
+      queryClient.invalidateQueries({queryKey:['organizations']})
     }
+  })
+
+   
+  
 
         return (
             <div>
+              {/* {isUser && currentStatus.id == '1' && (orgs && orgs.length > 0) 
+               ? <Alert
+                  style={{marginBottom:'1rem', marginTop:'1rem'}} 
+                  type='warning'
+                  message = 'Organization accepted!'
+                  description="Congratulations! One or more of your organizations have been reviewed and accepted. Please logout and log back into your account in order to visit your organization and start launching venues and services."
+                  banner
+                  closable
+                />:null} */}
                 {allOrgsQuery && allOrgsTotal === 0  
                 ? null
-                :<div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
-                    <Radio.Group defaultValue={currentStatus.id} buttonStyle="solid">
-                        {orgStatus.map(status=>(
-                            <Radio.Button key={status.id} onClick={()=>setCurrentStatus(status)} value={status.id}>{status.name}</Radio.Button>
-                        )
-                        )}
-                    </Radio.Group>
-                    <div>
-                      <Button type='link' loading={orgQuery.isRefetching} style={{marginRight:'1rem'}} onClick={()=>orgQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
-                      <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/new')}>New Organization</Button>
-                    </div>
+                : <div style={{marginBottom:'2rem', marginTop:'1.5rem', display:'flex', width:'100%', flexDirection:'column'}}>
+                  <div style={{width:'100%', marginBottom:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                      <Title style={{margin: '0'}} level={2}>Organizations</Title>
+                      <div>
+                        <Button shape='round' style={{marginRight:'1rem'}} loading={orgQuery.isRefetching} onClick={()=>orgQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                        <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/new')}>New Organization</Button>
+                      </div>
+                  </div>
+                  <Radio.Group defaultValue={currentStatus.id} buttonStyle="solid">
+                      {orgStatus.map(status=>(
+                          <Radio.Button key={status.id} onClick={()=>setCurrentStatus(status)} value={status.id}>{status.name}</Radio.Button>
+                      )
+                      )}
+                  </Radio.Group>
+
                 </div>
                 }
                 
@@ -478,6 +536,8 @@ export default function AdminOrgsView(){
                 :<Table 
                   style={{width:'100%'}} 
                   key='dfadfe' 
+                  size="middle"
+                  scroll={{ x: 'calc(500px + 50%)'}}
                   loading={orgQuery.isLoading||orgQuery.isRefetching} 
                   columns={columns} 
                   onChange={handleChange} 
@@ -487,10 +547,13 @@ export default function AdminOrgsView(){
                     showTotal:(total) => `Total: ${total} items`,
                   }} 
                 />}
-                {
+                {/* {
                   isDrawerOpen && currentStatus.name === 'Approved'
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedOrg={selectedOrg}/>
                   :null
+                } */}
+                {
+                  isDrawerOpen?<DetailDrawer  isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedOrg={selectedOrg}/>:null
                 }
             </div>
     )
@@ -506,20 +569,22 @@ interface DrawerProps{
 }
 function DetailDrawer({selectedOrg,isDrawerOpen,closeDrawer}:DrawerProps){
 
+console.log('selected org',selectedOrg)
+
 const queryClient = useQueryClient()
 const router = useRouter()
 const {switchOrg} = useOrgContext()
 const {paseto} = useAuthContext()
 const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+const {isUser} = useRole()
 
 function closeDrawerHandler(){
-  queryClient.invalidateQueries(['organizations'])
+  // queryClient.invalidateQueries(['organizations'])
   closeDrawer(!isDrawerOpen)
 }
 
 function gotoServices(org:NewOrg){
-  console.log(org)
-  // switch org
+
   switchOrg(org)
   // navigate user to services page
   router.push('/organizations/services/')
@@ -529,16 +594,18 @@ function toggleDeleteModal(){
   setIsDeleteModalOpen(!isDeleteModalOpen)
 }
 
-function deleteServiceItem(){ 
-
+function deleteOrg(){  
   // mutate record
   deleteData.mutate(selectedOrg,{
     onSuccess:()=>{
       notification['success']({
-        message: 'Successfully deleted record!'
+        message: 'Successfully deactivate organization!'
     })  
       toggleDeleteModal()
       closeDrawerHandler()
+    },
+    onSettled:()=>{
+      queryClient.invalidateQueries(['organizations'])
     },
 
   onError:(err)=>{
@@ -552,14 +619,15 @@ function deleteServiceItem(){
 }
 
 // const urlPrefix = currentUser.role == 1 ? 'manager': 'admin'
+const urlPrefix = useUrlPrefix()
 
-const deleteDataHandler = async(record:NewOrg)=>{      
+const deleteDataHandler = async(record:NewOrg)=>{  
   const {data} = await axios({
     method:'patch',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/org`,
+    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
     data: {
         //@ts-ignore
-        orgId:record.orgId,
+        id:record.orgId,
         key:'status',
         value: '0'
       },
@@ -573,20 +641,36 @@ const deleteData = useMutation(deleteDataHandler)
 
 const{isLoading:isDeletingItem} = deleteData
 
+
 return( 
 <Drawer 
   title="Organization Details" 
   width={640} placement="right" 
-  extra={selectedOrg.status === 1?<Button size='large' onClick={()=>gotoServices(selectedOrg)}>Visit organization</Button>:null}
+  extra={selectedOrg.status === 1?<Button disabled={isUser} shape='round' onClick={()=>gotoServices(selectedOrg)}>Visit organization</Button>:null}
   closable={true} 
   onClose={closeDrawerHandler} 
   open={isDrawerOpen}
 >
   
-  <EditableName selectedOrg={selectedOrg}/>
+<EditableText
+    fieldKey="name" // The way the field is named in DB
+    currentFieldValue={selectedOrg.name}
+    fieldName = 'name'
+    title = 'Name'
+    // @ts-ignore
+    id = {selectedOrg.orgId}
+    options = {{queryKey:'organizations',mutationUrl:'org'}}
+/>
   <EditableAddress selectedOrg={selectedOrg}/>
-  <EditablePhone selectedOrg={selectedOrg}/>
-  <EditableZipCode selectedOrg={selectedOrg}/>
+  <EditableText
+    fieldKey="contact_number" // The way the field is named in DB
+    currentFieldValue={selectedOrg.contactNumber} 
+    fieldName = 'contactNumber'
+    title = 'Contact Number'
+    // @ts-ignore
+    id = {selectedOrg.orgId}
+    options = {{queryKey:'organizations',mutationUrl:'org'}}
+/>
   <EditableLogoImage selectedOrg={selectedOrg}/>
   {/* <EditableCoverImage selectedOrg={selectedOrg}/> */}
 
@@ -597,7 +681,7 @@ return(
 
 
 
-  <DeleteRecordModal isDeletingItem={isDeletingItem} onCloseModal={toggleDeleteModal} onDeleteRecord={deleteServiceItem} isOpen={isDeleteModalOpen} selectedRecord={selectedOrg}/>
+ { isDeleteModalOpen? <DeleteRecordModal isDeletingItem={isDeletingItem} onCloseModal={toggleDeleteModal} onDeleteRecord={deleteOrg} isOpen={isDeleteModalOpen} selectedRecord={selectedOrg}/>:null}
 
 </Drawer>
 )
@@ -630,7 +714,7 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
       <Form 
       form={form} 
       style={{marginTop:'1rem'}}
-      name="deleteServiceItemForm" 
+      name="deleteOrgForm" 
       layout='vertical'
       onFinish={onFinish}>
       <Form.Item
@@ -675,429 +759,42 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
 interface EditableProp{
   selectedOrg: NewOrg
 }
-function EditableName({selectedOrg}:EditableProp){
 
-  const [state, setState] = useState(selectedOrg)
+
+export function EditableAddress({selectedOrg}:EditableProp){
+  
+
+  const [state, setState] = useState(selectedOrg.street)
 
   const [isEditMode, setIsEditMode] = useState(false)
 
-  const {paseto} = useAuthContext()
+  // You'll probably need to parse the address here.
 
-  const queryClient = useQueryClient()
 
-  function toggleEdit(){
+  function toggleEdit(){ 
     setIsEditMode(!isEditMode)
   }
 
- 
-
-  const nameMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/org`,updatedItem,{
-      headers:{
-          //@ts-ignore
-          "Authorization": paseto
-      }
-    })
-      return data;
-  }
-  const nameMutation = useMutation({
-    mutationKey:['name'],
-    mutationFn: nameMutationHandler,
-    onSuccess:()=>{
-      toggleEdit()
-    }
-  })
-
-  function onFinish(updatedItem:any){
-    const payload = {
-      key:'name',
-      value: updatedItem.name,
-      //@ts-ignore
-      orgId: selectedOrg.orgId
-    }
-    const updatedOrg = {
-      ...selectedOrg,
-      name: updatedItem.name
-    }
-    setState(updatedOrg)
-    nameMutation.mutate(payload)
-  }
-
-  const {isLoading:isEditing} = nameMutation ;
 
   const readOnly = (
     <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Text>{state.name}</Text>
+      <Text>{state}</Text>
       <Button type="link" onClick={toggleEdit}>Edit</Button>
     </div>
 )
 
-  const editable = (
-    <Form
-     style={{ marginTop:'.5rem' }}
-     name="editableName"
-     initialValues={selectedOrg}
-     onFinish={onFinish}
-     >
-      <Row>
-        <Col span={16} style={{height:'100%'}}>
-          <Form.Item
-              name="name"
-              rules={[{ required: true, message: 'Please input a valid service name' }]}
-          >
-              <Input  disabled={isEditing} placeholder="Flexable org" />
-          </Form.Item>
-        </Col>
-        <Col span={4}>
-          <Form.Item style={{ width:'100%'}}>
-              <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
-                      Cancel
-                  </Button>
-                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
-                      Apply changes
-                  </Button>
-              </Space>
-                        
-          </Form.Item>
-        </Col>
-      </Row>
-           
-    </Form>
-  )
-  return(
-    <div style={{width:'100%', display:'flex', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>Name</Text>
-    {isEditMode?editable:readOnly}
-    </div>
-  )
-}
-function EditableAddress({selectedOrg}:EditableProp){
-
-  const [state, setState] = useState(selectedOrg)
-
-  const [isEditMode, setIsEditMode] = useState(false)
-  const antInputRef = useRef();
-  const [fullAddress, setFullAddress] = useState({
-    latitude:0,
-    longitude:0,
-    state: '',
-    country:'',
-    city:''
-})
-
-  const {paseto} = useAuthContext()
-
-
-  function toggleEdit(){
-    setIsEditMode(!isEditMode)
-  }
-
-  const [form]  = Form.useForm()
-
-  const extractFullAddress = (place:any)=>{
-    const addressComponents = place.address_components 
-        let addressObj = {
-            state:'',
-            country:'',
-            city:'',
-            latitude:place.geometry.location.lat(),
-            longitude:place.geometry.location.lng()
-        };
-        addressComponents.forEach((address:any)=>{
-            const type = address.types[0]
-            if(type==='country') addressObj.country = address.long_name
-            if(type === 'locality') addressObj.state = address.short_name
-            if(type === 'administrative_area_level_1') addressObj.city = address.short_name
-        })
-
-        return addressObj
-}
-
-  const { ref: antRef } = usePlacesWidget({
-    apiKey: `${process.env.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API}`, // move this key to env
-    // apiKey: `AIzaSyB7ZUkMcIXpOKYU4r4iBMM9BFjCL5OpeeE`, // move this key to env
-    onPlaceSelected: (place) => {
-        // console.log(antInputRef.current.input)
-        form.setFieldValue('address',place?.formatted_address)
-        
-        const fullAddress = extractFullAddress(place)
-        setFullAddress(fullAddress)
-
-        //@ts-ignore
-      antInputRef.current.input.value = place?.formatted_address
-
-    },
-  });
-
-
-  const nameMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/org`,updatedItem,{
-      headers:{
-          //@ts-ignore
-          "Authorization": paseto
-      }
-    })
-      return data;
-  }
-  const nameMutation = useMutation({
-    mutationKey:['address'],
-    mutationFn: nameMutationHandler,
-    onSuccess:()=>{
-      toggleEdit()
-    }
-  })
-
-  function onFinish(updatedItem:any){
-    const payload = {
-      key:'country',
-      value: updatedItem.country,
-      orgId: selectedOrg.id
-    }
-    const updatedOrg = {
-      ...selectedOrg,
-      name: updatedItem.country
-    }
-    setState(updatedOrg)
-    nameMutation.mutate(payload)
-  }
-
-  const {isLoading:isEditing} = nameMutation 
-
-  const readOnly = (
-    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Text>{`${state.street}, ${state.country}, ${state.city}`}</Text>
-      <Button type="link" onClick={toggleEdit}>Edit</Button>
-    </div>
-)
-
-  const editable = (
-    <Form
-     style={{ marginTop:'.5rem' }}
-     name="editableAddress"
-     initialValues={selectedOrg}
-     onFinish={onFinish}
-     form={form}
-     >
-      <Row>
-        <Col span={16} style={{height:'100%'}}>
-        <Form.Item 
-            name="address"
-            rules={[{ required: true, message: 'Please input a valid address!' }]}
-        >
-            {/* <TextArea rows={3} placeholder='Apt. 235 30B NorthPointsettia Street, Syracuse'/> */}
-            <Input ref={(c) => {
-                // @ts-ignore
-                antInputRef.current = c;
-                // @ts-ignore
-                if (c) antRef.current = c.input;
-                }} 
-                placeholder="Syracuse, United states" 
-                />
-        </Form.Item>
-
-        </Col>
-        <Col span={4}>
-          <Form.Item style={{ width:'100%'}}>
-              <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
-                      Cancel
-                  </Button>
-                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
-                      Apply changes
-                  </Button>
-              </Space>
-                        
-          </Form.Item>
-        </Col>
-      </Row>
-           
-    </Form>
-  )
   return(
     <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
       <Text type="secondary" style={{ marginRight: '2rem',}}>Address</Text>
-    {isEditMode?editable:readOnly}
-    </div>
-  )
-}
-function EditablePhone({selectedOrg}:EditableProp){
-
-  const [isEditMode, setIsEditMode] = useState(false)
-
-  const {paseto} = useAuthContext()
-
-  const queryClient = useQueryClient()
-
-  function toggleEdit(){
-    setIsEditMode(!isEditMode)
-  }
-
-  const readOnly = (
-      <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{selectedOrg.contactNumber}</Text>
-        <Button type="link" onClick={toggleEdit}>Edit</Button>
-      </div>
-  )
-
-  const nameMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/org`,updatedItem,{
-      headers:{
-          //@ts-ignore
-          "Authorization": paseto
+      {isEditMode
+      ?<AddressField currentFieldValue={state} updateState={setState} toggleEdit={toggleEdit} selectedRecord={selectedOrg}/>
+      :readOnly
       }
-    })
-      return data;
-  }
-  const nameMutation = useMutation({
-    mutationKey:['contactNumber'],
-    mutationFn: nameMutationHandler,
-    onSuccess:()=>{
-      toggleEdit()
-      queryClient.invalidateQueries(['organizations'])
-    }
-  })
-
-  function onFinish(field:any){
-    const payload = {
-      key:'contact_number',
-      value: field.contactNumber,
-      orgId: selectedOrg.id
-    }
-    console.log(payload)
-    nameMutation.mutate(payload)
-  }
-
-  const {isLoading:isEditing} = nameMutation 
-
-  const editable = (
-    <Form
-     style={{ marginTop:'.5rem' }}
-     name="editablePhone"
-     initialValues={selectedOrg}
-     onFinish={onFinish}
-     >
-      <Row>
-        <Col span={16}>
-          <Form.Item
-              name="contactNumber"
-              rules={[{ required: true, message: 'Please input a valid phone number' }]}
-          >
-              <Input disabled={isEditing} placeholder="09023234857" />
-          </Form.Item>
-        </Col>
-        <Col span={4}>
-          <Form.Item style={{ width:'100%'}}>
-              <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
-                      Cancel
-                  </Button>
-                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
-                      Apply changes
-                  </Button>
-              </Space>
-                        
-          </Form.Item>
-        </Col>
-      </Row>
-           
-    </Form>
-  )
-  return(
-    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>Phone</Text>
-      {isEditMode?editable:readOnly}
     </div>
   )
 }
-function EditableZipCode({selectedOrg}:EditableProp){
 
-  const [isEditMode, setIsEditMode] = useState(false)
 
-  const queryClient = useQueryClient()
-
-  const {paseto} = useAuthContext()
-
-  function toggleEdit(){
-    setIsEditMode(!isEditMode)
-  }
-
-  const readOnly = (
-      <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{selectedOrg.zipCode}</Text>
-        <Button type="link" onClick={toggleEdit}>Edit</Button>
-      </div>
-  )
-
-  const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/org`,updatedItem,{
-      headers:{
-          //@ts-ignore
-          "Authorization": paseto
-      }
-    })
-      return data;
-  }
-  const mutation = useMutation({
-    mutationKey:['zipCode'],
-    mutationFn: mutationHandler,
-    onSuccess:()=>{
-      toggleEdit()
-      queryClient.invalidateQueries(['organizations'])
-    }
-  })
-
-  function onFinish(field:any){
-    const payload = {
-      key:'zip_code',
-      value: field.zipCode,
-      orgId: selectedOrg.id
-    }
-    mutation.mutate(payload)
-  }
-
-  const {isLoading:isEditing} = mutation
-
-  const editable = (
-    <Form
-     style={{ marginTop:'.5rem' }}
-     name="editableZipCode"
-     initialValues={selectedOrg}
-     onFinish={onFinish}
-     >
-      <Row>
-        <Col span={10}>
-          <Form.Item
-              name="zipCode"
-              rules={[{ required: true, message: 'Please input a valid zip code' }]}
-          >
-              <Input disabled={isEditing} placeholder="937462" />
-          </Form.Item>
-        </Col>
-        <Col span={4}>
-          <Form.Item style={{ width:'100%'}}>
-              <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
-                      Cancel
-                  </Button>
-                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
-                      Apply changes
-                  </Button>
-              </Space>
-                        
-          </Form.Item>
-        </Col>
-      </Row>
-           
-    </Form>
-  )
-  return(
-    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>Zip Code</Text>
-      {isEditMode?editable:readOnly}
-    </div>
-  )
-}
 function EditableLogoImage({selectedOrg}:EditableProp){
 
   const [isEditMode, setIsEditMode] = useState(false)
@@ -1112,6 +809,8 @@ function EditableLogoImage({selectedOrg}:EditableProp){
     setIsEditMode(!isEditMode)
   }
 
+  const urlPrefix = useUrlPrefix()
+
   const readOnly = (
       <div style={{width:'100%', marginTop:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
         <Image style={{width:'170px', height:'170px', border:'1px solid #f2f2f2', borderRadius:'50%'}} alt='Logo image for organization' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedLogoImageHash}`}/>
@@ -1120,7 +819,7 @@ function EditableLogoImage({selectedOrg}:EditableProp){
   )
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/org`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -1151,7 +850,7 @@ function EditableLogoImage({selectedOrg}:EditableProp){
       key:'logo_image_hash',
       value: logoHash,
       //@ts-ignore
-      orgId: selectedOrg.orgId
+      id: selectedOrg.orgId
     }
     setUpdatedLogoImageHash(logoHash)
     mutation.mutate(payload)
@@ -1214,96 +913,147 @@ function EditableLogoImage({selectedOrg}:EditableProp){
     </div>
   )
 }
-function EditableCoverImage({selectedOrg}:EditableProp){
 
-  const [isEditMode, setIsEditMode] = useState(false)
-  const [isHashingImage, setIsHashingImage] = useState(false)
-  const [updatedCoverImageHash, setUpdatedCoverImageHash] = useState(selectedOrg.logoImageHash)
 
-  const queryClient = useQueryClient()
+interface AddressFieldProp{
+  selectedRecord: NewOrg
+  toggleEdit: ()=>void
+  currentFieldValue: string
+  updateState: (value:any)=>void
+}
+function AddressField({selectedRecord, updateState, currentFieldValue,toggleEdit}:AddressFieldProp){
 
-  const {paseto} = useAuthContext()
+  // const [isEditMode, setIsEditMode] = useState(false)
+  const antInputRef = useRef();
+  const [fullAddress, setFullAddress] = useState({
+    state: '',
+    country:'',
+    city:'',
+    street:'',
+    postalCode: ''
+})
 
-  function toggleEdit(){
-    setIsEditMode(!isEditMode)
-  }
+const urlPrefix = useUrlPrefix()
 
-  const readOnly = (
-      <div style={{width:'100%', marginTop:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Image style={{width:'500px', height:'200px', objectFit:'cover', border:'1px solid #f2f2f2'}} alt='cover image for organization' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedCoverImageHash}`}/>
-        <Button type="link" onClick={toggleEdit}>Edit</Button>
-      </div>
-  )
+ const {paseto} = useAuthContext()
 
-  const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/org`,updatedItem,{
-      headers:{
-          //@ts-ignore
-          "Authorization": paseto
+ const queryClient = useQueryClient()
+
+  const [form]  = Form.useForm()
+
+  const extractFullAddress = (place:any)=>{
+    const addressComponents = place.address_components 
+        let addressObj = {
+            state:'',
+            country:'',
+            city:'',
+            postalCode:''
+        };
+        addressComponents.forEach((address:any)=>{
+            const type = address.types[0]
+            if(type==='country') addressObj.country = address.long_name
+            if(type === 'locality') addressObj.state = address.short_name
+            if(type === 'postal_code') addressObj.postalCode = address.short_name
+            if(type === 'administrative_area_level_1') addressObj.city = address.short_name
+        })
+
+        return addressObj
+}
+
+const { ref: antRef } = usePlacesWidget({
+  apiKey: process.env.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API,  // move this key to env
+  options:{
+      componentRestrictions:{country:'us'},
+      types: ['address'],
+      fields: ['address_components','geometry','formatted_address','name']
+  },
+  onPlaceSelected: (place) => {
+      // console.log(antInputRef.current.input)
+      form.setFieldValue('street',place?.formatted_address)
+
+      console.log(place)  
+      
+      const fullAddress = extractFullAddress(place)
+      // add street address
+      const addressWithStreet={
+          ...fullAddress,
+          street: place?.formatted_address
       }
-    })
-      return data;
-  }
-  const mutation = useMutation({
-    mutationKey:['logoImage'],
-    mutationFn: mutationHandler,
-    onSuccess:()=>{
-      toggleEdit()
+      setFullAddress(addressWithStreet)
+
+      //@ts-ignore
+    antInputRef.current.input.value = place?.formatted_address
+
+  },
+});
+
+const mutationHandler = async(updatedItem:any)=>{
+  // call a put api here instead
+  const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
+    headers:{
+        //@ts-ignore
+        "Authorization": paseto
     }
   })
+    return data;
+}
 
-  async function onFinish(field:any){
+const mutation = useMutation({
+  mutationFn: mutationHandler,
+  onSuccess:()=>{
+    toggleEdit()
+  },
+  onSettled:(data)=>{
+    updateState(data.data[0].street)
+    queryClient.invalidateQueries(['organizations'])
+  }
+})
 
-    // hash it first
-    const coverImageRes = await field.coverImage
+function onFinish(updatedItem:any){
 
-    setIsHashingImage(true)
-    const coverImageHash = await asyncStore(coverImageRes[0].originFileObj)
-    setIsHashingImage(false)
-
-    console.log(coverImageHash)
-
-    const payload = {
-      key:'cover_image_hash',
-      value: coverImageHash,
-      orgId: selectedOrg.id
-    }
-    setUpdatedCoverImageHash(coverImageHash)
-    mutation.mutate(payload)
+  // only take fullAddress and stringify it
+  const payload = {
+    //@ts-ignore
+    id: selectedRecord.orgId,
+    address: 'yes',
+    street:fullAddress.street,
+    state: fullAddress.state,
+    city: fullAddress.city,
+    country: fullAddress.country,
+    zipCode: fullAddress.postalCode,
   }
 
-  const {isLoading:isEditing} = mutation
 
-  const extractCoverImage = async(e: any) => {
-    console.log('Upload event:', e);
-    if (Array.isArray(e)) {
-    return e;
-    }
+  mutation.mutate(payload)
+}
 
-   return e?.fileList;
-};
+const {isLoading:isEditing} = mutation 
 
 
-  const editable = (
+  return(
     <Form
      style={{ marginTop:'.5rem' }}
-     name="editableCoverImage"
-     initialValues={selectedOrg}
+     initialValues={{street:currentFieldValue}}
      onFinish={onFinish}
+     form={form}
      >
       <Row>
-        <Col span={10}>
-          <Form.Item
-              name="coverImage"
-              valuePropName="coverImage"
-              getValueFromEvent={extractCoverImage}
-              rules={[{ required: true, message: 'Please input a valid zip code' }]}
-          >
-              
-              <Upload name="coverImageHash" listType="picture" multiple={false}>
-                   <Button size='small' disabled={isHashingImage} type='link'>Upload cover image</Button>
-              </Upload>
-          </Form.Item>
+        <Col span={16} style={{height:'100%'}}>
+        <Form.Item 
+            name="street"
+            rules={[{ required: true, message: 'Please input a valid address!' }]}
+        >
+           <Input allowClear ref={(c) => {
+                // @ts-ignore
+                antInputRef.current = c;
+            
+                // @ts-ignore
+                if (c) antRef.current = c.input;
+                }} 
+                placeholder="Syracuse, United states" 
+            />
+        </Form.Item>
+
         </Col>
         <Col span={4}>
           <Form.Item style={{ width:'100%'}}>
@@ -1311,7 +1061,7 @@ function EditableCoverImage({selectedOrg}:EditableProp){
                   <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
                       Cancel
                   </Button>
-                  <Button shape="round" loading={isEditing||isHashingImage} type="link" size="small"  htmlType="submit" >
+                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
                       Apply changes
                   </Button>
               </Space>
@@ -1321,12 +1071,6 @@ function EditableCoverImage({selectedOrg}:EditableProp){
       </Row>
            
     </Form>
-  )
-  return(
-    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>Cover Image</Text>
-      {isEditMode?editable:readOnly}
-    </div>
   )
 }
 
@@ -1384,7 +1128,7 @@ const rejectedOrgsActions = [
 function EmptyState(){
   const router = useRouter()
   return(
-    <div style={{border: '1px solid #dddddd', display:'flex', justifyContent:'center', height:'30vh', alignItems:'center', padding: '2rem'}}>
+    <div style={{border: '1px solid #dddddd', display:'flex', justifyContent:'center', height:'30vh', alignItems:'center', marginTop:'2rem', padding: '2rem'}}>
       <div style={{maxWidth:'300px', display:'flex', flexDirection:'column', justifyContent:'center'}}>
         <Title style={{textAlign:'center'}} level={3}>Get Started</Title>
         <Text style={{textAlign:'center'}}>Ready to get started listing your services on the Flexable Marketplace? The first step is to load in your organization’s details</Text>

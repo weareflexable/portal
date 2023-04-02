@@ -4,7 +4,7 @@ import {Button, Result} from 'antd'
 export default function UnAuthenticatedView(){
 
     const handleLogin=()=>{
-        location.href=`${process.env.NEXT_PUBLIC_AUTH}/login?redirect_to='portal`
+        location.href=`${process.env.NEXT_PUBLIC_AUTH}/login?redirect_to=portal`
     }
 
     return(

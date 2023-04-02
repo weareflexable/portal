@@ -52,6 +52,8 @@ export type ServiceItem = {
     serviceItemType: any[],
     serviceItemTypeId: string,
     description: string,
+    startTime: string,
+    endTime:string,
     availability: Availability
     updatedAt: string,
     createdAt: string
@@ -69,6 +71,8 @@ export type ServiceItemReqPaylod = {
     description:string,
     orgServiceId: string,
     logoImageHash?: string | null | any,
+    validityStartDate: string,
+    validityEndDate: string,
     // serviceItemId: string
     serviceItemTypeId?: string | undefined | string[]
 }

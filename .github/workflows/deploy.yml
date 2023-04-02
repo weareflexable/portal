@@ -1,7 +1,7 @@
-name: "[STAGING] Build and Push to GHCR"
+name: "[${GITHUB_REF#refs/heads/}] Build and Push to GHCR"
 on:
   push:
-    branches: [staging]
+    branches: [staging,main,prod]
 
 jobs:
   next-build:
@@ -47,7 +47,7 @@ jobs:
             .next
             public
             .env
-          retention-days: 7         # artifact retention duration, can be upto 30 days
+          retention-days: 0         # artifact retention duration, can be upto 30 days
   ghcr-push:
     name:
     needs: next-build               # Job depends on next-build(above) job
@@ -71,10 +71,58 @@ jobs:
       - name: Build and Push Docker Image
         run: |
           export CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
-          export TAG=$([[ $CURRENT_BRANCH == "staging" ]] && echo $CURRENT_BRANCH || echo "latest")
+          export TAG=$([[ $CURRENT_BRANCH == ${GITHUB_REF#refs/heads/} ]] && echo $CURRENT_BRANCH || echo "latest")
           export GITHUB_REF_IMAGE=ghcr.io/$GITHUB_REPOSITORY:$GITHUB_SHA
           export GITHUB_BRANCH_IMAGE=ghcr.io/$GITHUB_REPOSITORY:$TAG
           docker build -t $GITHUB_REF_IMAGE -t $GITHUB_BRANCH_IMAGE .
           echo "Pushing Image to GitHub Container Registry"
           docker push $GITHUB_REF_IMAGE
           docker push $GITHUB_BRANCH_IMAGE
+
+      - name: Deploy on Dev server 
+        if: github.ref == 'refs/heads/main'
+        uses: appleboy/ssh-action@v0.1.7
+        with:         
+          host: ${{ secrets.DEV_REMOTE_SERVER_ADDRESS }}
+          username: ${{ secrets.DEV_SERVER_USERNAME }}
+          key:  ${{ secrets.DEV_REMOTE_SERVER_KEY }}
+          port: ${{ secrets.DEV_SSH_PORT }}
+          script: |
+            pwd
+            cd ~
+            podman pull ghcr.io/weareflexable/portal:main
+            podman stop portal
+            podman rm portal
+            podman run --name="portal" -p 9082:3000 -d ghcr.io/weareflexable/portal:main
+
+      - name: Deploy on Staging server 
+        if: github.ref == 'refs/heads/staging'
+        uses: appleboy/ssh-action@v0.1.7
+        with:         
+          host: ${{ secrets.DEV_REMOTE_SERVER_ADDRESS }}
+          username: ${{ secrets.DEV_SERVER_USERNAME }}
+          key:  ${{ secrets.DEV_REMOTE_SERVER_KEY }}
+          port: ${{ secrets.DEV_SSH_PORT }}
+          script: |
+            pwd
+            cd ~
+            podman pull ghcr.io/weareflexable/portal:staging
+            podman stop portal
+            podman rm portal
+            podman run --name="portal" -p 9082:3001 -d ghcr.io/weareflexable/portal:staging
+
+      - name: Deploy on Prod server 
+        if: github.ref == 'refs/heads/prod'
+        uses: appleboy/ssh-action@v0.1.7
+        with:         
+          host: ${{ secrets.DEV_REMOTE_SERVER_ADDRESS }}
+          username: ${{ secrets.DEV_SERVER_USERNAME }}
+          key:  ${{ secrets.DEV_REMOTE_SERVER_KEY }}
+          port: ${{ secrets.DEV_SSH_PORT }}
+          script: |
+            pwd
+            cd ~
+            podman pull ghcr.io/weareflexable/portal:prod
+            podman stop portal
+            podman rm portal
+            podman run --name="portal" -p 9082:3002 -d ghcr.io/weareflexable/portal:prod

@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 const {Text,Title} = Typography
 import React, { useRef, useState } from 'react'
-import {Typography,Button,Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Modal, Alert, notification, Empty} from 'antd'
+import {Typography,Button,Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Modal, Alert, notification, Empty, Tag} from 'antd'
 import axios from 'axios';
 import {MoreOutlined,ReloadOutlined} from '@ant-design/icons'
 import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
@@ -138,6 +138,8 @@ export default function StaffView(){
         title: 'Staff',
         dataIndex: 'name',
         key: 'name',
+        width:'350px',
+        ellipsis:true,
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
@@ -155,6 +157,11 @@ export default function StaffView(){
         title: 'Role',
         dataIndex: 'userRoleName',
         key: 'userRoleName',
+
+        render:(userRoleName)=>{
+          const color = userRoleName === 'Manager' ? 'purple': userRoleName==='Admin'? 'volcano': userRoleName === 'Supervisor'?'cyan':'blue'
+          return <Tag color={color}>{userRoleName}</Tag>
+        }
       },
       // {
       //   title: 'Status',
@@ -172,57 +179,56 @@ export default function StaffView(){
           title: 'Created On',
           dataIndex: 'createdAt',
           key: 'createdAt',
+          width:'120px',
           render: (_,record)=>{
               const date = dayjs(record.createdAt).format('MMM DD, YYYY')
               return(
-            <Text>{date}</Text>
+            <Text type="secondary">{date}</Text>
             )
         },
       },
-    //   {
-    //       title: 'UpdatedAt',
-    //       dataIndex: 'updatedAt',
-    //       key: 'updatedAt',
-    //       render: (_,record)=>{
-    //           const date = dayjs(record.updatedAt).format('MMM DD, YYYY')
-    //           return(
-    //         <Text>{date}</Text>
-    //         )
-    //     },
-    // },
-
+ 
     {
       dataIndex: 'actions', 
       key: 'actions',
+      width:'70px',
+      // width: currentFilter.name == 'pending'
       render:(_,record)=>{
         // const items = getTableRecordActions()
-        return (<Button icon={<MoreOutlined/>} onClick={()=>viewStaffDetails(record)}/>)
+        return (<Button type="text" icon={<MoreOutlined/>} onClick={()=>viewStaffDetails(record)}/>)
       } 
     }
     ];
 
         return (
             <div>
-                {data && allStaffLength === 0 ? null : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+                {data && allStaffLength === 0 ? null : 
+                <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
+                  <div style={{display:'flex', justifyContent:'space-between', width:'100%', alignItems:'center'}}>
+                    <Title style={{margin:'0', width:'100%'}} level={2}>Staff</Title>
+                    <div style={{width: "100%",display:'flex', marginTop:'1.5rem', justifyContent:'flex-end', alignItems:'center'}}>
+                      <Button shape="round" style={{marginRight:'1rem'}} loading={staffQuery.isRefetching} onClick={()=>staffQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                      <Button
+                        type="primary"
+                        icon={<PlusOutlined/>}
+                        onClick={() => {
+                          setShowForm(true)
+                        }}
+                      >
+                        New Staff
+                      </Button>
+                    </div>
+                  </div>
+                  
                   <Radio.Group defaultValue={currentFilter.id} style={{width:'100%'}} buttonStyle="solid">
                       {staffFilter.map(filter=>(
                           <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
                       )
                       )}
                   </Radio.Group>
-                  <div style={{width: "100%",display:'flex', justifyContent:'flex-end', alignItems:'center'}}>
-                    <Button type='link' loading={staffQuery.isRefetching} onClick={()=>staffQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
-                    <Button
-                      type="primary"
-                      icon={<PlusOutlined/>}
-                      onClick={() => {
-                        setShowForm(true)
-                      }}
-                    >
-                      New Staff
-                    </Button>
-                  </div>
-                </div>}
+                  
+                </div>
+                }
 
                 {
                   data && allStaffLength === 0
@@ -290,11 +296,14 @@ const createData = useMutation(createDataHandler,{
     message = status == 0 ? `Staff could not be added because they aren't registered. A registration link has beens sent to ${user.email} to register and will be added automatically to as ${user.userRoleName} after registration`:`User has been added to service as a ${user.userRoleName}`
     notification['success']({
         message: message,
+        style:{
+          width:600
+        },
+        duration:0
       });
       onCancel()
    },
     onError:(data:any)=>{
-      console.log(data)
         notification['error']({
             message:data.message ,
           });
@@ -302,6 +311,7 @@ const createData = useMutation(createDataHandler,{
     },
     onSettled:()=>{
       queryClient.invalidateQueries(['staff',currentService.id])
+      queryClient.invalidateQueries(['all-staff'])
     }
 })
 
@@ -394,7 +404,6 @@ function toggleDeleteModal(){
 }
 
 function deleteService(){ 
-  console.log(selectedStaff.id)
   // mutate record
   deleteMutation.mutate(selectedStaff,{
     onSuccess:()=>{
@@ -405,12 +414,14 @@ function deleteService(){
       closeDrawerHandler()
 
     },
+    onSettled:()=>{
+      queryClient.invalidateQueries(['staff'])
+    },
     onError:(err)=>{
         console.log(err)
         notification['error']({
             message: 'Encountered an error while deleting record custom custom dates',
           });
-        // leave modal open
     }
   })
 }
@@ -437,7 +448,15 @@ const deleteMutation = useMutation(deleteDataHandler)
 return( 
 <Drawer title={"Staff details"} width={640} placement="right" closable={true} onClose={closeDrawerHandler} open={isDrawerOpen}>
   
-  <EditableRole selectedStaff={selectedStaff}/>
+  <EditableRadio
+    id={selectedStaff.id}
+    currentFieldValue = {selectedStaff.userRoleName}
+    fieldKey ='role'
+    selectedItem={selectedStaff.role}
+    fieldName="role"
+    title = 'Staff Role'
+    options ={{queryKey:'staff'}}
+  /> 
 
   
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
@@ -457,29 +476,32 @@ return(
 )
 }
 
-
-interface EditableProp{
-  selectedStaff: Staff
+interface EditableProps{
+  id: string,
+  selectedItem: string,
+  currentFieldValue: string | undefined | number,
+  fieldKey: string,
+  fieldName: string
+  title: string,
+  options?:{queryKey:string,mutationUrl?:string}
 }
 
 
-function EditableRole({selectedStaff}:EditableProp){
-
-  const [state, setState] = useState(selectedStaff)
+export function EditableRadio({id, options, selectedItem, fieldName, currentFieldValue, fieldKey, title}:EditableProps){
+  
+  const [state, setState] = useState(currentFieldValue)
 
   const [isEditMode, setIsEditMode] = useState(false)
 
   const {paseto} = useAuthContext()
 
+  const urlPrefix = useUrlPrefix()
 
   function toggleEdit(){
     setIsEditMode(!isEditMode)
   }
 
-  const [form]  = Form.useForm()
-
- const urlPrefix = useUrlPrefix()
-
+ const queryClient = useQueryClient()
 
   const mutationHandler = async(updatedItem:any)=>{
     const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff`,updatedItem,{
@@ -491,61 +513,55 @@ function EditableRole({selectedStaff}:EditableProp){
       return data;
   }
   const mutation = useMutation({
-    mutationKey:['role'],
     mutationFn: mutationHandler,
     onSuccess:()=>{
       toggleEdit()
+    },
+    onSettled:(data)=>{
+      setState(data.data[0].userRoleName)
+      queryClient.invalidateQueries({queryKey:[options?.queryKey]})
     }
   })
 
-  function onFinish(updatedItem:any){
-    console.log(updatedItem)
+  function onFinish(formData:any){
     const payload = {
-      key:'role',
-      value: String(updatedItem.role),
-      id: selectedStaff.id
+      key:fieldKey,
+      value: formData[fieldName],
+      id: id
     }
-    const updatedRecord = {
-      ...selectedStaff,
-      role: updatedItem.role
-    }
-    setState(updatedRecord)
     mutation.mutate(payload)
   }
 
-  const {isLoading:isEditing} = mutation 
+  const {isLoading:isEditing} = mutation ;
 
   const readOnly = (
     <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Text>{state.userRoleName}</Text>
-      <Button type="link"
-       onClick={toggleEdit}>Edit</Button>
+      <Text style={{textTransform:'capitalize'}}>{state}</Text>
+      <Button type="link" onClick={toggleEdit}>Edit</Button>
     </div>
 )
 
   const editable = (
     <Form
-     style={{ marginTop:'.8rem' }}
-     name="editableRole"
-     initialValues={selectedStaff}
+     style={{ marginTop:'.5rem' }}
+     initialValues={{[fieldName]:currentFieldValue}}
      onFinish={onFinish}
-     form={form}
      >
       <Row>
         <Col span={16} style={{height:'100%'}}>
-        <Form.Item 
-            name="role"
-            rules={[{ required: true, message: 'Please input a description for service item!' }]}
-        >
-          <Radio.Group >
-            <Space direction="vertical">
-              <Radio value={3}>Supervisor</Radio>
-              <Radio value={4}>Employee</Radio>
-            </Space>
-          </Radio.Group>
-        </Form.Item>
-
+          <Form.Item 
+              // label={title} 
+              name={fieldName}
+              initialValue={{[fieldName]:selectedItem}}
+              rules={[{ required: true, message: 'Please select an accountType' }]}
+              >
+              <Radio.Group defaultValue={selectedItem} size='large'>
+                  <Radio.Button value="3">Supervisor</Radio.Button>
+                  <Radio.Button value="4">Employee</Radio.Button>
+              </Radio.Group>
+          </Form.Item>
         </Col>
+        <Col span={4}>
           <Form.Item style={{ width:'100%'}}>
               <Space >
                   <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
@@ -557,17 +573,20 @@ function EditableRole({selectedStaff}:EditableProp){
               </Space>
                         
           </Form.Item>
+        </Col>
       </Row>
            
     </Form>
   )
+
   return(
     <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-      <Text type="secondary" style={{ marginRight: '2rem',}}>Staff role</Text>
-    {isEditMode?editable:readOnly}
+      <Text type="secondary" style={{ marginRight: '2rem',}}>{title}</Text>
+      {isEditMode?editable:readOnly}
     </div>
   )
 }
+
 
 
 
@@ -605,8 +624,8 @@ function DeleteRecordModal({selectedStaff, isOpen, isDeletingItem, onDeleteRecor
       <Form.Item
         name="name"
         style={{marginBottom:'.6rem'}}
-        label={`Please type "${selectedStaff.name}" to confirm`}
-        rules={[{ required: true, message: 'Please type correct service item name!' }]}
+        label={`Please type "${selectedStaff.email}" to confirm`}
+        rules={[{ required: true, message: 'Please type correct staff email' }]}
       >
         <Input disabled={isDeletingItem} />
       </Form.Item>
@@ -623,11 +642,11 @@ function DeleteRecordModal({selectedStaff, isOpen, isDeletingItem, onDeleteRecor
             htmlType="submit"
             disabled={
               // !form.isFieldTouched('name') &&
-              form.getFieldValue('name') !== selectedStaff.name
+              form.getFieldValue('name') !== selectedStaff.email
               // !!form.getFieldsError().filter(({ errors }) => errors.length).length
             }
           >
-           I understand the consequences, block user
+           I understand the consequences, remove staff
           </Button>
         )}
       </Form.Item>

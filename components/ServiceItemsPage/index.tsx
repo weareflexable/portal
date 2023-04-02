@@ -17,6 +17,8 @@ import AvailabilitySection from "./Availability/Availability";
 import useUrlPrefix from "../../hooks/useUrlPrefix";
 import useRole from "../../hooks/useRole";
 import useServiceItemTypes from "../../hooks/useServiceItemTypes";
+import { EditableText } from "../shared/Editables";
+import { numberFormatter } from "../../utils/numberFormatter";
 
 
 // const mockServiceItems:ServiceItem[]=[
@@ -64,6 +66,8 @@ export default function ServiceItemsView(){
     const [selectedRecord, setSelectedServiceItem] = useState<any|ServiceItem>({})
     const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Active'})
     const [pageNumber, setPageNumber] = useState<number|undefined>(0)
+    const [pageSize, setPageSize] = useState<number|undefined>(10)
+    
     const {isManager} = useRole()
 
     const serviceItemTypes = useServiceItemTypes()
@@ -85,7 +89,7 @@ export default function ServiceItemsView(){
     async function fetchServiceItems(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items?key=org_service_id&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=10&key2=status&value2=${currentFilter.id}`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items?key=org_service_id&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=${pageSize}&key2=status&value2=${currentFilter.id}`,
             headers:{
                 "Authorization": paseto
             }
@@ -132,19 +136,19 @@ export default function ServiceItemsView(){
     };
 
 
-    const serviceItemsQuery = useQuery({queryKey:['serviceItems', {currentSerive:currentService.id, currentFilter,pageNumber:pageNumber}], queryFn:fetchServiceItems, enabled:paseto !== ''})
+    const serviceItemsQuery = useQuery({queryKey:['serviceItems', {currentSerive:currentService.id, filter:currentFilter.id,pageNumber:pageNumber}], queryFn:fetchServiceItems, enabled:paseto !== ''})
     const res = serviceItemsQuery.data && serviceItemsQuery.data;
     const servicesData = res && res.data
     const totalLength = res && res.dataLength;
 
-    const allServiceItemsQuery = useQuery({queryKey:['all-serviceItems',{currentService: currentService.id}], queryFn:fetchServiceItems, enabled:paseto !== '', staleTime:Infinity})
+    const allServiceItemsQuery = useQuery({queryKey:['all-serviceItems',{currentService: currentService.id}], queryFn:fetchAllServiceItems, enabled:paseto !== '', staleTime:Infinity})
     const allServiceItemsLength = allServiceItemsQuery.data && allServiceItemsQuery.data.dataLength;
  
 
 
   
     const handleChange: TableProps<ServiceItem>['onChange'] = (data) => {
-      console.log(data.current)
+      setPageSize(data.pageSize)
       //@ts-ignore
       setPageNumber(data.current-1); // Subtracting 1 because pageSize param in url starts counting from 0
     };
@@ -158,15 +162,40 @@ export default function ServiceItemsView(){
 
     }
   
+    async function reActivateServiceHandler(record:ServiceItem){
+      const res = await axios({
+          method:'patch',
+          url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,
+          data:{
+              key:'status',
+              value: '1', 
+              id: record.id  
+          },
+          headers:{
+              "Authorization": paseto
+          }
+      })
+      return res; 
+  }
+
+
+  const reactivateService = useMutation(reActivateServiceHandler,{
+    onSettled:()=>{
+      queryClient.invalidateQueries({queryKey:['serviceItems']})
+    }
+  })
+
     
     
-      
   
     const columns: ColumnsType<ServiceItem> = [
       {
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
+        width:'270px',
+        ellipsis:true,
+        fixed:'left',
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
@@ -182,47 +211,57 @@ export default function ServiceItemsView(){
         title: 'Type',
         dataIndex: 'serviceItemType',
         key: 'serviceItemType',
+        width:'120px',
         render:(_,record)=>{
           const type = record.serviceItemType[0]
-          return <Text style={{textTransform:'capitalize'}}>{type.name}</Text>
+          return <Tag style={{textTransform:'capitalize'}}>{type.name}</Tag>
         }
-      },
-      {
-        title: 'Tickets Per Day',
-        dataIndex: 'ticketsPerDay',
-        key: 'ticketsPerDay',
-        align: 'right'
       },
       {
         title: 'Price',
         dataIndex: 'price',
         key: 'price',
         align:'right',
+        width:'120px',
         render: (price)=>(
           <div>
-            <Text type="secondary">$</Text>
+            <Text>$</Text>
             <Text>{price/100}</Text>
           </div>
         )
       },
+      {
+        title: 'Tickets Per Day',
+        dataIndex: 'ticketsPerDay',
+        key: 'ticketsPerDay',
+        align: 'right',
+        width:'150px',
+        render:(ticketsPerDay)=>{
+          const formatted = numberFormatter.from(ticketsPerDay)
+          return <Text>{`${formatted}`}</Text>
+        }
+      },
+     
       
       {
-        title: 'Status',
-        dataIndex: 'status',
-        key: 'status',
-        render: (status)=>{
-          const statusText = status ? 'Active': 'InActive'
-          return <Badge status="processing" text={statusText} />
+        title: 'Custom Dates',
+        // dataIndex: 'status',
+        key: 'customDates',
+        width:'150px',
+        render: (_,record)=>{
+          const customDatesLength = record.availability.length
+          return <Text>{`${customDatesLength}`}</Text>
         }
       },
       {
           title: 'Created On',
           dataIndex: 'createdAt',
           key: 'createdAt',
+          width:'120px',
           render: (_,record)=>{
               const date = dayjs(record.createdAt).format('MMM DD, YYYY')
               return(
-            <Text>{date}</Text>
+            <Text type="secondary">{date}</Text>
             )
         },
     },
@@ -230,28 +269,41 @@ export default function ServiceItemsView(){
     {
       dataIndex: 'actions', 
       key: 'actions',
-      render:(_,record)=>{
-        // const items = getTableRecordActions()
-        return (
-          <Button type="text" onClick={()=>viewDetails(record)} icon={<MoreOutlined/>}/>
-        )
+      fixed:'right',
+      width:currentFilter.name === 'In-active'?'150px':'70px',
+      //@ts-ignore
+      render:(_,record:Service)=>{
+        if(currentFilter.name === 'In-active'){
+          return (<Button   onClick={()=>reactivateService.mutate(record)}>Reactivate</Button>)
+        }else{
+          return <Button type="text" onClick={()=>viewDetails(record)} icon={<MoreOutlined/>}/> 
+        }
       }
     }
     ];
 
         return (
             <div>
-               { servicesData && allServiceItemsLength === 0  ? null : <div style={{marginBottom:'2em', marginTop:'.5rem', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
-               { isManager? <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
-                    {serviceItemsFilters.map(filter=>(
-                        <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
-                     )
-                    )}
-                </Radio.Group>:null}
+               { servicesData && allServiceItemsLength === 0  
+               ? null 
+               : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
+                 <div style={{width:'100%',  marginBottom:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                      <Title style={{margin: '0'}} level={2}>Services</Title>
+                      <div style={{display:'flex'}}>
+                        <Button shape='round' style={{marginRight:'1rem'}} loading={serviceItemsQuery.isRefetching} onClick={()=>serviceItemsQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                        <Dropdown.Button  trigger={['click']} type="primary"   icon={<PlusOutlined/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
+                      </div>
+                    </div>
+                  <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
+                        {serviceItemsFilters.map(filter=>(
+                            <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
+                        )
+                        )}
+                  </Radio.Group>
 
                 <div style={{width: "20%",display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-                  <Button type='link' loading={serviceItemsQuery.isRefetching} onClick={()=>serviceItemsQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
-                  <Dropdown.Button trigger={['click']} type="primary"   icon={<PlusOutlined/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
+
+                  {/* <Dropdown.Button trigger={['click']} type="primary"   icon={<PlusOutlined/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button> */}
                 </div>
 
                 </div>}
@@ -262,7 +314,8 @@ export default function ServiceItemsView(){
                   </EmptyState>
                   :<Table 
                   style={{width:'100%'}} 
-                  key='dfadfe' 
+                  scroll={{ x: 'calc(500px + 50%)'}} 
+                  rowKey={(record) => record.id}
                   pagination={{
                     total:totalLength,  
                     showTotal:(total) => `Total ${total} items`,
@@ -376,14 +429,30 @@ const{isLoading:isDeletingItem} = deleteData
 return( 
 <Drawer title="Service Details" width={640} placement="right" closable={true} onClose={closeDrawerHandler} open={isDrawerOpen}>
   
-  <EditableName selectedRecord={selectedRecord}/>
+<EditableText
+    fieldKey="name" // The way the field is named in DB
+    currentFieldValue={selectedRecord.name}
+    fieldName = 'name'
+    title = 'Name'
+    id = {selectedRecord.id}
+    options = {{queryKey:'serviceItems',mutationUrl:'service-items'}}
+  />
   <EditableDescription selectedRecord={selectedRecord}/>
   <EditablePrice selectedRecord={selectedRecord}/>
-  <EditableTicketsPerDay selectedRecord={selectedRecord}/>
+
+  <EditableText
+    fieldKey="tickets_per_day" // The way the field is named in DB
+    currentFieldValue={selectedRecord.ticketsPerDay}
+    fieldName = 'ticketsPerDay'
+    title = 'Tickets Per Day'
+    id = {selectedRecord.id}
+    options = {{queryKey:'serviceItems',mutationUrl:'service-items'}}
+  />
   <EditableCoverImage selectedRecord={selectedRecord}/>
 
   {/* <Text>CUSTOM AVALABILITY</Text> */}
   <Title style={{marginTop:'3rem'}} level={3}>Custom Dates</Title>
+
   <AvailabilitySection selectedServiceItem={selectedRecord} />
   {/* <AvailabilitySection selectedServiceItem={selectedRecord}/> */}
   

@@ -11,6 +11,7 @@ import { useServicesContext } from '../../../context/ServicesContext';
 import {PlusOutlined} from '@ant-design/icons'
 import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
+import useUrlPrefix from "../../../hooks/useUrlPrefix";
 const {TextArea} = Input 
 
 
@@ -27,19 +28,18 @@ export default function ServiceTypesView(){
 
     const [pageNumber, setPageNumber] = useState(0)
   
+    const urlPrefix = useUrlPrefix()
 
-
-    type DataIndex = keyof ServiceType;
 
     const [selectedServiceType, setSelectedServiceType] = useState<any|ServiceType>({})
-    const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Approved'})
+    const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Active'})
     const [showForm, setShowForm] = useState(false)
 
 
     async function fetchServiceType(){
       const res = await axios({
               method:'get',
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-types?pageNumber=0&pageSize=10  `,
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-types?pageNumber=0&pageSize=10  `,
               headers:{
                   "Authorization": paseto
               }
@@ -79,23 +79,14 @@ export default function ServiceTypesView(){
 
     
 
-  
+  // console.log('current',currentService!.length!==0)
+  // @ts-ignore
 
 
-    const ServiceTypesQuery = useQuery({queryKey:['service-item-types',currentService.serviceType[0].id,currentFilter.id], queryFn:fetchServiceType, enabled:paseto !== ''})
-    const data = ServiceTypesQuery.data && ServiceTypesQuery.data.data
+    const ServiceTypesQuery = useQuery({queryKey:['service-types',currentFilter.id], queryFn:fetchServiceType, enabled:paseto !== ''})
 
 
-    console.log(data)
-    
-  
-  
-    // function getTableRecordActions(){
-    //     switch(currentFilter.id){
-    //         // 1 = approved
-    //         case '1': return activeItemActions 
-    //     }
-    // }
+     
 
     function viewServiceTypeDetails(user:ServiceType){
       // set state
@@ -105,26 +96,17 @@ export default function ServiceTypesView(){
 
     }
   
-    
-      const onMenuClick=(e:any, record:ServiceType) => {
-        const event = e.key
-        switch(event){
-          // break;
-          case 'viewDetails': viewServiceTypeDetails(record)
-        }
-      };
-      
   
     const columns: ColumnsType<ServiceType> = [
       {
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
+        fixed: 'left',
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
                     {/* <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.profilePic}`}/> */}
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`/favicon.ico`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{record.name}</Text>  
                         {/* <Text type="secondary">{record.email}</Text>   */}
@@ -146,13 +128,14 @@ export default function ServiceTypesView(){
       },
 
       {
-          title: 'CreatedAt',
+          title: 'Created On',
           dataIndex: 'createdAt',
           key: 'createdAt',
+          width:'120px',
           render: (_,record)=>{
               const date = dayjs(record.createdAt).format('MMM DD, YYYY')
               return(
-            <Text>{date}</Text>
+            <Text type="secondary">{date}</Text>
             )
         },
       },
@@ -171,9 +154,10 @@ export default function ServiceTypesView(){
     {
       dataIndex: 'actions', 
       key: 'actions',
+      width:'70px',
       render:(_,record)=>{
         // const items = getTableRecordActions()
-        return (<Button icon={<MoreOutlined/>} onClick={()=>viewServiceTypeDetails(record)}/>)
+        return (<Button type="text" icon={<MoreOutlined/>} onClick={()=>viewServiceTypeDetails(record)}/>)
       } 
     }
     ];
@@ -201,7 +185,14 @@ export default function ServiceTypesView(){
                 </div>
 
                 </div>
-                <Table style={{width:'100%'}} key='dfadfe' loading={ServiceTypesQuery.isLoading||ServiceTypesQuery.isRefetching} columns={columns}  dataSource={data} />
+                <Table 
+                  style={{width:'100%'}} 
+                  scroll={{ x: 'calc(500px + 50%)'}} 
+                  key='dfadfe' 
+                  loading={ServiceTypesQuery.isLoading||ServiceTypesQuery.isRefetching} 
+                  columns={columns}  
+                  dataSource={ServiceTypesQuery && ServiceTypesQuery.data && ServiceTypesQuery.data.data || []}
+                />
                 {
                   isDrawerOpen
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedServiceType={selectedServiceType}/>
@@ -230,9 +221,10 @@ const AddServiceTypeForm: React.FC<ServiceTypeFormProps> = ({
   const {paseto} = useAuthContext()
   const {currentService} = useServicesContext()
 
+  const urlPrefix = useUrlPrefix()
 
   const createDataHandler = async(newItem:any)=>{
-    const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-item-types`, newItem,{
+    const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-item-types`, newItem,{
         headers:{
             "Authorization": paseto
         },
@@ -258,7 +250,6 @@ const createData = useMutation(createDataHandler,{
       onCancel()
    },
     onError:(data:any)=>{
-      console.log(data)
         notification['error']({
             message:data.message ,
           });
@@ -346,6 +337,8 @@ const queryClient = useQueryClient()
 const {currentUser,paseto} = useAuthContext()
 const {currentService} = useServicesContext()
 
+const urlPrefix = useUrlPrefix()
+
 const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
 function closeDrawerHandler(){
@@ -358,7 +351,6 @@ function toggleDeleteModal(){
 }
 
 function deleteService(){ 
-  console.log(selectedServiceType.id)
   // mutate record
   deleteMutation.mutate(selectedServiceType,{
     onSuccess:()=>{
@@ -383,7 +375,7 @@ function deleteService(){
 const deleteDataHandler = async(record:ServiceType)=>{      
   const {data} = await axios({
     method:'delete',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-item-types`,
+    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-item-types`,
     data: {
         id:record.id,
         serviceId: currentService.id
@@ -434,6 +426,8 @@ function EditableRole({selectedServiceType}:EditableProp){
 
   const {paseto} = useAuthContext()
 
+  const urlPrefix = useUrlPrefix()
+
 
   function toggleEdit(){
     setIsEditMode(!isEditMode)
@@ -444,7 +438,7 @@ function EditableRole({selectedServiceType}:EditableProp){
 
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-item-types`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-item-types`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -604,11 +598,11 @@ function DeleteRecordModal({selectedServiceType, isOpen, isDeletingItem, onDelet
 const staffFilter = [
   {
     id:'1',
-    name:'Approved'
+    name:'Active'
   },
   {
     id:'0',
-    name:'Pending registration'
+    name:'Inactive'
   }
 ]
 

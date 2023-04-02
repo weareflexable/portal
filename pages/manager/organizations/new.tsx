@@ -9,10 +9,11 @@ import {usePlacesWidget} from 'react-google-autocomplete'
 import { asyncStore} from "../../../utils/nftStorage";
 import { useOrgContext } from "../../../context/OrgContext";
 import useServiceTypes from "../../../hooks/useServiceTypes";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useAuthContext } from "../../../context/AuthContext";
 import {NewOrg, OrgPayload } from "../../../types/OrganisationTypes";
+import useUrlPrefix from "../../../hooks/useUrlPrefix";
 
 
 const getBase64 = (file: any): Promise<string> => 
@@ -37,11 +38,14 @@ export default function NewOrgForm(){
         city:''
     })
     const [isHashingAssets, setIsHashingAssets] = useState(false)
+    let queryClient = useQueryClient()
 
     const router = useRouter()
     const antInputRef = useRef();
     const [logoImage, setLogoImage] = useState(PLACEHOLDER_IMAGE)
     const [coverImage, setCoverImage] = useState(PLACEHOLDER_IMAGE)
+
+    const urlPrefix = useUrlPrefix()
 
     const areaCodeRef = useRef<InputRef>(null)
     const centralOfficeCodeRef = useRef<InputRef>(null)
@@ -122,7 +126,7 @@ export default function NewOrgForm(){
             ...fullAddress,
             logoImageHash: logoHash,
             coverImageHash: '',
-            contactNumber: formatedContact
+            contactNumber: formatedContact,
             // orgId:currentOrg.orgId,
         }
         // remove address field since because we have extracted
@@ -153,26 +157,10 @@ export default function NewOrgForm(){
         return e?.fileList;
       };
 
-        const extractCoverImage = async(e: any) => {
-            // e.preventDefault()
-            console.log('Upload event:', e);
-            if (Array.isArray(e)) {
-            return e;
-            }
-
-            console.log(e)
-            const imageBlob = e.fileList[0].originFileObj
-            console.log("blob",imageBlob)
-            const src = await getBase64(imageBlob)
-            setCoverImage(src)
-       
-
-        return e?.fileList;
-      };
-
+   
 
       const createDataHandler = async(newItem:any)=>{
-        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`, newItem,{
+        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`, newItem,{
             headers:{
                 "Authorization": paseto
             },
@@ -180,18 +168,47 @@ export default function NewOrgForm(){
         return data
     }
 
+    const changeOrgStatusHandler = async(newItem:any)=>{
+        const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`, newItem,{
+            headers:{
+                "Authorization": paseto
+            },
+        })
+        return data
+    }
+
+    const orgStatusMutation = useMutation(changeOrgStatusHandler,{
+        onSuccess:()=>{
+            queryClient.invalidateQueries(['organizations'])
+            router.back()
+        },
+        onError:()=>{
+            notification['error']({
+                message: 'Encountered an error while changing organization status for manager or superadmin',
+              });
+        }
+    })
+
     const createData = useMutation(createDataHandler,{
-       onSuccess:()=>{
-        form.resetFields()
-        console.log('record created')
+       onSuccess:(data)=>{
+        const orgId = data.data[0].orgId
         notification['success']({
             message: 'Successfully created new organization!'
         })
-            router.back()
+          // change status
+          const orgStatusPayload = {
+            key:'status',
+            value: '1', // 0 means de-activated in db
+            id: orgId 
+          }
+          orgStatusMutation.mutate(orgStatusPayload)
+       },
+       onSettled:()=>{
+            queryClient.invalidateQueries(['all-orgs'])
        },
         onError:()=>{
             notification['error']({
-                message: 'Encountered an error while creating record',
+                message: 'Encountered an error while creating organization',
               });
             // leave modal open
         } 

@@ -5,6 +5,7 @@ const {Text} = Typography;
 import { useRef, useState } from "react"
 import { usePlacesWidget } from "react-google-autocomplete"
 import { useAuthContext } from "../../../../context/AuthContext"
+import useUrlPrefix from "../../../../hooks/useUrlPrefix";
 import { NewOrg } from "../../../../types/OrganisationTypes"
 import { asyncStore } from "../../../../utils/nftStorage"
 
@@ -21,6 +22,8 @@ interface EditableProp{
     const {paseto} = useAuthContext()
   
     const queryClient = useQueryClient()
+
+    const urlPrefix = useUrlPrefix()
   
     function toggleEdit(){
       setIsEditMode(!isEditMode)
@@ -29,7 +32,7 @@ interface EditableProp{
    
   
     const nameMutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -50,7 +53,7 @@ interface EditableProp{
         key:'name',
         value: updatedItem.name,
         //@ts-ignore
-        orgId: selectedOrg.orgId
+        id: selectedOrg.orgId
       }
       const updatedOrg = {
         ...selectedOrg,
@@ -109,26 +112,61 @@ interface EditableProp{
       </div>
     )
   }
+
+
   export function EditableAddress({selectedOrg}:EditableProp){
   
-    const [state, setState] = useState(selectedOrg)
+    const [state, setState] = useState(selectedOrg.street)
   
     const [isEditMode, setIsEditMode] = useState(false)
-    const antInputRef = useRef();
-    const [fullAddress, setFullAddress] = useState({
-      latitude:0,
-      longitude:0,
-      state: '',
-      country:'',
-      city:''
-  })
-  
-    const {paseto} = useAuthContext()
   
   
     function toggleEdit(){
       setIsEditMode(!isEditMode)
     }
+  
+  
+    const readOnly = (
+      <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+        <Text>{state}</Text>
+        <Button type="link" onClick={toggleEdit}>Edit</Button>
+      </div>
+  )
+  
+    return(
+      <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+        <Text type="secondary" style={{ marginRight: '2rem',}}>Address</Text>
+        {isEditMode
+        ?<AddressField currentFieldValue={state} updateState={setState} toggleEdit={toggleEdit} selectedRecord={selectedOrg}/>
+        :readOnly
+        }
+      </div>
+    )
+  }
+
+  interface AddressFieldProp{
+    selectedRecord: NewOrg
+    toggleEdit: ()=>void
+    currentFieldValue: string
+    updateState: (value:any)=>void
+  }
+  function AddressField({currentFieldValue, updateState, selectedRecord,toggleEdit}:AddressFieldProp){
+  
+    // const [isEditMode, setIsEditMode] = useState(false)
+    const antInputRef = useRef();
+    const [fullAddress, setFullAddress] = useState({
+      state: '',
+      country:'',
+      city:'',
+      street:'',
+      postalCode:''
+  })
+  
+  const urlPrefix = useUrlPrefix()
+  
+   const {paseto} = useAuthContext()
+  
+   const queryClient = useQueryClient()
   
     const [form]  = Form.useForm()
   
@@ -138,99 +176,109 @@ interface EditableProp{
               state:'',
               country:'',
               city:'',
-              latitude:place.geometry.location.lat(),
-              longitude:place.geometry.location.lng()
+              postalCode:''
           };
           addressComponents.forEach((address:any)=>{
               const type = address.types[0]
               if(type==='country') addressObj.country = address.long_name
               if(type === 'locality') addressObj.state = address.short_name
+              if(type === 'postal_code') addressObj.postalCode = address.short_name
               if(type === 'administrative_area_level_1') addressObj.city = address.short_name
           })
   
           return addressObj
   }
   
-    const { ref: antRef } = usePlacesWidget({
-      apiKey: `${process.env.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API}`, // move this key to env
-      // apiKey: `AIzaSyB7ZUkMcIXpOKYU4r4iBMM9BFjCL5OpeeE`, // move this key to env
-      onPlaceSelected: (place) => {
-          // console.log(antInputRef.current.input)
-          form.setFieldValue('address',place?.formatted_address)
-          
-          const fullAddress = extractFullAddress(place)
-          setFullAddress(fullAddress)
-  
-          //@ts-ignore
-        antInputRef.current.input.value = place?.formatted_address
-  
-      },
-    });
-  
-  
-    const nameMutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
-        headers:{
-            //@ts-ignore
-            "Authorization": paseto
+  const { ref: antRef } = usePlacesWidget({
+    apiKey: process.env.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API,  // move this key to env
+    options:{
+        componentRestrictions:{country:'us'},
+        types: ['address'],
+        fields: ['address_components','geometry','formatted_address','name']
+    },
+    onPlaceSelected: (place) => {
+        console.log(place)
+        form.setFieldValue('street',place?.formatted_address)
+        
+        const fullAddress = extractFullAddress(place)
+        // add street address
+        const addressWithStreet={
+            ...fullAddress,
+            street: place?.formatted_address
         }
-      })
-        return data;
-    }
-    const nameMutation = useMutation({
-      mutationKey:['address'],
-      mutationFn: nameMutationHandler,
-      onSuccess:()=>{
-        toggleEdit()
+        setFullAddress(addressWithStreet)
+  
+        //@ts-ignore
+      antInputRef.current.input.value = place?.formatted_address
+  
+    },
+  });
+  
+  const mutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
+      headers:{
+          //@ts-ignore
+          "Authorization": paseto
       }
     })
+      return data;
+  }
   
-    function onFinish(updatedItem:any){
-      const payload = {
-        key:'country',
-        value: updatedItem.country,
-        orgId: selectedOrg.id
-      }
-      const updatedOrg = {
-        ...selectedOrg,
-        name: updatedItem.country
-      }
-      setState(updatedOrg)
-      nameMutation.mutate(payload)
+  const mutation = useMutation({
+    mutationFn: mutationHandler,
+    onSuccess:()=>{
+      toggleEdit()
+    },
+    onSettled:(data)=>{
+      updateState(data.data[0].street)
+      queryClient.invalidateQueries(['organizations'])
+    }
+  })
+  
+  function onFinish(updatedItem:any){
+
+  
+    const payload = {
+      //@ts-ignore
+      id: selectedRecord.orgId,
+      // name: selectedRecord.name,
+      address: 'yes',
+      street:fullAddress.street,
+      state: fullAddress.state,
+      city: fullAddress.city,
+      country: fullAddress.country,
+      zipCode: fullAddress.postalCode,
     }
   
-    const {isLoading:isEditing} = nameMutation 
+
+    mutation.mutate(payload)  
+  }
   
-    const readOnly = (
-      <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{`${state.street}, ${state.country}, ${state.city}`}</Text>
-        <Button type="link" onClick={toggleEdit}>Edit</Button>
-      </div>
-  )
+  const {isLoading:isEditing} = mutation 
   
-    const editable = (
+  
+    return(
       <Form
        style={{ marginTop:'.5rem' }}
-       name="editableAddress"
-       initialValues={selectedOrg}
+       initialValues={{street:currentFieldValue}}
        onFinish={onFinish}
        form={form}
        >
         <Row>
           <Col span={16} style={{height:'100%'}}>
           <Form.Item 
-              name="address"
+              name="street"
               rules={[{ required: true, message: 'Please input a valid address!' }]}
           >
-              {/* <TextArea rows={3} placeholder='Apt. 235 30B NorthPointsettia Street, Syracuse'/> */}
-              <Input ref={(c) => {
+             <Input allowClear  ref={(c) => {
                   // @ts-ignore
                   antInputRef.current = c;
+              
                   // @ts-ignore
                   if (c) antRef.current = c.input;
                   }} 
                   placeholder="Syracuse, United states" 
-                  />
+              />
           </Form.Item>
   
           </Col>
@@ -251,13 +299,8 @@ interface EditableProp{
              
       </Form>
     )
-    return(
-      <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-        <Text type="secondary" style={{ marginRight: '2rem',}}>Address</Text>
-      {isEditMode?editable:readOnly}
-      </div>
-    )
   }
+  
   export function EditablePhone({selectedOrg}:EditableProp){
   
     const [isEditMode, setIsEditMode] = useState(false)
@@ -265,7 +308,9 @@ interface EditableProp{
     const {paseto} = useAuthContext()
   
     const queryClient = useQueryClient()
-  
+
+    const urlPrefix = useUrlPrefix()
+   
     function toggleEdit(){
       setIsEditMode(!isEditMode)
     }
@@ -278,7 +323,7 @@ interface EditableProp{
     )
   
     const nameMutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -299,7 +344,7 @@ interface EditableProp{
       const payload = {
         key:'contact_number',
         value: field.contactNumber,
-        orgId: selectedOrg.id
+        id: selectedOrg.id
       }
       console.log(payload)
       nameMutation.mutate(payload)
@@ -354,6 +399,8 @@ interface EditableProp{
     const queryClient = useQueryClient()
   
     const {paseto} = useAuthContext()
+
+    const urlPrefix = useUrlPrefix()
   
     function toggleEdit(){
       setIsEditMode(!isEditMode)
@@ -367,7 +414,7 @@ interface EditableProp{
     )
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -388,7 +435,7 @@ interface EditableProp{
       const payload = {
         key:'zip_code',
         value: field.zipCode,
-        orgId: selectedOrg.id
+        id: selectedOrg.id
       }
       mutation.mutate(payload)
     }
@@ -444,6 +491,8 @@ interface EditableProp{
     const queryClient = useQueryClient()
   
     const {paseto} = useAuthContext()
+
+    const urlPrefix =  useUrlPrefix()
   
     function toggleEdit(){
       setIsEditMode(!isEditMode)
@@ -457,7 +506,7 @@ interface EditableProp{
     )
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -470,6 +519,9 @@ interface EditableProp{
       mutationFn: mutationHandler,
       onSuccess:()=>{
         toggleEdit()
+      },
+      onSettled:()=>{
+        queryClient.invalidateQueries(['organizations'])
       }
     })
   
@@ -488,7 +540,7 @@ interface EditableProp{
         key:'logo_image_hash',
         value: logoHash,
         //@ts-ignore
-        orgId: selectedOrg.orgId
+        id: selectedOrg.orgId
       }
       setUpdatedLogoImageHash(logoHash)
       mutation.mutate(payload)
@@ -560,6 +612,8 @@ interface EditableProp{
     const queryClient = useQueryClient()
   
     const {paseto} = useAuthContext()
+
+    const urlPrefix = useUrlPrefix()
   
     function toggleEdit(){
       setIsEditMode(!isEditMode)
@@ -573,7 +627,7 @@ interface EditableProp{
     )
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,updatedItem,{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -603,7 +657,7 @@ interface EditableProp{
       const payload = {
         key:'cover_image_hash',
         value: coverImageHash,
-        orgId: selectedOrg.id
+        id: selectedOrg.id
       }
       setUpdatedCoverImageHash(coverImageHash)
       mutation.mutate(payload)

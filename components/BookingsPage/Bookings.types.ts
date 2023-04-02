@@ -8,6 +8,7 @@ export interface Order {
     quantity: number,
     user: any[],
     orderStatus: string,
+    targetDate: string,
     ticketStatus: string,
     unitPrice:number,
     uniqueCode: string,

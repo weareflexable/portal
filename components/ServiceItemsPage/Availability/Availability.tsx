@@ -17,9 +17,10 @@ interface Props{
 export default function AvailabilitySection({selectedServiceItem}:Props){
     const {paseto} = useAuthContext()
 
+    const urlPrefix = useUrlPrefix()
   
     async function fetchItemAvailability(){
-      const res = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items/availability?key=service_item_id&value=${selectedServiceItem.id}&pageNumber=0&pageSize=10`,{
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items/availability?key=service_item_id&value=${selectedServiceItem.id}&pageNumber=0&pageSize=10`,{
        headers:{
          "Authorization":paseto
        }
@@ -121,11 +122,12 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
     function onFinish(record:any){
       const payload = {
         ...record,
+        ticketsPerDay: Number(record.ticketsPerDay),
         price: record.price*100,
         serviceItemId: selectedServiceItem.id, 
         id: availability.id, 
         //@ts-ignore
-        date: dayjs.utc(record.date).format(),
+        date: dayjs(record.date).format(),
       }
 
 
@@ -265,6 +267,8 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
     )
   }
 
+
+
 interface NewAvailabilityProps{
 availabilities: CustomDate[] // TODO: Find a better name to distinguish between availability array and it's items
 selectedServiceItem: ServiceItem
@@ -311,10 +315,10 @@ export function NewAvailability({selectedServiceItem}:NewAvailabilityProps){
         // of the request payload.
         const transformedItem = {
             //@ts-ignore
-            date: dayjs.utc(updatedItem.date).format(), // provide it in utc
+            date: dayjs(updatedItem.date).format(),
             name: updatedItem.name,
             price: updatedItem.price*100,
-            ticketsPerDay: Number(updatedItem.ticketsPerDay) 
+            ticketsperday: Number(updatedItem.ticketsPerDay) 
         }
         
         // Combine previous availabilities with new (transformedItem) into a single array and pass

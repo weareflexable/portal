@@ -11,3 +11,5 @@ What happens when the route changes and you still need the param values? Hence, 
 
 **The routing new pattern** was adopted because currently active organizations and services are being cached in local storage. Therefore, whenever those ids are needed, they could easily be accessed in the local storage
 
+
+

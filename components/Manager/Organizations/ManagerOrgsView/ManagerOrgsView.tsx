@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { NewOrg } from "../../../../types/OrganisationTypes";
 import useOrgs from "../../../../hooks/useOrgs";
 const {Text,Title} = Typography
-import { SearchOutlined, PlusOutlined } from '@ant-design/icons';
+import { SearchOutlined, PlusOutlined, LikeOutlined, DislikeOutlined } from '@ant-design/icons';
 import type { FilterConfirmProps } from 'antd/es/table/interface';
 import React, { useRef, useState } from 'react'
 import {Typography,Button,Avatar, Alert, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Modal, notification} from 'antd'
@@ -11,7 +11,7 @@ import Highlighter from 'react-highlight-words'
 import axios from 'axios';
 import {MoreOutlined,ReloadOutlined} from '@ant-design/icons'
 import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
-
+import Head from 'next/head'
 import { useAuthContext } from '../../../../context/AuthContext';
 import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
@@ -19,10 +19,16 @@ import { useOrgContext } from "../../../../context/OrgContext";
 import { asyncStore } from "../../../../utils/nftStorage";
 import { usePlacesWidget } from "react-google-autocomplete";
 import { EditableName, EditableAddress, EditablePhone, EditableZipCode, EditableLogoImage, EditableCoverImage } from "../EditOrg";
+import { convertToAmericanFormat } from "../../../../utils/phoneNumberFormatter";
+import { EditableText } from "../../../shared/Editables";
+import useUrlPrefix from "../../../../hooks/useUrlPrefix";
+import useRole from "../../../../hooks/useRole";
 
 
 var relativeTime = require('dayjs/plugin/relativeTime')
 dayjs.extend(relativeTime) 
+
+const IMAGE_PLACEHOLDER_HASH='bafkreiexo2kwvwmgfhutm7k4y6oaqo7vawlwlg6je55pqho6ch3ooxjiqa'
 
 
 export default function ManagerOrgsView(){
@@ -31,6 +37,7 @@ export default function ManagerOrgsView(){
     const queryClient = useQueryClient()
     const router = useRouter()
     const {switchOrg} = useOrgs()
+    const {isUser} = useRole()
 
     const [searchText, setSearchText] = useState('');
     const [filteredInfo, setFilteredInfo] = useState<Record<string, FilterValue | null>>({});
@@ -40,6 +47,7 @@ export default function ManagerOrgsView(){
     const ticketSearchRef = useRef(null)
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const [pageNumber, setPageNumber] = useState<number|undefined>(0)
+    const [pageSize, setPageSize] = useState<number|undefined>(10)
   
     // const isFilterEmpty = Object.keys(filteredInfo).length === 0;
 
@@ -51,7 +59,7 @@ export default function ManagerOrgsView(){
     async function fetchAllOrgs(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/orgs?pageNumber=${pageNumber}&pageSize=10`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?pageNumber=${pageNumber}&pageSize=10`,
             headers:{
                 "Authorization": paseto
             }
@@ -64,7 +72,7 @@ export default function ManagerOrgsView(){
     async function fetchOrgs(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/orgs?key=status&value=${currentStatus.id}&pageNumber=${pageNumber}&pageSize=10`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?key=status&value=${currentStatus.id}&pageNumber=${pageNumber}&pageSize=${pageSize}`,
             headers:{
                 "Authorization": paseto
             }
@@ -77,14 +85,28 @@ export default function ManagerOrgsView(){
    
 
     async function changeOrgStatus({orgId, statusNumber}:{orgId:string, statusNumber: string}){
-      console.log(orgId)
         const res = await axios({
             method:'patch',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
             data:{
                 key:'status',
                 value: statusNumber, // 0 means de-activated in db
-                orgId: orgId 
+                id: orgId 
+            },
+            headers:{
+                "Authorization": paseto
+            }
+        })
+        return res; 
+    }
+    async function changeOrgOwnerToAdmin({userId}:{userId:string}){
+        const res = await axios({
+            method:'patch',
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/users-role`,
+            data:{
+                key:'role',
+                value: '2', // 2 is for admin
+                targetUserId: userId 
             },
             headers:{
                 "Authorization": paseto
@@ -106,11 +128,28 @@ export default function ManagerOrgsView(){
         }
     })
 
+    const changeOrgOwnerToAdminMutation = useMutation({
+        mutationFn: changeOrgOwnerToAdmin,
+        onSuccess:(data:any)=>{
+            queryClient.invalidateQueries({queryKey:['organizations',currentStatus]})
+        },
+        onError:()=>{
+            console.log('Error changing status')
+        }
+    })
+
 
     function deActivateOrgHandler(org:NewOrg){
         // setSelelectedOrg(org.orgId)
         // @ts-ignore
         changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'0'})
+      }
+
+    function changeOwnerToAdmin (org:NewOrg){
+      console.log(org)
+        // setSelelectedOrg(org.orgId)
+        // @ts-ignore
+        // changeOrgOwnerToAdminMutation.mutate({userId:''})
       }
       
       function reviewHandler(org:NewOrg){
@@ -127,8 +166,15 @@ export default function ManagerOrgsView(){
     function acceptOrgHandler(org:NewOrg){
       // setSelelectedOrg(org.orgId)
 
-      // @ts-ignore
-        changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'1'})
+      changeOrgOwnerToAdminMutation.mutate({userId:org.createdBy},{
+        onSuccess:()=>{
+          // @ts-ignore
+          changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'1'})
+        },
+        onError:()=>{
+          console.log('error upgrading owner role to admin')
+        }
+      })
     }
 
     const orgQuery = useQuery({queryKey:['organizations', currentStatus], queryFn:fetchOrgs, enabled:paseto !== ''})
@@ -181,6 +227,7 @@ export default function ManagerOrgsView(){
     };
   
     const handleChange: TableProps<NewOrg>['onChange'] = (data) => {
+      setPageSize(data.pageSize)
       //@ts-ignore
       setPageNumber(data.current-1); 
     };
@@ -351,13 +398,6 @@ export default function ManagerOrgsView(){
 
     }
   
-    function gotoServices(org:NewOrg){
-      console.log(org)
-      // switch org
-      switchOrg(org)
-      // navigate user to services page
-      router.push('/organizations/services')
-    }
     
     
       const onMenuClick=(e:any, record:NewOrg) => {
@@ -373,19 +413,46 @@ export default function ManagerOrgsView(){
           break;
           case 'viewDetails': viewOrgDetails(record)
         }
-        console.log('click', record);
       };
+
+      const urlPrefix = useUrlPrefix()
+        
+    async function reActivateOrgHandler(record:NewOrg){
+      console.log(record)
+      const res = await axios({
+          method:'patch',
+          url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
+          data:{
+              key:'status',
+              value: '1', 
+              //@ts-ignore
+              id: record.orgId  
+          },
+          headers:{
+              "Authorization": paseto
+          }
+      })
+      return res; 
+  }
       
-  
+      const reactivateOrg = useMutation(reActivateOrgHandler,{
+        onSettled:()=>{
+          queryClient.invalidateQueries({queryKey:['organizations']})
+        }
+      })
+
     const columns: ColumnsType<NewOrg> = [
       {
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
+        fixed:'left',
+        width:'250px',
+        ellipsis:true,
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.logoImageHash}`}/>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.logoImageHash.length < 10? IMAGE_PLACEHOLDER_HASH :record.logoImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                        {/* { record.status !==1?<Text>{record.name}</Text>:<Text style={{color:'#1677ff', cursor:'pointer'}} onClick={()=>gotoServices(record)}>{record.name}</Text> }    */}
                         <Text>{record.name}</Text>
@@ -400,36 +467,44 @@ export default function ManagerOrgsView(){
         title: 'Address',
         dataIndex: 'address',
         key: 'address',
+        width:'370px',
+        ellipsis: true,
         render:(_,record)=>(
           <div style={{display:'flex',flexDirection:'column'}}>
               <Text style={{textTransform:'capitalize'}}>{record.country}</Text>  
-              <Text type="secondary">{record.city}</Text>
+              <Text type="secondary">{record.street}</Text>
           </div>
         )
       },
       
+      // {
+      //   title: 'Zip Code',
+      //   dataIndex: 'zipCode',
+      //   key: 'zipCode',
+      //   render:(_,record)=>{
+      //     const zipCode = record.zipCode  === ""? <Text>--</Text>: <Text>{record.zipCode}</Text>
+      //     return zipCode
+      // }
+      // },
       {
-        title: 'Zip Code',
-        dataIndex: 'zipCode',
-        key: 'zipCode',
-        render:(_,record)=>{
-          const zipCode = record.zipCode  === ""? <Text>--</Text>: <Text>{record.zipCode}</Text>
-          return zipCode
-      }
-      },
-      {
-        title: 'Contact',
+        title: 'Contact Number',
         dataIndex: 'contactNumber',
         key: 'contactNumber',
+        width:'150px',
+        render: (_,record)=>(
+          //@ts-ignore
+          <Text>{convertToAmericanFormat(record.contactNumber)}</Text> 
+        )
       },
       {
           title: 'Created On',
           dataIndex: 'createdAt',
           key: 'createdAt',
+          width:'120px',
           render: (_,record)=>{
               const date = dayjs(record.createdAt).format('MMM DD, YYYY')
               return(
-            <Text>{date}</Text>
+            <Text type='secondary'>{date}</Text>
             )
         },
     },
@@ -448,25 +523,46 @@ export default function ManagerOrgsView(){
     {
       dataIndex: 'actions', 
       key: 'actions',
-      render:(_,record)=>{
-        const items = getCurrentStatusActionItems()
-        return (<Dropdown menu={{ items , onClick: (e)=>onMenuClick(e,record) }}>
+      width: currentStatus.name !== 'Deactivated'?'70px':'150px',
+      fixed:'right',
+      render:(_,record:NewOrg)=>{
+        if(currentStatus.name !== 'Deactivated'){
+          const items = getCurrentStatusActionItems()
+          return (<Dropdown trigger={["click"]} menu={{ items , onClick: (e)=>onMenuClick(e,record) }}>
           <Button type='text' icon={<MoreOutlined/>}/>
         </Dropdown>)
+        }else{
+          return (<Button onClick={()=>reactivateOrg.mutate(record)}>Reactivate</Button>)
+        }
       }
     }
     ];
 
+ 
+
         return (
             <div>
-               { allOrgsQuery && allOrgsTotal === 0 ? null : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
-                <Radio.Group defaultValue={currentStatus.id} buttonStyle="solid">
-                    {orgStatus.map(status=>(
-                        <Radio.Button key={status.id} onClick={()=>setCurrentStatus(status)} value={status.id}>{status.name}</Radio.Button>
-                     )
-                    )}
-                </Radio.Group>
-                <Button type='link' loading={orgQuery.isRefetching} onClick={()=>orgQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+              <Head>
+                <title>Flexable|Portal</title>
+                <link rel="icon" href="/favicon.png" />
+               </Head>
+              
+               { allOrgsQuery && allOrgsTotal === 0 
+               ? null 
+               : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column',}}>
+                  <div style={{width:'100%', marginBottom:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                          <Title style={{margin: '0'}} level={2}>Organizations</Title>
+                          <div>
+                            <Button shape='round' style={{marginRight:'1rem'}} loading={orgQuery.isRefetching} onClick={()=>orgQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                            <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/manager/organizations/new')}>New Organization</Button>
+                          </div>
+                  </div>
+                  <Radio.Group defaultValue={currentStatus.id} buttonStyle="solid">
+                      {orgStatus.map(status=>(
+                          <Radio.Button key={status.id} onClick={()=>setCurrentStatus(status)} value={status.id}>{status.name}</Radio.Button>
+                      )
+                      )}
+                  </Radio.Group>
 
                 </div>
                 }
@@ -475,6 +571,8 @@ export default function ManagerOrgsView(){
                 ?<EmptyState/>
                 :<Table 
                   style={{width:'100%'}} 
+                  size='middle'
+                  scroll={{ x: 'calc(500px + 50%)'}}
                   // rowKey={(record)=>record.id}  
                   loading={orgQuery.isLoading||orgQuery.isRefetching} 
                   columns={columns} 
@@ -512,7 +610,7 @@ const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 const {paseto, currentUser} = useAuthContext()
 
 function closeDrawerHandler(){
-  queryClient.invalidateQueries(['organizations'])
+  // queryClient.invalidateQueries(['organizations'])
   closeDrawer(!isDrawerOpen)
 }
 
@@ -528,16 +626,19 @@ function toggleDeleteModal(){
   setIsDeleteModalOpen(!isDeleteModalOpen)
 }
 
-function deleteServiceItem(){ 
+function deleteOrg(){ 
 
   // mutate record
   deleteData.mutate(selectedOrg,{
     onSuccess:()=>{
       notification['success']({
-        message: 'Successfully deleted record!'
+        message: 'Successfully deactivated organization!'
     })  
       toggleDeleteModal()
       closeDrawerHandler()
+    },
+    onSettled:()=>{
+      queryClient.invalidateQueries(['organizations'])
     },
 
   onError:(err)=>{
@@ -550,15 +651,39 @@ function deleteServiceItem(){
   })
 }
 
-// const urlPrefix = currentUser.role == 1 ? 'manager': 'admin'
+async function reActivateOrgHandler(record:NewOrg){
+  console.log(record)
+  const res = await axios({
+      method:'patch',
+      url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
+      data:{
+          key:'status',
+          value: '1', 
+          //@ts-ignore
+          id: record.orgId  
+      },
+      headers:{
+          "Authorization": paseto
+      }
+  })
+  return res; 
+}
+
+const urlPrefix = useUrlPrefix()
+
+const reactivateOrg = useMutation(reActivateOrgHandler,{
+onSettled:()=>{
+  queryClient.invalidateQueries({queryKey:['organizations']})
+}
+})
 
 const deleteDataHandler = async(record:NewOrg)=>{      
   const {data} = await axios({
     method:'patch',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org`,
+    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
     data: {
         //@ts-ignore
-        orgId:record.orgId,
+        id:record.orgId,
         key:'status',
         value: '0'
       },
@@ -576,16 +701,33 @@ return(
 <Drawer 
   title="Organization Details" 
   width={640} placement="right" 
-  extra={selectedOrg.status === 1?<Button size='large' onClick={()=>gotoServices(selectedOrg)}>Visit organization</Button>:null}
+  extra={selectedOrg.status === 1?<Button shape='round' onClick={()=>gotoServices(selectedOrg)}>Visit organization</Button>:null}
   closable={true} 
   onClose={closeDrawerHandler} 
   open={isDrawerOpen}
 >
+
   
-  <EditableName selectedOrg={selectedOrg}/>
+  
+<EditableText
+    fieldKey="name" // The way the field is named in DB
+    currentFieldValue={selectedOrg.name}
+    fieldName = 'name'
+    title = 'Name'
+    // @ts-ignore
+    id = {selectedOrg.orgId}
+    options = {{queryKey:'organizations',mutationUrl:'org'}}
+/>
   <EditableAddress selectedOrg={selectedOrg}/>
-  <EditablePhone selectedOrg={selectedOrg}/>
-  {/* <EditableZipCode selectedOrg={selectedOrg}/> */}
+  <EditableText
+    fieldKey="contact_number" // The way the field is named in DB
+    currentFieldValue={selectedOrg.contactNumber} 
+    fieldName = 'contactNumber'
+    title = 'Contact Number'
+    // @ts-ignore
+    id = {selectedOrg.orgId}
+    options = {{queryKey:'organizations',mutationUrl:'org'}}
+/>
   <EditableLogoImage selectedOrg={selectedOrg}/>
   {/* <EditableCoverImage selectedOrg={selectedOrg}/> */}
 
@@ -594,7 +736,7 @@ return(
     <Button danger onClick={toggleDeleteModal} style={{width:'30%'}} type="link">Deactivate organization</Button>
   </div>
 
-  <DeleteRecordModal isDeletingItem={isDeletingItem} onCloseModal={toggleDeleteModal} onDeleteRecord={deleteServiceItem} isOpen={isDeleteModalOpen} selectedRecord={selectedOrg}/>
+  <DeleteRecordModal isDeletingItem={isDeletingItem} onCloseModal={toggleDeleteModal} onDeleteRecord={deleteOrg} isOpen={isDeleteModalOpen} selectedRecord={selectedOrg}/>
 
 
 </Drawer>
@@ -631,7 +773,7 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
       <Form 
       form={form} 
       style={{marginTop:'1rem'}}
-      name="deleteServiceItemForm" 
+      name="deleteOrgForm" 
       layout='vertical'
       onFinish={onFinish}>
       <Form.Item
@@ -712,11 +854,13 @@ const deActivatedOrgsActions = [
 const inReviewOrgsActions = [
     {
         key: 'accept',
-        label: 'Accept'
+        label: "Accept",
+        icon: <LikeOutlined />
     },
     {
         key: 'reject',
-        label: 'Reject'
+        label: 'Reject',
+        icon:<DislikeOutlined />
     },
     {
         key: 'viewDetails',

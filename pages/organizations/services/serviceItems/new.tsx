@@ -1,14 +1,13 @@
 import React,{useEffect, useRef, useState} from 'react';
-import {Card,Form, Input,InputNumber, DatePicker,Upload,Button,notification, Space, Alert, Typography, TimePicker, Select, Row, Col, Steps, Radio, Tooltip, Popconfirm, message, Drawer, Collapse} from 'antd';
+import {Card,Form, Image as AntImage, Input,InputNumber, DatePicker,Upload,Button,notification, Space, Alert, Typography, TimePicker, Select, Row, Col, Steps, Radio, Tooltip, Popconfirm, message, Drawer, Collapse} from 'antd';
 const { TextArea } = Input;
 import Image from 'next/image'
-const { RangePicker } = DatePicker;
-// import { Keyframes } from '@ant-design/cssinjs';
+
 const { Panel } = Collapse;
 
 
 const {Text,Title} = Typography;
-import {UploadOutlined,ArrowLeftOutlined,MinusCircleOutlined,InfoCircleOutlined,PlusCircleOutlined} from '@ant-design/icons'
+import {QuestionCircleOutlined,SelectOutlined,ArrowLeftOutlined,MinusCircleOutlined,InfoCircleOutlined,PlusCircleOutlined} from '@ant-design/icons'
 
 
 import { useRouter } from 'next/router';
@@ -19,7 +18,7 @@ import useServiceItemTypes from '../../../../hooks/useServiceItemTypes';
 import { asyncStore } from '../../../../utils/nftStorage';
 import axios from 'axios';
 import { useAuthContext } from '../../../../context/AuthContext';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import useUrlPrefix from '../../../../hooks/useUrlPrefix'; 
 
 
@@ -110,13 +109,15 @@ function BasicForm({nextStep}:BasicInfoProps){
     
     console.log(artworkRef)
 
+    const queryClient = useQueryClient()
+
     function handleArtworkChange(hash:string){
         artworkRef.current = hash
     }
 
    
 
-     const onFinish = async (formData:ServiceItem)=>{
+     const onFinish = async (formData:any)=>{
 
         // availability should return empty array whenever user decides not to add custom dates
         // const transformedAvailability = formData.availability?convertDates(formData.availability):[]
@@ -129,7 +130,9 @@ function BasicForm({nextStep}:BasicInfoProps){
                 description:formData.description,
                 orgServiceId: currentService.id,
                 serviceItemTypeId: router.query.key, // TODO: Get this value from context,
-                logoImageHash: artworkRef.current
+                logoImageHash: artworkRef.current,
+                validityStartDate: dayjs(formData.validity.start).format(),
+                validityEndDate: dayjs(formData.validity.end).format()
             }
 
             createData.mutate(formObject)
@@ -159,6 +162,9 @@ function BasicForm({nextStep}:BasicInfoProps){
             nextStep(data.data)
             
        },
+       onSettled:()=>{
+        queryClient.invalidateQueries(['all-serviceItems'])
+   },
         onError:(err)=>{
             console.log(err)
             notification['error']({
@@ -195,27 +201,51 @@ function BasicForm({nextStep}:BasicInfoProps){
             <TextArea allowClear maxLength={500} size='large' showCount  placeholder='Tell us more about this service' rows={2} />
         </Form.Item>
 
-        <Form.Item
-            name="price"
-            label='Price'
-            style={{width:'100%'}}
-            rules={[{ required: true, message: 'Please input a valid price!' }]}
-        >
-            <div style={{display:'flex', alignItems:'center'}}>
-            <Input style={{width:'400px'}} size='large' suffix='Per ticket'  prefix="$"  placeholder="0.00" /> 
-            </div>
-        </Form.Item> 
+          {/* price and tickets per day */}
+          <Row>
+            <Col span={11} style={{height:'100%'}}>
+                <Form.Item
+                    name='price'
+                    label='Price'
+                    style={{width:'100%'}}
+                    rules={[{ required: true, message: 'Please input a valid price!' }]}
+                >
+                    <Input size='large' style={{width:'100%'}} suffix='Per ticket' prefix="$" placeholder="0.00" /> 
+                </Form.Item> 
+            </Col>
+            <Col offset={1} span={12}>
+                <Form.Item
+                    name='ticketsPerDay'
+                    label='Tickets per day'
+                    style={{width:'100%'}}
+                    rules={[{ required: true, message: 'Please input a valid number!' }]}
+                    >
+                    <Input size='large' suffix='Tickets Per day' style={{width:'100%'}} placeholder="20" />
+                </Form.Item>
+            </Col>
+        </Row>
 
         <Form.Item
-            name="ticketsPerDay"
-            label='Tickets per day'
-            
-            rules={[{ required: true, message: 'Please input a valid number!' }]}
-            >
-            <div style={{display:'flex', alignItems:'center'}}>
-                <Input style={{width:'400px'}} suffix='Tickets per day'  size='large' placeholder="250" />
-            </div>
-        </Form.Item>
+            label="Validity Period"
+            hasFeedback
+            required
+            style={{marginBottom:'0'}}
+            extra={`Enter a timeframe you want your DAT to be redeemable by customers. This may vary based on your industry and service you provide. Eg: a "Saturday Night Line Skip" at a bar might be valid from 7pm on Saturday night until 4am Sunday morning, to allow the late night partygoers a chance to redeem their tickets. A restaurant DAT for a "Last Minute Saturday Reservation" might only need to have validity period of 12 noon - 12 midnight`} 
+            rules={[{required: true, message: 'Please select a time period' }]}
+        >
+            <Input.Group  compact>
+            <Form.Item  rules={[{required:true, message:'Please provide a start time'}]}  name={['validity','start']} noStyle>
+                <TimePicker  use12Hours placeholder="Start"  format="h A" size="large" />
+            </Form.Item>
+            <Form.Item  rules={[{required:true, message:'Please provide a end time'}]}  name={['validity','end']} noStyle>
+                <TimePicker use12Hours placeholder="End"  format="h A" size="large" />
+            </Form.Item>
+
+            </Input.Group>
+            {/* <Text style={{marginLeft:'1rem'}}>9 hrs interval for all tickets</Text>   */}
+
+        </Form.Item> 
+
 
 
         <Artwork onHandleArtwork={handleArtworkChange}/>
@@ -247,6 +277,7 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
 
     const [form] = Form.useForm()
     const router = useRouter()
+    const queryClient = useQueryClient()
 
     const urlPrefix = useUrlPrefix()
 
@@ -259,7 +290,7 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
      const res = customDates.map(date=>{ 
           const updatedDate = {
               ...date,
-              date: dayjs(date.date).format('MMM DD, YYYY'),
+              date: dayjs(date.date).format(),
               ticketsPerDay: Number(date.ticketsPerDay),
               price: date.price*100
           }
@@ -296,7 +327,6 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
         notification['success']({
             message: 'Successfully created custom availabilties!'
         })
-            console.log(data)
             router.back()
             // nextStep(data.data)
             
@@ -307,16 +337,14 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
                 message: 'Encountered an error while creating custom custom dates',
               });
             // leave modal open
-        } 
+        } ,
+        onSettled:()=>{
+            queryClient.invalidateQueries(['all-serviceItems'])
+       },
     })
 
     const {isError, isLoading:isCreatingData, isSuccess:isDataCreated, data:createdData} = createData
 
-
-    const cancel = (e: React.MouseEvent<HTMLElement>) => {
-        console.log(e);
-        message.success('keep custom date');
-      };
 
 
     return(
@@ -447,6 +475,7 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
                     >
                     {() => (
                      <Button
+                     size='large' 
                     type='primary'
                     shape='round'
                     loading={isCreatingData}
@@ -479,7 +508,7 @@ function Artwork({onHandleArtwork}:ArtworkProps){
     const router = useRouter()
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const [currentServiceItemType, setCurrentServiceItemType] = useState<null|string|string[]|undefined>(undefined)
-    const [selectedArtwork, setSelectedArtwork] = useState(lineSkipHashes[0]) // 
+    const [selectedArtwork, setSelectedArtwork] = useState('') // 
 
     function toggleDrawer(){
         setIsDrawerOpen(!isDrawerOpen)
@@ -488,7 +517,8 @@ function Artwork({onHandleArtwork}:ArtworkProps){
     useEffect(() => {
         if(router.isReady){
             setCurrentServiceItemType(router.query.label)
-            setSelectedArtwork(router.query.label === 'Bottle service'?bottleServiceHashes[0]:lineSkipHashes[0])
+            setSelectedArtwork(router.query.label === 'Bottle service'?bottleServiceHashes[0]:router.query.label == 'Reservation'?reservationHashes[0]:lineSkipHashes[0])
+            onHandleArtwork(router.query.label === 'Bottle service'?bottleServiceHashes[0]:router.query.label == 'Reservation'?reservationHashes[0]:lineSkipHashes[0])
         }
     }, [router.isReady, router.query.label])
 
@@ -499,10 +529,17 @@ function Artwork({onHandleArtwork}:ArtworkProps){
 
     return(
         <div>
-            <Title style={{marginTop:'4rem'}} level={3}>Artwork</Title>
-            <div style={{display:'flex', flexDirection:'column'}}>
-                <Button type='link' style={{alignSelf:'flex-end'}} onClick={toggleDrawer}>Select a different artwork</Button>
-                <Image alt='artwork' objectFit='cover' height='400px' width='300px'  src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${selectedArtwork}`}/>
+            <div style={{display:'flex', marginTop:'3rem',alignItems:'baseline'}}>
+                <Title style={{margin:'0'}} level={3}>Artwork</Title>
+                <Tooltip trigger={['click']} placement='right' title={<LogoTip/>}>
+                        <Button type="link">Learn more<QuestionCircleOutlined /></Button>
+                </Tooltip>
+            </div>
+            <div style={{display:'flex',width:'400px', marginTop:'2rem', flexDirection:'column'}}>
+                <div style={{alignSelf:'flex-end',display:'flex'}}>
+                <Button shape='round' icon={<SelectOutlined />} style={{ marginBottom:'.5rem'}} onClick={toggleDrawer}>Select a different artwork</Button>
+                </div>
+                <AntImage alt='artwork'  style={{width:'400px', height:'400px', objectFit:'cover'}}  src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${selectedArtwork}`}/>
                 <Text type='secondary'>This cover image will be used for listing on marketplace and Digital access token NFT</Text>
             </div>
             <ArtworkPicker 
@@ -526,7 +563,7 @@ interface ArtworkPickerProps{
 }
 function ArtworkPicker({isOpen, selected, currentServiceItemType, onSelectImage, onToggleDrawer}:ArtworkPickerProps){
  
-    const currentHashes = currentServiceItemType && currentServiceItemType === 'Line skip'?lineSkipHashes:bottleServiceHashes || lineSkipHashes
+    const currentHashes = currentServiceItemType && currentServiceItemType === 'Line skip'?lineSkipHashes:currentServiceItemType === 'Reservation'? reservationHashes:bottleServiceHashes || lineSkipHashes
 
     return(
         <Drawer
@@ -581,3 +618,13 @@ const reservationHashes = [
     'bafkreigg636y3fh5robhm57fokgxnbnhclzjlw5lujzqw6b5lddper3xuu'
 ]
 
+
+
+function LogoTip(){
+    return(
+        <div>
+            <AntImage style={{objectFit:'cover'}}  src={'/explainers/serviceItem-explainer.png'} alt='Service explainer as displayed on marketplace'/>
+            <Text style={{color:'white'}}>It is very important that you provide the requested the image size else, it will look distorted on marketplace.</Text>
+        </div>
+    ) 
+}

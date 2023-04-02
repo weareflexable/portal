@@ -17,6 +17,7 @@
     "country-calling-code": "^0.0.3",
     "country-list": "^2.3.0",
     "country-list-with-dial-code-and-flag": "^3.0.2",
+    "format-money-js": "^1.6.3",
     "moment-timezone": "^0.5.39",
     "next": "12.3.1",
     "nft.storage": "^7.0.0",
@@ -24,6 +25,7 @@
     "react-dom": "18.2.0",
     "react-google-autocomplete": "^2.7.0",
     "react-highlight-words": "^0.18.0",
+    "usa-states": "^0.0.6",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

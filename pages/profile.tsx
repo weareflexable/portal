@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react'
-import {Form,Input,Col, Image, Row, Select, Upload, Button, Layout, Typography, Avatar, Spin, Space, Radio, Skeleton} from 'antd'
+import {Form,Input,Col, Image, Row, Select, Upload, Button, Layout, Typography, Avatar, Spin, Space, Radio, Skeleton, Tag} from 'antd'
 import {UploadOutlined, ArrowLeftOutlined} from '@ant-design/icons'
 import {QueryClient, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 
@@ -69,8 +69,10 @@ export default function Profile(){
     useEffect(()=>{
         setTimeout(()=>{
             setIsLoadingProfile(false)
-        },3000)
+        },2000)
     })
+
+    console.log(router.route) 
 
     // check if user has uploaded profile picture
     const isProfilePic = profilePic !== placeholder
@@ -119,7 +121,11 @@ export default function Profile(){
                     ?<Skeleton.Input active size={'large'}  block />
                     :<EditableImage selectedRecord={userQuery.data&&userQuery.data[0]}/>
                     }
-                    <EditableEmail selectedRecord={userQuery.data&&userQuery.data[0]}/>
+                    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+                      <Text type="secondary" style={{ marginRight: '2rem',}}>Role</Text>
+                      <Tag color={userQuery.data&&userQuery.data[0].userRoleName === 'Manager' ? 'purple': userQuery.data&&userQuery.data[0].userRoleName==='Admin'? 'volcano': userQuery.data&&userQuery.data[0].userRoleName === 'Supervisor'?'cyan':userQuery.data&&userQuery.data[0].userRoleName === 'Superadmin'?'blue':'green'} style={{width:'max-content'}}>{userQuery.data && userQuery.data[0].userRoleName}</Tag>
+                    </div>
+                    <EditableEmail isReadOnly selectedRecord={userQuery.data&&userQuery.data[0]}/>
                     <EditableName selectedRecord={userQuery.data&&userQuery.data[0]}/>
                     <EditablePhone selectedRecord={userQuery.data&&userQuery.data[0]}/>
                     <EditableGender selectedRecord={userQuery.data&&userQuery.data[0]}/>
@@ -153,9 +159,10 @@ function getPrefixSelector(userCountry:any){
 //   );
 interface EditableProp{
     selectedRecord: User
+    isReadOnly?: boolean
 }
 
-function EditableEmail({selectedRecord}:EditableProp){
+function EditableEmail({selectedRecord, isReadOnly}:EditableProp){
 
 
     // const [state, setState] = useState(selectedRecord)
@@ -205,7 +212,7 @@ function EditableEmail({selectedRecord}:EditableProp){
     const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
         <Text>{selectedRecord.email}</Text>
-        <Button type="link" onClick={toggleEdit}>Edit</Button>
+        {isReadOnly?null:<Button type="link" onClick={toggleEdit}>Edit</Button>}
       </div>
   )
   
@@ -555,6 +562,13 @@ function EditableCountry({selectedRecord}:EditableProp){
     const [isEditMode, setIsEditMode] = useState(false)
   
     const {paseto} = useAuthContext()
+
+    const list = countryList.getNames()
+    // console.log(countryList.getData())
+    const america = countryList.getName('US')
+    const sortedList = list.sort()
+    const prioritizedList = [america, ...sortedList]
+    
   
     function toggleEdit(){
       setIsEditMode(!isEditMode)
@@ -622,8 +636,8 @@ function EditableCountry({selectedRecord}:EditableProp){
                 defaultValue={'USA'}
                 allowClear
                 >
-                    {countryList.getData().map((country:any)=>(
-                        <Option key={country.code} value={country.name}>{country.name}</Option>
+                    {prioritizedList.map((country:any)=>(
+                        <Option key={country} value={country}>{country}</Option>
                     ))}
                 </Select>
             </Form.Item> 

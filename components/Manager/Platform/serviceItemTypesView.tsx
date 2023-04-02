@@ -1,16 +1,16 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 const {Text,Title} = Typography
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {Typography,Button,Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Modal, Alert, notification} from 'antd'
 import axios from 'axios';
 import {MoreOutlined,ReloadOutlined} from '@ant-design/icons'
-import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
 
 import { useAuthContext } from '../../../context/AuthContext';
 import { useServicesContext } from '../../../context/ServicesContext';
 import {PlusOutlined} from '@ant-design/icons'
 import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
+import useUrlPrefix from "../../../hooks/useUrlPrefix";
 const {TextArea} = Input 
 
 
@@ -21,25 +21,29 @@ export default function ServiceItemTypesView(){
 
     const {paseto} = useAuthContext()
     const queryClient = useQueryClient()
-    const {currentService} = useServicesContext()
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
 
     const [pageNumber, setPageNumber] = useState(0)
+
+    const urlPrefix = useUrlPrefix()
   
 
+    type ServiceType ={
+      id: string,
+      name: string
+    }
 
-    type DataIndex = keyof ServiceItemType;
 
     const [selectedServiceItemType, setSelectedServiceItemType] = useState<any|ServiceItemType>({})
-    const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Approved'})
+    const [currentFilters, setCurrentFilters] = useState([])
+    const [selectedFilter, setSelectedFilter] = useState<ServiceType>({id:'',name:''})
     const [showForm, setShowForm] = useState(false)
 
-
-    async function fetchServiceItemType(){
+    async function fetchServiceType(){
       const res = await axios({
               method:'get',
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-item-types?pageNumber=0&pageSize=10&key=service_type_id&value=${currentService.serviceType[0].id}`,
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-types?pageNumber=0&pageSize=10  `,
               headers:{
                   "Authorization": paseto
               }
@@ -49,53 +53,30 @@ export default function ServiceItemTypesView(){
     }
 
 
-    // async function changeServiceItemStatus({serviceItemId, statusNumber}:{serviceItemId:string, statusNumber: string}){
-    //     const res = await axios({
-    //         method:'patch',
-    //         url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,
-    //         data:{
-    //             key:'status',
-    //             value: statusNumber, // 0 means de-activated in db
-    //             serviceItemId: serviceItemId 
-    //         },
-    //         headers:{
-    //             "Authorization": paseto
-    //         }
-    //     })
-    //     return res; 
-    // }
+    async function fetchServiceItemType(){
+      const res = await axios({
+              method:'get',
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-item-types?pageNumber=0&pageSize=10&key=service_type_id&value=${selectedFilter.id}`,
+              headers:{
+                  "Authorization": paseto
+              }
+          })
 
-    
+          return res.data;
+    }
 
-    // const changeStatusMutation = useMutation(['data'],{
-    //     mutationFn: changeServiceItemStatus,
-    //     onSuccess:(data:any)=>{
-    //         queryClient.invalidateQueries({queryKey:['users']})
-    //     },
-    //     onError:()=>{
-    //         console.log('Error changing status')
-    //     }
-    // })
+    const serviceTypesQuery = useQuery({queryKey:['service-types'], queryFn:fetchServiceType, enabled:paseto !== ''})
 
-    
-
-  
+    useEffect(() => {
+      if(serviceTypesQuery){
+        console.log(serviceTypesQuery.data)
+        setCurrentFilters(serviceTypesQuery.data && serviceTypesQuery.data.data)
+      }
+    }, [serviceTypesQuery])
 
 
-    const ServiceItemTypesQuery = useQuery({queryKey:['service-item-types',currentService.serviceType[0].id,currentFilter.id], queryFn:fetchServiceItemType, enabled:paseto !== ''})
-    const data = ServiceItemTypesQuery.data && ServiceItemTypesQuery.data.data
 
-
-    console.log(data)
-    
-  
-  
-    // function getTableRecordActions(){
-    //     switch(currentFilter.id){
-    //         // 1 = approved
-    //         case '1': return activeItemActions 
-    //     }
-    // }
+    const serviceItemTypesQuery = useQuery({queryKey:['service-item-types',selectedFilter], queryFn:fetchServiceItemType, enabled:paseto !== '' && serviceTypesQuery.isFetched})
 
     function viewServiceItemTypeDetails(user:ServiceItemType){
       // set state
@@ -120,11 +101,12 @@ export default function ServiceItemTypesView(){
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
+        fixed: 'left',
+        width:'250px',
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
                     {/* <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.profilePic}`}/> */}
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`/favicon.ico`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{record.name}</Text>  
                         {/* <Text type="secondary">{record.email}</Text>   */}
@@ -137,6 +119,7 @@ export default function ServiceItemTypesView(){
         title: 'Status',
         dataIndex: 'status',
         key: 'status',
+        width:'200px',
         render: (status)=>{
           const statusText = status == 1 ? "Active": "In-active";
           return(
@@ -157,13 +140,14 @@ export default function ServiceItemTypesView(){
     //   },
 
       {
-          title: 'CreatedAt',
+          title: 'Created On',
           dataIndex: 'createdAt',
           key: 'createdAt',
+          width:'120px',
           render: (_,record)=>{
               const date = dayjs(record.createdAt).format('MMM DD, YYYY')
               return(
-            <Text>{date}</Text>
+            <Text type='secondary'>{date}</Text>
             )
         },
       },
@@ -182,9 +166,10 @@ export default function ServiceItemTypesView(){
     {
       dataIndex: 'actions', 
       key: 'actions',
+      width:'70px',
       render:(_,record)=>{
         // const items = getTableRecordActions()
-        return (<Button icon={<MoreOutlined/>} onClick={()=>viewServiceItemTypeDetails(record)}/>)
+        return (<Button type="text" icon={<MoreOutlined/>} onClick={()=>viewServiceItemTypeDetails(record)}/>)
       } 
     }
     ];
@@ -192,14 +177,16 @@ export default function ServiceItemTypesView(){
         return (
             <div>
                 <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
-                {/* <Radio.Group defaultValue={currentFilter.id} style={{width:'100%'}} buttonStyle="solid">
-                    {staffFilter.map(filter=>(
-                        <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
+                {serviceTypesQuery.isLoading
+                ?<Text>Loading service-types ...</Text>
+                :<Radio.Group defaultValue={selectedFilter!.id} style={{width:'100%'}} buttonStyle="solid">
+                    {serviceTypesQuery.data && serviceTypesQuery.data && serviceTypesQuery.data.data.map((item:any)=>(
+                        <Radio.Button key={item.id} onClick={()=>setSelectedFilter(item)} value={item.id}>{item.name}</Radio.Button>
                      )
                     )}
-                </Radio.Group> */}
+                </Radio.Group>}
                 <div style={{width: "100%",display:'flex', justifyContent:'flex-end', alignItems:'center'}}>
-                  <Button type='link' loading={ServiceItemTypesQuery.isRefetching} onClick={()=>ServiceItemTypesQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                  <Button type='link' loading={serviceItemTypesQuery.isRefetching} onClick={()=>serviceItemTypesQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
                   <Button
                    disabled
                     type="primary"
@@ -212,7 +199,14 @@ export default function ServiceItemTypesView(){
                 </div>
 
                 </div>
-                <Table style={{width:'100%'}} key='dfadfe' loading={ServiceItemTypesQuery.isLoading||ServiceItemTypesQuery.isRefetching} columns={columns}  dataSource={data} />
+                <Table 
+                style={{width:'100%'}}
+                scroll={{ x: 'calc(500px + 50%)'}} 
+                 key='dfadfe' 
+                 loading={serviceItemTypesQuery.isLoading||serviceItemTypesQuery.isRefetching} 
+                 columns={columns}  
+                 dataSource={serviceItemTypesQuery && serviceItemTypesQuery.data && serviceItemTypesQuery.data.data || []}
+                  />
                 {
                   isDrawerOpen
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedServiceItemType={selectedServiceItemType}/>
@@ -241,9 +235,11 @@ const AddServiceItemTypeForm: React.FC<ServiceItemTypeFormProps> = ({
   const {paseto} = useAuthContext()
   const {currentService} = useServicesContext()
 
+  const urlPrefix = useUrlPrefix()
+
 
   const createDataHandler = async(newItem:any)=>{
-    const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-item-types`, newItem,{
+    const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-item-types`, newItem,{
         headers:{
             "Authorization": paseto
         },
@@ -356,6 +352,7 @@ const queryClient = useQueryClient()
 
 const {currentUser,paseto} = useAuthContext()
 const {currentService} = useServicesContext()
+const urlPrefix = useUrlPrefix()
 
 const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
@@ -394,7 +391,7 @@ function deleteService(){
 const deleteDataHandler = async(record:ServiceItemType)=>{      
   const {data} = await axios({
     method:'delete',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-item-types`,
+    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-item-types`,
     data: {
         id:record.id,
         serviceId: currentService.id
@@ -445,6 +442,8 @@ function EditableRole({selectedServiceItemType}:EditableProp){
 
   const {paseto} = useAuthContext()
 
+  const urlPrefix = useUrlPrefix()
+
 
   function toggleEdit(){
     setIsEditMode(!isEditMode)
@@ -455,7 +454,7 @@ function EditableRole({selectedServiceItemType}:EditableProp){
 
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-item-types`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-item-types`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
