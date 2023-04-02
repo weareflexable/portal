@@ -111,7 +111,7 @@ jobs:
             podman pull ghcr.io/weareflexable/portal:staging
             podman stop portal
             podman rm portal
-            podman run --name="portal" -p 9082:3001 -d ghcr.io/weareflexable/portal:staging
+            podman run --name="portal" -p 9082:3000 -d ghcr.io/weareflexable/portal:staging
 
       - name: Deploy on Prod server 
         if: github.ref == 'refs/heads/prod'
@@ -128,4 +128,4 @@ jobs:
             podman pull ghcr.io/weareflexable/portal:prod
             podman stop portal
             podman rm portal
-            podman run --name="portal" -p 9082:3002 -d ghcr.io/weareflexable/portal:prod
+            podman run --name="portal" -p 9082:3000 -d ghcr.io/weareflexable/portal:prod
