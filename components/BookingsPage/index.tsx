@@ -252,7 +252,7 @@ export default function BookingsView(){
           width: '120px',
           fixed: 'right',
           render: (ticketDate)=>{
-              const date = dayjs(ticketDate).format('MMM DD, YYYY')
+              const date = dayjs(ticketDate).format('MMM D, YYYY')
               return(
             <Text type="secondary">{date}</Text>
             )
