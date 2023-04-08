@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import React,{useState,useContext,createContext, ReactNode, useEffect, useMemo, useCallback} from 'react';
 import useLocalStorage from '../hooks/useLocalStorage';
 import { deleteStorage, getStorage, setStorage } from '../utils/storage';
-import  {useQuery} from '@tanstack/react-query'
+import  {QueryCache, QueryClient, useQuery} from '@tanstack/react-query'
 import axios from 'axios';
 
 
@@ -84,8 +84,19 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
             const isArray = Array.isArray(user)
             setCurrentUser(isArray?user[0]:user)
         }, 
-        staleTime:Infinity,
-        retry:false
+        // staleTime:Infinity,
+        refetchInterval: 30000,
+        retry: (failureCount, error) =>{
+          if(failureCount >2) return false
+          return true  
+        },
+        onError:(error:any)=>{
+            const statusCode = error.response.status
+            if(statusCode === 401){ // 401: user token has expired
+                // logout user if token has expired
+                logout()
+            }
+        }
     })
 
 
