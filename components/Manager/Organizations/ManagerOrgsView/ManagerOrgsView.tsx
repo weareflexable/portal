@@ -573,7 +573,7 @@ export default function ManagerOrgsView(){
                   style={{width:'100%'}} 
                   size='middle'
                   scroll={{ x: 'calc(500px + 50%)'}}
-                  // rowKey={(record)=>record.id}  
+                  rowKey={(record)=>record.id}  
                   loading={orgQuery.isLoading||orgQuery.isRefetching} 
                   columns={columns} 
                   onChange={handleChange} 

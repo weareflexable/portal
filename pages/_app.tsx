@@ -1,16 +1,39 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import { AuthContextProvider } from '../context/AuthContext';
-import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query'
+import { QueryCache, QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { OrgContextProvider } from '../context/OrgContext';
 import { ServicesContextProvider } from '../context/ServicesContext';
 import ErrorBoundary from '../components/shared/ErrorBoundary/ErrorBoundary';
 import Head from 'next/head'
 
-const queryClient = new QueryClient()
 
 function MyApp({ Component, pageProps }: AppProps) {
+
+
+  const queryClient = new QueryClient({
+    // queryCache: new QueryCache({
+    //   onError:(error:any)=>{
+    //     const statusCode = error.response.status
+    //     console.log(statusCode)
+    //     if(statusCode === 401){
+    //       api.open({
+    //         message: 'Token expired',
+    //         description:
+    //           'Logout to continue',
+    //         className: 'custom-class',
+    //         btn: <Button>Logout</Button>,
+    //         style: {
+    //           width: 600,
+    //         },
+    //       });
+    //     }
+    //     console.log('this is coming from global errors',error!.response)
+    //   }
+    // })
+  })
+  
 
   return (
     <>

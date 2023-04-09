@@ -8,7 +8,11 @@ export default function useSession(){
     const {paseto} = useAuthContext()
 
     async function getDecodedPaseto(){
-        // const res =  await axios.get('')
+        const res =  await axios.get('',{
+            headers:{
+                "Authorization": paseto
+            }
+        })
         
     }
 
