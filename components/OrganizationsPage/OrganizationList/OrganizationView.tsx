@@ -121,23 +121,8 @@ export default function AdminOrgsView(){
         changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'0'})
       }
       
-      function reviewHandler(org:NewOrg){
-        // setSelelectedOrg(org.orgId)
-        // @ts-ignore
-        changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'2'})
-      }
-      
-      function rejectOrgHandler(org:NewOrg){
-      // @ts-ignore
-      changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'4'})
-    }
     
-    function acceptOrgHandler(org:NewOrg){
-      // setSelelectedOrg(org.orgId)
-
-      // @ts-ignore
-        changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'1'})
-    }
+ 
 
     const orgQuery = useQuery({queryKey:['organizations', currentStatus], queryFn:fetchOrgs, enabled:paseto !== ''})
     const orgs = orgQuery.data && orgQuery.data.data
@@ -340,18 +325,6 @@ export default function AdminOrgsView(){
     }
     })
 
-    function getCurrentStatusActionItems(){
-        switch(currentStatus.id){
-            // 1 = approved
-            case '1': return approvedOrgsActions 
-            // 2 = inReview
-            case '2': return inReviewOrgsActions 
-            // 4 = rejected
-            case '4': return rejectedOrgsActions 
-            // 0 = deActivated
-            case '0': return deActivatedOrgsActions 
-        }
-    }
 
     function viewOrgDetails(org:NewOrg){
       console.log(org)
@@ -362,31 +335,8 @@ export default function AdminOrgsView(){
 
     }
   
-    // function gotoServices(org:NewOrg){
-    //   console.log(org)
-    //   // switch org
-    //   switchOrg(org)
-    //   // navigate user to services page
-    //   router.push('/organizations/services/')
-    // }
     
-    
-      // const onMenuClick=(e:any, record:NewOrg) => {
-      //   const event = e.key
-      //   switch(event){
-      //     case 'deActivate': deActivateOrgHandler(record);
-      //     break;
-      //     case 'review': reviewHandler(record)
-      //     break;
-      //     case 'accept': acceptOrgHandler(record)
-      //     break;
-      //     case 'reject': rejectOrgHandler(record)
-      //     break;
-      //     case 'viewDetails': viewOrgDetails(record)
-      //   }
-      //   console.log('click', record);
-      // };
-      
+
   
     const columns: ColumnsType<NewOrg> = [
       {
@@ -425,15 +375,6 @@ export default function AdminOrgsView(){
         )
       },
       
-      // {
-      //   title: 'Zip Code',
-      //   dataIndex: 'zipCode',
-      //   key: 'zipCode',
-      //   render:(_,record)=>{
-      //     const zipCode = record.zipCode  === ""? <Text>--</Text>: <Text>{record.zipCode}</Text>
-      //     return zipCode
-      // }
-      // },
       {
         title: 'Contact Number',
         dataIndex: 'contactNumber',
@@ -569,7 +510,6 @@ interface DrawerProps{
 }
 function DetailDrawer({selectedOrg,isDrawerOpen,closeDrawer}:DrawerProps){
 
-console.log('selected org',selectedOrg)
 
 const queryClient = useQueryClient()
 const router = useRouter()
@@ -1096,34 +1036,7 @@ const orgStatus = [
   },
 ]
 
-const approvedOrgsActions = [
-    {
-        key: 'viewDetails',
-        label: 'View details'
-    },
 
-]
-const deActivatedOrgsActions = [
-    {
-        key: 'viewDetails',
-        label: 'View details'
-    },
-
-]
-const inReviewOrgsActions = [
-    {
-        key: 'viewDetails',
-        label: 'View details'
-    },
-
-]
-const rejectedOrgsActions = [
-    {
-        key: 'viewDetails',
-        label: 'View details'
-    },
-
-]
 
 function EmptyState(){
   const router = useRouter()
