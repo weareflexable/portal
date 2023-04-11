@@ -24,6 +24,7 @@ import { numberFormatter } from "../../../utils/numberFormatter";
 import { convertToAmericanFormat } from "../../../utils/phoneNumberFormatter";
 import { EditableText } from "../../shared/Editables";
 import useRole from "../../../hooks/useRole";
+import EmptyState from "../EmptyState";
 
 
 var relativeTime = require('dayjs/plugin/relativeTime')
@@ -517,6 +518,7 @@ const {switchOrg} = useOrgContext()
 const {paseto} = useAuthContext()
 const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 const {isUser} = useRole()
+const urlPrefix = useUrlPrefix()
 
 function closeDrawerHandler(){
   // queryClient.invalidateQueries(['organizations'])
@@ -558,8 +560,8 @@ function deleteOrg(){
   })
 }
 
-// const urlPrefix = currentUser.role == 1 ? 'manager': 'admin'
-const urlPrefix = useUrlPrefix()
+
+
 
 const deleteDataHandler = async(record:NewOrg)=>{  
   const {data} = await axios({
@@ -612,7 +614,6 @@ return(
     options = {{queryKey:'organizations',mutationUrl:'org'}}
 />
   <EditableLogoImage selectedOrg={selectedOrg}/>
-  {/* <EditableCoverImage selectedOrg={selectedOrg}/> */}
 
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
     <Title level={3}>Danger zone</Title>
@@ -692,7 +693,6 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
   </Modal>
   )
 }
-
 
 
 
@@ -1037,16 +1037,3 @@ const orgStatus = [
 ]
 
 
-
-function EmptyState(){
-  const router = useRouter()
-  return(
-    <div style={{border: '1px solid #dddddd', display:'flex', justifyContent:'center', height:'30vh', alignItems:'center', marginTop:'2rem', padding: '2rem'}}>
-      <div style={{maxWidth:'300px', display:'flex', flexDirection:'column', justifyContent:'center'}}>
-        <Title style={{textAlign:'center'}} level={3}>Get Started</Title>
-        <Text style={{textAlign:'center'}}>Ready to get started listing your services on the Flexable Marketplace? The first step is to load in your organization’s details</Text>
-        <Button size="large" shape="round" type="primary" style={{marginTop:'2rem'}} icon={<PlusOutlined />} onClick={()=>router.push('/organizations/new')}>Create New Organization</Button>
-      </div>
-    </div>
-  )
-}
