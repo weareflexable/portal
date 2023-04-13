@@ -229,7 +229,7 @@ export default function ManagerOrgsView(){
     const handleChange: TableProps<NewOrg>['onChange'] = (data) => {
       setPageSize(data.pageSize)
       //@ts-ignore
-      setPageNumber(data.current-1); 
+      setPageNumber(data.current); 
     };
   
     // const getColumnSearchProps = (dataIndex: DataIndex): ColumnType<NewOrg> => ({

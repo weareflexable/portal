@@ -115,7 +115,7 @@ export default function BankView(){
     const handleChange: TableProps<Bank>['onChange'] = (data) => {
       setPageSize(data.pageSize)
       //@ts-ignore
-      setPageNumber(data.current-1); // Subtracting 1 because pageSize param in url starts counting from 0
+      setPageNumber(data.current); // Subtracting 1 because pageSize param in url starts counting from 0
     };
   
   

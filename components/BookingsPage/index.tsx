@@ -99,7 +99,7 @@ export default function BookingsView(){
   
     const handleChange: TableProps<Order>['onChange'] = (data) => {
       //@ts-ignore
-      setPageNumber(data.current-1);
+      setPageNumber(data.current);
       setPageSize(data.pageSize)
     };
   

@@ -69,7 +69,7 @@ export default function ManagerBookingsView(){
       // console.log('Various parameters', pagination, filters, sorter); 
       console.log(data)
       // @ts-ignore
-      setPageNumber(data.current-1)
+      setPageNumber(data.current) 
       setPageSize(data.pageSize)
       // set new page
       // set page number
