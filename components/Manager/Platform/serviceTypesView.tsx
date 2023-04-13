@@ -39,7 +39,7 @@ export default function ServiceTypesView(){
     async function fetchServiceType(){
       const res = await axios({
               method:'get',
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-types?pageNumber=0&pageSize=10  `,
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-types?pageNumber=1&pageSize=10  `,
               headers:{
                   "Authorization": paseto
               }

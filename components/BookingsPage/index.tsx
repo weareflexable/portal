@@ -62,7 +62,7 @@ export default function BookingsView(){
     const {switchOrg} = useOrgs()
     const {currentService} = useServicesContext()
     const [isDrawerOpen, setIsDrawerOpen] = useState(false) 
-    const [pageNumber, setPageNumber] = useState<number|undefined>(0)
+    const [pageNumber, setPageNumber] = useState<number|undefined>(1)
     const [pageSize, setPageSize] = useState<number|undefined>(10)
 
     const urlPrefix = useUrlPrefix();
@@ -99,7 +99,7 @@ export default function BookingsView(){
   
     const handleChange: TableProps<Order>['onChange'] = (data) => {
       //@ts-ignore
-      setPageNumber(data.current-1);
+      setPageNumber(data.current);
       setPageSize(data.pageSize)
     };
   

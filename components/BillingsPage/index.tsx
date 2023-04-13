@@ -34,6 +34,9 @@ export default function BillingsView(){
 
     const router = useRouter()
 
+    const [pageNumber, setPageNumber] = useState<number|undefined>(1)
+    const [pageSize, setPageSize] = useState<number|undefined>(10)
+
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
 
@@ -46,7 +49,7 @@ export default function BillingsView(){
         const res = await axios({
             method:'get',
             //@ts-ignore
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank?pageNumber=0&pageSize=10`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank?pageNumber=${pageNumber}&pageSize=${pageSize}`,
             headers:{
                 "Authorization": paseto
             }
@@ -58,7 +61,7 @@ export default function BillingsView(){
         const res = await axios({
             method:'get',
             //@ts-ignore
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank?key=org_id&value=${currentOrg.orgId}&pageNumber=0&pageSize=10&key2=status&value2=${currentFilter.id}`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank?key=org_id&value=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&key2=status&value2=${currentFilter.id}`,
             headers:{
                 "Authorization": paseto
             }
@@ -120,10 +123,11 @@ export default function BillingsView(){
     
       const allBanksQuery = useQuery({queryKey:['all-banks'], queryFn:fetchAllBanks, enabled:paseto !== '', staleTime:Infinity})
       const allBanksLength = allBanksQuery.data && allBanksQuery.data.data.length
-
-
-    const banksQuery = useQuery({queryKey:['banks', currentFilter], queryFn:fetchBanks, enabled:paseto !== '' && allBanksQuery.isFetched})
-    const data = banksQuery.data && banksQuery.data.data
+      
+      
+      const banksQuery = useQuery({queryKey:['banks', currentFilter], queryFn:fetchBanks, enabled:paseto !== '' && allBanksQuery.isFetched})
+      const data = banksQuery.data && banksQuery.data.data
+      const totalLength = banksQuery.data && banksQuery.data.dataLength;
 
   
   
@@ -151,6 +155,14 @@ export default function BillingsView(){
       setIsDrawerOpen(true)
 
     }
+
+
+    const handleChange: TableProps<Bank>['onChange'] = (data) => {
+      setPageSize(data.pageSize)
+      //@ts-ignore
+      setPageNumber(data.current); // Subtracting 1 because pageSize param in url starts counting from 0
+    };
+  
   
     
       const onMenuClick=(e:any, record:Bank) => {
@@ -262,10 +274,15 @@ export default function BillingsView(){
                   : <Table 
                   style={{width:'100%'}} 
                   scroll={{ x: 'calc(500px + 50%)'}} 
-                  key='dfadfe' 
+                  rowKey={(record)=>record.id}
+                  onChange={handleChange} 
                   loading={banksQuery.isLoading||banksQuery.isRefetching} 
                   columns={columns} 
                   dataSource={data} 
+                  pagination={{
+                    total:totalLength,  
+                    showTotal:(total) => `Total: ${total} items`,
+                  }} 
                   />
                 }
                 

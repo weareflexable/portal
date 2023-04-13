@@ -20,6 +20,9 @@ export default function BankView(){
     const {paseto} = useAuthContext()
     const queryClient = useQueryClient()
 
+    const [pageNumber, setPageNumber] = useState<number|undefined>(1)
+    const [pageSize, setPageSize] = useState<number|undefined>(10)
+
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
 
@@ -31,7 +34,7 @@ export default function BankView(){
     async function fetchBanks(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org-bank?key=status&value=${currentFilter.id}&pageNumber=0&pageSize=10`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org-bank?key=status&value=${currentFilter.id}&pageNumber=${pageNumber}&pageSize=${pageSize}`,
             headers:{
                 "Authorization": paseto
             }
@@ -86,6 +89,7 @@ export default function BankView(){
 
     const banksQuery = useQuery({queryKey:['manager-banks', currentFilter], queryFn:fetchBanks, enabled:paseto !== ''})
     const data = banksQuery.data && banksQuery.data.data
+    const totalLength = banksQuery.data && banksQuery.data.dataLength;
 
 
 
@@ -107,6 +111,13 @@ export default function BankView(){
       setIsDrawerOpen(true)
 
     }
+
+    const handleChange: TableProps<Bank>['onChange'] = (data) => {
+      setPageSize(data.pageSize)
+      //@ts-ignore
+      setPageNumber(data.current); // Subtracting 1 because pageSize param in url starts counting from 0
+    };
+  
   
     
       const onMenuClick=(e:any, record:Bank) => {
@@ -198,12 +209,23 @@ export default function BankView(){
                     {bankFilters.map(bankFilter=>(
                         <Radio.Button key={bankFilter.id} onClick={()=>setCurrentStatus(bankFilter)} value={bankFilter.id}>{bankFilter.name}</Radio.Button>
                      )
-                    )}
+                    )} 
                 </Radio.Group>
-                <Button type='link' loading={banksQuery.isRefetching} onClick={()=>banksQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                <Button type='link' loading={banksQuery.isRefetching} onClick={()=>banksQuery.refetch()} icon={<ReloadOutlined />}>Refresweh</Button>
 
                 </div>
-                <Table style={{width:'100%'}} key='dfadfe' loading={banksQuery.isLoading||banksQuery.isRefetching} columns={columns} dataSource={data} />
+                <Table 
+                  style={{width:'100%'}} 
+                  rowKey={(record)=>record.id}
+                  onChange={handleChange} 
+                  loading={banksQuery.isLoading||banksQuery.isRefetching} 
+                  columns={columns} 
+                  dataSource={data} 
+                  pagination={{
+                    total:totalLength,  
+                    showTotal:(total) => `Total: ${total} items`,
+                  }} 
+                />
                 {
                   isDrawerOpen
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedBank={selectedBank}/>

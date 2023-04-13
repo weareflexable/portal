@@ -43,7 +43,7 @@ export default function ServiceItemTypesView(){
     async function fetchServiceType(){
       const res = await axios({
               method:'get',
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-types?pageNumber=0&pageSize=10  `,
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-types?pageNumber=1&pageSize=10  `,
               headers:{
                   "Authorization": paseto
               }
@@ -56,7 +56,7 @@ export default function ServiceItemTypesView(){
     async function fetchServiceItemType(){
       const res = await axios({
               method:'get',
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-item-types?pageNumber=0&pageSize=10&key=service_type_id&value=${selectedFilter.id}`,
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-item-types?pageNumber=1&pageSize=10&key=service_type_id&value=${selectedFilter.id}`,
               headers:{
                   "Authorization": paseto
               }

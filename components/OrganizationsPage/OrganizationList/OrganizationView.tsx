@@ -45,7 +45,7 @@ export default function AdminOrgsView(){
     const searchInput = useRef<InputRef>(null);
     const ticketSearchRef = useRef(null)
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-    const [pageNumber, setPageNumber] = useState<number|undefined>(0)
+    const [pageNumber, setPageNumber] = useState<number|undefined>(1)
     const [pageSize, setPageSize] = useState<number|undefined>(10)
   
     // const isFilterEmpty = Object.keys(filteredInfo).length === 0;
@@ -192,7 +192,7 @@ export default function AdminOrgsView(){
     const handleChange: TableProps<NewOrg>['onChange'] = (data) => {
       setPageSize(data.pageSize)
       //@ts-ignore
-      setPageNumber(data.current-1); 
+      setPageNumber(data.current); 
     };
   
     // const getColumnSearchProps = (dataIndex: DataIndex): ColumnType<NewOrg> => ({
@@ -535,7 +535,7 @@ export default function AdminOrgsView(){
                 ?<EmptyState/>
                 :<Table 
                   style={{width:'100%'}} 
-                  key='dfadfe' 
+                  rowKey={(record)=>record.id}  
                   size="middle"
                   scroll={{ x: 'calc(500px + 50%)'}}
                   loading={orgQuery.isLoading||orgQuery.isRefetching} 
