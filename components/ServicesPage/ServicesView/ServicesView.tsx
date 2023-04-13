@@ -42,7 +42,7 @@ export default function ManagerOrgsView(){
     const {switchService} = useServicesContext()
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-    const [pageNumber, setPageNumber] = useState<number|undefined>(0)
+    const [pageNumber, setPageNumber] = useState<number|undefined>(1)
     const [pageSize, setPageSize] = useState<number|undefined>(10)
 
     const serviceTypes = useServiceTypes()

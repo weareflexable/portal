@@ -33,7 +33,7 @@ export default function UsersView(){
     const router = useRouter()
     const {switchOrg} = useOrgs()
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-    const [pageNumber, setPageNumber] = useState<number|undefined>(0)
+    const [pageNumber, setPageNumber] = useState<number|undefined>(1)
     const [pageSize, setPageSize] = useState<number|undefined>(10)
   
     const urlPrefix = useUrlPrefix()

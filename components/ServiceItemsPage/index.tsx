@@ -65,7 +65,7 @@ export default function ServiceItemsView(){
 
     const [selectedRecord, setSelectedServiceItem] = useState<any|ServiceItem>({})
     const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Active'})
-    const [pageNumber, setPageNumber] = useState<number|undefined>(0)
+    const [pageNumber, setPageNumber] = useState<number|undefined>(1)
     const [pageSize, setPageSize] = useState<number|undefined>(10)
     
     const {isManager} = useRole()
