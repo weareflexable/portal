@@ -54,7 +54,7 @@ export default function ManagerOrgsView(){
     type DataIndex = keyof NewOrg;
 
     const [selectedOrg, setSelelectedOrg] = useState<any|NewOrg>({})
-    const [currentStatus, setCurrentStatus] = useState({id:'2',name: 'In Review'})
+    const [currentStatus, setCurrentStatus] = useState({id:'1',name: 'Approved'})
 
     async function fetchAllOrgs(){
     const res = await axios({
@@ -816,12 +816,12 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
 
 const orgStatus = [
   {
-      id: '2',
-      name: 'In Review'
+    id: '1',
+    name: 'Approved'
   },
   {
-      id: '1',
-      name: 'Approved'
+      id: '2',
+      name: 'In Review'
   },
   {
       id: '4',
