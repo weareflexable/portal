@@ -20,7 +20,7 @@ export default function AvailabilitySection({selectedServiceItem}:Props){
     const urlPrefix = useUrlPrefix()
   
     async function fetchItemAvailability(){
-      const res = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items/availability?key=service_item_id&value=${selectedServiceItem.id}&pageNumber=0&pageSize=10`,{
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items/availability?key=service_item_id&value=${selectedServiceItem.id}&pageNumber=1&pageSize=50`,{
        headers:{
          "Authorization":paseto
        }

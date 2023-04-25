@@ -9,7 +9,7 @@ export default function useServiceTypes(){
     const urlPrefix = useUrlPrefix()
 
     const fetchServiceTypes = async()=>{
-        const {data} = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-types?pageNumber=0&pageSize=5&key=status&value=1`,{
+        const {data} = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-types?pageNumber=1&pageSize=20&key=status&value=1`,{
             headers:{
                 //@ts-ignore
                 "Authorization":paseto

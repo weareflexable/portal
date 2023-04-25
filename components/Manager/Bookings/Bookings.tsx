@@ -33,7 +33,7 @@ dayjs.extend(advanced)
 export default function ManagerBookingsView(){
 
     const {paseto} = useAuthContext()
-    const [pageNumber, setPageNumber] = useState<number|undefined>(0)
+    const [pageNumber, setPageNumber] = useState<number|undefined>(1)
     const [pageSize, setPageSize] = useState<number|undefined>(10)
   
 
@@ -69,7 +69,7 @@ export default function ManagerBookingsView(){
       // console.log('Various parameters', pagination, filters, sorter); 
       console.log(data)
       // @ts-ignore
-      setPageNumber(data.current-1)
+      setPageNumber(data.current) 
       setPageSize(data.pageSize)
       // set new page
       // set page number

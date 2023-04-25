@@ -42,7 +42,7 @@ export default function ManagerOrgsView(){
     const {switchService} = useServicesContext()
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-    const [pageNumber, setPageNumber] = useState<number|undefined>(0)
+    const [pageNumber, setPageNumber] = useState<number|undefined>(1)
     const [pageSize, setPageSize] = useState<number|undefined>(10)
 
     const serviceTypes = useServiceTypes()
@@ -142,7 +142,7 @@ export default function ManagerOrgsView(){
     const handleChange: TableProps<Service>['onChange'] = (data) => {
       setPageSize(data.pageSize)
       //@ts-ignore
-      setPageNumber(data.current-1); // Subtracting 1 because pageSize param in url starts counting from 0
+      setPageNumber(data.current); // Subtracting 1 because pageSize param in url starts counting from 0
     };
   
    

@@ -28,7 +28,9 @@ export default function StaffView(){
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
 
-    const [pageNumber, setPageNumber] = useState(0)
+    const [pageNumber, setPageNumber] = useState<number|undefined>(1)
+    const [pageSize, setPageSize] = useState<number|undefined>(10)
+    
   
 
 
@@ -99,6 +101,7 @@ export default function StaffView(){
 
     const staffQuery = useQuery({queryKey:['staff',currentService.id,currentFilter.id], queryFn:fetchStaff, enabled:paseto !== ''})
     const data = staffQuery.data && staffQuery.data.data
+    const totalLength = staffQuery.data && staffQuery.data.dataLength;
 
     const allStaffQuery = useQuery({queryKey:['all-staff'], queryFn:fetchAllStaff, enabled:paseto !== '', staleTime:Infinity})
     const allStaffLength = allStaffQuery.data && allStaffQuery.data.dataLength
@@ -106,7 +109,11 @@ export default function StaffView(){
 
 
     
-  
+    const handleChange: TableProps<Staff>['onChange'] = (data) => {
+      setPageSize(data.pageSize)
+      //@ts-ignore
+      setPageNumber(data.current); // Subtracting 1 because pageSize param in url starts counting from 0
+    };
   
     // function getTableRecordActions(){
     //     switch(currentFilter.id){
@@ -139,6 +146,7 @@ export default function StaffView(){
         dataIndex: 'name',
         key: 'name',
         width:'350px',
+        fixed:'left',
         ellipsis:true,
         render:(_,record)=>{
             return(
@@ -192,6 +200,7 @@ export default function StaffView(){
       dataIndex: 'actions', 
       key: 'actions',
       width:'70px',
+      fixed:'right',
       // width: currentFilter.name == 'pending'
       render:(_,record)=>{
         // const items = getTableRecordActions()
@@ -235,10 +244,16 @@ export default function StaffView(){
                   ? <EmptyState onOpenForm={()=>setShowForm(true)}/>
                   : <Table 
                       style={{width:'100%'}} 
-                      key='dfadfe' 
+                      scroll={{ x: 'calc(500px + 50%)'}} 
+                      rowKey={(record)=>record.id}
+                      onChange={handleChange} 
                       loading={staffQuery.isLoading||staffQuery.isRefetching} 
                       columns={columns}  
                       dataSource={data} 
+                      pagination={{
+                        total:totalLength,  
+                        showTotal:(total) => `Total: ${total} items`,
+                      }} 
                     />
                 }
                 

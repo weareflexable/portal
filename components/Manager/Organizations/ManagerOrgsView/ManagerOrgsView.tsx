@@ -46,7 +46,7 @@ export default function ManagerOrgsView(){
     const searchInput = useRef<InputRef>(null);
     const ticketSearchRef = useRef(null)
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-    const [pageNumber, setPageNumber] = useState<number|undefined>(0)
+    const [pageNumber, setPageNumber] = useState<number|undefined>(1)
     const [pageSize, setPageSize] = useState<number|undefined>(10)
   
     // const isFilterEmpty = Object.keys(filteredInfo).length === 0;
@@ -54,7 +54,7 @@ export default function ManagerOrgsView(){
     type DataIndex = keyof NewOrg;
 
     const [selectedOrg, setSelelectedOrg] = useState<any|NewOrg>({})
-    const [currentStatus, setCurrentStatus] = useState({id:'2',name: 'In Review'})
+    const [currentStatus, setCurrentStatus] = useState({id:'1',name: 'Approved'})
 
     async function fetchAllOrgs(){
     const res = await axios({
@@ -164,12 +164,12 @@ export default function ManagerOrgsView(){
     }
     
     function acceptOrgHandler(org:NewOrg){
-      // setSelelectedOrg(org.orgId)
 
       changeOrgOwnerToAdminMutation.mutate({userId:org.createdBy},{
         onSuccess:()=>{
           // @ts-ignore
           changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'1'})
+          // call api for changing custom role rn
         },
         onError:()=>{
           console.log('error upgrading owner role to admin')
@@ -229,7 +229,7 @@ export default function ManagerOrgsView(){
     const handleChange: TableProps<NewOrg>['onChange'] = (data) => {
       setPageSize(data.pageSize)
       //@ts-ignore
-      setPageNumber(data.current-1); 
+      setPageNumber(data.current); 
     };
   
     // const getColumnSearchProps = (dataIndex: DataIndex): ColumnType<NewOrg> => ({
@@ -816,12 +816,12 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
 
 const orgStatus = [
   {
-      id: '2',
-      name: 'In Review'
+    id: '1',
+    name: 'Approved'
   },
   {
-      id: '1',
-      name: 'Approved'
+      id: '2',
+      name: 'In Review'
   },
   {
       id: '4',

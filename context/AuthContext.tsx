@@ -90,12 +90,13 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
           if(failureCount >2) return false
           return true  
         },
-        onError:(error:any)=>{
-            const statusCode = error.response.status
-            if(statusCode === 401){ // 401: user token has expired
-                // logout user if token has expired
-                logout()
-            }
+        onError:(error:any)=>{ 
+            console.log(error)
+            // const statusCode = error.response.status
+            // if(statusCode === 401){ // 401: user token has expired
+            //     // logout user if token has expired
+            //     logout()
+            // }
         }
     })
 
