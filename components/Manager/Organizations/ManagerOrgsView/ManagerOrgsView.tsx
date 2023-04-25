@@ -164,12 +164,12 @@ export default function ManagerOrgsView(){
     }
     
     function acceptOrgHandler(org:NewOrg){
-      // setSelelectedOrg(org.orgId)
 
       changeOrgOwnerToAdminMutation.mutate({userId:org.createdBy},{
         onSuccess:()=>{
           // @ts-ignore
           changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'1'})
+          // call api for changing custom role rn
         },
         onError:()=>{
           console.log('error upgrading owner role to admin')
