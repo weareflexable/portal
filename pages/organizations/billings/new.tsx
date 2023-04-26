@@ -2,14 +2,14 @@
 
 import React,{useState} from 'react'
 import {Card,Form,Input, InputNumber,Button, Typography, Radio, notification, Row, Col, Segmented, Checkbox, Select, Space} from 'antd'
-import { Bank } from '../../../../components/BillingsPage/Types/Banks.types'
-import { useOrgContext } from '../../../../context/OrgContext'
+import { Bank } from '../../../components/BillingsPage/Types/Banks.types'
+import { useOrgContext } from '../../../context/OrgContext'
 import {ArrowLeftOutlined} from '@ant-design/icons'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import router, { useRouter } from 'next/router'
 import axios from 'axios'
-import { useAuthContext } from '../../../../context/AuthContext'
-import useUrlPrefix from '../../../../hooks/useUrlPrefix'
+import { useAuthContext } from '../../../context/AuthContext'
+import useUrlPrefix from '../../../hooks/useUrlPrefix'
 const countryList = require('country-list')
 
 const {Title} = Typography;

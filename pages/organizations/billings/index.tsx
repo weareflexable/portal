@@ -3,8 +3,8 @@ import { Typography, Row, Button, Col } from 'antd'
 const {Title} = Typography
 import {ArrowLeftOutlined} from '@ant-design/icons'
 import React from 'react'
-import BillingsView from '../../../../components/BillingsPage'
-import AppLayout from '../../../../components/shared/Layout/layout'
+import BillingsView from '../../../components/BillingsPage'
+import AppLayout from '../../../components/shared/Layout/layout'
 import { useRouter } from 'next/router'
 
 export default function Billings(){

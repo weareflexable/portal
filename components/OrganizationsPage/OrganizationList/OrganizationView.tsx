@@ -463,6 +463,7 @@ export default function AdminOrgsView(){
                         <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/new')}>New Organization</Button>
                       </div>
                   </div>
+
                   <Radio.Group defaultValue={currentStatus.id} buttonStyle="solid">
                       {orgStatus.map(status=>(
                           <Radio.Button key={status.id} onClick={()=>setCurrentStatus(status)} value={status.id}>{status.name}</Radio.Button>
@@ -529,7 +530,7 @@ function gotoServices(org:NewOrg){
 
   switchOrg(org)
   // navigate user to services page
-  router.push('/organizations/services/')
+  router.push('/organizations/venues/')
 }
 
 function toggleDeleteModal(){

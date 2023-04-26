@@ -619,7 +619,7 @@ function gotoServices(org:NewOrg){
   // switch org
   switchOrg(org)
   // navigate user to services page
-  router.push('/organizations/services/')
+  router.push('/organizations/venues/')
 }
 
 function toggleDeleteModal(){

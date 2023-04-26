@@ -17,4 +17,4 @@ const nextConfig = {
   },
 };
 
-module.exports = withBundleAnalyzer(bundleAnalyzer, nextConfig);
+module.exports =  nextConfig;

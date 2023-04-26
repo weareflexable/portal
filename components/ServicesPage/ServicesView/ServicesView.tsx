@@ -20,6 +20,7 @@ import useServiceTypes from "../../../hooks/useServiceTypes";
 import { convertToAmericanFormat } from "../../../utils/phoneNumberFormatter";
 import { EditableText} from "../../shared/Editables";
 import useUrlPrefix from "../../../hooks/useUrlPrefix";
+import ServiceLayout from "../../shared/Layout/ServiceLayout";
 
 var relativeTime = require('dayjs/plugin/relativeTime')
 dayjs.extend(relativeTime)
@@ -30,7 +31,7 @@ type ServiceMenu={
 }
 
 
-export default function ManagerOrgsView(){
+function VenuesTable(){
 
     const {paseto,currentUser} = useAuthContext()
     const {currentOrg} = useOrgContext() // coming from local storage
@@ -54,10 +55,7 @@ export default function ManagerOrgsView(){
     const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Active'})
     const [isHydrated, setIsHydrated] = useState(false)
 
-    useEffect(() => {
-      setIsHydrated(true)
-    }, [])
-
+   
    const urlPrefix = useUrlPrefix()
 
   
@@ -150,7 +148,7 @@ function gotoServiceItemsPage(service:Service){
   // switch org
   switchService(service)
   // navigate user to services page
-  router.push('/organizations/services/serviceItems') // redirect to dashboard later
+  router.push('/organizations/venues/serviceItems') // redirect to dashboard later
 }
 
 
@@ -275,8 +273,6 @@ function gotoServiceItemsPage(service:Service){
 
 
     
-    
-
     const onLaunchButtonClick: MenuProps['onClick'] = (e) => {
       const key = e.key
       const targetMenu:any = items.find((item:ServiceMenu)=>item.key === key)
@@ -285,8 +281,7 @@ function gotoServiceItemsPage(service:Service){
 
         return (
             <div style={{background:'#f7f7f7', minHeight:'100vh'}}>
-                <Row style={{marginTop:'.5em'}} gutter={[16,16]}>
-               <header style={{width:'100%', padding:'1rem 0' , background:'#ffffff'}}>
+               {/* <header style={{width:'100%', padding:'1rem 0' , background:'#ffffff'}}>
                    <Col style={{display:'flex', justifyContent:'space-between'}} offset={1} span={22}>
                        <div style={{display:'flex', flex:'7',alignItems:'center'}}> 
                            <Button style={{display:'flex', padding: '0', margin:'0', alignItems:'center', textAlign:'left'}} onClick={()=>router.replace('/')} icon={<ArrowLeftOutlined />} type='link'/>
@@ -302,25 +297,28 @@ function gotoServiceItemsPage(service:Service){
                        : <Skeleton.Input active size='default'/>
                        }
                    </Col>
-               </header>
-
-               <Col offset={1} span={22}>
+               </header> */}
                    {allServicesQuery.data && allServicesLength === 0 
                    ? null 
                    : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
                     <div style={{width:'100%',  marginBottom:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-                      <Title style={{margin: '0'}} level={2}>Launchpad</Title>
-                      <div style={{display:'flex'}}>
-                        <Button shape='round' style={{marginRight:'1rem'}} loading={servicesQuery.isRefetching} onClick={()=>servicesQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
-                        <Dropdown.Button  trigger={['click']} type="primary"   icon={<PlusOutlined/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
-                      </div>
-                    </div>
-                      <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
+                        {/* filters */}
+                        <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
                           {servicesFilter.map((filter:any)=>(
                               <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
                           )
                           )}
                       </Radio.Group>
+                      <div style={{display:'flex'}}>
+                        <Button shape='round' style={{marginRight:'1rem'}} loading={servicesQuery.isRefetching} onClick={()=>servicesQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                        <Dropdown.Button  trigger={['click']} type="primary"   icon={<PlusOutlined/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
+                      </div>
+                    </div>
+
+                      
+
+                    
+                     
                    </div>
                    }
                 
@@ -350,16 +348,14 @@ function gotoServiceItemsPage(service:Service){
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedRecord={selectedRecord}/>
                   :null
                 }  
-
-               </Col> 
-           </Row>
                 
             </div>
     )
 
 
-
 }
+
+
 
 interface DrawerProps{
   selectedRecord: Service,
@@ -376,16 +372,18 @@ const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 const {switchService} = useServicesContext()
 const {paseto,currentUser} = useAuthContext()
 
+const urlPrefix = useUrlPrefix()
+
 function closeDrawerHandler(){
   queryClient.invalidateQueries(['services']) 
   closeDrawer(!isDrawerOpen)
 }
 
 function gotoServices(service:Service){
-  // switch org
+  // switch org 
   switchService(service)
   // navigate user to services page
-  router.push('/organizations/services/serviceItems') // redirect to dashboard later
+  router.push('/organizations/venues/serviceItems') // redirect to dashboard later
 }
 
 function toggleDeleteModal(){
@@ -414,7 +412,6 @@ function deleteService(){
   })
 }
 
-const urlPrefix = currentUser.role == 1 ? 'manager': 'admin'
 
 const deleteDataHandler = async(record:Service)=>{      
   const {data} = await axios({
@@ -553,18 +550,6 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
 }
 
 
-function CustomDropdown(menus:ReactNode[]){
-  return(
-    <div>
-      {
-        menus!.map((item:any)=>(
-          <Text key={item}>{item}</Text>
-        ))
-      }
-    </div>
-  )
-}
-
 
 
 const servicesFilter = [
@@ -597,6 +582,8 @@ function EmptyState({children}:EmptyStateProps){
     </div>
   )
 }
+
+export default VenuesTable
 
 
 
