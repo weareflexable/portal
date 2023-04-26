@@ -42,7 +42,7 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
     }, [])
 
    const navigateBackToServices=()=>{
-      router.replace(`/organizations/services`)
+      router.replace(`/organizations/venues`)
    }
    const navigateBackToOrgs=()=>{
       router.replace(`/organizations`)
@@ -93,7 +93,7 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
 
   function getVenueRoutes(){
     return[
-      {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateBackToServices}  >Back to launchpad</Text>, key:'servicesPage'},
+      {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateBackToServices}  >Back to launchpad</Text>, key:'venuesPage'},
     {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateBackToOrgs} >Back to organizations</Text>, key:'organizationsPage'},
     {type:'divider', key:'divider0'},
     {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={openOrgSwitcher}  >Switch organization</Text>, key:'switchOrganizations'},
@@ -107,7 +107,7 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
 
   function getManagerVenueRoutes(){
     return[
-      {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateBackToServices}  >Back to launchpad</Text>, key:'servicesPage'},
+      {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateBackToServices}  >Back to launchpad</Text>, key:'venuesPage'},
     {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={()=>router.replace('/manager/organizations')} >Back to organizations</Text>, key:'organizationsPage'},
     {type:'divider', key:'divider0'},
     {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateToProfile}  >Profile</Text>, key:'profile'},
@@ -118,7 +118,7 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
 
   function getSuperAdminRoutes(){
     return[
-      {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateBackToServices}  >Back to launchpad</Text>, key:'servicesPage'},
+      {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateBackToServices}  >Back to launchpad</Text>, key:'venuesPage'},
     {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={()=>router.replace('/manager/organizations')} >Back to organizations</Text>, key:'organizationsPage'},
     {type:'divider', key:'divider0'},
     {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateToProfile}  >Profile</Text>, key:'profile'},
