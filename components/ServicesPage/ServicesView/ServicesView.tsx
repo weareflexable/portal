@@ -276,7 +276,7 @@ function gotoServiceItemsPage(service:Service){
     const onLaunchButtonClick: MenuProps['onClick'] = (e) => {
       const key = e.key
       const targetMenu:any = items.find((item:ServiceMenu)=>item.key === key)
-      router.push(`/organizations/services/new?key=${targetMenu!.key}&label=${targetMenu!.label}`)
+      router.push(`/organizations/venues/new?key=${targetMenu!.key}&label=${targetMenu!.label}`)
     };
 
         return (
