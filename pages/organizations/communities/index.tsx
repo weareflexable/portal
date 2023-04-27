@@ -238,7 +238,7 @@ function gotoCommunityItemsPage(service:Community){
                       </Radio.Group>
                       <div style={{display:'flex'}}>
                         <Button shape='round' style={{marginRight:'1rem'}} loading={communityQuery.isRefetching} onClick={()=>communityQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
-                        <Button  type="primary"  icon={<PlusOutlined/>} >Launch Community</Button>
+                        <Button  type="primary" onClick={()=>router.push('/organizations/communities/new')}  icon={<PlusOutlined/>} >Launch Community</Button>
                       </div>
                     </div>
 
@@ -252,7 +252,7 @@ function gotoCommunityItemsPage(service:Community){
                 {
                   allCommunitysQuery.data && allCommunitysLength === 0
                   ? <EmptyState>
-                      <Button type="primary"   icon={<PlusOutlined/>} >Launch Community</Button>
+                      <Button type="primary"  onClick={()=>router.push('/organizations/communities/new')}  icon={<PlusOutlined/>} >Launch Community</Button>
                   </EmptyState> 
                   : <Table 
                       style={{width:'100%'}} 
