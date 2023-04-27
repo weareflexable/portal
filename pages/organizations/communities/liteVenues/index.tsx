@@ -235,7 +235,7 @@ function LiteVenues(){
                       <Title style={{margin: '0'}} level={2}>Lite Venues</Title>
                       <div style={{display:'flex'}}>
                         <Button shape='round' style={{marginRight:'1rem'}} loading={liteVenuesQuery.isRefetching} onClick={()=>liteVenuesQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
-                        <Button type="primary"   icon={<PlusOutlined/>} >Add Venue</Button>
+                        <Button type="primary" onClick={()=>{router.push('/organizations/communities/liteVenues/new')}}   icon={<PlusOutlined/>} >Add Venue</Button>
                       </div>
                     </div>
                   <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">

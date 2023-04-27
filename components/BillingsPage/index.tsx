@@ -263,13 +263,13 @@ export default function BillingsView(){
                   </Radio.Group>
                   <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                     <Button shape="round" style={{marginRight:'1rem'}} loading={banksQuery.isRefetching} onClick={()=>banksQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
-                    <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/services/billings/new')}>New Bank</Button>
+                    <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/billings/new')}>New Bank</Button>
                   </div>
                 </div>}
                 {
                   allBanksQuery.data && allBanksLength == 0
                   ?<EmptyState>
-                    <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/services/billings/new')}>New Bank</Button>
+                    <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/billings/new')}>New Bank</Button>
                   </EmptyState>
                   : <Table 
                   style={{width:'100%'}} 

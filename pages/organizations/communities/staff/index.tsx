@@ -188,7 +188,7 @@ function CommunityStaff(){
         return (
             <div>
                 {data && allStaffLength === 0 ? null : 
-                <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
+                <div style={{marginBottom:'1.5em', marginTop:'2rem', display:'flex', width:'100%', flexDirection:'column'}}>
                   <div style={{display:'flex', justifyContent:'space-between', width:'100%', alignItems:'center'}}>
                     <Title style={{margin:'0', width:'100%'}} level={2}>Staff</Title>
                     <div style={{width: "100%",display:'flex', marginTop:'1.5rem', justifyContent:'flex-end', alignItems:'center'}}>
