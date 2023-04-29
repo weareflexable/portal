@@ -13,9 +13,15 @@ type CommunityVenue = {
     id: string,
     name: string,
     promotion: string,
+    contactNumber: string,
     address: Address ,
-    createdAt: string,
-    updatedAt:string,
+    createdAt?: string,
+    updatedAt?:string,
 }
 
-export type {CommunityVenue, Address}
+type CommunityVenueReq = {
+    communityId: string,
+    venues: CommunityVenue[]
+}
+
+export type {CommunityVenue, CommunityVenueReq, Address}

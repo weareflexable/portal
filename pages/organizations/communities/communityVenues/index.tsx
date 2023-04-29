@@ -160,7 +160,7 @@ function CommunityVenues(){
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
-        width:'270px',
+        width:'220px',
         ellipsis:true,
         fixed:'left',
         render:(_,record)=>{
@@ -178,10 +178,10 @@ function CommunityVenues(){
         title: 'Promotion',
         dataIndex: 'promotion',
         key: 'promotion',
-        width:'220px',
+        width:'270px',
         render: (_,record)=>{
             return(
-          <Text type="secondary">{record.promotion}</Text>
+          <Text >{record.promotion}</Text>
           )
       },
   },
@@ -192,7 +192,7 @@ function CommunityVenues(){
         width:'220px',
         render: (_,record:any)=>{
             return(
-          <Text type="secondary">{record.address.fullAddress}</Text>
+          <Text >{record.address.fullAddress}</Text>
           )
       },
   },
@@ -307,20 +307,9 @@ const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
  const urlPrefix = useUrlPrefix()
 
-async function fetchItemAvailability(){
- const res = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues/availability?key=service_item_id&value=${selectedRecord.id}&pageNumber=0&pageSize=10`,{
-  headers:{
-    "Authorization":paseto
-  }
-})
-return res.data.data
-}
 
-const {data, isLoading} = useQuery({queryKey:['availability',selectedRecord.id], queryFn:fetchItemAvailability})
 
-const availabilityData = data && data
 
-console.log(availabilityData)
 
 
 function closeDrawerHandler(){
@@ -399,8 +388,6 @@ return(
   /> */}
 
 
-  {/* <Text>CUSTOM AVALABILITY</Text> */}
-  <Title style={{marginTop:'3rem'}} level={3}>Custom Dates</Title>
 
   
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>

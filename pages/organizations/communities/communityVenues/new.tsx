@@ -18,6 +18,8 @@ import axios from "axios";
 import { useAuthContext } from "../../../../context/AuthContext";
 import loadConfig from "next/dist/server/config";
 import useUrlPrefix from "../../../../hooks/useUrlPrefix";
+import { CommunityVenueReq } from "../../../../types/CommunityVenue.types";
+import useCommunity from "../../../../hooks/useCommunity";
 
 const getBase64 = (file: any): Promise<string> => 
 new Promise((resolve, reject) => {
@@ -29,24 +31,27 @@ reader.onerror = (error) => reject(error);
 
 const PLACEHOLDER_IMAGE = '/placeholder.png'
 
-export default function NewLiteVenue(){
+export default function NewCommunityVenue(){
 
     const queryClient = useQueryClient()
 
 
     const {paseto} = useAuthContext()
     const {currentOrg} = useOrgContext()
+    const {currentCommunity} = useCommunity()
 
     const [form]=Form.useForm()
     const [fullAddress, setFullAddress] = useState({
         latitude:0,
         longitude:0,
+        placeId: '',
+        street: '',
+        fullAddress: '',
         state: '',
         country:'',
         city:''
     })
-    const [isHashingAssets, setIsHashingAssets] = useState(false)
-    const [logoImage, setLogoImage] = useState(PLACEHOLDER_IMAGE)
+
 
     const router = useRouter() 
 
@@ -72,12 +77,14 @@ export default function NewLiteVenue(){
                 state:'',
                 country:'',
                 city:'',
+                street: '',
                 latitude:place.geometry.location.lat(),
                 longitude:place.geometry.location.lng()
             };
             addressComponents.forEach((address:any)=>{
                 const type = address.types[0]
                 if(type==='country') addressObj.country = address.long_name
+                if(type==='route') addressObj.street = address.long_name
                 if(type === 'locality') addressObj.state = address.short_name
                 if(type === 'administrative_area_level_1') addressObj.city = address.short_name
             })
@@ -90,7 +97,7 @@ export default function NewLiteVenue(){
         options:{
             componentRestrictions:{country:'us'},
             types: ['address'],
-            fields: ['address_components','geometry','formatted_address']
+            fields: ['address_components','geometry','formatted_address', 'place_id']
         },
         onPlaceSelected: (place) => {
             // console.log(antInputRef.current.input)
@@ -101,8 +108,10 @@ export default function NewLiteVenue(){
             // add street address
             const addressWithStreet={
                 ...fullAddress,
-                street: place?.formatted_address
+                placeId: place?.place_id,
+                fullAddress: place?.formatted_address
             }
+            console.log(addressWithStreet)
             setFullAddress(addressWithStreet)
 
             //@ts-ignore
@@ -114,40 +123,26 @@ export default function NewLiteVenue(){
 
     const onFinish = async(formData:any)=>{
 
-        const logoRes = await formData.logoImageHash
-        setIsHashingAssets(true)
-        //@ts-ignore
-        const imageHash = await asyncStore(logoRes[0].originFileObj)
-        //@ts-ignore
-        // const coverImageHash = await asyncStore(formData.coverImageHash[0].originFileObj)
-        setIsHashingAssets(false)
-
-
         // format phoneNumber
         const contact = formData.contact
         const formatedContact = `${contact.countryCode}${contact.areaCode}${contact.centralOfficeCode}${contact.tailNumber}`
 
 
-        const formObject: ServicePayload = {
-            ...formData,
-            ...fullAddress,
-            logoImageHash: imageHash,
-            coverImageHash: "coverimagehash",
-            latitude:String(fullAddress.latitude),
-            longitude:String(fullAddress.longitude),
-            contactNumber: formatedContact,
-            serviceTypeId: router.query.key,
-            currency: 'USD',
-            //@ts-ignore
-            orgId:currentOrg.orgId,
-            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // get user timezone
-            //@ts-ignore
-            startTime: "2023-03-24T13:47:59.064351Z",
-            //@ts-ignore
-            endTime: "2023-03-24T13:47:59.064351Z"
+        const formObject: CommunityVenueReq = {
+            communityId: currentCommunity.id,
+            venues: [{
+                id: '',
+                address: {
+                    ...fullAddress,
+                    latitude:String(fullAddress.latitude),
+                    longitude:String(fullAddress.longitude),
+                },
+                promotion: formData.promotion,
+                name: formData.name,
+                contactNumber: formatedContact,
+            }]
         }
-        //@ts-ignore
-        delete formObject.validityPeriod
+
         // @ts-ignore
         delete formObject.address
 
@@ -158,25 +153,9 @@ export default function NewLiteVenue(){
 
     const urlPrefix = useUrlPrefix()
 
-    const extractLogoImage = async(e: any) => {
-        // e.preventDefault()
-        console.log('Upload event:', e);
-        if (Array.isArray(e)) {
-        return e;
-        }
-
-        console.log(e)
-        const imageBlob = e.fileList[0].originFileObj
-        console.log("blob",imageBlob)
-        const src = await getBase64(imageBlob)
-        setLogoImage(src)
-   
-
-    return e?.fileList;
-  };
-
+  
       const createDataHandler = async(newItem:any)=>{
-        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`, newItem,{
+        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`, newItem,{
             headers:{
                 "Authorization": paseto
             },
@@ -207,7 +186,7 @@ export default function NewLiteVenue(){
 
     return (
         <div style={{background:'#ffffff', minHeight:'100vh'}}>
-            <div style={{marginBottom:'3rem', padding: '1rem', borderBottom:'1px solid #e5e5e5',}}>
+            <div style={{marginBottom:'1rem', padding: '1rem', borderBottom:'1px solid #e5e5e5',}}>
                 <Row>
                     <Col offset={1}> 
                          <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
