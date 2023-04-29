@@ -48,8 +48,8 @@ const {Text} = Typography
 
     const items: MenuProps['items'] = [
         {
-            key:'liteVenues',
-            label: 'Lite Venues'
+            key:'communityVenues',
+            label: 'Community Venues'
         },
         {
             key:'bookings',
@@ -68,8 +68,8 @@ const {Text} = Typography
     splittedRoutes.pop() 
 
     function onClickNavItemHandler(e:any){
-        if(e.key === 'liteVenues'){
-            router.push('/organizations/communities/liteVenues')
+        if(e.key === 'communityVenues'){
+            router.push('/organizations/communities/communityVenues')
         }else if(e.key === 'bookings'){
             router.push('/organizations/communities/bookings')
         }else{

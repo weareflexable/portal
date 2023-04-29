@@ -21,6 +21,7 @@ import { EditableText} from "../../../components/shared/Editables";
 import useUrlPrefix from "../../../hooks/useUrlPrefix";
 import ServiceLayout from "../../../components/shared/Layout/ServiceLayout";
 import { Community } from "../../../types/community.types";
+import useCommunity from "../../../hooks/useCommunity";
 
 var relativeTime = require('dayjs/plugin/relativeTime')
 dayjs.extend(relativeTime)
@@ -33,7 +34,7 @@ function Communities(){
     const {currentOrg} = useOrgContext() // coming from local storage
     const queryClient = useQueryClient()
     const router = useRouter()
-    const {switchOrg} = useOrgs()
+    const {switchCommunity} = useCommunity()
     // const [items, setItems] = useState([])
 
     const {switchService} = useServicesContext()
@@ -132,12 +133,12 @@ function Communities(){
     };
   
    
-function gotoCommunityItemsPage(service:Community){
+function gotoCommunityItemsPage(community:Community){
   // switch org
   // get community switcher here
-//   switchService(service)
+  switchCommunity(community)
   // navigate user to services page
-  router.push('/organizations/communities/liteVenues') // 
+  router.push('/organizations/communities/communityVenues') // 
 }
 
 
