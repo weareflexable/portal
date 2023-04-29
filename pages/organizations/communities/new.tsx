@@ -21,6 +21,9 @@ import { useAuthContext } from '../../../context/AuthContext';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import useUrlPrefix from '../../../hooks/useUrlPrefix'; 
 import { usePlacesWidget } from 'react-google-autocomplete';
+import { CommunityReq } from '../../../types/community.types';
+import useOrgs from '../../../hooks/useOrgs';
+import { useOrgContext } from '../../../context/OrgContext';
 
 
 
@@ -28,6 +31,7 @@ import { usePlacesWidget } from 'react-google-autocomplete';
 export default function ServiceItemForm(){
 
     const router = useRouter() 
+    
     const [currentStep, setCurrentStep] = useState(0);
     // State to hold the id of the service item that will get created in the
     // first form.
@@ -93,7 +97,7 @@ function BasicForm({nextStep}:BasicInfoProps){
      //@ts-ignore
 
      const [isHashingImage, setIsHashingImage] = useState(false)
-     const {currentService} = useServicesContext()
+     const {currentOrg} = useOrgs()
      const {paseto} = useAuthContext()
      const router = useRouter()
 
@@ -102,7 +106,6 @@ function BasicForm({nextStep}:BasicInfoProps){
      // make this default value to be lineskip images first element
     const artworkRef = useRef<string|null>(lineSkipHashes[0])
     
-    console.log(artworkRef)
 
     const queryClient = useQueryClient()
 
@@ -118,18 +121,18 @@ function BasicForm({nextStep}:BasicInfoProps){
         // const transformedAvailability = formData.availability?convertDates(formData.availability):[]
 
         // // only generate key if it's a new service
-            const formObject: ServiceItemReqPaylod = {
-                name: formData.name,
-                price: Number(formData.price) * 100,
-                ticketsPerDay: Number(formData.ticketsPerDay),
+            const formObject: CommunityReq = {
+                // @ts-ignore
+                orgId: currentOrg.orgId,
+                name: `Key to: ${formData.name}`,
+                price: String(formData.price * 100),
+                currency: 'USD',
                 description:formData.description,
-                orgServiceId: currentService.id,
-                serviceItemTypeId: router.query.key, // TODO: Get this value from context,
-                logoImageHash: artworkRef.current,
-                validityStartDate: dayjs(formData.validity.start).format(),
-                validityEndDate: dayjs(formData.validity.end).format()
+                artworkHash: artworkRef.current,
+                logoImageHash: artworkRef.current
             }
 
+            console.log(formObject)
             createData.mutate(formObject)
 
 
@@ -137,9 +140,9 @@ function BasicForm({nextStep}:BasicInfoProps){
     const [form] = Form.useForm()
 
 
-    const createDataHandler = async(newItem:ServiceItemReqPaylod)=>{
+    const createDataHandler = async(newItem:CommunityReq)=>{
 
-        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`, newItem,{
+        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`, newItem,{
             headers:{
                 "Authorization": paseto
             },
@@ -149,12 +152,19 @@ function BasicForm({nextStep}:BasicInfoProps){
 
     const createData = useMutation(createDataHandler,{
        onSuccess:(data)=>{
-        // form.resetFields()
-        notification['success']({
-            message: 'Successfully created new service item!'
-        })
-            console.log(data)
-            nextStep(data.data)
+        console.log(data)
+        const status = data.status
+        if(status <= 200){
+            notification['success']({
+                message: 'Successfully created new community!'
+            })
+                console.log(data)
+                nextStep(data.data)
+        }else{
+            notification['error']({
+                message: data.message,
+              });
+        }
             
        },
        onSettled:()=>{
@@ -163,7 +173,7 @@ function BasicForm({nextStep}:BasicInfoProps){
         onError:(err)=>{
             console.log(err)
             notification['error']({
-                message: 'Encountered an error while creating service itme',
+                message: 'Encountered an error while creating community',
               });
             // leave modal open
         } 
