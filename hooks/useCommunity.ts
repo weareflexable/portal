@@ -1,6 +1,6 @@
 import { deleteStorage} from '../utils/storage'
 import useLocalStorage from './useLocalStorage'
-import { Community } from '../types/community.types'
+import { Community } from '../types/Community.types'
 
 
 export default function useCommunity(){

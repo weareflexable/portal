@@ -20,7 +20,7 @@ import { convertToAmericanFormat } from "../../../utils/phoneNumberFormatter";
 import { EditableText} from "../../../components/shared/Editables";
 import useUrlPrefix from "../../../hooks/useUrlPrefix";
 import ServiceLayout from "../../../components/shared/Layout/ServiceLayout";
-import { Community } from "../../../types/community.types";
+import { Community } from "../../../types/Community.types";
 import useCommunity from "../../../hooks/useCommunity";
 
 var relativeTime = require('dayjs/plugin/relativeTime')

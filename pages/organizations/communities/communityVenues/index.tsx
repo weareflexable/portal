@@ -18,7 +18,8 @@ import useRole from "../../../../hooks/useRole";
 import { EditableText } from "../../../../components/shared/Editables";
 
 
-import { LiteVenue } from '../../../../types/LiteVenue.type';
+import { CommunityVenue, Address } from '../../../../types/CommunityVenue.types';
+import useCommunity from '../../../../hooks/useCommunity';
 
 
 
@@ -26,10 +27,10 @@ import { LiteVenue } from '../../../../types/LiteVenue.type';
 
 
 
-function LiteVenues(){
+function CommunityVenues(){
 
     const {paseto} = useAuthContext()
-    const {currentService} = useServicesContext()
+    const {currentCommunity} = useCommunity()
     const urlPrefix  = useUrlPrefix()
     const queryClient = useQueryClient()
     const router = useRouter()
@@ -37,19 +38,19 @@ function LiteVenues(){
   
     // const isFilterEmpty = Object.keys(filteredInfo).length === 0;
 
-    type DataIndex = keyof LiteVenue;
+    type DataIndex = keyof CommunityVenue;
 
-    const [selectedRecord, setSelectedRecord] = useState<any|LiteVenue>({})
+    const [selectedRecord, setSelectedRecord] = useState<any|CommunityVenue>({})
     const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Active'})
     const [pageNumber, setPageNumber] = useState<number|undefined>(1)
     const [pageSize, setPageSize] = useState<number|undefined>(10)
     
 
 
-    async function fetchAllLiteVenues(){
+    async function fetchAllCommunityVenues(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/lite-venues?key=org_service_id&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=10`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues?communityId=${currentCommunity.id}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
             headers:{
                 "Authorization": paseto
             }
@@ -58,10 +59,10 @@ function LiteVenues(){
         return res.data;
    
     }
-    async function fetchLiteVenues(){
+    async function fetchCommunityVenues(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/lite-venues?key=org_service_id&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=${pageSize}&key2=status&value2=${currentFilter.id}`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues?communityId=${currentCommunity.id}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
             headers:{
                 "Authorization": paseto
             }
@@ -72,10 +73,10 @@ function LiteVenues(){
     }
 
    
-    async function changeLiteVenueStatus({serviceItemId, statusNumber}:{serviceItemId:string, statusNumber: string}){
+    async function changeCommunityVenueStatus({serviceItemId, statusNumber}:{serviceItemId:string, statusNumber: string}){
         const res = await axios({
             method:'patch',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/lite-venues`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`,
             data:{
                 key:'status',
                 value: statusNumber, // 0 means de-activated in db
@@ -90,7 +91,7 @@ function LiteVenues(){
 
     
     const changeStatusMutation = useMutation(['data'],{
-        mutationFn: changeLiteVenueStatus,
+        mutationFn: changeCommunityVenueStatus,
         onSuccess:(data:any)=>{
             queryClient.invalidateQueries({queryKey:['serviceItems']})
         },
@@ -102,25 +103,25 @@ function LiteVenues(){
 
 
 
-    const liteVenuesQuery = useQuery({queryKey:['serviceItems', {currentSerive:currentService.id, filter:currentFilter.id,pageNumber:pageNumber}], queryFn:fetchLiteVenues, enabled:paseto !== ''})
-    const res = liteVenuesQuery.data && liteVenuesQuery.data;
+    const communityVenuesQuery = useQuery({queryKey:['communityVenues', {currentSerive:currentCommunity.id, filter:currentFilter.id,pageNumber:pageNumber}], queryFn:fetchCommunityVenues, enabled:paseto !== ''})
+    const res = communityVenuesQuery.data && communityVenuesQuery.data;
     const servicesData = res && res.data
     const totalLength = res && res.dataLength;
 
-    const allLiteVenuesQuery = useQuery({queryKey:['all-serviceItems',{currentService: currentService.id}], queryFn:fetchAllLiteVenues, enabled:paseto !== '', staleTime:Infinity})
-    const allLiteVenuesLength = allLiteVenuesQuery.data && allLiteVenuesQuery.data.dataLength;
+    const allCommunityVenuesQuery = useQuery({queryKey:['all-communityVenues',{currentCommunity: currentCommunity.id}], queryFn:fetchAllCommunityVenues, enabled:paseto !== '', staleTime:Infinity})
+    const allCommunityVenuesLength = allCommunityVenuesQuery.data && allCommunityVenuesQuery.data.dataLength;
  
 
 
   
-    const handleChange: TableProps<LiteVenue>['onChange'] = (data) => {
+    const handleChange: TableProps<CommunityVenue>['onChange'] = (data) => {
       setPageSize(data.pageSize)
       //@ts-ignore
       setPageNumber(data.current); // Subtracting 1 because pageSize param in url starts counting from 0
     };
   
  
-    function viewDetails(serviceItem:LiteVenue){
+    function viewDetails(serviceItem:CommunityVenue){
       // set state
       setSelectedRecord(serviceItem)
       // opne drawer
@@ -128,10 +129,10 @@ function LiteVenues(){
 
     }
   
-    async function reActivateLiteVenueHandler(record:LiteVenue){
+    async function reActivateCommunityVenueHandler(record:CommunityVenue){
       const res = await axios({
           method:'patch',
-          url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/lite-venues`,
+          url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`,
           data:{
               key:'status',
               value: '1', 
@@ -145,7 +146,7 @@ function LiteVenues(){
   }
 
 
-  const reactivateVenue = useMutation(reActivateLiteVenueHandler,{
+  const reactivateVenue = useMutation(reActivateCommunityVenueHandler,{
     onSettled:()=>{
       queryClient.invalidateQueries({queryKey:['serviceItems']})
     }
@@ -154,7 +155,7 @@ function LiteVenues(){
     
     
   
-    const columns: ColumnsType<LiteVenue> = [
+    const columns: ColumnsType<CommunityVenue> = [
       {
         title: 'Name',
         dataIndex: 'name',
@@ -189,9 +190,9 @@ function LiteVenues(){
         dataIndex: 'address',
         key: 'address',
         width:'220px',
-        render: (_,record)=>{
+        render: (_,record:any)=>{
             return(
-          <Text type="secondary">{record.address}</Text>
+          <Text type="secondary">{record.address.fullAddress}</Text>
           )
       },
   },
@@ -228,14 +229,14 @@ function LiteVenues(){
 
         return (
             <div style={{background:'#f7f7f7', minHeight:'100vh'}}>
-               { servicesData && allLiteVenuesLength === 0  
+               { servicesData && allCommunityVenuesLength === 0  
                ? null 
                : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
                  <div style={{width:'100%',  marginBottom:'1rem', marginTop:'2rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-                      <Title style={{margin: '0'}} level={2}>Lite Venues</Title>
+                      <Title style={{margin: '0'}} level={2}>Community Venues</Title>
                       <div style={{display:'flex'}}>
-                        <Button shape='round' style={{marginRight:'1rem'}} loading={liteVenuesQuery.isRefetching} onClick={()=>liteVenuesQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
-                        <Button type="primary" onClick={()=>{router.push('/organizations/communities/liteVenues/new')}}   icon={<PlusOutlined/>} >Add Venue</Button>
+                        <Button shape='round' style={{marginRight:'1rem'}} loading={communityVenuesQuery.isRefetching} onClick={()=>communityVenuesQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                        <Button type="primary" onClick={()=>{router.push('/organizations/communities/communityVenues/new')}}   icon={<PlusOutlined/>} >Add Venue</Button>
                       </div>
                     </div>
                   <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
@@ -252,7 +253,7 @@ function LiteVenues(){
 
                 </div>}
                 {
-                  servicesData && allLiteVenuesLength === 0
+                  servicesData && allCommunityVenuesLength === 0
                   ?<EmptyState>
                     <Button type="primary" icon={<PlusOutlined/>} >Add Venue</Button>
                   </EmptyState>
@@ -264,7 +265,7 @@ function LiteVenues(){
                     total:totalLength,  
                     showTotal:(total) => `Total ${total} items`,
                   }} 
-                  loading={liteVenuesQuery.isLoading || liteVenuesQuery.isRefetching} 
+                  loading={communityVenuesQuery.isLoading || communityVenuesQuery.isRefetching} 
                   columns={columns} 
                   onChange={handleChange} 
                   dataSource={servicesData} 
@@ -285,12 +286,12 @@ function LiteVenues(){
 }
 
 
-LiteVenues.PageLayout = CommunitiesLayout
+CommunityVenues.PageLayout = CommunitiesLayout
 
-export default LiteVenues
+export default CommunityVenues
 
 interface DrawerProps{
-  selectedRecord: LiteVenue,
+  selectedRecord: CommunityVenue,
   isDrawerOpen: boolean,
   closeDrawer: (value:boolean)=>void
 }
@@ -307,7 +308,7 @@ const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
  const urlPrefix = useUrlPrefix()
 
 async function fetchItemAvailability(){
- const res = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/lite-venues/availability?key=service_item_id&value=${selectedRecord.id}&pageNumber=0&pageSize=10`,{
+ const res = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues/availability?key=service_item_id&value=${selectedRecord.id}&pageNumber=0&pageSize=10`,{
   headers:{
     "Authorization":paseto
   }
@@ -331,7 +332,7 @@ function toggleDeleteModal(){
   setIsDeleteModalOpen(!isDeleteModalOpen)
 }
 
-function deleteLiteVenue(){ 
+function deleteCommunityVenue(){ 
   console.log(selectedRecord.id)
   // mutate record
   deleteData.mutate(selectedRecord,{
@@ -342,10 +343,10 @@ function deleteLiteVenue(){
   })
 }
 
-const deleteDataHandler = async(record:LiteVenue)=>{      
+const deleteDataHandler = async(record:CommunityVenue)=>{      
   const {data} = await axios({
     method:'patch',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/lite-venues`,
+    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`,
     data: {
         id:record.id,
         key:'status',
@@ -384,18 +385,18 @@ return(
     fieldName = 'name'
     title = 'Name'
     id = {selectedRecord.id}
-    options = {{queryKey:'serviceItems',mutationUrl:'lite-venues'}}
+    options = {{queryKey:'serviceItems',mutationUrl:'community-venues'}}
   />
   {/* <EditableDescription selectedRecord={selectedRecord}/> */}
 
-  <EditableText
+  {/* <EditableText
     fieldKey="tickets_per_day" // The way the field is named in DB
     currentFieldValue={selectedRecord.name}
     fieldName = 'name'
     title = 'Name'
     id = {selectedRecord.id}
-    options = {{queryKey:'liteVenue',mutationUrl:'lite-venues'}}
-  />
+    options = {{queryKey:'communityVenues',mutationUrl:'community-venues'}}
+  /> */}
 
 
   {/* <Text>CUSTOM AVALABILITY</Text> */}
@@ -434,7 +435,7 @@ const filters = [
 
 
 interface DeleteProp{
-  selectedRecord: LiteVenue
+  selectedRecord: CommunityVenue
   isOpen: boolean
   onCloseModal: ()=>void
   onDeleteRecord: ()=>void
