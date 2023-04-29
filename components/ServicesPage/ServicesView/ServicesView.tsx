@@ -37,7 +37,7 @@ function VenuesTable(){
     const {currentOrg} = useOrgContext() // coming from local storage
     const queryClient = useQueryClient()
     const router = useRouter()
-    const {switchOrg} = useOrgs()
+    // const {currentOrg} = useOrgs()
     // const [items, setItems] = useState([])
 
     const {switchService} = useServicesContext()
@@ -145,7 +145,6 @@ function VenuesTable(){
   
    
 function gotoServiceItemsPage(service:Service){
-  // switch org
   switchService(service)
   // navigate user to services page
   router.push('/organizations/venues/serviceItems') // redirect to dashboard later
@@ -193,8 +192,8 @@ function gotoServiceItemsPage(service:Service){
         key: 'serviceType',
         width:'120px',
         render: (_,record)=>{
-          const type = record.serviceType[0]
-            return <Tag>{type.name}</Tag>
+          const type = record && record.serviceType[0]
+            return <Tag>{type && type.name}</Tag>
         }
       },
       {

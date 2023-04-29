@@ -115,6 +115,14 @@ export default function ManagerOrgsView(){
         return res; 
     }
 
+
+    function gotoOrg(org:NewOrg){
+      console.log(org)
+      // switch org
+      switchOrg(org)
+      // navigate user to services page
+      router.push('/organizations/venues/')
+    }
    
     
 
@@ -454,8 +462,8 @@ export default function ManagerOrgsView(){
                 <div style={{display:'flex',alignItems:'center'}}>
                     <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.logoImageHash.length < 10? IMAGE_PLACEHOLDER_HASH :record.logoImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
-                       {/* { record.status !==1?<Text>{record.name}</Text>:<Text style={{color:'#1677ff', cursor:'pointer'}} onClick={()=>gotoServices(record)}>{record.name}</Text> }    */}
-                        <Text>{record.name}</Text>
+                       { record.status !==1?<Text>{record.name}</Text>:<Text style={{color:'#1677ff', cursor:'pointer'}} onClick={()=>gotoOrg(record)}>{record.name}</Text> }   
+                        {/* <Text>{record.name}</Text> */}
                         <Text type="secondary">{record.email}</Text>
                     </div>
                 </div>
@@ -476,16 +484,7 @@ export default function ManagerOrgsView(){
           </div>
         )
       },
-      
-      // {
-      //   title: 'Zip Code',
-      //   dataIndex: 'zipCode',
-      //   key: 'zipCode',
-      //   render:(_,record)=>{
-      //     const zipCode = record.zipCode  === ""? <Text>--</Text>: <Text>{record.zipCode}</Text>
-      //     return zipCode
-      // }
-      // },
+    
       {
         title: 'Contact Number',
         dataIndex: 'contactNumber',
@@ -508,18 +507,6 @@ export default function ManagerOrgsView(){
             )
         },
     },
-    //   {
-    //       title: 'UpdatedAt',
-    //       dataIndex: 'updatedAt',
-    //       key: 'updatedAt',
-    //       render: (_,record)=>{
-    //         //@ts-ignore
-    //           const date = dayjs().from(dayjs(record.updatedAt),true)
-    //           return(
-    //         <Text>{date} ago</Text>
-    //         )
-    //     },
-    // },
     {
       dataIndex: 'actions', 
       key: 'actions',
@@ -614,12 +601,12 @@ function closeDrawerHandler(){
   closeDrawer(!isDrawerOpen)
 }
 
-function gotoServices(org:NewOrg){
+function gotoOrg(org:NewOrg){
   console.log(org)
   // switch org
   switchOrg(org)
   // navigate user to services page
-  router.push('/organizations/venues/')
+  // router.push('/organizations/venues/')
 }
 
 function toggleDeleteModal(){
@@ -701,7 +688,7 @@ return(
 <Drawer 
   title="Organization Details" 
   width={640} placement="right" 
-  extra={selectedOrg.status === 1?<Button shape='round' onClick={()=>gotoServices(selectedOrg)}>Visit organization</Button>:null}
+  extra={selectedOrg.status === 1?<Button shape='round' onClick={()=>gotoOrg(selectedOrg)}>Visit organization</Button>:null}
   closable={true} 
   onClose={closeDrawerHandler} 
   open={isDrawerOpen}

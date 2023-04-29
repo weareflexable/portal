@@ -20,6 +20,8 @@ export default function ServiceLayout({children}:ServiceLayoutProps){
     const [isHydrated, setIsHydrated] = useState(false)
     const [selectedPage, setSelectedPage] = useState('venues')
 
+    console.log(currentOrg)
+
     const splittedRoutes = router.pathname.split('/')
     const selectedRoute = splittedRoutes && splittedRoutes[2]
     // console.log(pageName[2])

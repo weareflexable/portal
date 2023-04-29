@@ -254,6 +254,9 @@ export default function BillingsView(){
 
         return (
             <div>
+              <div style={{display:'flex', marginTop:'1rem', marginBottom:'1rem', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+                 <Title style={{ margin:'0'}} level={2}>Billings</Title>
+               </div>
                {  allBanksQuery.data && allBanksLength == 0? null : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                   <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
                       {bankFilters.map(bankFilter=>(
