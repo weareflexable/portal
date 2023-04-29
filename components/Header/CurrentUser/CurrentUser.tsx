@@ -25,6 +25,9 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
     const [isManagerRoute, setIsManagerRoute] = useState(false)
     const [isVenueRoute,setIsVenueRoute] = useState<any>(false)
 
+    // move this into a hook
+    const borderColor = currentUser.role == 1 ? 'purple': currentUser.role == 2 ? 'volcano': currentUser.role == 3? 'cyan': currentUser.role == 0?'blue':'green'
+
     useEffect(() => {
       const isManagerRoute = router.isReady? router.asPath.includes('/manager'): false
       if(router.isReady){
@@ -167,7 +170,7 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
             alignItems:'center',
           }}>
             
-             <Avatar size={'large'} style={{border:'2px solid red'}} src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${currentUser && currentUser.profilePic}`}/>
+             <Avatar size={'large'} style={{border:`2px solid ${borderColor}`}} src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${currentUser && currentUser.profilePic}`}/>
             
           {/* <Badge count={currentUser && currentUser.userRoleName} offset={[10, 10]}>  */}
           {/* <div style={{display:'flex', marginLeft:'.4rem', flexDirection:'column'}}> */}
