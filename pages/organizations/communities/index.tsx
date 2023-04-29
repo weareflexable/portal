@@ -56,14 +56,14 @@ function Communities(){
     const res = await axios({
             method:'get',
             //@ts-ignore
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services?key=org_id&value=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=10`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community/by-orgId?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
 
             headers:{
                 "Authorization": paseto
             }
         })
 
-        return res.data;
+        return res.data.data;
    
     }
   
@@ -71,14 +71,14 @@ function Communities(){
       const res = await axios({
               method:'get',
               //@ts-ignore
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services?key=org_id&value=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&key2=status&value2=${currentFilter.id}`,
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community/by-orgId?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
 
               headers:{
                   "Authorization": paseto
               }
           })
 
-          return res.data;
+          return res.data.data;
     
     }
 
@@ -114,8 +114,7 @@ function Communities(){
 
     // @ts-ignore
     const communityQuery = useQuery({queryKey:['services',{currentOrg: currentOrg.orgId, status:currentFilter.name, pageNumber} ], queryFn:fetchCommunities, enabled: paseto !== ''})
-    // const data = communityQuery.data && communityQuery.data
-    const data = []
+    const data = communityQuery.data && communityQuery.data
     // const totalLength = communityQuery.data && communityQuery.data;
     const totalLength = 0;
 
@@ -179,8 +178,8 @@ function gotoCommunityItemsPage(service:Community){
       },
       {
         title: 'No of Venues',
-        dataIndex: 'liteVenueCount',
-        key: 'liteVenueCount',
+        dataIndex: 'communityVenuesCount',
+        key: 'communityVenuesCount',
         width:'100px',
       },
       {
@@ -188,6 +187,12 @@ function gotoCommunityItemsPage(service:Community){
         dataIndex: 'price',
         key: 'price',
         width:'100px',
+        render: (price)=>(
+          <div>
+            <Text>$</Text>
+            <Text>{price/100}</Text>
+          </div>
+        )
       },
       {
           title: 'Created On',
@@ -262,7 +267,7 @@ function gotoCommunityItemsPage(service:Community){
                       onChange={handleChange} 
                       loading={communityQuery.isLoading || communityQuery.isRefetching} 
                       columns={columns} 
-                      dataSource={[]}
+                      dataSource={data}
                       pagination={{
                         total:totalLength,  
                         showTotal:(total) => `Total: ${total} items`, 
