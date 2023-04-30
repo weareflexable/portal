@@ -315,7 +315,7 @@ const {paseto} = useAuthContext()
 const urlPrefix = useUrlPrefix()
 
 function closeDrawerHandler(){
-  queryClient.invalidateQueries(['services']) 
+  queryClient.invalidateQueries(['communities']) 
   closeDrawer(!isDrawerOpen)
 }
 
@@ -382,15 +382,16 @@ return(
   open={isDrawerOpen}
 >
   
-  <EditableText
+  {/* <EditableText
     fieldKey="name" // The way the field is named in DB
     currentFieldValue={selectedRecord.name}
     fieldName = 'name'
     title = 'Name'
     id = {selectedRecord.id}
     options = {{queryKey:'communities',mutationUrl:'communities'}}
-  />
-   <EditablePrice selectedRecord={selectedRecord}/>
+  /> */}
+  <EditableName selectedRecord={selectedRecord}/>
+  <EditablePrice selectedRecord={selectedRecord}/>
   <EditableDescription selectedRecord={selectedRecord}/>
   <EditableArtwork selectedRecord={selectedRecord}/>
   {/* <EditableLogoImage selectedRecord={selectedRecord}/> */}
@@ -626,6 +627,115 @@ export function EditablePrice({selectedRecord}:EditableProp){
     </div>
   )
 }
+
+export function EditableName({selectedRecord}:EditableProp){
+
+  // console.log(selectedRecord.name)
+  
+  const [state, setState] = useState(selectedRecord)
+
+  const [isEditMode, setIsEditMode] = useState(false)
+
+  const {paseto} = useAuthContext()
+
+  const queryClient = useQueryClient()
+
+  const splittedName = selectedRecord && selectedRecord.name.split(':')
+
+  const communityName = splittedName[1].trim();
+
+  console.log(communityName)
+
+  function toggleEdit(){
+    setIsEditMode(!isEditMode)
+  }
+
+ const urlPrefix = useUrlPrefix()
+
+  const recordMutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,updatedItem,{
+      headers:{
+          //@ts-ignore
+          "Authorization": paseto
+      }
+    })
+      return data;
+  }
+  const recordMutation = useMutation({
+    mutationKey:['name'],
+    mutationFn: recordMutationHandler,
+    onSuccess:()=>{
+      toggleEdit()
+    },
+    onSettled:()=>{
+      queryClient.invalidateQueries(['communities'])
+    }
+  })
+
+  function onFinish(updatedItem:any){
+    const payload = {
+      key:'name',
+      value: `Key to: ${updatedItem.name}`,
+      id: selectedRecord.id
+    }
+
+    const updatedRecord = {
+      ...selectedRecord,
+      name: `Key to: ${updatedItem.name}`
+    }
+    setState(updatedRecord)
+    recordMutation.mutate(payload)
+  }
+
+  const {isLoading:isEditing} = recordMutation ;
+
+  const readOnly = (
+    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+      <Text>{state.name}</Text>
+      <Button type="link" onClick={toggleEdit}>Edit</Button>
+    </div>
+)
+
+  const editable = (
+    <Form
+     style={{ marginTop:'.5rem' }}
+     name="editableName"
+     initialValues={{name: communityName}}
+     onFinish={onFinish}
+     >
+      <Row>
+        <Col span={16} style={{height:'100%'}}>
+          <Form.Item
+              name="name"
+              rules={[{ required: true, message: 'Please input a valid  name' }]}
+          >
+              <Input addonBefore="Key to:"  disabled={isEditing} placeholder="Flexable serviceItem"/>
+          </Form.Item>
+        </Col>
+        <Col span={4}>
+          <Form.Item style={{ width:'100%'}}>
+              <Space >
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                      Cancel
+                  </Button>
+                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                      Apply changes
+                  </Button>
+              </Space>           
+          </Form.Item>
+        </Col>
+      </Row>
+           
+    </Form>
+  )
+  return(
+    <div style={{width:'100%', display:'flex', flexDirection:'column'}}>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>Title</Text>
+    {isEditMode?editable:readOnly}
+    </div>
+  )
+}
+
 
 
 interface DeleteProp{
