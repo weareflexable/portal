@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useOrgs from "../../../hooks/useOrgs";
 const {Text, Title} = Typography;
 import React, { ReactNode, useEffect, useRef, useState } from 'react'
-import {Typography,Button, Skeleton, Badge, Image, Table, Input, Radio,  Drawer, Row, Col, Form, Modal, Alert, notification, Dropdown, MenuProps, Tag} from 'antd'
+import {Typography,Button, Skeleton, Badge, Image, Table, Input, Radio,  Drawer, Row, Col, Form, Modal, Alert, notification, Dropdown, MenuProps, Tag, Space} from 'antd'
 import { useRouter } from 'next/router'
 import axios from 'axios';
 import { MoreOutlined, ReloadOutlined, ArrowLeftOutlined, PlusOutlined} from '@ant-design/icons'
@@ -22,6 +22,9 @@ import useUrlPrefix from "../../../hooks/useUrlPrefix";
 import ServiceLayout from "../../../components/shared/Layout/ServiceLayout";
 import { Community } from "../../../types/Community.types";
 import useCommunity from "../../../hooks/useCommunity";
+import { EditableArtwork } from "../../../components/CommunityPage/Editables/Artwork";
+
+const {TextArea} = Input
 
 var relativeTime = require('dayjs/plugin/relativeTime')
 dayjs.extend(relativeTime)
@@ -169,7 +172,7 @@ function gotoCommunityItemsPage(community:Community){
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.logoImageHash}`}/>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.artworkHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Button onClick={()=>gotoCommunityItemsPage(record)} type='link'>{record.name}</Button>  
                     </div>
@@ -305,9 +308,9 @@ function DetailDrawer({selectedRecord,isDrawerOpen,closeDrawer}:DrawerProps){
 const queryClient = useQueryClient()
 const router = useRouter()
 const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
-// const {swi} = useOrgContext()
-const {switchService} = useServicesContext()
-const {paseto,currentUser} = useAuthContext()
+
+const {switchCommunity} = useCommunity()
+const {paseto} = useAuthContext()
 
 const urlPrefix = useUrlPrefix()
 
@@ -316,11 +319,10 @@ function closeDrawerHandler(){
   closeDrawer(!isDrawerOpen)
 }
 
-function gotoCommunitys(service:Community){
-  // switch org 
-//   switchService(service)
+function gotoCommunity(community:Community){
+  switchCommunity(community)
   // navigate user to services page
-  router.push('/organizations/communities/liteVenues')
+  router.push('/organizations/communities/communityVenues')
 }
 
 function toggleDeleteModal(){
@@ -353,7 +355,7 @@ function deleteCommunity(){
 const deleteDataHandler = async(record:Community)=>{      
   const {data} = await axios({
     method:'patch',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,
+    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,
     data: {
         id:record.id,
         key:'status',
@@ -374,7 +376,7 @@ return(
 <Drawer 
   title="Community Details" 
   width={640} placement="right" 
-  extra={<Button size='large' onClick={()=>gotoCommunitys(selectedRecord)}>Visit Community</Button>}
+  extra={<Button size='large' onClick={()=>gotoCommunity(selectedRecord)}>Visit Community</Button>}
   closable={true} 
   onClose={closeDrawerHandler} 
   open={isDrawerOpen}
@@ -388,8 +390,9 @@ return(
     id = {selectedRecord.id}
     options = {{queryKey:'communities',mutationUrl:'communities'}}
   />
-  
-  {/* <EditableCurrency selectedRecord={selectedRecord}/> */}
+   <EditablePrice selectedRecord={selectedRecord}/>
+  <EditableDescription selectedRecord={selectedRecord}/>
+  <EditableArtwork selectedRecord={selectedRecord}/>
   {/* <EditableLogoImage selectedRecord={selectedRecord}/> */}
   {/* <EditableCoverImage selectedRecord={selectedRecord}/> */}
 
@@ -409,6 +412,221 @@ return(
 </Drawer>
 )
 }
+
+interface EditableProp{
+  selectedRecord: Community
+}
+
+
+export function EditableDescription({selectedRecord}:EditableProp){
+  
+  const [state, setState] = useState(selectedRecord)
+
+  const [isEditMode, setIsEditMode] = useState(false)
+
+  const {paseto} = useAuthContext()
+
+
+  const queryClient = useQueryClient()
+
+  function toggleEdit(){
+    setIsEditMode(!isEditMode)
+  }
+
+  
+  const [form]  = Form.useForm()
+
+  const urlPrefix = useUrlPrefix()
+
+  const recordMutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,updatedItem,{
+      headers:{
+          //@ts-ignore
+          "Authorization": paseto
+      }
+    })
+      return data;
+  }
+
+  const recordMutation = useMutation({
+    mutationKey:['description'],
+    mutationFn: recordMutationHandler,
+    onSuccess:(data:any)=>{
+      console.log(data)
+      toggleEdit()
+    },
+    onSettled:()=>{
+      queryClient.invalidateQueries(['community'])
+    }
+  })
+
+  function onFinish(updatedItem:any){
+    const payload = {
+      key:'description',
+      value: updatedItem.description,
+      id: selectedRecord.id
+    }
+    const updatedRecord = {
+      ...selectedRecord,
+      description: updatedItem.description
+    }
+    setState(updatedRecord)
+    recordMutation.mutate(payload)
+  }
+
+  const {isLoading:isEditing} = recordMutation 
+
+  const readOnly = (
+    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+      <Text>{state.description}</Text>
+      <Button type="link" onClick={toggleEdit}>Edit</Button>
+    </div>
+)
+
+  const editable = (
+    <Form
+     style={{ marginTop:'.5rem' }}
+     name="editableDescription"
+     initialValues={selectedRecord}
+     onFinish={onFinish}
+     form={form}
+     >
+      <Row>
+        <Col span={16} style={{height:'100%'}}>
+        <Form.Item 
+            name="description"
+            rules={[{ required: true, message: 'Please input a description for your community!' }]}
+        >
+            <TextArea rows={3} placeholder='Tell us what your community is all about.'/>
+
+        </Form.Item>
+
+        </Col>
+        <Col span={4}>
+          <Form.Item style={{ width:'100%'}}>
+              <Space >
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                      Cancel
+                  </Button>
+                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                      Apply changes
+                  </Button>
+              </Space>
+                        
+          </Form.Item>
+        </Col>
+      </Row>
+           
+    </Form>
+  )
+  return(
+    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>Description</Text>
+    {isEditMode?editable:readOnly}
+    </div>
+  )
+}
+
+export function EditablePrice({selectedRecord}:EditableProp){
+  
+  const [state, setState] = useState(selectedRecord.price)
+
+  const [isEditMode, setIsEditMode] = useState(false)
+
+  const {paseto} = useAuthContext()
+
+  const queryClient = useQueryClient()
+
+  function toggleEdit(){
+    setIsEditMode(!isEditMode)
+  }
+
+ const transformedRecord = {
+  ...selectedRecord,
+  price: Number(selectedRecord.price)/100
+ }
+ const urlPrefix = useUrlPrefix()
+
+  const recordMutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,updatedItem,{
+      headers:{
+          //@ts-ignore
+          "Authorization": paseto
+      }
+    })
+      return data;
+  }
+  const recordMutation = useMutation({
+    mutationKey:['price'],
+    mutationFn: recordMutationHandler,
+    onSuccess:()=>{
+      toggleEdit()
+    },
+    onSettled:(data)=>{
+      setState(data.data[0].price)
+      queryClient.invalidateQueries(['service-items'])
+    }
+  })
+
+  function onFinish(updatedItem:any){
+    const payload = {
+      key:'price',
+      value: String(updatedItem.price*100),
+      id: selectedRecord.id
+    }
+    recordMutation.mutate(payload)
+  }
+
+  const {isLoading:isEditing} = recordMutation ;
+
+  const readOnly = (
+    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+      <Text>${state/100}</Text> 
+      <Button type="link" onClick={toggleEdit}>Edit</Button>
+    </div>
+)
+
+  const editable = (
+    <Form
+     style={{ marginTop:'.5rem' }}
+     name="editablePrice"
+     initialValues={{price: state/100}}
+     onFinish={onFinish}
+     >
+      <Row>
+        <Col span={16} style={{height:'100%'}}>
+          <Form.Item
+              name="price"
+              rules={[{ required: true, message: 'Please input a valid price' }]}
+          >
+              <Input  prefix="$" disabled={isEditing} />
+          </Form.Item>
+        </Col>
+        <Col span={4}>
+          <Form.Item style={{ width:'100%'}}>
+              <Space >
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                      Cancel
+                  </Button>
+                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                      Apply changes
+                  </Button>
+              </Space>
+                        
+          </Form.Item>
+        </Col>
+      </Row>
+           
+    </Form>
+  )
+  return(
+    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>Price</Text>
+    {isEditMode?editable:readOnly}
+    </div>
+  )
+}
+
 
 interface DeleteProp{
   selectedRecord: Community

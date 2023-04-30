@@ -111,7 +111,7 @@ export default function NewCommunityVenue(){
                 placeId: place?.place_id,
                 fullAddress: place?.formatted_address
             }
-            console.log(addressWithStreet)
+
             setFullAddress(addressWithStreet)
 
             //@ts-ignore

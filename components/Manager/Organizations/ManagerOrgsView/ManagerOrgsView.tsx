@@ -536,7 +536,7 @@ export default function ManagerOrgsView(){
               
                { allOrgsQuery && allOrgsTotal === 0 
                ? null 
-               : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column',}}>
+               : <div style={{marginBottom:'2rem', marginTop:'2rem', display:'flex', width:'100%', flexDirection:'column',}}>
                   <div style={{width:'100%', marginBottom:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                           <Title style={{margin: '0'}} level={2}>Organizations</Title>
                           <div>

@@ -20,6 +20,9 @@ import { EditableText } from "../../../../components/shared/Editables";
 
 import { CommunityVenue, Address } from '../../../../types/CommunityVenue.types';
 import useCommunity from '../../../../hooks/useCommunity';
+import { usePlacesWidget } from 'react-google-autocomplete';
+
+const {TextArea} = Input
 
 
 
@@ -103,7 +106,7 @@ function CommunityVenues(){
 
 
 
-    const communityVenuesQuery = useQuery({queryKey:['communityVenues', {currentSerive:currentCommunity.id, filter:currentFilter.id,pageNumber:pageNumber}], queryFn:fetchCommunityVenues, enabled:paseto !== ''})
+    const communityVenuesQuery = useQuery({queryKey:['community-venues', {currentSerive:currentCommunity.id, filter:currentFilter.id,pageNumber:pageNumber}], queryFn:fetchCommunityVenues, enabled:paseto !== ''})
     const res = communityVenuesQuery.data && communityVenuesQuery.data;
     const servicesData = res && res.data
     const totalLength = res && res.dataLength;
@@ -255,7 +258,7 @@ function CommunityVenues(){
                 {
                   servicesData && allCommunityVenuesLength === 0
                   ?<EmptyState>
-                    <Button type="primary" icon={<PlusOutlined/>} >Add Venue</Button>
+                    <Button type="primary" onClick={()=>{router.push('/organizations/communities/communityVenues/new')}} icon={<PlusOutlined/>} >Add Venue</Button>
                   </EmptyState>
                   :<Table 
                   style={{width:'100%'}} 
@@ -366,7 +369,7 @@ const deleteData = useMutation(deleteDataHandler,{
 const{isLoading:isDeletingItem} = deleteData
 
 return( 
-<Drawer title="Service Details" width={640} placement="right" closable={true} onClose={closeDrawerHandler} open={isDrawerOpen}>
+<Drawer title="Community Venue Details" width={640} placement="right" closable={true} onClose={closeDrawerHandler} open={isDrawerOpen}>
   
 <EditableText
     fieldKey="name" // The way the field is named in DB
@@ -374,9 +377,10 @@ return(
     fieldName = 'name'
     title = 'Name'
     id = {selectedRecord.id}
-    options = {{queryKey:'serviceItems',mutationUrl:'community-venues'}}
+    options = {{queryKey:'community-venues',mutationUrl:'community-venues'}}
   />
-  {/* <EditableDescription selectedRecord={selectedRecord}/> */}
+  <EditablePromotion selectedRecord={selectedRecord}/>
+  <EditableAddress selectedRecord={selectedRecord}/>
 
   {/* <EditableText
     fieldKey="tickets_per_day" // The way the field is named in DB
@@ -392,7 +396,8 @@ return(
   
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
     <Title level={3}>Danger zone</Title>
-    <Button danger onClick={toggleDeleteModal} style={{width:'30%'}} type="link">Deactivate Service </Button>
+    <Button  onClick={toggleDeleteModal} style={{}}>Deactivate Community Venue </Button>
+    <Button danger onClick={toggleDeleteModal} style={{marginTop:'1rem'}} >Delete Community Venue </Button>
   </div>
 
   {/* <DeleteRecordModal isDeletingItem={isDeletingItem} onCloseModal={toggleDeleteModal} onDeleteRecord={deleteServiceItem} isOpen={isDeleteModalOpen} selectedRecord={selectedRecord}/> */}
@@ -415,6 +420,319 @@ const filters = [
       name: 'In-active'
   },
 ]
+
+interface EditableProp{
+  selectedRecord: CommunityVenue
+}
+export function EditableAddress({selectedRecord}:EditableProp){
+  
+  const [state, setState] = useState(selectedRecord.address.fullAddress)
+
+  const [isEditMode, setIsEditMode] = useState(false)
+
+  function toggleEdit(){
+    setIsEditMode(!isEditMode)
+  }
+
+
+  const readOnly = (
+    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+      <Text>{state}</Text>
+      <Button type="link" onClick={toggleEdit}>Edit</Button>
+    </div>
+)
+
+  return(
+    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>Address</Text>
+      {isEditMode
+      ?<AddressField currentFieldValue={state} updateState={setState} toggleEdit={toggleEdit} selectedRecord={selectedRecord}/>
+      :readOnly
+      }
+    </div>
+  )
+}
+
+interface AddressFieldProp{
+  selectedRecord: CommunityVenue
+  toggleEdit: ()=>void,
+  updateState: (value:any)=>void
+  currentFieldValue: string
+}
+function AddressField({selectedRecord, currentFieldValue, toggleEdit,updateState}:AddressFieldProp){
+
+  // const [isEditMode, setIsEditMode] = useState(false)
+  const antInputRef = useRef();
+  const [fullAddress, setFullAddress] = useState({
+    latitude:0,
+    longitude:0,
+    placeId: '',
+    street: '',
+    fullAddress: '',
+    state: '',
+    country:'',
+    city:''
+})
+
+const queryClient = useQueryClient()
+
+const urlPrefix = useUrlPrefix()
+const {currentCommunity} = useCommunity()
+
+ const {paseto} = useAuthContext()
+
+
+  const [form]  = Form.useForm()
+
+  const extractFullAddress = (place:any)=>{
+    const addressComponents = place.address_components 
+          let addressObj = {
+            state:'',
+            country:'',
+            city:'',
+            street: '',
+            latitude:place.geometry.location.lat(),
+            longitude:place.geometry.location.lng()
+        };
+        addressComponents.forEach((address:any)=>{
+          const type = address.types[0]
+          if(type==='country') addressObj.country = address.long_name
+          if(type==='route') addressObj.street = address.long_name
+          if(type === 'locality') addressObj.state = address.short_name
+          if(type === 'administrative_area_level_1') addressObj.city = address.short_name
+      })
+          return addressObj
+}
+
+const { ref: antRef } = usePlacesWidget({
+  apiKey: process.env.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API,  // move this key to env
+  options:{
+      componentRestrictions:{country:'us'},
+      types: ['address'],
+      fields: ['address_components','geometry','formatted_address','name', 'place_id']
+  },
+  onPlaceSelected: (place) => {
+      // console.log(antInputRef.current.input)
+      form.setFieldValue('street',place?.formatted_address)
+
+      console.log(place)  
+      
+      const fullAddress = extractFullAddress(place)
+      // add street address
+      const addressWithStreet={
+        ...fullAddress,
+        placeId: place?.place_id,
+        fullAddress: place?.formatted_address
+    }
+      setFullAddress(addressWithStreet)
+
+      //@ts-ignore
+    antInputRef.current.input.value = place?.formatted_address
+
+  },
+});
+
+const mutationHandler = async(updatedItem:any)=>{
+  const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`,updatedItem,{
+    headers:{
+        //@ts-ignore
+        "Authorization": paseto
+    }
+  })
+    return data;
+}
+
+const mutation = useMutation({
+  mutationKey:['address'],
+  mutationFn: mutationHandler,
+  onSuccess:()=>{
+    toggleEdit()
+  },
+  onSettled:(data)=>{
+    updateState(data.data[0].address.fullAddress)
+    queryClient.invalidateQueries(['community-venues'])
+  }
+})
+
+function onFinish(updatedItem:any){
+
+
+  const payload = { 
+    // communityId: currentCommunity.id,
+    //@ts-ignore
+    id: selectedRecord.id,
+    // name: selectedRecord.name,
+    key: 'address',
+    values :JSON.stringify({
+      street:fullAddress.street,
+      fullAddress: fullAddress.fullAddress,
+      city: fullAddress.city,
+      country: fullAddress.country,
+      placeId: fullAddress.placeId,
+      state: fullAddress.state,
+      latitude:String(fullAddress.latitude),
+      longitude:String(fullAddress.longitude),
+    })
+  }
+  console.log(payload)
+  // setState(updatedRecord)
+  mutation.mutate(payload)
+}
+
+const {isLoading:isEditing} = mutation 
+
+
+  return(
+    <Form
+     style={{ marginTop:'.5rem' }}
+     name="editableAddress"
+     initialValues={{street:currentFieldValue}}
+     onFinish={onFinish}
+     form={form}
+     >
+      <Row>
+        <Col span={16} style={{height:'100%'}}>
+        <Form.Item 
+            name="street"
+            rules={[{ required: true, message: 'Please input a valid address!' }]}
+        >
+           <Input allowClear  ref={(c) => {
+                // @ts-ignore
+                antInputRef.current = c;
+            
+                // @ts-ignore
+                if (c) antRef.current = c.input;
+                }} 
+                placeholder="Syracuse, United states" 
+            />
+        </Form.Item>
+
+        </Col>
+        <Col span={4}>
+          <Form.Item style={{ width:'100%'}}>
+              <Space >
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                      Cancel
+                  </Button>
+                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                      Apply changes
+                  </Button>
+              </Space>
+                        
+          </Form.Item>
+        </Col>
+      </Row>
+           
+    </Form>
+  )
+}
+
+export function EditablePromotion({selectedRecord}:EditableProp){
+  
+  const [state, setState] = useState(selectedRecord)
+
+  const [isEditMode, setIsEditMode] = useState(false)
+
+  const {paseto} = useAuthContext()
+
+  function toggleEdit(){
+    setIsEditMode(!isEditMode)
+  }
+
+  const [form]  = Form.useForm()
+
+  const queryClient = useQueryClient()
+
+  const urlPrefix = useUrlPrefix()
+
+  const recordMutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`,updatedItem,{
+      headers:{
+          //@ts-ignore
+          "Authorization": paseto
+      }
+    })
+      return data;
+  }
+
+  const recordMutation = useMutation({
+    mutationKey:['promotion'],
+    mutationFn: recordMutationHandler,
+    onSuccess:()=>{
+      toggleEdit()
+    },
+    onSettled:()=>{
+      queryClient.invalidateQueries(['community-venues'])
+    }
+  })
+
+  function onFinish(updatedItem:any){
+    const payload = {
+      key:'promotion',
+      value: updatedItem.promotion,
+      id: selectedRecord.id
+    }
+    const updatedRecord = {
+      ...selectedRecord,
+      promotion: updatedItem.promotion
+    }
+    setState(updatedRecord)
+    recordMutation.mutate(payload)
+  }
+
+  const {isLoading:isEditing} = recordMutation 
+
+  const readOnly = (
+    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+      <Text>{state.promotion}</Text>
+      <Button type="link" onClick={toggleEdit}>Edit</Button>
+    </div>
+)
+
+  const editable = (
+    <Form
+     style={{ marginTop:'.5rem' }}
+     name="editablePromotion"
+     initialValues={selectedRecord}
+     onFinish={onFinish}
+     form={form}
+     >
+      <Row>
+        <Col span={16} style={{height:'100%'}}>
+        <Form.Item 
+            name="promotion"
+            rules={[{ required: true, message: 'Please input a promotion for the venue!' }]}
+        >
+            <TextArea rows={3} placeholder='What do you have to offer?'/>
+
+        </Form.Item>
+
+        </Col>
+        <Col span={4}>
+          <Form.Item style={{ width:'100%'}}>
+              <Space >
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                      Cancel
+                  </Button>
+                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                      Apply changes
+                  </Button>
+              </Space>
+                        
+          </Form.Item>
+        </Col>
+      </Row>
+           
+    </Form>
+  )
+  return(
+    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>Promotion</Text>
+    {isEditMode?editable:readOnly}
+    </div>
+  )
+}
+
 
 
 
