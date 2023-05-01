@@ -36,7 +36,8 @@ export default function ManagerOrgsView(){
     const {paseto} = useAuthContext()
     const queryClient = useQueryClient()
     const router = useRouter()
-    const {switchOrg} = useOrgs()
+    const {switchOrg} = useOrgContext()
+    // const {switchOrg} = useOrgs()
     const {isUser} = useRole()
 
     const [searchText, setSearchText] = useState('');
@@ -117,11 +118,10 @@ export default function ManagerOrgsView(){
 
 
     function gotoOrg(org:NewOrg){
-      console.log(org)
       // switch org
       switchOrg(org)
       // navigate user to services page
-      router.push('/organizations/venues/')
+      router.push('/organizations/venues')
     }
    
     
@@ -592,6 +592,7 @@ function DetailDrawer({selectedOrg,isDrawerOpen,closeDrawer}:DrawerProps){
 const queryClient = useQueryClient()
 const router = useRouter()
 const {switchOrg} = useOrgContext()
+// const {switchOrg} = useOrgs()
 const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
 const {paseto, currentUser} = useAuthContext()
@@ -606,7 +607,7 @@ function gotoOrg(org:NewOrg){
   // switch org
   switchOrg(org)
   // navigate user to services page
-  // router.push('/organizations/venues/')
+  router.push('/organizations/venues')
 }
 
 function toggleDeleteModal(){
