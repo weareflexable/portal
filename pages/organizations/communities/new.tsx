@@ -21,7 +21,7 @@ import { useAuthContext } from '../../../context/AuthContext';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import useUrlPrefix from '../../../hooks/useUrlPrefix'; 
 import { usePlacesWidget } from 'react-google-autocomplete';
-import { CommunityReq } from '../../../types/Community.types';
+import { CommunityReq } from '../../../types/Community';
 import useOrgs from '../../../hooks/useOrgs';
 import { useOrgContext } from '../../../context/OrgContext';
 

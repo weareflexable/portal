@@ -1,5 +1,5 @@
 
-import { Community } from '../types/Community.types'
+import { Community } from '../types/Community'
 import { deleteStorage} from '../utils/storage'
 import useLocalStorage from './useLocalStorage'
 

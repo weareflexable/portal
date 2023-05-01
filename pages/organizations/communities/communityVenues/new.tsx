@@ -18,7 +18,7 @@ import axios from "axios";
 import { useAuthContext } from "../../../../context/AuthContext";
 import loadConfig from "next/dist/server/config";
 import useUrlPrefix from "../../../../hooks/useUrlPrefix";
-import { CommunityVenueReq } from "../../../../types/CommunityVenue.types";
+import { CommunityVenueReq } from "../../../../types/CommunityVenue";
 import useCommunity from "../../../../hooks/useCommunity";
 
 const getBase64 = (file: any): Promise<string> => 

@@ -18,7 +18,7 @@ import useRole from "../../../../hooks/useRole";
 import { EditableText } from "../../../../components/shared/Editables";
 
 
-import { CommunityVenue, Address } from '../../../../types/CommunityVenue.types';
+import { CommunityVenue, Address } from '../../../../types/CommunityVenue';
 import useCommunity from '../../../../hooks/useCommunity';
 import { usePlacesWidget } from 'react-google-autocomplete';
 

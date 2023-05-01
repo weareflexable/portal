@@ -4,7 +4,7 @@ import axios from "axios"
 import { useState } from "react"
 import { useAuthContext } from "../../../context/AuthContext"
 import useUrlPrefix from "../../../hooks/useUrlPrefix"
-import { Community } from "../../../types/Community.types"
+import { Community } from "../../../types/Community"
 import { ArtworkPicker } from "../../ServiceItemsPage/Artwork"
 import {SelectOutlined} from "@ant-design/icons"
 import Image  from 'next/image'
