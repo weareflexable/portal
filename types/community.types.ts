@@ -11,7 +11,7 @@ export type Community = {
     updatedAt: string
 }
 
-export type CommunityReq = {
+ export type CommunityReq = {
     orgId: string
     name: string,
     price: string

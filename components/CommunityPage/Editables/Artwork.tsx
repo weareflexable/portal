@@ -8,7 +8,7 @@ import { Community } from "../../../types/Community.types"
 import { ArtworkPicker } from "../../ServiceItemsPage/Artwork"
 import {SelectOutlined} from "@ant-design/icons"
 import Image  from 'next/image'
-
+ 
 const {Text} = Typography
 
 interface EditableProp{
