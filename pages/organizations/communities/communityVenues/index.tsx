@@ -563,7 +563,7 @@ function onFinish(updatedItem:any){
     id: selectedRecord.id,
     // name: selectedRecord.name,
     key: 'address',
-    values :JSON.stringify({
+    value: JSON.stringify({
       street:fullAddress.street,
       fullAddress: fullAddress.fullAddress,
       city: fullAddress.city,
