@@ -89,7 +89,7 @@ function Communities(){
     async function reActivateCommunityHandler(record:Community){
         const res = await axios({
             method:'patch',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,
             data:{
                 key:'status',
                 value: '1', 
@@ -105,7 +105,7 @@ function Communities(){
 
     const reactivateCommunity = useMutation(reActivateCommunityHandler,{
       onSettled:()=>{
-        queryClient.invalidateQueries({queryKey:['services']})
+        queryClient.invalidateQueries({queryKey:['community']})
       }
     })
 
@@ -117,13 +117,13 @@ function Communities(){
     // console.log('shouldfetch',shouldFetch)
 
     // @ts-ignore
-    const communityQuery = useQuery({queryKey:['services',{currentOrg: currentOrg.orgId, status:currentFilter.name, pageNumber} ], queryFn:fetchCommunities, enabled: paseto !== ''})
+    const communityQuery = useQuery({queryKey:['community',{currentOrg: currentOrg.orgId, status:currentFilter.name, pageNumber} ], queryFn:fetchCommunities, enabled: paseto !== ''})
     const data = communityQuery.data && communityQuery.data
     // const totalLength = communityQuery.data && communityQuery.data;
     const totalLength = 0;
 
     // @ts-ignore
-    const allCommunitysQuery = useQuery({queryKey:['all-services',{currentOrg: currentOrg.orgId}], queryFn:fetchAllCommunities, enabled: paseto !== '', staleTime:Infinity})
+    const allCommunitysQuery = useQuery({queryKey:['all-communities',{currentOrg: currentOrg.orgId}], queryFn:fetchAllCommunities, enabled: paseto !== '', staleTime:Infinity})
     const allCommunitysLength = allCommunitysQuery.data && allCommunitysQuery.data.dataLength;
 
 
@@ -330,16 +330,19 @@ function toggleDeleteModal(){
 }
 
 function deleteCommunity(){ 
-  console.log(selectedRecord.id)
+
   // mutate record
   deleteData.mutate(selectedRecord,{
     onSuccess:()=>{
       notification['success']({
-        message: 'Successfully deleted record!'
+        message: 'Successfully deactivated community!'
       })
+      queryClient.invalidateQueries(['community'])
       toggleDeleteModal()
       closeDrawerHandler()
-
+    },
+    onSettled:()=>{
+      queryClient.invalidateQueries(['community'])
     },
     onError:(err)=>{
         console.log(err)
@@ -382,14 +385,6 @@ return(
   open={isDrawerOpen}
 >
   
-  {/* <EditableText
-    fieldKey="name" // The way the field is named in DB
-    currentFieldValue={selectedRecord.name}
-    fieldName = 'name'
-    title = 'Name'
-    id = {selectedRecord.id}
-    options = {{queryKey:'communities',mutationUrl:'communities'}}
-  /> */}
   <EditableName selectedRecord={selectedRecord}/>
   <EditablePrice selectedRecord={selectedRecord}/>
   <EditableDescription selectedRecord={selectedRecord}/>
