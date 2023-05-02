@@ -12,6 +12,7 @@ import {PlusOutlined} from '@ant-design/icons'
 import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import useUrlPrefix from "../../../hooks/useUrlPrefix";
+import PlatformLayout from "../../Layout/PlatformLayout";
 const {TextArea} = Input 
 
 
@@ -204,6 +205,7 @@ export default function ServiceTypesView(){
     )
 }
 
+ServiceTypesView.PageLayout = PlatformLayout
 
 interface ServiceTypeFormProps {
   open: boolean;

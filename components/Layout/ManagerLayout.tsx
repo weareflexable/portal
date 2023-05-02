@@ -146,7 +146,7 @@ const navItems=[
   },
   {
     key:'platform',
-    label:<Link href='/manager/platform/services'>Platform</Link>,
+    label:<Link href='/manager/platform/service-types'>Platform</Link>,
     icon: <BankOutlined />
   },
 ]
