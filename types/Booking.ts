@@ -41,5 +41,18 @@ export interface Order {
     currency: string,
     endTime: string,
     createdAt: string,
+  }
 
+
+  export type CommunityOrder = {
+    id: string
+    name: string
+    user: any
+    createdAt: string
+    createdBy: string
+    artworkHash: string
+    logoImageHash: string
+    quantity: number
+    price: number
+    paymentStatus: string
   }

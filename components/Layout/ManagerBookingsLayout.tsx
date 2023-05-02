@@ -66,10 +66,10 @@ export default function ManagerBookingsLayout({children}:Props){
 const navItems=[
     {
       key:'venues',
-      label:<Link href='/manager/platform/service-types'>Venues</Link>,
+      label:<Link href='/manager/bookings/venues'>Venues</Link>,
     },
     {
       key:'communities',
-      label:<Link href='/manager/platform/service-item-types'>Communities</Link>,
+      label:<Link href='/manager/bookings/communities'>Communities</Link>,
     }
   ]

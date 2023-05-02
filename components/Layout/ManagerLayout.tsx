@@ -136,7 +136,7 @@ const navItems=[
   },
   {
     key:'bookings',
-    label:<Link href='/manager/bookings'>Bookings</Link>,
+    label:<Link href='/manager/bookings/venues'>Bookings</Link>,
     icon: <BookOutlined />
   },
   {

@@ -3,13 +3,13 @@ import { TableProps, Tag, Button, Table, Typography } from "antd";
 import { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import { useState } from "react";
-import ManagerBookingsLayout from "../../../../components/Layout/ManagerBookingsLayout"
-import { IMAGE_PLACEHOLDER_HASH } from "../../../../constants";
-import { useAuthContext } from "../../../../context/AuthContext";
-import useUrlPrefix from "../../../../hooks/useUrlPrefix";
-import { CommunityOrder } from "../../../../types/Booking";
-import { ServiceItem } from "../../../../types/Services";
-import { numberFormatter } from "../../../../utils/numberFormatter";
+import ManagerBookingsLayout from "../../../components/Layout/ManagerBookingsLayout"
+import { IMAGE_PLACEHOLDER_HASH } from "../../../constants";
+import { useAuthContext } from "../../../context/AuthContext";
+import useUrlPrefix from "../../../hooks/useUrlPrefix";
+import { CommunityOrder } from "../../../types/Booking";
+import { ServiceItem } from "../../../types/Services";
+import { numberFormatter } from "../../../utils/numberFormatter";
 
 import {ReloadOutlined, CheckOutlined,StopOutlined} from '@ant-design/icons'
 
