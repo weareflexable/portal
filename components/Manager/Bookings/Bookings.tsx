@@ -107,7 +107,7 @@ export default function ManagerBookingsView(){
         key: 'unitPrice',
         width:'120px',
         render: (_,record)=>{
-          const serviceItemType = record.serviceItemDetails[0].serviceItemType[0].name
+          const serviceItemType = record.serviceDetails[0].serviceType[0].name
           return(
           <div>
             <Tag style={{textTransform:'capitalize'}}>{serviceItemType}</Tag>
@@ -241,31 +241,22 @@ export default function ManagerBookingsView(){
     ];
 
         return (
-            <div>
-                  <div style={{marginBottom:'2em', marginTop:'1rem', display:'flex', width:'100%', flexDirection:'column', alignItems:'center'}}>
-               <div style={{display:'flex', marginTop:'1rem', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
-                 <div style={{display:'flex', alignItems:'baseline'}}>
-                 <Title style={{ margin:'0'}} level={2}>Bookings</Title>
-                 {/* <div style={{marginLeft:'1rem'}}>
-                  <Text>{`Last Updated on - `}</Text> 
-                  <Text>{`${dayjs(bookingsQuery.dataUpdatedAt).tz('America/New_York').format("MMM D, YYYY z")}`}</Text>
-                  <Text>{` · ${dayjs(bookingsQuery.dataUpdatedAt).tz('America/New_York').format('HH:mm:ss')} secs ago`}</Text>
-                  </div> */}
-                 </div>
-                 <Button shape="round" loading={bookingsQuery.isRefetching} onClick={()=>bookingsQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
-               </div>
-               <div style={{display:'flex', marginTop:'.5rem', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
-                  <div>
-                  <Text>{`Last Updated on - `}</Text> 
-                  <Text>{`${dayjs(bookingsQuery.dataUpdatedAt).tz('America/New_York').format("MMM D, YYYY z")}`}</Text>
-                  <Text>{` · ${dayjs(bookingsQuery.dataUpdatedAt).tz('America/New_York').format('HH:mm:ss')} secs ago`}</Text>
+            <div style={{width:'100%', padding:'0', margin: '0'}}>
+                <div style={{marginBottom:'2rem', display:'flex', width:'100%', flexDirection:'column', alignItems:'center'}}>
+                  <div style={{display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+                      <div style={{display:'flex', marginTop:'.5rem', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+                          <div>
+                            <Text>{`Last Updated on - `}</Text> 
+                            <Text>{`${dayjs(bookingsQuery.dataUpdatedAt).tz('America/New_York').format("MMM D, YYYY z")}`}</Text>
+                            <Text>{` · ${dayjs(bookingsQuery.dataUpdatedAt).tz('America/New_York').format('HH:mm:ss')} secs ago`}</Text>
+                          </div>
+                      </div>
+                      <Button shape="round" loading={bookingsQuery.isRefetching} onClick={()=>bookingsQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
                   </div>
-               </div>
-
                </div>
                 <Table 
                   style={{width:'100%'}} 
-                  key='dfadfe' 
+                  rowKey={(record)=>record.id}
                   size='small'  
                   scroll={{ x: 'calc(450px + 50%)'}} 
                   loading={bookingsQuery.isLoading||bookingsQuery.isRefetching} 

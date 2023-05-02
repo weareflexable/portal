@@ -15,7 +15,7 @@ interface PlatformLayoutProps{
   export default function PlatformLayout({children}:PlatformLayoutProps){
     const {asPath,push,query,isReady} = useRouter()  
   
-      const [selectedPage, setSelectedPage] = useState('service-types')
+      const [selectedPage, setSelectedPage] = useState('venues')
   
     
   
@@ -66,17 +66,11 @@ interface PlatformLayoutProps{
         </Col>
         </Row>
       </ManagerLayout>  
-      
     )
   }
   
   
   const navItems=[
-    // {
-    //   key:'dashboard',
-    //   label: <Link href='/manager/dashboard'>Dashboard</Link>,
-    //   icon:<PieChartOutlined />
-    // },
     {
       key:'service-types',
       label:<Link href='/manager/platform/service-types'>Service Types</Link>,
