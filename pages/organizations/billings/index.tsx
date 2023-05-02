@@ -4,9 +4,9 @@ const {Title} = Typography
 import {ArrowLeftOutlined} from '@ant-design/icons'
 import React from 'react'
 import BillingsView from '../../../components/BillingsPage'
-import AppLayout from '../../../components/shared/Layout/layout'
+import AppLayout from '../../../components/Layout/layout'
 import { useRouter } from 'next/router'
-import ServiceLayout from '../../../components/shared/Layout/ServiceLayout'
+import ServiceLayout from '../../../components/Layout/ServiceLayout'
 
 export default function Billings(){
 

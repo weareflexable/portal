@@ -1,18 +1,16 @@
 import React from 'react'
 import { Content } from 'antd/lib/layout/layout'
 import { Typography,Row, Col } from 'antd'
-import ManagerLayout from '../../components/Manager/Layout/Layout'
-import ManagerBookingsView from '../../components/Manager/Bookings/Bookings'
 import UsersView from '../../components/Manager/Users/UsersView'
+import ManagerLayout from '../../components/Layout/ManagerLayout'
 
 const {Title} = Typography
 
-export default function AdminStaff(){
+export default function ManagerUsers(){
 
 
     return(
         
-        <ManagerLayout>
             <Row>
                 <Col offset={1} span={22}>
                 
@@ -27,6 +25,8 @@ export default function AdminStaff(){
                     </Content>
                 </Col>
             </Row>
-        </ManagerLayout>
     )
 }
+
+
+ManagerUsers.PageLayout = ManagerLayout

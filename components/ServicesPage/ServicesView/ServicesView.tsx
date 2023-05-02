@@ -20,7 +20,7 @@ import useServiceTypes from "../../../hooks/useServiceTypes";
 import { convertToAmericanFormat } from "../../../utils/phoneNumberFormatter";
 import { EditableText} from "../../shared/Editables";
 import useUrlPrefix from "../../../hooks/useUrlPrefix";
-import ServiceLayout from "../../shared/Layout/ServiceLayout";
+import ServiceLayout from "../../Layout/ServiceLayout";
 
 var relativeTime = require('dayjs/plugin/relativeTime')
 dayjs.extend(relativeTime)

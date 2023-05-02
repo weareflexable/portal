@@ -19,7 +19,7 @@ import useServiceTypes from "../../../hooks/useServiceTypes";
 import { convertToAmericanFormat } from "../../../utils/phoneNumberFormatter";
 import { EditableText} from "../../../components/shared/Editables";
 import useUrlPrefix from "../../../hooks/useUrlPrefix";
-import ServiceLayout from "../../../components/shared/Layout/ServiceLayout";
+import ServiceLayout from "../../../components/Layout/ServiceLayout";
 import { Community } from "../../../types/Community";
 import useCommunity from "../../../hooks/useCommunity";
 import { EditableArtwork } from "../../../components/CommunityPage/Editables/Artwork";

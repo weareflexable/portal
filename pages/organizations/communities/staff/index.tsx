@@ -1,5 +1,5 @@
 
-import CommunitiesLayout from '../../../../components/shared/Layout/CommunitiesLayout'
+import CommunitiesLayout from '../../../../components/Layout/CommunitiesLayout'
 
 
 
