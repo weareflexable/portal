@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useOrgs from "../../../../hooks/useOrgs";
 const {Text,Title} = Typography
 import React, { ReactNode, useRef, useState } from 'react'
-import {Typography,Button,Table, InputRef, Input, Space, DatePicker, Radio, Drawer, Row, Col, Divider, Form, notification, Modal} from 'antd'
+import {Typography,Button,Table, InputRef, Input, Space, DatePicker, Radio, Drawer, Row, Col, Divider, Form, notification, Modal, Popconfirm} from 'antd'
 import { useRouter } from 'next/router'
 import axios from 'axios';
 import {MoreOutlined,ReloadOutlined,MinusCircleOutlined,PlusOutlined} from '@ant-design/icons'
@@ -151,7 +151,7 @@ function CommunityVenues(){
 
   const reactivateVenue = useMutation(reActivateCommunityVenueHandler,{
     onSettled:()=>{
-      queryClient.invalidateQueries({queryKey:['serviceItems']})
+      queryClient.invalidateQueries({queryKey:['community-venues']})
     }
   })
 
@@ -324,8 +324,17 @@ function toggleDeleteModal(){
   setIsDeleteModalOpen(!isDeleteModalOpen)
 }
 
+function deactivateCommunityVenue(){ 
+  // mutate record
+  deactivateVenue.mutate(selectedRecord,{
+    onSuccess:()=>{
+      toggleDeleteModal()
+      closeDrawerHandler()
+    }
+  })
+}
+
 function deleteCommunityVenue(){ 
-  console.log(selectedRecord.id)
   // mutate record
   deleteData.mutate(selectedRecord,{
     onSuccess:()=>{
@@ -335,7 +344,7 @@ function deleteCommunityVenue(){
   })
 }
 
-const deleteDataHandler = async(record:CommunityVenue)=>{      
+const deactivateDataHandler = async(record:CommunityVenue)=>{      
   const {data} = await axios({
     method:'patch',
     url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`,
@@ -349,7 +358,37 @@ const deleteDataHandler = async(record:CommunityVenue)=>{
   }})
   return data
 }
+const deleteDataHandler = async(record:CommunityVenue)=>{      
+  const {data} = await axios({
+    method:'delete',
+    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`,
+    data: {
+        id:record.id,
+      },
+    headers:{
+          "Authorization": paseto
+  }})
+  return data
+}
 
+const deactivateVenue = useMutation(deactivateDataHandler,{
+ onSuccess:(data)=>{
+  notification['success']({
+      message: 'Successfully deactivate venue'
+  })
+    // remove from list  
+ },
+ onSettled:()=>{
+  queryClient.invalidateQueries(['community-venues'])
+ },
+  onError:(err:any)=>{
+      console.log(err)
+      notification['error']({
+          message: err.message,
+        });
+      // leave modal open
+  } 
+})
 const deleteData = useMutation(deleteDataHandler,{
  onSuccess:(data)=>{
   notification['success']({
@@ -365,6 +404,8 @@ const deleteData = useMutation(deleteDataHandler,{
       // leave modal open
   } 
 })
+
+const {isLoading:isDeactivating} = deactivateVenue
 
 const{isLoading:isDeletingItem} = deleteData
 
@@ -396,11 +437,19 @@ return(
   
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
     <Title level={3}>Danger zone</Title>
-    <Button  onClick={toggleDeleteModal} style={{}}>Deactivate Community Venue </Button>
+    <Popconfirm
+    title="Deactivate Community Venue"
+    description="Are you sure to deactivate this community venue?"
+    okText="Yes"
+    onConfirm={()=>deactivateCommunityVenue()}
+    cancelText="No"
+  >
+    <Button loading={isDeactivating}>Deactivate Community Venue </Button>
+  </Popconfirm>
     <Button danger onClick={toggleDeleteModal} style={{marginTop:'1rem'}} >Delete Community Venue </Button>
   </div>
 
-  {/* <DeleteRecordModal isDeletingItem={isDeletingItem} onCloseModal={toggleDeleteModal} onDeleteRecord={deleteServiceItem} isOpen={isDeleteModalOpen} selectedRecord={selectedRecord}/> */}
+  <DeleteRecordModal isDeletingItem={isDeletingItem} onCloseModal={toggleDeleteModal} onDeleteRecord={deleteCommunityVenue} isOpen={isDeleteModalOpen} selectedRecord={selectedRecord}/>
 
   
 </Drawer>
