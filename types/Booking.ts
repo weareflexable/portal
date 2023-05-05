@@ -43,10 +43,18 @@ export interface Order {
     createdAt: string,
   }
 
+  type CommunityDats = {
+    name: string
+    price: number
+    artworkHash: string
+    logoImageHash: string
+  }
+
 
   export type CommunityOrder = {
     id: string
     name: string
+    communityDats: CommunityDats
     user: any
     createdAt: string
     createdBy: string
@@ -54,5 +62,6 @@ export interface Order {
     logoImageHash: string
     quantity: number
     price: number
+    unitPrice: number
     paymentStatus: string
   }

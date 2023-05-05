@@ -546,7 +546,7 @@ export default function ManagerOrgsView(){
                   </div>
                   <Radio.Group defaultValue={currentStatus.id} buttonStyle="solid">
                       {orgStatus.map(status=>(
-                          <Radio.Button key={status.id} onClick={()=>setCurrentStatus(status)} value={status.id}>{status.name}</Radio.Button>
+                          <Radio.Button  key={status.id} onClick={()=>setCurrentStatus(status)} value={status.id}>{status.name}</Radio.Button>
                       )
                       )}
                   </Radio.Group>

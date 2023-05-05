@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { TableProps, Tag, Button, Table, Typography } from "antd";
+import { TableProps, Tag, Button, Table, Image, Typography } from "antd";
 import { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import { useState } from "react";
@@ -24,7 +24,6 @@ dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.extend(advanced)
 
-import Image from 'next/image'
 
 const {Text} = Typography
 
@@ -43,7 +42,7 @@ export default function CommunityBookings(){
     async function fetchBookings(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/bookings/communities?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/bookings/communities?pageNumber=${pageNumber}&pageSize=${pageSize}&key='id'&value=${''}`,
             headers:{
                 "Authorization": paseto
             }
@@ -86,12 +85,13 @@ export default function CommunityBookings(){
         fixed:'left',
         render:(_,record)=>{
 
-          const logoImageHash = record.artworkHash
+          const logoImageHash = record.communityDats.artworkHash
+          
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${logoImageHash}`}/>
+                    <Image  style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${logoImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
-                        <Text>{record.name}</Text>  
+                        <Text>{record.communityDats.name}</Text>  
                         {/* <Text type="secondary">{serviceName}</Text>   */}
                     </div>
                 </div>
@@ -106,7 +106,7 @@ export default function CommunityBookings(){
         width:'250px',
         key: 'customer',
         render:(_,record)=>{
-          const user = record.user[0]
+          const user = record.user
           const email = user.email
           const name = user.name
           const profilePicHash = user.profilePic
@@ -155,9 +155,10 @@ export default function CommunityBookings(){
         width:'120px',
         align:'right',
         render: (_,record)=>{
-          const total = record.quantity * (record.price/100)
+
+          const total = record.quantity * (record.unitPrice/100)
           return(
-            <div>
+            <div>  
             <Text>$</Text>
             <Text>{`${numberFormatter.from(total)}`}</Text>
           </div>
