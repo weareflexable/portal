@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { TableProps, Tag, Button, Table, Typography } from "antd";
+import { TableProps, Tag, Button, Table, Image, Typography } from "antd";
 import { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import { useState } from "react";
@@ -10,6 +10,8 @@ import useUrlPrefix from "../../../../hooks/useUrlPrefix";
 import { CommunityOrder } from "../../../../types/Booking";
 import { ServiceItem } from "../../../../types/Services";
 import { numberFormatter } from "../../../../utils/numberFormatter";
+
+const {Title} = Typography
 
 import {ReloadOutlined, CheckOutlined,StopOutlined} from '@ant-design/icons'
 
@@ -24,7 +26,7 @@ dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.extend(advanced)
 
-import Image from 'next/image'
+
 import CommunitiesLayout from "../../../../components/Layout/CommunitiesLayout";
 
 const {Text} = Typography
@@ -87,12 +89,12 @@ export default function CommunityBookings(){
         fixed:'left',
         render:(_,record)=>{
 
-          const logoImageHash = record.artworkHash
+          const logoImageHash = record.communityDats.artworkHash
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${logoImageHash}`}/>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='community artwork hash' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${logoImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
-                        <Text>{record.name}</Text>  
+                        <Text>{record.communityDats.name}</Text>  
                         {/* <Text type="secondary">{serviceName}</Text>   */}
                     </div>
                 </div>
@@ -107,7 +109,7 @@ export default function CommunityBookings(){
         width:'250px',
         key: 'customer',
         render:(_,record)=>{
-          const user = record.user[0]
+          const user = record.user
           const email = user.email
           const name = user.name
           const profilePicHash = user.profilePic
@@ -127,7 +129,7 @@ export default function CommunityBookings(){
         title: 'Unit Price',
         dataIndex: 'unitPrice',
         key: 'unitPrice',
-        width:'100px',
+        width:'120px',
         align:'right',
         render: (unitPrice)=>(
           <div>
@@ -153,10 +155,10 @@ export default function CommunityBookings(){
         title: 'Total Price',
         // dataIndex: 'totalPrice',
         key: 'totalPrice',
-        width:'120px',
+        width:'150px',
         align:'right',
         render: (_,record)=>{
-          const total = record.quantity * (record.price/100)
+          const total = record.quantity * (record.unitPrice/100)
           return(
             <div>
             <Text>$</Text>
@@ -171,7 +173,7 @@ export default function CommunityBookings(){
       title: 'Payment Status',
       dataIndex: 'paymentIntentStatus',
       key: 'paymentIntentStatus',
-      width:'125px',
+      width:'150px',
       fixed:'right',
       render: (paymentStatus)=>{
         const color = paymentStatus === 'successful'?'green':paymentStatus === 'failed'?'red':paymentStatus === 'cancelled'?'grey':'blue'
@@ -197,7 +199,8 @@ export default function CommunityBookings(){
 
         return (
             <div style={{width:'100%', padding:'0', margin: '0'}}>
-                <div style={{marginBottom:'2rem', display:'flex', width:'100%', flexDirection:'column', alignItems:'center'}}>
+                <div style={{marginBottom:'2rem', display:'flex', width:'100%', flexDirection:'column', alignItems:'flex-start'}}>
+                <Title style={{margin: '0', marginTop:'2rem'}} level={2}>Bookings</Title>
                   <div style={{display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                       <div style={{display:'flex', marginTop:'.5rem', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                           <div>

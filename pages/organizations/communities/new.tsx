@@ -29,7 +29,7 @@ export default function ServiceItemForm(){
 
     const router = useRouter() 
     
-    const [currentStep, setCurrentStep] = useState(0);
+    const [currentStep, setCurrentStep] = useState(1);
     // State to hold the id of the service item that will get created in the
     // first form.
     const [createdItemId, setCreatedItemId] = useState('')
@@ -256,14 +256,14 @@ function VenuesForm({serviceItemId}:AvailabilityProp){
 
 
     async function onFinish(formData:any){
-        console.log('form data',formData.availability)
+        console.log('form data',formData.communityVenues)
         // const transformedDates = convertDates(formData.venues)
         const reqPayload = {
             communityId: '' ,
             venues: []
         }
 
-        createData.mutate(reqPayload)
+        // createData.mutate(reqPayload)
     }
 
 
@@ -362,10 +362,6 @@ function VenuesForm({serviceItemId}:AvailabilityProp){
                     shape='round'
                     loading={isCreatingData}
                     htmlType="submit"
-                    disabled={
-                    !form.isFieldTouched('venue')
-                    // !!form.getFieldsError().filter(({ errors }) => errors.length).length
-                    }
                 >
                 Add Venues
                 </Button>
@@ -527,18 +523,14 @@ function CommunityVenueForm({remove, name, restField}:CommunityVenueFormProps){
         city:''
     })
 
-    const queryClient = useQueryClient()
-
-    const urlPrefix = useUrlPrefix()
-
-    const [form] = Form.useForm()
-
-    const {paseto} = useAuthContext()
+    const [formAddress, setFormAddress] = useState('')
     
     const antInputRef = useRef();
     const areaCodeRef = useRef<InputRef>(null)
     const centralOfficeCodeRef = useRef<InputRef>(null)
     const tailNoRef = useRef<InputRef>(null)
+    const streetRef = useRef<InputRef>(null)
+    const countryRef = useRef<InputRef>(null)
 
     function handleAreaCodeRef(e:any){
         if(e.target.value.length >= 3){ 
@@ -579,8 +571,12 @@ function CommunityVenueForm({remove, name, restField}:CommunityVenueFormProps){
         },
         onPlaceSelected: (place) => {
             // console.log(antInputRef.current.input)
-            console.log(place)
-            form.setFieldValue('address',place?.formatted_address)
+            // form.setFieldValue('address.fullAddress',place?.formatted_address)
+            //@ts-ignore
+            // setFormAddress(place?.formatted_address) 
+            streetRef.current.input = place?.formatted_address
+            
+            console.log(streetRef.current)
             
             const fullAddress = extractFullAddress(place)
             // add street address
@@ -596,50 +592,8 @@ function CommunityVenueForm({remove, name, restField}:CommunityVenueFormProps){
         },
       });
     
-    async function onFinish(formData:any){
-        console.log('form data',formData.availability)
-        // const transformedDates = convertDates(formData.venues)
-        const reqPayload = {
-            // serviceItemId: serviceItemId,
-            availability: []
-        }
+   
 
-        // createData.mutate(reqPayload)
-    }
-
-
-    const createDataHandler = async(newItem:AvailabilityPayload)=>{ 
-        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items/availability`, newItem,{
-            headers:{
-                "Authorization": paseto
-            },
-        })
-        return data
-    }
-
-    const createData = useMutation(createDataHandler,{
-       onSuccess:(data)=>{
-        form.resetFields()
-        notification['success']({
-            message: 'Successfully created custom availabilties!'
-        })
-            router.back()
-            // nextStep(data.data)
-            
-       },
-        onError:(err)=>{
-            console.log(err)
-            notification['error']({
-                message: 'Encountered an error while creating custom custom dates',
-              });
-            // leave modal open
-        } ,
-        onSettled:()=>{
-            queryClient.invalidateQueries(['all-serviceItems'])
-       },
-    })
-
-    const {isError, isLoading:isCreatingData, isSuccess:isDataCreated, data:createdData} = createData
 
     return(
         <div style={{padding:'1rem', marginBottom:'1rem', borderRadius:'4px', border:'1px solid #FFC680'}} >
@@ -656,56 +610,67 @@ function CommunityVenueForm({remove, name, restField}:CommunityVenueFormProps){
                                 <Input size='large' suffix={<Tooltip title='This field is optional'><InfoCircleOutlined/></Tooltip> } placeholder='Christmas eve' />
                             </Form.Item>
 
-
-                            <Form.Item  
-                                name="address"
-                                label='Address'
-                                extra={<Text type="secondary"><InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} /> Please refresh the page if the address you selected is not being displayed in the field </Text> }
-                                rules={[{ required: true, message: 'Please input a valid address!' }]}
-                            >
-                                <Input 
-                                    // suffix={
-                                    //     <Tooltip title="Please refresh the page if the date you selected is not being displayed in the field">
-                                    //       <InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
-                                    //     </Tooltip>
-                                    //   }
-                                    size="large" 
-                                    allowClear
-                                    ref={(c) => {
-                                    // @ts-ignore
-                                    antInputRef.current = c;
-                                    // @ts-ignore
-                                    if (c) antRef.current = c.input;
-                                    }} 
-                                    placeholder="Syracuse, United states" 
-                                    />
-                            </Form.Item>
+                            <Form.Item >
+                                <Input.Group>
+                                    <Form.Item  
+                                    name={['address','fullAddress']}
+                                    label='Address'
+                                    extra={<Text type="secondary"><InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} /> Please refresh the page if the address you selected is not being displayed in the field </Text> }
+                                    rules={[{ required: true, message: 'Please input a valid address!' }]}
+                                >
+                                    <Input 
+                                        // suffix={
+                                        //     <Tooltip title="Please refresh the page if the date you selected is not being displayed in the field">
+                                        //       <InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
+                                        //     </Tooltip>
+                                        //   }                                                                                                                
+                                        size="large" 
+                                        value={formAddress}
+                                        allowClear
+                                        ref={(c) => {
+                                        // @ts-ignore
+                                        antInputRef.current = c;
+                                        // @ts-ignore
+                                        if (c) antRef.current = c.input;
+                                        }} 
+                                        placeholder="Syracuse, United states" 
+                                        />
+                                    </Form.Item>
+                                    <Form.Item name={['address','street']} >
+                                        <Input ref={streetRef} />
+                                    </Form.Item>
+                                    <Form.Item name={['address','country']} hidden>
+                                        <Input ref={countryRef} />
+                                    </Form.Item>
+                                </Input.Group>
+                            </Form.Item>   
+                            
 
                             <Form.Item
                         // name="contactNumber"
-                        label="Contact Number"
-                        required
-                        style={{marginBottom:'1rem'}}
-                        rules={[{ required: true, message: 'Please input a valid phone number' }]}
-                    >
-                        <Input.Group compact>
-                            <Form.Item initialValue={'+1'} name={['contact','countryCode']} noStyle>
-                                <Input allowClear style={{width:'10%'}} disabled size="large"/>
-                            </Form.Item>
-                            <Form.Item name={['contact','areaCode']} noStyle>
-                                <Input allowClear ref={areaCodeRef} maxLength={3} onChange={handleAreaCodeRef} style={{width:'20%'}} size="large" placeholder="235" />
-                            </Form.Item>
-                            <Form.Item name={['contact','centralOfficeCode']} noStyle>
-                                <Input allowClear ref={centralOfficeCodeRef} onChange={handleCentralOfficeCode} maxLength={3} style={{width:'20%'}} size="large" placeholder="380" />
-                            </Form.Item>
-                            <div style={{height:'40px',margin:'0 .3rem 0 .3rem', display:'inline-flex', alignItems:'center',  verticalAlign:'center'}}>
-                            <MinusOutlined style={{color:"#e7e7e7"}} />
-                            </div>
-                            <Form.Item name={['contact','tailNumber']} noStyle>
-                                <Input ref={tailNoRef} maxLength={4} style={{width:'20%'}} size="large" placeholder="3480" />
-                            </Form.Item>
-                        </Input.Group>
-                    </Form.Item>
+                                label="Contact Number"
+                                required
+                                style={{marginBottom:'1rem'}}
+                                rules={[{ required: true, message: 'Please input a valid phone number' }]}
+                            >
+                                <Input.Group compact>
+                                    <Form.Item initialValue={'+1'} name={['contact','countryCode']} noStyle>
+                                        <Input allowClear style={{width:'10%'}} disabled size="large"/>
+                                    </Form.Item>
+                                    <Form.Item  name={['contact','areaCode']} noStyle>
+                                        <Input allowClear ref={areaCodeRef} maxLength={3} onChange={handleAreaCodeRef} style={{width:'20%'}} size="large" placeholder="235" />
+                                    </Form.Item>
+                                    <Form.Item name={['contact','centralOfficeCode']} noStyle>
+                                        <Input allowClear ref={centralOfficeCodeRef} onChange={handleCentralOfficeCode} maxLength={3} style={{width:'20%'}} size="large" placeholder="380" />
+                                    </Form.Item>
+                                    <div style={{height:'40px',margin:'0 .3rem 0 .3rem', display:'inline-flex', alignItems:'center',  verticalAlign:'center'}}>
+                                    <MinusOutlined style={{color:"#e7e7e7"}} />
+                                    </div>
+                                    <Form.Item name={['contact','tailNumber']} noStyle>
+                                        <Input ref={tailNoRef} maxLength={4} style={{width:'20%'}} size="large" placeholder="3480" />
+                                    </Form.Item>
+                                </Input.Group>
+                             </Form.Item>
 
 
                             {/* promotion */}
