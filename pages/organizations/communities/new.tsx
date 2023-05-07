@@ -665,7 +665,7 @@ function CommunityVenueForm({remove, name, restField}:CommunityVenueFormProps){
                                     name={[name, 'name']}
                                     style={{width:'100%'}}
                                 >
-                                <Input size='large' suffix={<Tooltip title='This field is optional'><InfoCircleOutlined/></Tooltip> } placeholder='Christmas eve' />
+                                <Input size='large'required placeholder='Benjamins On Franklin' />
                             </Form.Item>
 
                             <Form.Item >

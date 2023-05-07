@@ -13,7 +13,7 @@ import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { ServiceItem } from "../../../types/Services";
 import { ManagerOrder } from "./Bookings.types";
 import useUrlPrefix from "../../../hooks/useUrlPrefix";
-const {TextArea} = Input
+
 import {numberFormatter} from '../../../utils/numberFormatter'
 import { IMAGE_PLACEHOLDER_HASH } from "../../../constants";
 import dayjs from 'dayjs'
@@ -125,9 +125,9 @@ export default function ManagerBookingsView(){
           const email = user && user.email
           const name = user?.name 
           const profilePicHash = user && user.profilePic
-            return(
+            return( 
                 <div style={{display:'flex',alignItems:'center'}}>
-                    {/* <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${profilePicHash.length < 10? IMAGE_PLACEHOLDER_HASH : profilePicHash}`}/> */}
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Profile image' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${profilePicHash && profilePicHash.length < 20 ? IMAGE_PLACEHOLDER_HASH : profilePicHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{name}</Text>  
                         <Text type="secondary">{email}</Text>  

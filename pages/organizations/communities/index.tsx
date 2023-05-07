@@ -182,7 +182,7 @@ function gotoCommunityItemsPage(community:Community){
         },
       },
       {
-        title: 'No of Venues',
+        title: 'Number of Venues',
         dataIndex: 'communityVenuesCount',
         key: 'communityVenuesCount',
         width:'100px',
