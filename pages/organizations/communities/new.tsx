@@ -3,7 +3,7 @@ import {Card,Form, Image as AntImage, Input,InputNumber, DatePicker,Upload,Butto
 const { TextArea } = Input;
 import Image from 'next/image'
 
-const { Panel } = Collapse;
+
 
 
 const {Text,Title} = Typography;
@@ -11,7 +11,6 @@ import {QuestionCircleOutlined,SelectOutlined,ArrowLeftOutlined, MinusOutlined,M
 
 
 import router, { useRouter } from 'next/router';
-import { Availability, AvailabilityPayload, ServiceItem, ServiceItemReqPaylod } from '../../../types/Services';
 import axios from 'axios';
 import { useAuthContext } from '../../../context/AuthContext';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';

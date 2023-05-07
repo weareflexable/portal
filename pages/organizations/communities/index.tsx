@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useOrgs from "../../../hooks/useOrgs";
 const {Text, Title} = Typography;
 import React, { ReactNode, useEffect, useRef, useState } from 'react'
-import {Typography,Button, Skeleton, Badge, Image, Table, Input, Radio,  Drawer, Row, Col, Form, Modal, Alert, notification, Dropdown, MenuProps, Tag, Space} from 'antd'
+import {Typography,Button, Skeleton, Badge, Image, Table, Input, Radio,  Drawer, Row, Col, Form, Modal, Alert, notification, Dropdown, MenuProps, Tag, Space, Upload} from 'antd'
 import { useRouter } from 'next/router'
 import axios from 'axios';
 import { MoreOutlined, ReloadOutlined, ArrowLeftOutlined, PlusOutlined} from '@ant-design/icons'
@@ -23,6 +23,7 @@ import ServiceLayout from "../../../components/Layout/ServiceLayout";
 import { Community } from "../../../types/Community";
 import useCommunity from "../../../hooks/useCommunity";
 import { EditableArtwork } from "../../../components/CommunityPage/Editables/Artwork";
+import { asyncStore } from "../../../utils/nftStorage";
 
 const {TextArea} = Input
 
@@ -389,7 +390,7 @@ return(
   <EditablePrice selectedRecord={selectedRecord}/>
   <EditableDescription selectedRecord={selectedRecord}/>
   <EditableArtwork selectedRecord={selectedRecord}/>
-  {/* <EditableLogoImage selectedRecord={selectedRecord}/> */}
+  <EditableLogoImage selectedRecord={selectedRecord}/>
   {/* <EditableCoverImage selectedRecord={selectedRecord}/> */}
 
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
@@ -731,6 +732,129 @@ export function EditableName({selectedRecord}:EditableProp){
   )
 }
 
+export function EditableLogoImage({selectedRecord}:EditableProp){
+  
+  const [isEditMode, setIsEditMode] = useState(false)
+  const [isHashingImage, setIsHashingImage] = useState(false)
+  const [updatedLogoImageHash, setUpdatedLogoImageHash] = useState(selectedRecord.logoImageHash)
+
+
+  const urlPrefix = useUrlPrefix()
+
+  const {paseto} = useAuthContext()
+
+  const queryClient = useQueryClient()
+
+  function toggleEdit(){
+    setIsEditMode(!isEditMode)
+  }
+
+  const readOnly = (
+      <div style={{width:'100%', marginTop:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+        <Image style={{width:'170px', height:'170px', border:'1px solid #f2f2f2', borderRadius:'50%'}} alt='Logo image for organization' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedLogoImageHash}`}/>
+        <Button type="link" onClick={toggleEdit}>Edit</Button>
+      </div>
+  )
+
+  const mutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,updatedItem,{
+      headers:{
+          //@ts-ignore
+          "Authorization": paseto
+      }
+    })
+      return data;
+  }
+  const mutation = useMutation({
+    mutationKey:['logoImage'],
+    mutationFn: mutationHandler,
+    onSuccess:()=>{
+      toggleEdit()
+    },
+    onSettled:(data)=>{
+      setUpdatedLogoImageHash(data.data[0].logoImageHash)
+      queryClient.invalidateQueries(['services'])
+    }
+  })
+
+  async function onFinish(field:any){
+
+    // hash it first
+    const logoRes = await field.logoImage
+
+    setIsHashingImage(true)
+    const logoHash = await asyncStore(logoRes[0].originFileObj)
+    setIsHashingImage(false)
+
+    console.log(logoHash)
+
+    const payload = {
+      key:'logo_image_hash',
+      value: logoHash,
+      id: selectedRecord.id
+    }
+    mutation.mutate(payload)
+  }
+
+  const {isLoading:isEditing} = mutation
+
+  const extractLogoImage = async(e: any) => {
+    console.log('Upload event:', e);
+    if (Array.isArray(e)) {
+    return e;
+    }
+
+   return e?.fileList;
+};
+
+
+  const editable = (
+    <Form
+     style={{ marginTop:'.5rem' }}
+     name="EditablelogoImage"
+     initialValues={selectedRecord}
+     onFinish={onFinish}
+     >
+
+      <Row>
+        <Col span={10}>
+          <Form.Item
+              name="logoImage"
+              valuePropName="logoImage"
+              getValueFromEvent={extractLogoImage}
+              rules={[{ required: true, message: 'Please input a valid zip code' }]}
+          >
+              
+              <Upload name="logoImageHash" listType="picture" multiple={false}>
+                   <Button size='small' disabled={isHashingImage} type='link'>Upload logo image</Button>
+              </Upload>
+          </Form.Item>
+        </Col>
+        <Col span={4}>
+          <Form.Item style={{ width:'100%'}}>
+              <Space >
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                      Cancel
+                  </Button>
+                  <Button shape="round" loading={isEditing||isHashingImage} type="link" size="small"  htmlType="submit" >
+                      Apply changes
+                  </Button>
+              </Space>
+                        
+          </Form.Item>
+        </Col>
+      </Row>
+           
+    </Form>
+  )
+
+  return(
+    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>Logo</Text>
+      {isEditMode?editable:readOnly}
+    </div>
+  )
+}
 
 
 interface DeleteProp{
