@@ -103,7 +103,6 @@ function BasicForm({nextStep}:BasicInfoProps){
      // TODO: set field for editing
      //@ts-ignore
 
-     const [isHashingImage, setIsHashingImage] = useState(false)
      const {currentOrg} = useOrgs()
      const {paseto} = useAuthContext()
      const router = useRouter()
@@ -286,7 +285,7 @@ function BasicForm({nextStep}:BasicInfoProps){
                     Cancel
                 </Button>
 
-                <Button shape='round' size='large' loading={isHashingImage||isCreatingData} type="primary"  htmlType="submit" >
+                <Button shape='round' size='large' loading={isHashingAssets||isCreatingData} type="primary"  htmlType="submit" >
                     Create Community
                 </Button>
 
