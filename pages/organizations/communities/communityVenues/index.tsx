@@ -437,7 +437,7 @@ return(
   
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
     <Title level={3}>Danger zone</Title>
-    <Popconfirm
+    {/* <Popconfirm
     title="Deactivate Community Venue"
     description="Are you sure to deactivate this community venue?"
     okText="Yes"
@@ -445,11 +445,11 @@ return(
     cancelText="No"
   >
     <Button loading={isDeactivating}>Deactivate Community Venue </Button>
-  </Popconfirm>
-    <Button danger onClick={toggleDeleteModal} style={{marginTop:'1rem'}} >Delete Community Venue </Button>
+  </Popconfirm> */}
+    <Button danger onClick={toggleDeleteModal} style={{marginTop:'1rem'}} >Deactivate Community Venue </Button>
   </div>
 
-  <DeleteRecordModal isDeletingItem={isDeletingItem} onCloseModal={toggleDeleteModal} onDeleteRecord={deleteCommunityVenue} isOpen={isDeleteModalOpen} selectedRecord={selectedRecord}/>
+  <DeleteRecordModal isDeletingItem={isDeletingItem} onCloseModal={toggleDeleteModal} onDeleteRecord={deactivateCommunityVenue} isOpen={isDeleteModalOpen} selectedRecord={selectedRecord}/>
 
   
 </Drawer>

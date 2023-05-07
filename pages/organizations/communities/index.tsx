@@ -76,7 +76,7 @@ function Communities(){
       const res = await axios({
               method:'get',
               //@ts-ignore
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community/by-orgId?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
 
               headers:{
                   "Authorization": paseto
@@ -757,7 +757,7 @@ export function EditableLogoImage({selectedRecord}:EditableProp){
   )
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -773,7 +773,7 @@ export function EditableLogoImage({selectedRecord}:EditableProp){
     },
     onSettled:(data)=>{
       setUpdatedLogoImageHash(data.data[0].logoImageHash)
-      queryClient.invalidateQueries(['services'])
+      queryClient.invalidateQueries(['community'])
     }
   })
 
