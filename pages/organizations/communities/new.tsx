@@ -20,12 +20,13 @@ import { usePlacesWidget } from 'react-google-autocomplete';
 import { CommunityReq } from '../../../types/Community';
 import useOrgs from '../../../hooks/useOrgs';
 import { CommunityVenueReq } from '../../../types/CommunityVenue';
+import { asyncStore} from "../../../utils/nftStorage";
 
 
 
 
 
-export default function ServiceItemForm(){
+export default function CommunityForm(){
 
     const router = useRouter() 
     
@@ -87,6 +88,16 @@ interface BasicInfoProps{
     nextStep: (data:any)=>void
 }
 
+const getBase64 = (file: any): Promise<string> => 
+new Promise((resolve, reject) => {
+const reader = new FileReader();
+reader.readAsDataURL(file);
+reader.onload = () => resolve(reader.result as string);
+reader.onerror = (error) => reject(error);
+});
+
+const PLACEHOLDER_IMAGE = '/placeholder.png'
+
 function BasicForm({nextStep}:BasicInfoProps){
 
     
@@ -97,6 +108,9 @@ function BasicForm({nextStep}:BasicInfoProps){
      const {currentOrg} = useOrgs()
      const {paseto} = useAuthContext()
      const router = useRouter()
+
+     const [isHashingAssets, setIsHashingAssets] = useState(false)
+     const [logoImage, setLogoImage] = useState(PLACEHOLDER_IMAGE)
 
      const urlPrefix = useUrlPrefix()
 
@@ -110,12 +124,36 @@ function BasicForm({nextStep}:BasicInfoProps){
         artworkRef.current = hash
     }
 
+
+    const extractLogoImage = async(e: any) => {
+        // e.preventDefault()
+        console.log('Upload event:', e);
+        if (Array.isArray(e)) {
+        return e;
+        }
+
+        console.log(e)
+        const imageBlob = e.fileList[0].originFileObj
+        console.log("blob",imageBlob)
+        const src = await getBase64(imageBlob)
+        setLogoImage(src)
+   
+
+    return e?.fileList;
+  };
    
 
      const onFinish = async (formData:any)=>{
 
-        // availability should return empty array whenever user decides not to add custom dates
-        // const transformedAvailability = formData.availability?convertDates(formData.availability):[]
+            const logoRes = await formData.logoImageHash
+            setIsHashingAssets(true)
+            //@ts-ignore
+            const imageHash = await asyncStore(logoRes[0].originFileObj)
+            //@ts-ignore
+            // const coverImageHash = await asyncStore(formData.coverImageHash[0].originFileObj)
+            setIsHashingAssets(false)
+
+
 
         // // only generate key if it's a new service
             const formObject: CommunityReq = {
@@ -126,7 +164,7 @@ function BasicForm({nextStep}:BasicInfoProps){
                 currency: 'USD',
                 description:formData.description,
                 artworkHash: artworkRef.current,
-                logoImageHash: artworkRef.current
+                logoImageHash: imageHash
             }
 
             console.log(formObject)
@@ -220,6 +258,28 @@ function BasicForm({nextStep}:BasicInfoProps){
 
 
         <Artwork onHandleArtwork={handleArtworkChange}/>
+
+        <div style={{marginBottom:'2rem', marginTop:'3rem'}}>
+            <Title level={3}>Image Upload</Title>
+            <Text >Your logo and artwork will be visible on marketplace</Text>
+            <Tooltip trigger={['click']} placement='right' title={<LogoTip/>}>
+                <Button type="link">Show me <QuestionCircleOutlined /></Button>
+            </Tooltip>
+        </div>
+
+        <AntImage alt='community logo' src={logoImage} style={{width:'150px',height:'150px', borderRadius:'50%', border:'1px solid #e5e5e5'}}/>
+        <Form.Item
+            name="logoImageHash"
+            valuePropName="logoImageHash"
+            getValueFromEvent={extractLogoImage}
+            extra={'Please upload a PNG or JPEG that is 1024px x 1024px'}
+            rules={[{ required: true, message: 'Please upload an image' }]}
+        >
+            
+            <Upload name="logoImageHash" multiple={false} fileList={[]}  >
+                    <Button size='small' type='link'>Upload logo image</Button>
+            </Upload>
+        </Form.Item>
 
         <Form.Item style={{marginTop:'4rem'}}>
             <Space>

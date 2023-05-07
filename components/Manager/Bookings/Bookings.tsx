@@ -121,13 +121,13 @@ export default function ManagerBookingsView(){
         width:'250px',
         key: 'customer',
         render:(_,record)=>{
-          const user = record.user[0]
-          const email = user.email
-          const name = user.name
-          const profilePicHash = user.profilePic
+          const user = record.user[0] 
+          const email = user && user.email
+          const name = user?.name 
+          const profilePicHash = user && user.profilePic
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${profilePicHash.length < 10? IMAGE_PLACEHOLDER_HASH : profilePicHash}`}/>
+                    {/* <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${profilePicHash.length < 10? IMAGE_PLACEHOLDER_HASH : profilePicHash}`}/> */}
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{name}</Text>  
                         <Text type="secondary">{email}</Text>  

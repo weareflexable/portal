@@ -5,7 +5,7 @@ export interface ManagerOrder {
     name: string;
     startTime: string
     serviceItemDetails: any[],
-    user: any[]
+    user: User[]
     targetDate: string,
     serviceDetails: any[],
     quantity: number,
@@ -22,4 +22,10 @@ export interface ManagerOrder {
     endTime: string,
     createdAt: string,
 
+  }
+
+  type User = {
+    email: string
+    name: string
+    profilePic: string
   }
