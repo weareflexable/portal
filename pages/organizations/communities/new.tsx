@@ -1,5 +1,5 @@
 import React,{useEffect, useRef, useState} from 'react';
-import {Card,Form, Image as AntImage, Input,InputNumber, DatePicker,Upload,Button,notification, Space, Alert, Typography, TimePicker, Select, Row, Col, Steps, Radio, Tooltip, Popconfirm, message, Drawer, Collapse, InputRef} from 'antd';
+import {Card,Form, Image as AntImage, Input,InputNumber, DatePicker,Upload,Button,notification, Space, Alert, Typography, TimePicker, Select, Row, Col, Steps, Radio, Tooltip, Popconfirm, message, Drawer, Collapse, InputRef, FormInstance} from 'antd';
 const { TextArea } = Input;
 import Image from 'next/image'
 
@@ -29,7 +29,7 @@ export default function CommunityForm(){
 
     const router = useRouter() 
     
-    const [currentStep, setCurrentStep] = useState(0);
+    const [currentStep, setCurrentStep] = useState(1);
     // State to hold the id of the service item that will get created in the
     // first form.
     const [createdItemId, setCreatedItemId] = useState('')
@@ -378,12 +378,13 @@ function VenuesForm({serviceItemId}:AvailabilityProp){
             onFinish={onFinish}
             >
 
-            <Form.List  name="venues">
+            <Form.List name="venues">
                 {(fields, { add, remove }) => (
                     <>
                     {fields.map(({ key, name, ...restField }) => (
                        <CommunityVenueForm
                         name={name}
+                        formInstance = {form}
                         key={key}
                         restField={restField}
                         remove={remove}
@@ -568,10 +569,11 @@ function LogoTip(){
 interface CommunityVenueFormProps{
     name: number,
     restField:{fieldKey?: number | undefined},
-    remove: (index: number | number[]) => void
+    remove: (index: number | number[]) => void,
+    formInstance: FormInstance<any>
 }
 
-function CommunityVenueForm({remove, name, restField}:CommunityVenueFormProps){
+function CommunityVenueForm({remove, name, formInstance, restField}:CommunityVenueFormProps){
 
     const [fullAddress, setFullAddress] = useState({
         latitude:0,
@@ -630,8 +632,10 @@ function CommunityVenueForm({remove, name, restField}:CommunityVenueFormProps){
         onPlaceSelected: (place) => {
             // console.log(antInputRef.current.input)
             // form.setFieldValue('address.fullAddress',place?.formatted_address)
-            //@ts-ignore
             // setFormAddress(place?.formatted_address) 
+            console.log(formInstance.getFieldValue(['venues',name,'address'])) 
+            formInstance.setFieldValue(['venues',name,'address','fullAddress'],place?.formatted_address)
+            //@ts-ignore
             streetRef.current.input = place?.formatted_address
             
             console.log(streetRef.current)
@@ -650,7 +654,7 @@ function CommunityVenueForm({remove, name, restField}:CommunityVenueFormProps){
         },
       });
     
-   
+   console.log(name,restField)
 
 
     return(
@@ -668,10 +672,13 @@ function CommunityVenueForm({remove, name, restField}:CommunityVenueFormProps){
                                 <Input size='large'required placeholder='Benjamins On Franklin' />
                             </Form.Item>
 
-                            <Form.Item >
+                            <Form.Item
+                                name={[name, 'address']}
+                                {...restField}
+                            >
                                 <Input.Group>
                                     <Form.Item  
-                                    name={['address','fullAddress']}
+                                    name={[name,'address','fullAddress']}
                                     label='Address'
                                     extra={<Text type="secondary"><InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} /> Please refresh the page if the address you selected is not being displayed in the field </Text> }
                                     rules={[{ required: true, message: 'Please input a valid address!' }]}
@@ -705,26 +712,27 @@ function CommunityVenueForm({remove, name, restField}:CommunityVenueFormProps){
                             
 
                             <Form.Item
-                        // name="contactNumber"
                                 label="Contact Number"
-                                required
+                                {...restField}
+                                // name={[name, 'contact']}
+                                required 
                                 style={{marginBottom:'1rem'}}
                                 rules={[{ required: true, message: 'Please input a valid phone number' }]}
                             >
                                 <Input.Group compact>
-                                    <Form.Item initialValue={'+1'} name={['contact','countryCode']} noStyle>
+                                    <Form.Item  name={[name,'contact','countryCode']} noStyle>
                                         <Input allowClear style={{width:'10%'}} disabled size="large"/>
                                     </Form.Item>
-                                    <Form.Item  name={['contact','areaCode']} noStyle>
+                                    <Form.Item  name={[name,'contact','areaCode']} noStyle>
                                         <Input allowClear ref={areaCodeRef} maxLength={3} onChange={handleAreaCodeRef} style={{width:'20%'}} size="large" placeholder="235" />
                                     </Form.Item>
-                                    <Form.Item name={['contact','centralOfficeCode']} noStyle>
+                                    <Form.Item name={[name,'contact','centralOfficeCode']} noStyle>
                                         <Input allowClear ref={centralOfficeCodeRef} onChange={handleCentralOfficeCode} maxLength={3} style={{width:'20%'}} size="large" placeholder="380" />
                                     </Form.Item>
                                     <div style={{height:'40px',margin:'0 .3rem 0 .3rem', display:'inline-flex', alignItems:'center',  verticalAlign:'center'}}>
                                     <MinusOutlined style={{color:"#e7e7e7"}} />
                                     </div>
-                                    <Form.Item name={['contact','tailNumber']} noStyle>
+                                    <Form.Item name={[name,'contact','tailNumber']} noStyle>
                                         <Input ref={tailNoRef} maxLength={4} style={{width:'20%'}} size="large" placeholder="3480" />
                                     </Form.Item>
                                 </Input.Group>
@@ -732,7 +740,7 @@ function CommunityVenueForm({remove, name, restField}:CommunityVenueFormProps){
 
 
                             {/* promotion */}
-                            <Form.Item name='promotion' rules={[{ required: true, message: 'Please write a description for your service' }]}  label="Promotion">
+                            <Form.Item  {...restField} name={[name,'promotion']} rules={[{ required: true, message: 'Please write a description for your service' }]}  label="Promotion">
                                 <TextArea allowClear maxLength={500} size='large' showCount  placeholder='Tell us more about this service' rows={2} />
                             </Form.Item>
             

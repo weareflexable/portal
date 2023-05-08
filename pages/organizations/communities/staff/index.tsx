@@ -19,6 +19,7 @@ import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { Staff } from "../../../../types/Staff";
 import useUrlPrefix from "../../../../hooks/useUrlPrefix";
 import { useRouter } from "next/router";
+import useCommunity from '../../../../hooks/useCommunity';
 const {TextArea} = Input
 
 
@@ -45,12 +46,14 @@ function CommunityStaff(){
     const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Approved'})
     const [showForm, setShowForm] = useState(false)
 
+    const {currentCommunity} = useCommunity()
+
     const urlPrefix = useUrlPrefix()
 
     async function fetchAllStaff(){
       const res = await axios({
               method:'get',
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff?key=service_id&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=10`,
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/community?communityId=${currentCommunity.id}&pageNumber=${pageNumber}&pageSize=10`,
               headers:{
                   "Authorization": paseto
               }
@@ -61,7 +64,7 @@ function CommunityStaff(){
     async function fetchStaff(){
       const res = await axios({
               method:'get',
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff?key=service_id&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=10&key2=status&value2=${currentFilter.id}`,
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/community?communityId=${currentCommunity.id}&pageNumber=${pageNumber}&pageSize=10&status=${currentFilter.id}`,
               headers:{
                   "Authorization": paseto
               }
@@ -75,11 +78,11 @@ function CommunityStaff(){
   
 
 
-    const staffQuery = useQuery({queryKey:['staff',currentService.id,currentFilter.id], queryFn:fetchStaff, enabled:paseto !== ''})
+    const staffQuery = useQuery({queryKey:['community-staff',currentCommunity.id,currentFilter.id], queryFn:fetchStaff, enabled:paseto !== ''})
     const data = staffQuery.data && staffQuery.data.data
     const totalLength = staffQuery.data && staffQuery.data.dataLength;
 
-    const allStaffQuery = useQuery({queryKey:['all-staff'], queryFn:fetchAllStaff, enabled:paseto !== '', staleTime:Infinity})
+    const allStaffQuery = useQuery({queryKey:['all-community-staff'], queryFn:fetchAllStaff, enabled:paseto !== '', staleTime:Infinity})
     const allStaffLength = allStaffQuery.data && allStaffQuery.data.dataLength
 
 
@@ -163,7 +166,7 @@ function CommunityStaff(){
           title: 'Created On',
           dataIndex: 'createdAt',
           key: 'createdAt',
-          width:'120px',
+          width:'150px',
           render: (_,record)=>{
               const date = dayjs(record.createdAt).format('MMM DD, YYYY')
               return(
@@ -265,12 +268,12 @@ const AddStaffForm: React.FC<StaffFormProps> = ({
   const [form] = Form.useForm();
 
   const {paseto} = useAuthContext()
-  const {currentService} = useServicesContext()
+  const {currentCommunity} = useCommunity()
 
   const urlPrefix = useUrlPrefix()
 
   const createDataHandler = async(newItem:any)=>{
-    const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff`, newItem,{
+    const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/community`, newItem,{
         headers:{
             "Authorization": paseto
         },
@@ -300,14 +303,15 @@ const createData = useMutation(createDataHandler,{
       onCancel()
    },
     onError:(data:any)=>{
+      console.log(data)
         notification['error']({
             message:data.message ,
           });
         // leave modal open
     },
     onSettled:()=>{
-      queryClient.invalidateQueries(['staff',currentService.id])
-      queryClient.invalidateQueries(['all-staff'])
+      queryClient.invalidateQueries(['commmunity-staff',currentCommunity.id])
+      queryClient.invalidateQueries(['all-community-staff'])
     }
 })
 
@@ -317,7 +321,7 @@ function handleSubmit(formData:any){
   // console.log(formData)
   const payload = {
     ...formData,
-    serviceId: currentService.id
+    communityId: currentCommunity.id
   }
   // console.log(payload)
   createData.mutate(payload)
@@ -326,7 +330,7 @@ function handleSubmit(formData:any){
   return (
     <Modal
       open={open}
-      title="Add staff to your venue"
+      title="Add staff to your community"
       onCancel={onCancel}
       footer={null}
 
@@ -386,7 +390,8 @@ function DetailDrawer({selectedStaff,isDrawerOpen,closeDrawer}:DrawerProps){
 const queryClient = useQueryClient()
 
 const {currentUser,paseto} = useAuthContext()
-const {currentService} = useServicesContext()
+
+const {currentCommunity} = useCommunity()
 
 const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
@@ -399,7 +404,7 @@ function toggleDeleteModal(){
   setIsDeleteModalOpen(!isDeleteModalOpen)
 }
 
-function deleteService(){ 
+function deleteStaff(){ 
   // mutate record
   deleteMutation.mutate(selectedStaff,{
     onSuccess:()=>{
@@ -416,7 +421,7 @@ function deleteService(){
     onError:(err)=>{
         console.log(err)
         notification['error']({
-            message: 'Encountered an error while deleting record custom custom dates',
+            message: 'Encountered an error while deleting staff',
           });
     }
   })
@@ -427,10 +432,10 @@ const urlPrefix = useUrlPrefix()
 const deleteDataHandler = async(record:Staff)=>{      
   const {data} = await axios({
     method:'delete',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff`,
+    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/community`,
     data: {
         id:record.id,
-        serviceId: currentService.id
+        communityId: currentCommunity.id
       },
     headers:{
           "Authorization": paseto 
@@ -463,7 +468,7 @@ return(
   <DeleteRecordModal 
     isDeletingItem={deleteMutation.isLoading} 
     onCloseModal={toggleDeleteModal} 
-    onDeleteRecord={deleteService} 
+    onDeleteRecord={deleteStaff} 
     isOpen={isDeleteModalOpen} 
     selectedStaff={selectedStaff}
   />
@@ -614,7 +619,7 @@ function DeleteRecordModal({selectedStaff, isOpen, isDeletingItem, onDeleteRecor
       <Form 
       form={form} 
       style={{marginTop:'1rem'}}
-      name="deleteServiceForm" 
+      name="deleteStaffForm" 
       layout='vertical'
       onFinish={onFinish}>
       <Form.Item
