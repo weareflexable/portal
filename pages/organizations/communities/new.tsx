@@ -29,7 +29,7 @@ export default function CommunityForm(){
 
     const router = useRouter() 
     
-    const [currentStep, setCurrentStep] = useState(1);
+    const [currentStep, setCurrentStep] = useState(0);
     // State to hold the id of the service item that will get created in the
     // first form.
     const [createdItemId, setCreatedItemId] = useState('')
@@ -314,7 +314,7 @@ function VenuesForm({serviceItemId}:AvailabilityProp){
 
 
     async function onFinish(formData:any){
-        console.log('form data',formData.communityVenues)
+        console.log('form data',formData.venues)
         // const transformedDates = convertDates(formData.venues)
         const reqPayload = {
             communityId: '' ,
@@ -636,11 +636,12 @@ function CommunityVenueForm({remove, name, formInstance, restField}:CommunityVen
             console.log(formInstance.getFieldValue(['venues',name,'address'])) 
             formInstance.setFieldValue(['venues',name,'address','fullAddress'],place?.formatted_address)
             //@ts-ignore
-            streetRef.current.input = place?.formatted_address
+            // streetRef.current.input = place?.formatted_address
             
             console.log(streetRef.current)
             
             const fullAddress = extractFullAddress(place)
+            formInstance.setFieldValue(['venues',name,'address','country'],fullAddress.country)
             // add street address
             const addressWithStreet={
                 ...fullAddress,
@@ -701,7 +702,7 @@ function CommunityVenueForm({remove, name, formInstance, restField}:CommunityVen
                                         placeholder="Syracuse, United states" 
                                         />
                                     </Form.Item>
-                                    <Form.Item name={['address','street']} >
+                                    <Form.Item hidden name={['address','street']} >
                                         <Input ref={streetRef} />
                                     </Form.Item>
                                     <Form.Item name={['address','country']} hidden>
