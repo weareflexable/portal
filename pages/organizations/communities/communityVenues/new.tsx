@@ -131,7 +131,6 @@ export default function NewCommunityVenue(){
         const formObject: CommunityVenueReq = {
             communityId: currentCommunity.id,
             venues: [{
-                id: '',
                 address: {
                     ...fullAddress,
                     latitude:String(fullAddress.latitude),
