@@ -10,13 +10,27 @@ type Address = {
     fullAddress: string
 }
 type CommunityVenue = {
-    id: string,
     name: string,
     promotion: string,
     contactNumber: string,
     address: Address ,
     createdAt?: string,
     updatedAt?:string,
+}
+export type CommunityVenueForm = {
+    promotion: string
+    name: string
+    contact: any 
+    address: {
+        country: string
+        state: string
+        city: string
+        street: string
+        fullAddress: string
+        latitude: string
+        longitude: string
+        placeId: string
+    }
 }
 
 type CommunityVenueReq = {

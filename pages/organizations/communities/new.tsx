@@ -16,9 +16,9 @@ import { useAuthContext } from '../../../context/AuthContext';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import useUrlPrefix from '../../../hooks/useUrlPrefix'; 
 import { usePlacesWidget } from 'react-google-autocomplete';
-import { CommunityReq } from '../../../types/Community';
+import { Community, CommunityReq } from '../../../types/Community';
 import useOrgs from '../../../hooks/useOrgs';
-import { CommunityVenueReq } from '../../../types/CommunityVenue';
+import { CommunityVenue, CommunityVenueForm, CommunityVenueReq } from '../../../types/CommunityVenue';
 import { asyncStore} from "../../../utils/nftStorage";
 
 
@@ -35,8 +35,8 @@ export default function CommunityForm(){
     const [createdItemId, setCreatedItemId] = useState('')
     
           const next = (data:any) => {
-            const serviceItemId = data[0].id // extract id of newly created service item
-            setCreatedItemId(serviceItemId)
+            const communityId = data[0].id // extract id of newly created community
+            setCreatedItemId(communityId)
             setCurrentStep(currentStep + 1);
           };
         
@@ -51,7 +51,7 @@ export default function CommunityForm(){
             },
             {
             title: 'Add Venues',
-            content: <VenuesForm serviceItemId={createdItemId} />,
+            content: <VenuesForm communityId={createdItemId} />,
             },
         ];
 
@@ -165,7 +165,6 @@ function BasicForm({nextStep}:BasicInfoProps){
                 logoImageHash: imageHash
             }
 
-            console.log(formObject)
             createData.mutate(formObject)
 
 
@@ -299,34 +298,53 @@ function BasicForm({nextStep}:BasicInfoProps){
 
 
 
-interface AvailabilityProp{
-    serviceItemId: string,
+interface VenueFormProp{
+    communityId: string,
 }
-function VenuesForm({serviceItemId}:AvailabilityProp){
+function VenuesForm({communityId}:VenueFormProp){
 
     const [form] = Form.useForm()
     const router = useRouter()
     const queryClient = useQueryClient()
 
+
     const urlPrefix = useUrlPrefix()
 
     const {paseto} = useAuthContext()
 
+    function transformContactNumbersInVenues(venues:CommunityVenueForm[]){
+
+        const venuesCopy = [...venues];
+        const transformedVenues  = venuesCopy.map((venue:CommunityVenueForm)=>{ 
+           return{
+               name: venue.name,
+               promotion: venue.promotion,
+               address: venue.address,
+               contactNumber: `+1${venue.contact.areaCode}${venue.contact.centralOfficeCode}${venue.contact.tailNumber}`
+           }
+        })
+   
+        return transformedVenues;
+      }
+   
+
 
     async function onFinish(formData:any){
-        console.log('form data',formData.venues)
+        const transformedVenues = transformContactNumbersInVenues(formData.venues)
+        console.log('form data',transformedVenues)
         // const transformedDates = convertDates(formData.venues)
         const reqPayload = {
-            communityId: '' ,
-            venues: []
+            communityId: communityId,
+            venues: transformedVenues
         }
 
-        // createData.mutate(reqPayload)
+        console.log(reqPayload)
+        createData.mutate(reqPayload)
     }
 
 
     const createDataHandler = async(newItem:CommunityVenueReq)=>{ 
-        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues/`, newItem,{
+        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`, newItem,{
             headers:{
                 "Authorization": paseto
             },
@@ -575,13 +593,6 @@ interface CommunityVenueFormProps{
 
 function CommunityVenueForm({remove, name, formInstance, restField}:CommunityVenueFormProps){
 
-    const [fullAddress, setFullAddress] = useState({
-        latitude:0,
-        longitude:0,
-        state: '',
-        country:'',
-        city:''
-    })
 
     const [formAddress, setFormAddress] = useState('')
     
@@ -589,8 +600,7 @@ function CommunityVenueForm({remove, name, formInstance, restField}:CommunityVen
     const areaCodeRef = useRef<InputRef>(null)
     const centralOfficeCodeRef = useRef<InputRef>(null)
     const tailNoRef = useRef<InputRef>(null)
-    const streetRef = useRef<InputRef>(null)
-    const countryRef = useRef<InputRef>(null)
+
 
     function handleAreaCodeRef(e:any){
         if(e.target.value.length >= 3){ 
@@ -605,21 +615,23 @@ function CommunityVenueForm({remove, name, formInstance, restField}:CommunityVen
 
     const extractFullAddress = (place:any)=>{
         const addressComponents = place.address_components 
-            let addressObj = {
-                state:'',
-                country:'',
-                city:'',
-                latitude:place.geometry.location.lat(),
-                longitude:place.geometry.location.lng()
-            };
-            addressComponents.forEach((address:any)=>{
-                const type = address.types[0]
-                if(type==='country') addressObj.country = address.long_name
-                if(type === 'locality') addressObj.state = address.short_name
-                if(type === 'administrative_area_level_1') addressObj.city = address.short_name
-            })
+        let addressObj = {
+            state:'',
+            country:'',
+            city:'',
+            street: '',
+            latitude:String(place.geometry.location.lat()),
+            longitude:String(place.geometry.location.lng())
+        };
+        addressComponents.forEach((address:any)=>{
+            const type = address.types[0]
+            if(type==='country') addressObj.country = address.long_name
+            if(type==='route') addressObj.street = address.long_name
+            if(type === 'locality') addressObj.state = address.short_name
+            if(type === 'administrative_area_level_1') addressObj.city = address.short_name
+        })
 
-            return addressObj
+        return addressObj
     }
 
       const { ref: antRef } = usePlacesWidget({
@@ -627,36 +639,32 @@ function CommunityVenueForm({remove, name, formInstance, restField}:CommunityVen
         options:{
             componentRestrictions:{country:'us'},
             types: ['address'],
-            fields: ['address_components','geometry','formatted_address']
+            fields: ['address_components','geometry','formatted_address','place_id']
         },
         onPlaceSelected: (place) => {
-            // console.log(antInputRef.current.input)
-            // form.setFieldValue('address.fullAddress',place?.formatted_address)
-            // setFormAddress(place?.formatted_address) 
-            console.log(formInstance.getFieldValue(['venues',name,'address'])) 
-            formInstance.setFieldValue(['venues',name,'address','fullAddress'],place?.formatted_address)
-            //@ts-ignore
-            // streetRef.current.input = place?.formatted_address
-            
-            console.log(streetRef.current)
+
             
             const fullAddress = extractFullAddress(place)
+            
+            formInstance.setFieldValue(['venues',name,'address','fullAddress'],place?.formatted_address)
             formInstance.setFieldValue(['venues',name,'address','country'],fullAddress.country)
+            formInstance.setFieldValue(['venues',name,'address','street'],fullAddress.street)
+            formInstance.setFieldValue(['venues',name,'address','state'],fullAddress.state)
+            formInstance.setFieldValue(['venues',name,'address','city'],fullAddress.city)
+            formInstance.setFieldValue(['venues',name,'address','latitude'],fullAddress.latitude)
+            formInstance.setFieldValue(['venues',name,'address','longitude'],fullAddress.longitude)
+            formInstance.setFieldValue(['venues',name,'address','placeId'],place?.place_id)
             // add street address
-            const addressWithStreet={
-                ...fullAddress,
-                street: place?.formatted_address
-            }
-            setFullAddress(addressWithStreet)
 
+            console.log(fullAddress)
+        
             //@ts-ignore 
           antInputRef.current.input.value = place?.formatted_address
 
         },
       });
     
-   console.log(name,restField)
-
+  
 
     return(
         <div style={{padding:'1rem', marginBottom:'1rem', borderRadius:'4px', border:'1px solid #FFC680'}} >
@@ -702,11 +710,26 @@ function CommunityVenueForm({remove, name, formInstance, restField}:CommunityVen
                                         placeholder="Syracuse, United states" 
                                         />
                                     </Form.Item>
-                                    <Form.Item hidden name={['address','street']} >
-                                        <Input ref={streetRef} />
+                                    <Form.Item hidden name={['address','fullAddress']} >
+                                        <Input />
                                     </Form.Item>
                                     <Form.Item name={['address','country']} hidden>
-                                        <Input ref={countryRef} />
+                                        <Input/>
+                                    </Form.Item>
+                                    <Form.Item name={['address','state']} hidden>
+                                        <Input/>
+                                    </Form.Item>
+                                    <Form.Item name={['address','street']} hidden>
+                                        <Input/>
+                                    </Form.Item>
+                                    <Form.Item name={['address','latitude']} hidden>
+                                        <Input/>
+                                    </Form.Item>
+                                    <Form.Item name={['address','longitude']} hidden>
+                                        <Input/>
+                                    </Form.Item>
+                                    <Form.Item name={['address','placeId']} hidden>
+                                        <Input/>
                                     </Form.Item>
                                 </Input.Group>
                             </Form.Item>   
