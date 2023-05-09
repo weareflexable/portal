@@ -338,8 +338,8 @@ function VenuesForm({communityId}:VenueFormProp){
             venues: transformedVenues
         }
 
-        console.log(reqPayload)
         createData.mutate(reqPayload)
+
     }
 
 

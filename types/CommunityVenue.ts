@@ -10,6 +10,7 @@ type Address = {
     fullAddress: string
 }
 type CommunityVenue = {
+    id: string
     name: string,
     promotion: string,
     contactNumber: string,
@@ -17,6 +18,15 @@ type CommunityVenue = {
     createdAt?: string,
     updatedAt?:string,
 }
+type CommunityVenuePayload = {
+    name: string,
+    promotion: string,
+    contactNumber: string,
+    address: Address ,
+    createdAt?: string,
+    updatedAt?:string,
+}
+
 export type CommunityVenueForm = {
     promotion: string
     name: string
@@ -35,7 +45,7 @@ export type CommunityVenueForm = {
 
 type CommunityVenueReq = {
     communityId: string,
-    venues: CommunityVenue[]
+    venues: CommunityVenuePayload[]
 }
 
 export type {CommunityVenue, CommunityVenueReq, Address}

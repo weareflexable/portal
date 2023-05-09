@@ -181,19 +181,19 @@ export default function CommunityBookings(){
         return <Tag icon={icon} color={color} style={{textTransform:'capitalize'}}>{paymentStatus}</Tag>
       }
     },
-//     {
-//       title: 'Ticket Date',
-//       dataIndex: 'targetDate',
-//       key: 'targetDate',
-//       fixed:'right',
-//       width: '110px',
-//       render: (targetDate)=>{
-//           const date = dayjs(targetDate).format('MMM DD, YYYY')
-//           return(
-//         <Text type='secondary'>{date}</Text>
-//         )
-//     }
-//   },
+    {
+      title: 'Order Date',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      fixed:'right',
+      width: '110px',
+      render: (createdAt)=>{
+          const date = dayjs(createdAt).format('MMM DD, YYYY')
+          return(
+        <Text type='secondary'>{date}</Text>
+        )
+    }
+  },
     
     ];
 
