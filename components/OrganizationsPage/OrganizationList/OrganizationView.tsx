@@ -359,7 +359,7 @@ export default function AdminOrgsView(){
                 <div style={{display:'flex',alignItems:'center'}}>
                     <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.logoImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
-                       { record.status !==1?<Text>{record.name}</Text>:<Text style={{color:'#1677ff', cursor:'pointer'}} onClick={()=>gotoServices(record)}>{record.name}</Text> }   
+                       { record.status !==1?<Text>{record.name}</Text>:<Text style={{color:`${isUser?'black':'#1677ff'}`, cursor:'pointer'}} onClick={isUser?()=>{}:()=>gotoServices(record)}>{record.name}</Text> }   
                         <Text>{record.name}</Text>
                         <Text type="secondary">{record.email}</Text>
                     </div>
@@ -595,7 +595,7 @@ return(
 <Drawer 
   title="Organization Details" 
   width={640} placement="right" 
-  extra={selectedOrg.status === 1?<Button shape='round' onClick={()=>gotoServices(selectedOrg)}>Visit organization</Button>:null}
+  extra={selectedOrg.status === 1?<Button disabled={isUser} shape='round' onClick={()=>gotoServices(selectedOrg)}>Visit Organization</Button>:null}
   closable={true} 
   onClose={closeDrawerHandler} 
   open={isDrawerOpen}
