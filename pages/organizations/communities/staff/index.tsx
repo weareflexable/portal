@@ -142,8 +142,8 @@ function CommunityStaff(){
       },
       {
         title: 'Role',
-        dataIndex: 'userRoleName',
-        key: 'userRoleName',
+        dataIndex: 'staffRoleName',
+        key: 'staffRoleName',
 
         render:(userRoleName)=>{
           const color = userRoleName === 'Manager' ? 'purple': userRoleName==='Admin'? 'volcano': userRoleName === 'Supervisor'?'cyan':'blue'
@@ -192,28 +192,29 @@ function CommunityStaff(){
             <div>
                 {data && allStaffLength === 0 ? null : 
                 <div style={{marginBottom:'1.5em', marginTop:'2rem', display:'flex', width:'100%', flexDirection:'column'}}>
-                  <div style={{display:'flex', justifyContent:'space-between', width:'100%', alignItems:'center'}}>
                     <Title style={{margin:'0', width:'100%'}} level={2}>Staff</Title>
-                    <div style={{width: "100%",display:'flex', marginTop:'1.5rem', justifyContent:'flex-end', alignItems:'center'}}>
-                      <Button shape="round" style={{marginRight:'1rem'}} loading={staffQuery.isRefetching} onClick={()=>staffQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
-                      <Button
-                        type="primary"
-                        icon={<PlusOutlined/>}
-                        onClick={() => {
-                          setShowForm(true)
-                        }}
-                      >
-                        New Staff
-                      </Button>
-                    </div>
-                  </div>
+                  <div style={{display:'flex', justifyContent:'space-between', width:'100%', alignItems:'center'}}>
+                        <Radio.Group defaultValue={currentFilter.id} style={{width:'100%'}} buttonStyle="solid">
+                          {filters.map(filter=>(
+                              <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
+                          )
+                          )}
+                      </Radio.Group>
+                        <div style={{width: "100%",display:'flex', marginTop:'1.5rem', justifyContent:'flex-end', alignItems:'center'}}>
+                          <Button shape="round" style={{marginRight:'1rem'}} loading={staffQuery.isRefetching} onClick={()=>staffQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                          <Button
+                            type="primary"
+                            icon={<PlusOutlined/>}
+                            onClick={() => {
+                              setShowForm(true)
+                            }}
+                          >
+                            New Staff
+                          </Button>
+                      </div>
+                   </div>
                   
-                  <Radio.Group defaultValue={currentFilter.id} style={{width:'100%'}} buttonStyle="solid">
-                      {filters.map(filter=>(
-                          <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
-                      )
-                      )}
-                  </Radio.Group>
+                 
                   
                 </div>
                 }
