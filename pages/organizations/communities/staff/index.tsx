@@ -311,7 +311,7 @@ const createData = useMutation(createDataHandler,{
         // leave modal open
     },
     onSettled:()=>{
-      queryClient.invalidateQueries(['commmunity-staff',currentCommunity.id])
+      queryClient.invalidateQueries(['community-staff',currentCommunity.id])
       queryClient.invalidateQueries(['all-community-staff'])
     }
 })

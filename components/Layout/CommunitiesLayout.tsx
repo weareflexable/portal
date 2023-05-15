@@ -70,14 +70,9 @@ const {Text, Title} = Typography
     splittedRoutes.pop() 
 
     function onClickNavItemHandler(e:any){
-        if(e.key === 'communityVenues'){
-            router.push('/organizations/communities/communityVenues')
-        }else if(e.key === 'bookings'){
-            router.push('/organizations/communities/bookings')
-        }else{
-            router.push('/organizations/communities/staff')
-        }
-        
+
+            router.push(`/organizations/communities/${e.key}`)
+       
         setCurrentPage(e.key)
         
     }
