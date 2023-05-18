@@ -356,7 +356,7 @@ function VenuesForm({communityId}:VenueFormProp){
        onSuccess:(data)=>{
         form.resetFields()
         notification['success']({
-            message: 'Successfully created custom availabilties!'
+            message: 'Successfully added venues under your community!'
         })
             router.back()
             // nextStep(data.data)
@@ -365,12 +365,12 @@ function VenuesForm({communityId}:VenueFormProp){
         onError:(err)=>{
             console.log(err)
             notification['error']({
-                message: 'Encountered an error while creating custom custom dates',
+                message: 'Encountered an error while creating adding venues to your community',
               });
             // leave modal open
         } ,
         onSettled:()=>{
-            queryClient.invalidateQueries(['all-serviceItems'])
+            queryClient.invalidateQueries(['all-communities'])
        },
     })
 
