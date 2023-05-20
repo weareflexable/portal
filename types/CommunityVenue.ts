@@ -14,6 +14,7 @@ type CommunityVenue = {
     name: string,
     promotion: string,
     contactNumber: string,
+    marketValue: number,
     address: Address ,
     createdAt?: string,
     updatedAt?:string,

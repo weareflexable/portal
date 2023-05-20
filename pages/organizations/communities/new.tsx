@@ -319,7 +319,7 @@ function VenuesForm({communityId}:VenueFormProp){
            return{
                name: venue.name,
                promotion: venue.promotion,
-               marketValue: venue.marketValue,
+               marketValue: Number(venue.marketValue * 100),
                address: venue.address,
                contactNumber: `+1${venue.contact.areaCode}${venue.contact.centralOfficeCode}${venue.contact.tailNumber}`
            }
@@ -332,7 +332,8 @@ function VenuesForm({communityId}:VenueFormProp){
 
     async function onFinish(formData:any){
         const transformedVenues = transformContactNumbersInVenues(formData.venues)
-        console.log('form data',transformedVenues)
+        console.log(transformedVenues)
+        // console.log('form data',transformedVenues)
         // const transformedDates = convertDates(formData.venues)
         const reqPayload = {
             communityId: communityId,
@@ -691,7 +692,9 @@ function CommunityVenueForm({remove, name, formInstance, restField}:CommunityVen
                             <Row>
                                 <Col span={11} style={{height:'100%'}}>
                                     <Form.Item
-                                        name='marketValue'
+
+                                        {...restField} 
+                                        name={[name,'marketValue']} 
                                         label='Market Value'
                                         style={{width:'100%'}}
                                         rules={[{ required: true, message: 'Please input a valid price!' }]}

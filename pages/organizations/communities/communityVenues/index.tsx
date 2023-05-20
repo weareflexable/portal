@@ -188,6 +188,18 @@ function CommunityVenues(){
           )
       },
   },
+  {
+    title: 'Market Value',
+    dataIndex: 'marketValue',
+    key: 'marketValue',
+    width:'100px',
+    render: (marketValue)=>(
+      <div>
+        <Text>$</Text>
+        <Text>{marketValue/100}</Text>
+      </div>
+    )
+  },
       {
         title: 'Address',
         dataIndex: 'address',
@@ -422,6 +434,7 @@ return(
   />
   <EditablePromotion selectedRecord={selectedRecord}/>
   <EditableAddress selectedRecord={selectedRecord}/>
+  <EditableMarketValue selectedRecord={selectedRecord}/>
 
   {/* <EditableText
     fieldKey="tickets_per_day" // The way the field is named in DB
@@ -782,6 +795,105 @@ export function EditablePromotion({selectedRecord}:EditableProp){
   )
 }
 
+export function EditableMarketValue({selectedRecord}:EditableProp){
+  
+  const [state, setState] = useState(selectedRecord.marketValue)
+
+  const [isEditMode, setIsEditMode] = useState(false)
+
+  const {paseto} = useAuthContext()
+
+  const queryClient = useQueryClient()
+
+  function toggleEdit(){
+    setIsEditMode(!isEditMode)
+  }
+
+ const transformedRecord = {
+  ...selectedRecord,
+  marketValue: Number(selectedRecord.marketValue)/100
+ }
+ const urlPrefix = useUrlPrefix()
+
+  const recordMutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`,updatedItem,{
+      headers:{
+          //@ts-ignore
+          "Authorization": paseto
+      }
+    })
+      return data;
+  }
+  const recordMutation = useMutation({
+    mutationKey:['marketValue'],
+    mutationFn: recordMutationHandler,
+    onSuccess:()=>{
+      toggleEdit()
+    },
+    onSettled:(data)=>{
+      setState(data.data[0].marketValue)
+      queryClient.invalidateQueries(['community-venues'])
+    }
+  })
+
+  function onFinish(updatedItem:any){
+    const payload = {
+      key:'market_value',
+      value: String(updatedItem.marketValue*100),
+      id: selectedRecord.id
+    }
+    recordMutation.mutate(payload)
+  }
+
+  const {isLoading:isEditing} = recordMutation ;
+
+  const readOnly = (
+    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+      <Text>${state/100}</Text> 
+      <Button type="link" onClick={toggleEdit}>Edit</Button>
+    </div>
+)
+
+  const editable = (
+    <Form
+     style={{ marginTop:'.5rem' }}
+     name="editablePrice"
+     initialValues={{marketValue: state/100}}
+     onFinish={onFinish}
+     >
+      <Row>
+        <Col span={16} style={{height:'100%'}}>
+          <Form.Item
+              name="marketValue"
+              rules={[{ required: true, message: 'Please input a valid price' }]}
+          >
+              <Input  prefix="$" disabled={isEditing} />
+          </Form.Item>
+        </Col>
+        <Col span={4}>
+          <Form.Item style={{ width:'100%'}}>
+              <Space >
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                      Cancel
+                  </Button>
+                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                      Apply changes
+                  </Button>
+              </Space>
+                        
+          </Form.Item>
+        </Col>
+      </Row>
+           
+    </Form>
+  )
+  return(
+    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>Market Value</Text>
+    {isEditMode?editable:readOnly}
+    </div>
+  )
+}
 
 
 
