@@ -319,6 +319,7 @@ function VenuesForm({communityId}:VenueFormProp){
            return{
                name: venue.name,
                promotion: venue.promotion,
+               marketValue: venue.marketValue,
                address: venue.address,
                contactNumber: `+1${venue.contact.areaCode}${venue.contact.centralOfficeCode}${venue.contact.tailNumber}`
            }
@@ -681,6 +682,25 @@ function CommunityVenueForm({remove, name, formInstance, restField}:CommunityVen
                                 <Input size='large'required placeholder='Benjamins On Franklin' />
                             </Form.Item>
 
+                                {/* promotion */}
+                            <Form.Item  {...restField} name={[name,'promotion']} rules={[{ required: true, message: 'Please write a description for your venue' }]}  label="Promotion">
+                                <TextArea allowClear maxLength={500} size='large' showCount  placeholder='Tell us more about this venue' rows={2} />
+                            </Form.Item>
+
+                            {/* marketValue */}
+                            <Row>
+                                <Col span={11} style={{height:'100%'}}>
+                                    <Form.Item
+                                        name='marketValue'
+                                        label='Market Value'
+                                        style={{width:'100%'}}
+                                        rules={[{ required: true, message: 'Please input a valid price!' }]}
+                                    >
+                                        <Input size='large' style={{width:'100%'}}  prefix="$" placeholder="0.00" /> 
+                                    </Form.Item> 
+                                </Col>
+                            </Row>
+
                             <Form.Item
                                 name={[name, 'address']}
                                 {...restField}
@@ -763,10 +783,8 @@ function CommunityVenueForm({remove, name, formInstance, restField}:CommunityVen
                              </Form.Item>
 
 
-                            {/* promotion */}
-                            <Form.Item  {...restField} name={[name,'promotion']} rules={[{ required: true, message: 'Please write a description for your service' }]}  label="Promotion">
-                                <TextArea allowClear maxLength={500} size='large' showCount  placeholder='Tell us more about this service' rows={2} />
-                            </Form.Item>
+                        
+
             
                            
             

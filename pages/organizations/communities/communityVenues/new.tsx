@@ -3,20 +3,16 @@ import {Form, Row, Col, Image, Tooltip, Input,Upload,Button,notification, Typogr
 import {UploadOutlined,MinusOutlined, QuestionCircleOutlined, ArrowLeftOutlined, InfoCircleOutlined,  InboxOutlined} from '@ant-design/icons'
 const {Title,Text} = Typography
 const {TextArea} = Input
-import dayjs from 'dayjs'
-var utc = require('dayjs/plugin/utc')
+
 
 
 import { useRouter } from 'next/router';
 import {usePlacesWidget} from 'react-google-autocomplete'
-import { asyncStore} from "../../../../utils/nftStorage";
-import { Service, ServicePayload } from "../../../../types/Services";
+
 import { useOrgContext } from "../../../../context/OrgContext";
-import useServiceTypes from "../../../../hooks/useServiceTypes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useAuthContext } from "../../../../context/AuthContext";
-import loadConfig from "next/dist/server/config";
 import useUrlPrefix from "../../../../hooks/useUrlPrefix";
 import { CommunityVenueReq } from "../../../../types/CommunityVenue";
 import useCommunity from "../../../../hooks/useCommunity";
@@ -37,7 +33,6 @@ export default function NewCommunityVenue(){
 
 
     const {paseto} = useAuthContext()
-    const {currentOrg} = useOrgContext()
     const {currentCommunity} = useCommunity()
 
     const [form]=Form.useForm()
@@ -65,6 +60,7 @@ export default function NewCommunityVenue(){
             centralOfficeCodeRef.current!.focus()
         }
     }
+
     function handleCentralOfficeCode(e:any){
         if(e.target.value.length >= 3){ 
             tailNoRef.current!.focus()
@@ -137,6 +133,7 @@ export default function NewCommunityVenue(){
                     longitude:String(fullAddress.longitude),
                 },
                 promotion: formData.promotion,
+                marketValue:Number(formData.marketValue*100),
                 name: formData.name,
                 contactNumber: formatedContact,
             }]
@@ -224,9 +221,23 @@ export default function NewCommunityVenue(){
                     </Form.Item>
 
 
-                    <Form.Item name='promotion' rules={[{ required: true, message: 'Please write a description for your service' }]}  label="Promotion">
-                        <TextArea allowClear maxLength={500} size='large' showCount  placeholder='Tell us more about this service' rows={2} />
+                    <Form.Item name='promotion' rules={[{ required: true, message: 'Please write a what promotion you are offering' }]}  label="Promotion">
+                        <TextArea allowClear maxLength={500} size='large' showCount  placeholder='Tell us more about this venue' rows={2} />
                     </Form.Item>
+
+                    <Row>
+                        <Col span={11} style={{height:'100%'}}>
+                            <Form.Item
+                                name='marketValue'
+                                label='Market Value'
+                                style={{width:'100%'}}
+                                rules={[{ required: true, message: 'Please input a valid price!' }]}
+                            >
+                                <Input size='large' style={{width:'100%'}}  prefix="$" placeholder="0.00" /> 
+                            </Form.Item> 
+                        </Col>
+                    </Row>
+
 
                     <Form.Item  
                         name="address"
