@@ -561,7 +561,7 @@ export function EditablePrice({selectedRecord}:EditableProp){
     },
     onSettled:(data)=>{
       setState(data.data[0].price)
-      queryClient.invalidateQueries(['service-items'])
+      queryClient.invalidateQueries(['community'])
     }
   })
 
@@ -664,7 +664,7 @@ export function EditableName({selectedRecord}:EditableProp){
       toggleEdit()
     },
     onSettled:()=>{
-      queryClient.invalidateQueries(['communities'])
+      queryClient.invalidateQueries(['community'])
     }
   })
 
