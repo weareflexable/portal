@@ -85,13 +85,13 @@ export default function CommunityBookings(){
         fixed:'left',
         render:(_,record)=>{
 
-          const logoImageHash = record.communityDats.artworkHash
+          const logoImageHash = record.communityDetails.artworkHash
           
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
                     <Image  style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${logoImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
-                        <Text>{record.communityDats.name}</Text>  
+                        <Text>{record.communityDetails.name}</Text>  
                         {/* <Text type="secondary">{serviceName}</Text>   */}
                     </div>
                 </div>

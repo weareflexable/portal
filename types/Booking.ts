@@ -54,7 +54,7 @@ export interface Order {
   export type CommunityOrder = {
     id: string
     name: string
-    communityDats: CommunityDats
+    communityDetails: CommunityDats
     user: any
     createdAt: string
     createdBy: string
