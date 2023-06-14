@@ -24,6 +24,7 @@ import { numberFormatter } from "../../../utils/numberFormatter";
 import { convertToAmericanFormat } from "../../../utils/phoneNumberFormatter";
 import { EditableText } from "../../shared/Editables";
 import useRole from "../../../hooks/useRole";
+import EmptyState from "../EmptyState";
 
 
 var relativeTime = require('dayjs/plugin/relativeTime')
@@ -35,7 +36,7 @@ export default function AdminOrgsView(){
     const {paseto} = useAuthContext()
     const queryClient = useQueryClient()
     const router = useRouter()
-    const {switchOrg} = useOrgs()
+    const {switchOrg} = useOrgContext()
     const {isUser} = useRole()
 
     const [searchText, setSearchText] = useState('');
@@ -121,23 +122,8 @@ export default function AdminOrgsView(){
         changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'0'})
       }
       
-      function reviewHandler(org:NewOrg){
-        // setSelelectedOrg(org.orgId)
-        // @ts-ignore
-        changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'2'})
-      }
-      
-      function rejectOrgHandler(org:NewOrg){
-      // @ts-ignore
-      changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'4'})
-    }
     
-    function acceptOrgHandler(org:NewOrg){
-      // setSelelectedOrg(org.orgId)
-
-      // @ts-ignore
-        changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'1'})
-    }
+ 
 
     const orgQuery = useQuery({queryKey:['organizations', currentStatus], queryFn:fetchOrgs, enabled:paseto !== ''})
     const orgs = orgQuery.data && orgQuery.data.data
@@ -340,18 +326,6 @@ export default function AdminOrgsView(){
     }
     })
 
-    function getCurrentStatusActionItems(){
-        switch(currentStatus.id){
-            // 1 = approved
-            case '1': return approvedOrgsActions 
-            // 2 = inReview
-            case '2': return inReviewOrgsActions 
-            // 4 = rejected
-            case '4': return rejectedOrgsActions 
-            // 0 = deActivated
-            case '0': return deActivatedOrgsActions 
-        }
-    }
 
     function viewOrgDetails(org:NewOrg){
       console.log(org)
@@ -362,31 +336,15 @@ export default function AdminOrgsView(){
 
     }
   
-    // function gotoServices(org:NewOrg){
-    //   console.log(org)
-    //   // switch org
-    //   switchOrg(org)
-    //   // navigate user to services page
-    //   router.push('/organizations/services/')
-    // }
+    function gotoServices(org:NewOrg){
+
+      switchOrg(org)
+      // navigate user to services page
+      router.push('/organizations/venues/')
+    }
     
     
-      // const onMenuClick=(e:any, record:NewOrg) => {
-      //   const event = e.key
-      //   switch(event){
-      //     case 'deActivate': deActivateOrgHandler(record);
-      //     break;
-      //     case 'review': reviewHandler(record)
-      //     break;
-      //     case 'accept': acceptOrgHandler(record)
-      //     break;
-      //     case 'reject': rejectOrgHandler(record)
-      //     break;
-      //     case 'viewDetails': viewOrgDetails(record)
-      //   }
-      //   console.log('click', record);
-      // };
-      
+
   
     const columns: ColumnsType<NewOrg> = [
       {
@@ -401,8 +359,7 @@ export default function AdminOrgsView(){
                 <div style={{display:'flex',alignItems:'center'}}>
                     <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.logoImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
-                       {/* { record.status !==1?<Text>{record.name}</Text>:<Text style={{color:'#1677ff', cursor:'pointer'}} onClick={()=>gotoServices(record)}>{record.name}</Text> }    */}
-
+                       { record.status !==1?<Text>{record.name}</Text>:<Text style={{color:`${isUser?'black':'#1677ff'}`, cursor:'pointer'}} onClick={isUser?()=>{}:()=>gotoServices(record)}>{record.name}</Text> }   
                         <Text>{record.name}</Text>
                         <Text type="secondary">{record.email}</Text>
                     </div>
@@ -425,15 +382,6 @@ export default function AdminOrgsView(){
         )
       },
       
-      // {
-      //   title: 'Zip Code',
-      //   dataIndex: 'zipCode',
-      //   key: 'zipCode',
-      //   render:(_,record)=>{
-      //     const zipCode = record.zipCode  === ""? <Text>--</Text>: <Text>{record.zipCode}</Text>
-      //     return zipCode
-      // }
-      // },
       {
         title: 'Contact Number',
         dataIndex: 'contactNumber',
@@ -521,6 +469,7 @@ export default function AdminOrgsView(){
                         <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/new')}>New Organization</Button>
                       </div>
                   </div>
+
                   <Radio.Group defaultValue={currentStatus.id} buttonStyle="solid">
                       {orgStatus.map(status=>(
                           <Radio.Button key={status.id} onClick={()=>setCurrentStatus(status)} value={status.id}>{status.name}</Radio.Button>
@@ -569,7 +518,6 @@ interface DrawerProps{
 }
 function DetailDrawer({selectedOrg,isDrawerOpen,closeDrawer}:DrawerProps){
 
-console.log('selected org',selectedOrg)
 
 const queryClient = useQueryClient()
 const router = useRouter()
@@ -577,6 +525,7 @@ const {switchOrg} = useOrgContext()
 const {paseto} = useAuthContext()
 const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 const {isUser} = useRole()
+const urlPrefix = useUrlPrefix()
 
 function closeDrawerHandler(){
   // queryClient.invalidateQueries(['organizations'])
@@ -587,7 +536,7 @@ function gotoServices(org:NewOrg){
 
   switchOrg(org)
   // navigate user to services page
-  router.push('/organizations/services/')
+  router.push('/organizations/venues/')
 }
 
 function toggleDeleteModal(){
@@ -618,8 +567,8 @@ function deleteOrg(){
   })
 }
 
-// const urlPrefix = currentUser.role == 1 ? 'manager': 'admin'
-const urlPrefix = useUrlPrefix()
+
+
 
 const deleteDataHandler = async(record:NewOrg)=>{  
   const {data} = await axios({
@@ -646,7 +595,7 @@ return(
 <Drawer 
   title="Organization Details" 
   width={640} placement="right" 
-  extra={selectedOrg.status === 1?<Button disabled={isUser} shape='round' onClick={()=>gotoServices(selectedOrg)}>Visit organization</Button>:null}
+  extra={selectedOrg.status === 1?<Button disabled={isUser} shape='round' onClick={()=>gotoServices(selectedOrg)}>Visit Organization</Button>:null}
   closable={true} 
   onClose={closeDrawerHandler} 
   open={isDrawerOpen}
@@ -672,7 +621,6 @@ return(
     options = {{queryKey:'organizations',mutationUrl:'org'}}
 />
   <EditableLogoImage selectedOrg={selectedOrg}/>
-  {/* <EditableCoverImage selectedOrg={selectedOrg}/> */}
 
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
     <Title level={3}>Danger zone</Title>
@@ -752,7 +700,6 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
   </Modal>
   )
 }
-
 
 
 
@@ -1096,44 +1043,4 @@ const orgStatus = [
   },
 ]
 
-const approvedOrgsActions = [
-    {
-        key: 'viewDetails',
-        label: 'View details'
-    },
 
-]
-const deActivatedOrgsActions = [
-    {
-        key: 'viewDetails',
-        label: 'View details'
-    },
-
-]
-const inReviewOrgsActions = [
-    {
-        key: 'viewDetails',
-        label: 'View details'
-    },
-
-]
-const rejectedOrgsActions = [
-    {
-        key: 'viewDetails',
-        label: 'View details'
-    },
-
-]
-
-function EmptyState(){
-  const router = useRouter()
-  return(
-    <div style={{border: '1px solid #dddddd', display:'flex', justifyContent:'center', height:'30vh', alignItems:'center', marginTop:'2rem', padding: '2rem'}}>
-      <div style={{maxWidth:'300px', display:'flex', flexDirection:'column', justifyContent:'center'}}>
-        <Title style={{textAlign:'center'}} level={3}>Get Started</Title>
-        <Text style={{textAlign:'center'}}>Ready to get started listing your services on the Flexable Marketplace? The first step is to load in your organization’s details</Text>
-        <Button size="large" shape="round" type="primary" style={{marginTop:'2rem'}} icon={<PlusOutlined />} onClick={()=>router.push('/organizations/new')}>Create New Organization</Button>
-      </div>
-    </div>
-  )
-}

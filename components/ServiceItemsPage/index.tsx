@@ -132,7 +132,7 @@ export default function ServiceItemsView(){
     const onLaunchButtonClick: MenuProps['onClick'] = (e) => {
       const key = e.key
       const targetMenu:any = items.find((item:ServiceMenu)=>item.key === key)
-      router.push(`/organizations/services/serviceItems/new?key=${targetMenu!.key}&label=${targetMenu!.label}`)
+      router.push(`/organizations/venues/serviceItems/new?key=${targetMenu!.key}&label=${targetMenu!.label}`)
     };
 
 
@@ -288,18 +288,19 @@ export default function ServiceItemsView(){
                ? null 
                : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
                  <div style={{width:'100%',  marginBottom:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-                      <Title style={{margin: '0'}} level={2}>Services</Title>
-                      <div style={{display:'flex'}}>
-                        <Button shape='round' style={{marginRight:'1rem'}} loading={serviceItemsQuery.isRefetching} onClick={()=>serviceItemsQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
-                        <Dropdown.Button  trigger={['click']} type="primary"   icon={<PlusOutlined/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
-                      </div>
-                    </div>
-                  <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
+                     
+                 <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
                         {serviceItemsFilters.map(filter=>(
                             <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
                         )
                         )}
                   </Radio.Group>
+                      <div style={{display:'flex'}}>
+                        <Button shape='round' style={{marginRight:'1rem'}} loading={serviceItemsQuery.isRefetching} onClick={()=>serviceItemsQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                        <Dropdown.Button  trigger={['click']} type="primary"   icon={<PlusOutlined/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
+                      </div>
+                    </div>
+                 
 
                 <div style={{width: "20%",display:'flex', justifyContent:'space-between', alignItems:'center'}}>
 

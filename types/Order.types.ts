@@ -1,15 +1,14 @@
-export interface ManagerOrder {
+export type Order  = {
     id: string;
     userId: string,
     serviceName: string;
     name: string;
-    startTime: string
     serviceItemDetails: any[],
-    user: User[]
-    targetDate: string,
     serviceDetails: any[],
     quantity: number,
+    user: any[],
     orderStatus: string,
+    targetDate: string,
     ticketStatus: string,
     unitPrice:number,
     uniqueCode: string,
@@ -17,15 +16,9 @@ export interface ManagerOrder {
     paymentIntentStatus: string,
     paymentIntentId: string,
     orgServiceItemId: string,
-    hash: string,
     currency: string,
-    endTime: string,
-    createdAt: string,
-
+    createdAt: string
   }
 
-  type User = {
-    email: string
-    name: string
-    profilePic: string
-  }
+  
+

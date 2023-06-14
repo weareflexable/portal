@@ -25,6 +25,9 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
     const [isManagerRoute, setIsManagerRoute] = useState(false)
     const [isVenueRoute,setIsVenueRoute] = useState<any>(false)
 
+    // move this into a hook
+    const borderColor = currentUser.role == 1 ? 'purple': currentUser.role == 2 ? 'volcano': currentUser.role == 3? 'cyan': currentUser.role == 0?'blue':'green'
+
     useEffect(() => {
       const isManagerRoute = router.isReady? router.asPath.includes('/manager'): false
       if(router.isReady){
@@ -42,7 +45,7 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
     }, [])
 
    const navigateBackToServices=()=>{
-      router.replace(`/organizations/services`)
+      router.replace(`/organizations/venues`)
    }
    const navigateBackToOrgs=()=>{
       router.replace(`/organizations`)
@@ -93,7 +96,7 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
 
   function getVenueRoutes(){
     return[
-      {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateBackToServices}  >Back to launchpad</Text>, key:'servicesPage'},
+      {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateBackToServices}  >Back to launchpad</Text>, key:'venuesPage'},
     {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateBackToOrgs} >Back to organizations</Text>, key:'organizationsPage'},
     {type:'divider', key:'divider0'},
     {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={openOrgSwitcher}  >Switch organization</Text>, key:'switchOrganizations'},
@@ -107,7 +110,7 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
 
   function getManagerVenueRoutes(){
     return[
-      {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateBackToServices}  >Back to launchpad</Text>, key:'servicesPage'},
+      {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateBackToServices}  >Back to launchpad</Text>, key:'venuesPage'},
     {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={()=>router.replace('/manager/organizations')} >Back to organizations</Text>, key:'organizationsPage'},
     {type:'divider', key:'divider0'},
     {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateToProfile}  >Profile</Text>, key:'profile'},
@@ -118,7 +121,7 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
 
   function getSuperAdminRoutes(){
     return[
-      {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateBackToServices}  >Back to launchpad</Text>, key:'servicesPage'},
+      {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateBackToServices}  >Back to launchpad</Text>, key:'venuesPage'},
     {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={()=>router.replace('/manager/organizations')} >Back to organizations</Text>, key:'organizationsPage'},
     {type:'divider', key:'divider0'},
     {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateToProfile}  >Profile</Text>, key:'profile'},
@@ -135,6 +138,16 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
     // {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateBackToServices}>Back to launchpad</Text>, key:'servicesPage'},
     // {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={()=>router.push('/manager/organizations')} >Back to organizations</Text>, key:'organizationsPage'},
     // {type:'divider', key:'divider0'},
+    {label:
+    <div style={{ width:'100%',height:'100%', display:'block'}} >
+      <div style={{width: '100%', display:'flex'}}>
+      <Text ellipsis  style={{width:'100%', marginTop:'0', marginLeft:'.3em'}}>{currentUser && currentUser.name}</Text>
+      <Tag color='purple' style={{ marginTop:'0', marginLeft:'.3em'}}>{currentUser && currentUser.userRoleName}</Tag>
+      </div>
+      <Text ellipsis type='secondary'  style={{width:'100%', marginTop:'0', marginLeft:'.3em'}}>{currentUser && currentUser.email}</Text>
+    </div>, 
+    key:'userData'},
+    {type:'divider', key:'divider23'},
     {label:<Text style={{ width:'100%',height:'100%', display:'block'}} onClick={navigateToProfile}  >Profile</Text>, key:'profile'},
     {type:'divider', key:'divider2'},
     {label:<Button onClick={logout} danger type='link'>Logout</Button>, key:'logout'},
@@ -157,14 +170,14 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
             alignItems:'center',
           }}>
             
-             <Avatar src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${currentUser && currentUser.profilePic}`}/>
+             <Avatar size={'large'} style={{border:`2px solid ${borderColor}`}} src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${currentUser && currentUser.profilePic}`}/>
             
-          <Badge count={currentUser && currentUser.userRoleName} offset={[10, 10]}> 
-          <div style={{display:'flex', marginLeft:'.4rem', flexDirection:'column'}}>
-            <Text ellipsis  style={{width:'100%', marginTop:'0', marginLeft:'.3em'}}>{currentUser && currentUser.name}</Text>
-            <Text type='secondary' ellipsis style={{width:'150px', marginBottom:'0', marginTop:'0', marginRight:'.5em', marginLeft:'.3em'}}>{currentUser && currentUser.email}</Text>
-          </div>
-            </Badge>
+          {/* <Badge count={currentUser && currentUser.userRoleName} offset={[10, 10]}>  */}
+          {/* <div style={{display:'flex', marginLeft:'.4rem', flexDirection:'column'}}> */}
+            {/* <Text ellipsis  style={{width:'100%', marginTop:'0', marginLeft:'.3em'}}>{currentUser && currentUser.name}</Text> */}
+            {/* <Text type='secondary' ellipsis style={{width:'150px', marginBottom:'0', marginTop:'0', marginRight:'.5em', marginLeft:'.3em'}}>{currentUser && currentUser.email}</Text> */}
+          {/* </div> */}
+            {/* </Badge> */}
      </div>
     </Dropdown>
     )

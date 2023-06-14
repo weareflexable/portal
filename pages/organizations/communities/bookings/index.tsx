@@ -1,21 +1,20 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import useOrgs from "../../../hooks/useOrgs";
-const {Text,Title} = Typography
-import React, { useRef, useState } from 'react'
-import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge} from 'antd'
-import { useRouter } from 'next/router'
-import axios from 'axios';
-import {MoreOutlined,ReloadOutlined, CheckOutlined,StopOutlined} from '@ant-design/icons'
+import { useQuery } from "@tanstack/react-query";
+import { TableProps, Tag, Button, Table, Image, Typography } from "antd";
+import { ColumnsType } from "antd/es/table";
+import axios from "axios";
+import { useState } from "react";
+import ManagerBookingsLayout from "../../../../components/Layout/ManagerBookingsLayout"
+import { IMAGE_PLACEHOLDER_HASH } from "../../../../constants";
+import { useAuthContext } from "../../../../context/AuthContext";
+import useUrlPrefix from "../../../../hooks/useUrlPrefix";
+import { CommunityOrder } from "../../../../types/Booking";
+import { ServiceItem } from "../../../../types/Services";
+import { numberFormatter } from "../../../../utils/numberFormatter";
 
-import { useAuthContext } from '../../../context/AuthContext';
-import {PlusOutlined} from '@ant-design/icons'
-import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
-import { ServiceItem } from "../../../types/Services";
-import { ManagerOrder } from "./Bookings.types";
-import useUrlPrefix from "../../../hooks/useUrlPrefix";
+const {Title} = Typography
 
-import {numberFormatter} from '../../../utils/numberFormatter'
-import { IMAGE_PLACEHOLDER_HASH } from "../../../constants";
+import {ReloadOutlined, CheckOutlined,StopOutlined} from '@ant-design/icons'
+
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
@@ -28,9 +27,11 @@ dayjs.extend(timezone)
 dayjs.extend(advanced)
 
 
+import CommunitiesLayout from "../../../../components/Layout/CommunitiesLayout";
 
+const {Text} = Typography
 
-export default function ManagerBookingsView(){
+export default function CommunityBookings(){
 
     const {paseto} = useAuthContext()
     const [pageNumber, setPageNumber] = useState<number|undefined>(1)
@@ -45,7 +46,7 @@ export default function ManagerBookingsView(){
     async function fetchBookings(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/bookings?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/bookings/communities?pageNumber=${pageNumber}&pageSize=${pageSize}`,
             headers:{
                 "Authorization": paseto
             }
@@ -65,7 +66,7 @@ export default function ManagerBookingsView(){
 
   
   
-    const handleChange: TableProps<ManagerOrder>['onChange'] = (data) => {
+    const handleChange: TableProps<CommunityOrder>['onChange'] = (data) => {
       // console.log('Various parameters', pagination, filters, sorter); 
       console.log(data)
       // @ts-ignore
@@ -78,42 +79,29 @@ export default function ManagerBookingsView(){
   
   
 
-    const columns: ColumnsType<ManagerOrder> = [
+    const columns: ColumnsType<CommunityOrder> = [
       {
-        title: 'Service',
+        title: 'Community',
         dataIndex: 'name',
         key: 'name',
         ellipsis:true,
         width:'250px',
         fixed:'left',
         render:(_,record)=>{
-          const serviceItemName = record.serviceItemDetails[0].name
-          const serviceName = record.serviceDetails[0].name
-          const logoImageHash = record.serviceItemDetails[0].logoImageHash
+
+          const logoImageHash = record.communityDetails.artworkHash
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${logoImageHash}`}/>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='community artwork hash' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${logoImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
-                        <Text>{serviceItemName}</Text>  
-                        <Text type="secondary">{serviceName}</Text>  
+                        <Text>{record.communityDetails.name}</Text>  
+                        {/* <Text type="secondary">{serviceName}</Text>   */}
                     </div>
                 </div>
             )
         },
       },
-      {
-        title: 'Service Type',
-        // dataIndex: 'unitPrice',
-        key: 'unitPrice',
-        width:'120px',
-        render: (_,record)=>{
-          const serviceItemType = record.serviceDetails[0].serviceType[0].name
-          return(
-          <div>
-            <Tag style={{textTransform:'capitalize'}}>{serviceItemType}</Tag>
-          </div>
-        )}
-      },
+      
       {
         title: 'Customer',
         // dataIndex: 'customer',
@@ -121,13 +109,13 @@ export default function ManagerBookingsView(){
         width:'250px',
         key: 'customer',
         render:(_,record)=>{
-          const user = record.user[0] 
-          const email = user && user.email
-          const name = user?.name 
-          const profilePicHash = user && user.profilePic
-            return( 
+          const user = record.user
+          const email = user.email
+          const name = user.name
+          const profilePicHash = user.profilePic
+            return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Profile image' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${profilePicHash && profilePicHash.length < 20 ? IMAGE_PLACEHOLDER_HASH : profilePicHash}`}/>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${profilePicHash.length < 10? IMAGE_PLACEHOLDER_HASH : profilePicHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{name}</Text>  
                         <Text type="secondary">{email}</Text>  
@@ -141,7 +129,7 @@ export default function ManagerBookingsView(){
         title: 'Unit Price',
         dataIndex: 'unitPrice',
         key: 'unitPrice',
-        width:'100px',
+        width:'120px',
         align:'right',
         render: (unitPrice)=>(
           <div>
@@ -167,7 +155,7 @@ export default function ManagerBookingsView(){
         title: 'Total Price',
         // dataIndex: 'totalPrice',
         key: 'totalPrice',
-        width:'120px',
+        width:'150px',
         align:'right',
         render: (_,record)=>{
           const total = record.quantity * (record.unitPrice/100)
@@ -180,33 +168,12 @@ export default function ManagerBookingsView(){
         }
       }, 
       
-      // {
-      //   title: 'Ticket Status',
-      //   dataIndex: 'ticketStatus',
-      //   key: 'ticketStatus',
-      //   render: (status)=>{
-      //     const statusText = status === '1'? 'Redeemed': 'Confirmed'
-      //     return <Badge status="success" text={statusText} />
-      //   }
-      // },
-      {
-        title: 'Booking Date',
-        dataIndex: 'createdAt',
-        key: 'createdAt',
-        width: '110px',
-        render: (bookingDate)=>{
-            const date = dayjs(bookingDate).format('MMM DD, YYYY')
-            return(
-          <Text type='secondary'>{date}</Text>
-          )
-      },
-  },
      
     {
       title: 'Payment Status',
       dataIndex: 'paymentIntentStatus',
       key: 'paymentIntentStatus',
-      width:'125px',
+      width:'150px',
       fixed:'right',
       render: (paymentStatus)=>{
         const color = paymentStatus === 'successful'?'green':paymentStatus === 'failed'?'red':paymentStatus === 'cancelled'?'grey':'blue'
@@ -215,34 +182,25 @@ export default function ManagerBookingsView(){
       }
     },
     {
-      title: 'Ticket Date',
-      dataIndex: 'targetDate',
-      key: 'targetDate',
+      title: 'Order Date',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
       fixed:'right',
       width: '110px',
-      render: (targetDate)=>{
-          const date = dayjs(targetDate).format('MMM DD, YYYY')
+      render: (createdAt)=>{
+          const date = dayjs(createdAt).format('MMM DD, YYYY')
           return(
         <Text type='secondary'>{date}</Text>
         )
     }
   },
     
-
-    // {
-    //   dataIndex: 'actions', 
-    //   key: 'actions',
-    //   render:(_,record)=>{
-    //     return (
-    //       <Button onClick={()=>seeFullDetails(record)} icon={<MoreOutlined/>}/>
-    //       )
-    //   }
-    // }
     ];
 
         return (
             <div style={{width:'100%', padding:'0', margin: '0'}}>
-                <div style={{marginBottom:'2rem', display:'flex', width:'100%', flexDirection:'column', alignItems:'center'}}>
+                <div style={{marginBottom:'2rem', display:'flex', width:'100%', flexDirection:'column', alignItems:'flex-start'}}>
+                <Title style={{margin: '0', marginTop:'2rem'}} level={2}>Bookings</Title>
                   <div style={{display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                       <div style={{display:'flex', marginTop:'.5rem', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                           <div>
@@ -276,6 +234,7 @@ export default function ManagerBookingsView(){
             </div>
     )
 
-
-
 }
+
+
+CommunityBookings.PageLayout = CommunitiesLayout

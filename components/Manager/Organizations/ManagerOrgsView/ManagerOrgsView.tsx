@@ -36,7 +36,8 @@ export default function ManagerOrgsView(){
     const {paseto} = useAuthContext()
     const queryClient = useQueryClient()
     const router = useRouter()
-    const {switchOrg} = useOrgs()
+    const {switchOrg} = useOrgContext()
+    // const {switchOrg} = useOrgs()
     const {isUser} = useRole()
 
     const [searchText, setSearchText] = useState('');
@@ -115,6 +116,13 @@ export default function ManagerOrgsView(){
         return res; 
     }
 
+
+    function gotoOrg(org:NewOrg){
+      // switch org
+      switchOrg(org)
+      // navigate user to services page
+      router.push('/organizations/venues')
+    }
    
     
 
@@ -164,12 +172,12 @@ export default function ManagerOrgsView(){
     }
     
     function acceptOrgHandler(org:NewOrg){
-      // setSelelectedOrg(org.orgId)
 
       changeOrgOwnerToAdminMutation.mutate({userId:org.createdBy},{
         onSuccess:()=>{
           // @ts-ignore
           changeStatusMutation.mutate({orgId:org.orgId, statusNumber:'1'})
+          // call api for changing custom role rn
         },
         onError:()=>{
           console.log('error upgrading owner role to admin')
@@ -452,10 +460,10 @@ export default function ManagerOrgsView(){
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.logoImageHash.length < 10? IMAGE_PLACEHOLDER_HASH :record.logoImageHash}`}/>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.logoImageHash.length < 20? IMAGE_PLACEHOLDER_HASH :record.logoImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
-                       {/* { record.status !==1?<Text>{record.name}</Text>:<Text style={{color:'#1677ff', cursor:'pointer'}} onClick={()=>gotoServices(record)}>{record.name}</Text> }    */}
-                        <Text>{record.name}</Text>
+                       { record.status !==1?<Text>{record.name}</Text>:<Text style={{color:'#1677ff', cursor:'pointer'}} onClick={()=>gotoOrg(record)}>{record.name}</Text> }   
+                        {/* <Text>{record.name}</Text> */}
                         <Text type="secondary">{record.email}</Text>
                     </div>
                 </div>
@@ -476,16 +484,7 @@ export default function ManagerOrgsView(){
           </div>
         )
       },
-      
-      // {
-      //   title: 'Zip Code',
-      //   dataIndex: 'zipCode',
-      //   key: 'zipCode',
-      //   render:(_,record)=>{
-      //     const zipCode = record.zipCode  === ""? <Text>--</Text>: <Text>{record.zipCode}</Text>
-      //     return zipCode
-      // }
-      // },
+    
       {
         title: 'Contact Number',
         dataIndex: 'contactNumber',
@@ -508,18 +507,6 @@ export default function ManagerOrgsView(){
             )
         },
     },
-    //   {
-    //       title: 'UpdatedAt',
-    //       dataIndex: 'updatedAt',
-    //       key: 'updatedAt',
-    //       render: (_,record)=>{
-    //         //@ts-ignore
-    //           const date = dayjs().from(dayjs(record.updatedAt),true)
-    //           return(
-    //         <Text>{date} ago</Text>
-    //         )
-    //     },
-    // },
     {
       dataIndex: 'actions', 
       key: 'actions',
@@ -549,7 +536,7 @@ export default function ManagerOrgsView(){
               
                { allOrgsQuery && allOrgsTotal === 0 
                ? null 
-               : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column',}}>
+               : <div style={{marginBottom:'2rem', marginTop:'2rem', display:'flex', width:'100%', flexDirection:'column',}}>
                   <div style={{width:'100%', marginBottom:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                           <Title style={{margin: '0'}} level={2}>Organizations</Title>
                           <div>
@@ -559,7 +546,7 @@ export default function ManagerOrgsView(){
                   </div>
                   <Radio.Group defaultValue={currentStatus.id} buttonStyle="solid">
                       {orgStatus.map(status=>(
-                          <Radio.Button key={status.id} onClick={()=>setCurrentStatus(status)} value={status.id}>{status.name}</Radio.Button>
+                          <Radio.Button  key={status.id} onClick={()=>setCurrentStatus(status)} value={status.id}>{status.name}</Radio.Button>
                       )
                       )}
                   </Radio.Group>
@@ -605,6 +592,7 @@ function DetailDrawer({selectedOrg,isDrawerOpen,closeDrawer}:DrawerProps){
 const queryClient = useQueryClient()
 const router = useRouter()
 const {switchOrg} = useOrgContext()
+// const {switchOrg} = useOrgs()
 const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
 const {paseto, currentUser} = useAuthContext()
@@ -614,12 +602,12 @@ function closeDrawerHandler(){
   closeDrawer(!isDrawerOpen)
 }
 
-function gotoServices(org:NewOrg){
+function gotoOrg(org:NewOrg){
   console.log(org)
   // switch org
   switchOrg(org)
   // navigate user to services page
-  router.push('/organizations/services/')
+  router.push('/organizations/venues')
 }
 
 function toggleDeleteModal(){
@@ -701,7 +689,7 @@ return(
 <Drawer 
   title="Organization Details" 
   width={640} placement="right" 
-  extra={selectedOrg.status === 1?<Button shape='round' onClick={()=>gotoServices(selectedOrg)}>Visit organization</Button>:null}
+  extra={selectedOrg.status === 1?<Button shape='round' onClick={()=>gotoOrg(selectedOrg)}>Visit organization</Button>:null}
   closable={true} 
   onClose={closeDrawerHandler} 
   open={isDrawerOpen}

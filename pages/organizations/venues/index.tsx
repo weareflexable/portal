@@ -1,13 +1,19 @@
 import React from 'react'
 import dynamic from 'next/dynamic'
+import ServiceLayout from '../../../components/Layout/ServiceLayout'
 
 const DynamicServices = dynamic(()=>import('../../../components/ServicesPage/ServicesView/ServicesView'),{
     ssr:false
 })
 
-export default function Services(){
+ function Services(){
 
     return( 
         <DynamicServices/>
     )
 }
+
+
+Services.PageLayout = ServiceLayout 
+
+export default Services

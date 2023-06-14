@@ -11,6 +11,7 @@ import {PlusOutlined} from '@ant-design/icons'
 import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import useUrlPrefix from "../../../hooks/useUrlPrefix";
+import PlatformLayout from "../../Layout/PlatformLayout";
 const {TextArea} = Input 
 
 
@@ -218,11 +219,12 @@ export default function ServiceItemTypesView(){
     )
 }
 
+// ServiceItemTypesView.PageLayout = PlatformLayout
 
 interface ServiceItemTypeFormProps {
   open: boolean;
   onCreate?: (values:any) => void;
-  onCancel: () => void;
+  onCancel: () => void; 
 }
 
 const AddServiceItemTypeForm: React.FC<ServiceItemTypeFormProps> = ({

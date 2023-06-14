@@ -7,14 +7,14 @@ import {
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { ReactNode, useState, useEffect } from 'react';
-import { useAuthContext } from '../../../context/AuthContext';
-import CurrentUser from '../../Header/CurrentUser/CurrentUser';
-import OrgSwitcher from '../../Header/OrgSwitcherButton/OrgSwitcherButton';
-import ServiceSwitcherButton from '../../Header/ServicesSwitcherButton/ServicesSwitcherButton';
-import ErrorBoundary from '../ErrorBoundary/ErrorBoundary';
-import OrgSwitcherModal from '../OrgSwitcherModal/OrgSwitcherModal';
-import ServicesSwitcherModal from '../ServicesSwitcherModal/ServicesSwitcherModal';
-import UnAuthenticatedView from '../UnAuthenticated/UnAuthenticatedView';
+import { useAuthContext } from '../../context/AuthContext';
+import CurrentUser from '../Header/CurrentUser/CurrentUser';
+import OrgSwitcher from '../Header/OrgSwitcherButton/OrgSwitcherButton';
+import ServiceSwitcherButton from '../Header/ServicesSwitcherButton/ServicesSwitcherButton';
+import ErrorBoundary from '../shared/ErrorBoundary/ErrorBoundary';
+import OrgSwitcherModal from '../shared/OrgSwitcherModal/OrgSwitcherModal';
+import ServicesSwitcherModal from '../shared/ServicesSwitcherModal/ServicesSwitcherModal';
+import UnAuthenticatedView from '../shared/UnAuthenticated/UnAuthenticatedView';
 
 
 

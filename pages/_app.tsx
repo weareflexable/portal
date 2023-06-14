@@ -7,32 +7,22 @@ import { OrgContextProvider } from '../context/OrgContext';
 import { ServicesContextProvider } from '../context/ServicesContext';
 import ErrorBoundary from '../components/shared/ErrorBoundary/ErrorBoundary';
 import Head from 'next/head'
+import { ComponentType, ReactNode } from 'react';
 
+type ComponentWithPageLayout = AppProps & {
+  Component: AppProps['Component'] & {
+    PageLayout?: ComponentType
+  }
+}
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({ Component, pageProps }: ComponentWithPageLayout) {
 
 
   const queryClient = new QueryClient({
-    // queryCache: new QueryCache({
-    //   onError:(error:any)=>{
-    //     const statusCode = error.response.status
-    //     console.log(statusCode)
-    //     if(statusCode === 401){
-    //       api.open({
-    //         message: 'Token expired',
-    //         description:
-    //           'Logout to continue',
-    //         className: 'custom-class',
-    //         btn: <Button>Logout</Button>,
-    //         style: {
-    //           width: 600,
-    //         },
-    //       });
-    //     }
-    //     console.log('this is coming from global errors',error!.response)
-    //   }
-    // })
+ 
   })
+
+
   
 
   return (
@@ -43,7 +33,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"/>
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"/>
-        <link rel="manifest" href="/site.webmanifest"/>
+        {/* <link rel="manifest" href="/site.webmanifest"/> */}
         <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"/>
         <meta name="msapplication-TileColor" content="#9f00a7"/>
         <meta name="theme-color" content="#ffffff"/>
@@ -54,7 +44,14 @@ function MyApp({ Component, pageProps }: AppProps) {
             <ServicesContextProvider>
               <ErrorBoundary name='entire app'>
                 {/* <ConfigProvider theme={{token:{}}}> */}
-                   <Component {...pageProps} />
+                {Component.PageLayout?
+                //  @ts-ignore
+                  <Component.PageLayout>
+                    <Component {...pageProps} />
+                  </Component.PageLayout>
+                : <Component {...pageProps} />
+                   
+              }
                 {/* </ConfigProvider> */}
               </ErrorBoundary>
             </ServicesContextProvider>

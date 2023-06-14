@@ -1,6 +1,6 @@
 import { Content } from 'antd/lib/layout/layout'
 import React from 'react'
-import AppLayout from '../../../components/shared/Layout/layout'
+import AppLayout from '../../../components/Layout/layout'
 import { useAuthContext } from '../../../context/AuthContext'
 import { Col, Row,Card,Statistic,Typography } from 'antd';
 import Earnings from '../../../components/DashboardPage/Earnings/Earnings';
