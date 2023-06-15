@@ -200,6 +200,18 @@ function gotoCommunityItemsPage(community:Community){
         )
       },
       {
+        title: 'Market Value',
+        dataIndex: 'marketValue',
+        key: 'marketValue',
+        width:'100px',
+        render: (marketValue)=>(
+          <div>
+            <Text>$</Text>
+            <Text>{marketValue/100}</Text>
+          </div>
+        )
+      },
+      {
           title: 'Created On',
           dataIndex: 'createdAt',
           key: 'createdAt',
