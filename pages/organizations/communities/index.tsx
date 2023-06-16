@@ -201,13 +201,13 @@ function gotoCommunityItemsPage(community:Community){
       },
       {
         title: 'Market Value',
-        dataIndex: 'marketValue',
-        key: 'marketValue',
+        dataIndex: 'totalMarketValue',
+        key: 'totalMarketValue',
         width:'100px',
-        render: (marketValue)=>(
+        render: (totalMarketValue)=>(
           <div>
             <Text>$</Text>
-            <Text>{marketValue/100}</Text>
+            <Text>{totalMarketValue/100}</Text>
           </div>
         )
       },
