@@ -20,7 +20,6 @@ export default function ServiceLayout({children}:ServiceLayoutProps){
     const [isHydrated, setIsHydrated] = useState(false)
     const [selectedPage, setSelectedPage] = useState('venues')
 
-    console.log(currentOrg)
 
     const splittedRoutes = router.pathname.split('/')
     const selectedRoute = splittedRoutes && splittedRoutes[2]
@@ -54,7 +53,6 @@ export default function ServiceLayout({children}:ServiceLayoutProps){
 
 
     function onChangeHandler(e:any){
-        console.log(e)
         if(e.key === 'venues'){
             router.push('/organizations/venues')
         }else if(e.key === 'communities'){
@@ -91,8 +89,6 @@ export default function ServiceLayout({children}:ServiceLayoutProps){
                  <Menu theme="light" style={{ background:'#f7f7f7', width:'100%'}} mode="horizontal" defaultSelectedKeys={[selectedPage]} selectedKeys={[selectedPage]} onSelect={onChangeHandler} items={secondaryItems} />
                 </Col>
             <Col offset={1} span={22}>
-                <div style={{width:'100%', display:'flex', justifyContent:'center'}}>
-                </div>
                 {children}
             </Col>
         </Row>
