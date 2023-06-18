@@ -193,7 +193,7 @@ export default function NewCommunityVenue(){
                 </Row>
             </div>
             <Row >
-                <Col offset={2} span={13}>
+                <Col offset={2} span={11}>
                     
                     <Form
                     name="liteVenueForm"
@@ -226,9 +226,10 @@ export default function NewCommunityVenue(){
                     </Form.Item>
 
                     <Row>
-                        <Col span={11} style={{height:'100%'}}>
+                        <Col span={12} style={{height:'100%'}}>
                             <Form.Item
                                 name='marketValue'
+                                extra="When submitting promotions to our site, please provide the market value offer. This information will be combined with other promotions in our Community DAT, enabling customers to clearly see the great deal they'll be getting"
                                 label='Market Value'
                                 style={{width:'100%'}}
                                 rules={[{ required: true, message: 'Please input a valid price!' }]}
