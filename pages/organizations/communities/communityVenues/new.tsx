@@ -226,10 +226,10 @@ export default function NewCommunityVenue(){
                     </Form.Item>
 
                     <Row>
-                        <Col span={12} style={{height:'100%'}}>
+                        <Col span={16} style={{height:'100%'}}>
                             <Form.Item
                                 name='marketValue'
-                                extra="When submitting promotions to our site, please provide the market value offer. This information will be combined with other promotions in our Community DAT, enabling customers to clearly see the great deal they'll be getting"
+                                extra="Market Value of the promotion is required so that the Community DAT can be properly priced on the Marketplace"
                                 label='Market Value'
                                 style={{width:'100%'}}
                                 rules={[{ required: true, message: 'Please input a valid price!' }]}
