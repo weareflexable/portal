@@ -695,6 +695,7 @@ function CommunityVenueForm({remove, name, formInstance, restField}:CommunityVen
 
                                         {...restField} 
                                         name={[name,'marketValue']} 
+                                        extra="Market Value of the promotion is required so that the Community DAT can be properly priced on the Marketplace"
                                         label='Market Value'
                                         style={{width:'100%'}}
                                         rules={[{ required: true, message: 'Please input a valid price!' }]}
