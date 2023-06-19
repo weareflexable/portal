@@ -247,7 +247,7 @@ function BasicForm({nextStep}:BasicInfoProps){
                     style={{width:'100%'}}
                     rules={[{ required: true, message: 'Please input a valid price!' }]}
                 >
-                    <Input size='large' style={{width:'100%'}} suffix='Per ticket' prefix="$" placeholder="0.00" /> 
+                    <Input size='large' style={{width:'100%'}} suffix='Per DAT' prefix="$" placeholder="0.00" /> 
                 </Form.Item> 
             </Col>
         </Row>
@@ -258,7 +258,7 @@ function BasicForm({nextStep}:BasicInfoProps){
 
         <div style={{marginBottom:'2rem', marginTop:'3rem'}}>
             <Title level={3}>Image Upload</Title>
-            <Text >Your logo and artwork will be visible on marketplace</Text>
+            <Text >Your logo and artwork will be visible on the marketplace</Text>
             <Tooltip trigger={['click']} placement='right' title={<LogoTip/>}>
                 <Button type="link">Show me <QuestionCircleOutlined /></Button>
             </Tooltip>
@@ -496,8 +496,8 @@ function Artwork({onHandleArtwork}:ArtworkProps){
                 <div style={{alignSelf:'flex-end',display:'flex'}}>
                 <Button shape='round' icon={<SelectOutlined />} style={{ marginBottom:'.5rem'}} onClick={toggleDrawer}>Select a different artwork</Button>
                 </div>
-                <AntImage alt='artwork'  style={{width:'400px', height:'400px', objectFit:'cover'}}  src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${selectedArtwork}`}/>
-                <Text type='secondary'>This cover image will be used for listing on marketplace and Digital access token NFT</Text>
+                <AntImage alt='artwork'  style={{width:'400px', height:'400px', marginBottom:'.5rem', objectFit:'cover'}}  src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${selectedArtwork}`}/>
+                <Text type='secondary'>This cover image will be used for your listing on marketplace and for the Digital access token NFT</Text>
             </div>
             <ArtworkPicker 
                 currentServiceItemType={currentServiceItemType}
@@ -578,7 +578,7 @@ function LogoTip(){
     return(
         <div>
             <AntImage style={{objectFit:'cover'}}  src={'/explainers/serviceItem-explainer.png'} alt='Service explainer as displayed on marketplace'/>
-            <Text style={{color:'white'}}>It is very important that you provide the requested the image size else, it will look distorted on marketplace.</Text>
+            <Text style={{color:'white'}}>{"It is very important to provide the requested image size (2400 x 1200) or else the image will appear distorted on the marketplace"}</Text>
         </div>
     ) 
 }
@@ -695,6 +695,7 @@ function CommunityVenueForm({remove, name, formInstance, restField}:CommunityVen
 
                                         {...restField} 
                                         name={[name,'marketValue']} 
+                                        extra="Market Value of the promotion is required so that the Community DAT can be properly priced on the Marketplace"
                                         label='Market Value'
                                         style={{width:'100%'}}
                                         rules={[{ required: true, message: 'Please input a valid price!' }]}

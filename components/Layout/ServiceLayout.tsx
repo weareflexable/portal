@@ -20,7 +20,6 @@ export default function ServiceLayout({children}:ServiceLayoutProps){
     const [isHydrated, setIsHydrated] = useState(false)
     const [selectedPage, setSelectedPage] = useState('venues')
 
-    console.log(currentOrg)
 
     const splittedRoutes = router.pathname.split('/')
     const selectedRoute = splittedRoutes && splittedRoutes[2]
@@ -28,16 +27,19 @@ export default function ServiceLayout({children}:ServiceLayoutProps){
 
     const items: MenuProps['items'] = [
         {
+            key:'billings',
+            label: 'Billings'
+        }
+    ]
+
+    const secondaryItems: MenuProps['items'] = [
+        {
             key:'venues',
             label: 'Venues'
         },
         {
             key:'communities',
             label: 'Communities'
-        },
-        {
-            key:'billings',
-            label: 'Billings'
         }
     ]
 
@@ -51,7 +53,6 @@ export default function ServiceLayout({children}:ServiceLayoutProps){
 
 
     function onChangeHandler(e:any){
-        console.log(e)
         if(e.key === 'venues'){
             router.push('/organizations/venues')
         }else if(e.key === 'communities'){
@@ -76,18 +77,18 @@ export default function ServiceLayout({children}:ServiceLayoutProps){
 
                     {
                     isHydrated
-                        ?<div style={{ display:'flex', flex:'5', justifySelf:'flex-end', alignItems:'center'}}>
-                         <Menu theme="light" style={{ width:'100%'}} mode="horizontal" defaultSelectedKeys={[selectedPage]} selectedKeys={[selectedPage]} onSelect={onChangeHandler} items={items} />
-                        {/* <Button type="link" style={{marginRight:'2rem'}} >Billings</Button> */}
+                    ?<div style={{ display:'flex', flex:'5',  width:'100%', justifyContent:'flex-end', alignItems:'center'}}>
+                        <Menu theme="light" style={{ background:'#f7f7f7', width:'20%'}} mode="horizontal" defaultSelectedKeys={[selectedPage]} selectedKeys={[selectedPage]} onSelect={onChangeHandler} items={items} />
                         <CurrentUser/>
                     </div>
                     : <Skeleton.Input active size='default'/>
-                    }
+                }
                 </Col>
             </Header>
+                <Col style={{display:'flex', justifyContent:'space-between'}} offset={1} span={22}>
+                 <Menu theme="light" style={{ background:'#f7f7f7', width:'100%'}} mode="horizontal" defaultSelectedKeys={[selectedPage]} selectedKeys={[selectedPage]} onSelect={onChangeHandler} items={secondaryItems} />
+                </Col>
             <Col offset={1} span={22}>
-                <div style={{width:'100%', display:'flex', justifyContent:'center'}}>
-                </div>
                 {children}
             </Col>
         </Row>
