@@ -1,5 +1,5 @@
 import React,{useEffect, useRef, useState} from 'react';
-import {Card,Form, Image as AntImage, Input,InputNumber, DatePicker,Upload,Button,notification, Space, Alert, Typography, TimePicker, Select, Row, Col, Steps, Radio, Tooltip, Popconfirm, message, Drawer, Collapse} from 'antd';
+import {Card,Form, Image as AntImage, Input,InputNumber, DatePicker,Upload,Button,notification, Space, Alert, Typography, TimePicker, Select, Row, Col, Steps, Radio, Tooltip, Popconfirm, message, Drawer, Collapse, FormInstance} from 'antd';
 const { TextArea } = Input;
 import Image from 'next/image'
 
@@ -69,7 +69,7 @@ export default function ServiceItemForm(){
                 <Row>
                     <Col offset={1}> 
                          <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
-                            <Button  type='link' onClick={()=>router.back()} icon={<ArrowLeftOutlined/>}/>
+                            <Button  type='link' onClick={()=>router.back()} icon={<ArrowLeftOutlined rev={undefined}/>}/>
                             <Title style={{margin:'0', textTransform:'capitalize'}} level={3}>{router.isReady?`New ${router.query.label}`:'...'}</Title>
                         </div>
                     </Col>
@@ -107,7 +107,6 @@ function BasicForm({nextStep}:BasicInfoProps){
      // make this default value to be lineskip images first element
     const artworkRef = useRef<string|null>(lineSkipHashes[0])
     
-    console.log(artworkRef)
 
     const queryClient = useQueryClient()
 
@@ -192,13 +191,20 @@ function BasicForm({nextStep}:BasicInfoProps){
         <Form.Item
             name="name"
             label="Title"
-            rules={[{ required: true, message: 'Please input a valid service name' }]}
+            rules={[
+                { required: true, message: 'This field is valid' },
+                { max: 150, message: 'Sorry, name cant be more than 150 characters' },
+                
+            ]}
          >
-            <Input allowClear size='large' maxLength={150} placeholder="Wonderland cage" />
+            <Input allowClear size='large' maxLength={150} showCount placeholder="Wonderland cage" />
         </Form.Item>
 
-        <Form.Item name='description' rules={[{ required: true, message: 'Please write a description for your service' }]}  label="Description">
-            <TextArea allowClear maxLength={500} size='large' showCount  placeholder='Tell us more about this service' rows={2} />
+        <Form.Item name='description' rules={[
+            { required: true, message: 'Please write a description for your service' },
+            { min: 50, message: 'Please provide a minimum of 50 characters' },
+            ]}  label="Description">
+            <TextArea allowClear maxLength={500} minLength={100} size='large' showCount  placeholder='Tell us more about this service' rows={2} />
         </Form.Item>
 
           {/* price and tickets per day */}
@@ -208,7 +214,7 @@ function BasicForm({nextStep}:BasicInfoProps){
                     name='price'
                     label='Price'
                     style={{width:'100%'}}
-                    rules={[{ required: true, message: 'Please input a valid price!' }]}
+                    rules={[{ required: true, message: 'This field is required!' }, { pattern: /^\d+$/, message: 'Value entered must be a number' },]}
                 >
                     <Input size='large' style={{width:'100%'}} suffix='Per ticket' prefix="$" placeholder="0.00" /> 
                 </Form.Item> 
@@ -218,7 +224,7 @@ function BasicForm({nextStep}:BasicInfoProps){
                     name='ticketsPerDay'
                     label='Tickets per day'
                     style={{width:'100%'}}
-                    rules={[{ required: true, message: 'Please input a valid number!' }]}
+                    rules={[{ required: true, message: 'This field is required!' }, { pattern: /^\d+$/, message: 'Value entered must be a number' },]}
                     >
                     <Input size='large' suffix='Tickets Per day' style={{width:'100%'}} placeholder="20" />
                 </Form.Item>
@@ -231,9 +237,9 @@ function BasicForm({nextStep}:BasicInfoProps){
             required
             style={{marginBottom:'0'}}
             extra={`Enter a timeframe you want your DAT to be redeemable by customers. This may vary based on your industry and service you provide. Eg: a "Saturday Night Line Skip" at a bar might be valid from 7pm on Saturday night until 4am Sunday morning, to allow the late night partygoers a chance to redeem their tickets. A restaurant DAT for a "Last Minute Saturday Reservation" might only need to have validity period of 12 noon - 12 midnight`} 
-            rules={[{required: true, message: 'Please select a time period' }]}
+            rules={[{required: true, message: 'This field is required' }]}
         >
-            <Input.Group  compact>
+            <Space.Compact  block>
             <Form.Item  rules={[{required:true, message:'Please provide a start time'}]}  name={['validity','start']} noStyle>
                 <TimePicker  use12Hours placeholder="Start"  format="h A" size="large" />
             </Form.Item>
@@ -241,7 +247,7 @@ function BasicForm({nextStep}:BasicInfoProps){
                 <TimePicker use12Hours placeholder="End"  format="h A" size="large" />
             </Form.Item>
 
-            </Input.Group>
+            </Space.Compact>
             {/* <Text style={{marginLeft:'1rem'}}>9 hrs interval for all tickets</Text>   */}
 
         </Form.Item> 
@@ -255,11 +261,11 @@ function BasicForm({nextStep}:BasicInfoProps){
                 <Button onClick={()=>router.back()}  type='ghost'>
                     Cancel
                 </Button>
-
-                <Button shape='round' size='large' loading={isHashingImage||isCreatingData} type="primary"  htmlType="submit" >
-                {router.isReady?`Create ${router.query.label}`:'...'}
-                </Button>
-
+                <SubmitButton
+                    isCreatingData={isCreatingData}
+                    isHashingAssets={isHashingImage} 
+                    form={form}
+                />
             </Space>
             
         </Form.Item>
@@ -379,13 +385,14 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
                             {/* label */}
                             <Form.Item
                                     {...restField}
+                                    // @ts-ignore
                                     requiredMark='optional'
                                     // label='Label'
                                     // rules={[{ required: true, message: 'Please provide a valid label for the date' }]}
                                     name={[name, 'name']}
                                     style={{width:'100%'}}
                                 >
-                                <Input size='large' suffix={<Tooltip title='This field is optional'><InfoCircleOutlined/></Tooltip> } placeholder='Christmas eve' />
+                                <Input size='large' suffix={<Tooltip title='This field is optional'><InfoCircleOutlined rev={undefined}/></Tooltip> } placeholder='Christmas eve' />
                             </Form.Item>
 
                             {/* price and tickets per day */}
@@ -442,7 +449,7 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
                                         okText="Yes, Remove"
                                         cancelText="No"
                                     >
-                                        <Button shape="round" icon={<MinusCircleOutlined  />} size='small'  type='text'>Remove Custom Date</Button>
+                                        <Button shape="round" icon={<MinusCircleOutlined rev={undefined}  />} size='small'  type='text'>Remove Custom Date</Button>
                                     </Popconfirm>
                                     </Space>           
                                 </Form.Item>
@@ -451,7 +458,7 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
                     ))}
 
                     <Form.Item>
-                        <Button icon={<PlusCircleOutlined />} size='large' shape='round' onClick={() => add()}>
+                        <Button icon={<PlusCircleOutlined rev={undefined} />} size='large' shape='round' onClick={() => add()}>
                              Add Custom Date
                         </Button>
                     </Form.Item>
@@ -532,12 +539,12 @@ function Artwork({onHandleArtwork}:ArtworkProps){
             <div style={{display:'flex', marginTop:'3rem',alignItems:'baseline'}}>
                 <Title style={{margin:'0'}} level={3}>Artwork</Title>
                 <Tooltip trigger={['click']} placement='right' title={<LogoTip/>}>
-                        <Button type="link">Learn more<QuestionCircleOutlined /></Button>
+                        <Button type="link">Learn more<QuestionCircleOutlined rev={undefined} /></Button>
                 </Tooltip>
             </div>
             <div style={{display:'flex',width:'400px', marginTop:'2rem', flexDirection:'column'}}>
                 <div style={{alignSelf:'flex-end',display:'flex'}}>
-                <Button shape='round' icon={<SelectOutlined />} style={{ marginBottom:'.5rem'}} onClick={toggleDrawer}>Select a different artwork</Button>
+                <Button shape='round' icon={<SelectOutlined rev={undefined} />} style={{ marginBottom:'.5rem'}} onClick={toggleDrawer}>Select a different artwork</Button>
                 </div>
                 <AntImage alt='artwork'  style={{width:'400px', height:'400px', objectFit:'cover'}}  src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${selectedArtwork}`}/>
                 <Text type='secondary'>This cover image will be used for listing on marketplace and Digital access token NFT</Text>
@@ -640,3 +647,37 @@ function LogoTip(){
         </div>
     ) 
 }
+
+interface SubmitButtonProps{
+    isHashingAssets: boolean,
+    isCreatingData: boolean,
+    form: FormInstance
+}
+
+const SubmitButton = ({ form, isCreatingData, isHashingAssets }:SubmitButtonProps) => {
+    const [submittable, setSubmittable] = useState(false);
+  
+    // Watch all values
+    const values = Form.useWatch([], form);
+
+    const router = useRouter() 
+  
+    useEffect(() => {
+        
+      form.validateFields({validateOnly:true}).then(
+        (res) => {
+          setSubmittable(true);
+        },
+        () => {
+          setSubmittable(false);
+        },
+      );
+    }, [values]);
+  
+    return (
+        <Button shape="round" type="primary" disabled={!submittable} size="large" loading={isHashingAssets || isCreatingData}  htmlType="submit" >
+         {router.isReady?`Create ${router.query.label}`:'...'}
+     </Button>
+    );
+  };
+  

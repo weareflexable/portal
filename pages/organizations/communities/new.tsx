@@ -237,7 +237,7 @@ function BasicForm({nextStep}:BasicInfoProps){
             <Input allowClear size='large' addonBefore='Key to:' maxLength={150} showCount placeholder="Napoli" />
         </Form.Item>
 
-        <Form.Item name='description' rules={[{ required: true, message: 'Please write a description for your service' }]}  label="Description">
+        <Form.Item name='description' rules={[{max:500, message:"Description shouldn't exceed 500 characters"},{ required: true, message: 'This field is required' }]}  label="Description">
             <TextArea allowClear maxLength={500} size='large' showCount  placeholder='Tell us more about this community' rows={2} />
         </Form.Item>
 
