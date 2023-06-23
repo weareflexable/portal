@@ -34,6 +34,8 @@ export default function NewService(){
     const queryClient = useQueryClient()
 
 
+
+
     const {paseto} = useAuthContext()
     const {currentOrg} = useOrgContext()
 
@@ -240,10 +242,18 @@ export default function NewService(){
                         name="name"
                         label="Name" 
                         
+                        hasFeedback
                         // extra="The name you provide here will be used as display on marketplace listing"
-                        rules={[{ required: true, message: 'Please input a valid service name' }]}
+                        rules={[
+                            { required: true, message: 'This field is required' },
+                            { pattern:/^[A-Za-z ]+$/, message: 'Please provide only string values' },
+                            { max: 20, message: 'Sorry, your service name cant be more than 20 characters' },
+                    
+                            ]}
                     >
-                        <Input allowClear size="large" placeholder="Bill Cage coffee" />
+                        <Input 
+                        type="string"
+                        allowClear size="large" placeholder="Eg. Bill Cage coffee" />
                     </Form.Item>
 
                     <Form.Item  
@@ -275,24 +285,33 @@ export default function NewService(){
                         label="Contact Number"
                         required
                         style={{marginBottom:'0'}}
-                        rules={[{ required: true, message: 'Please input a valid phone number' }]}
+                        rules={[
+                            { required: true, message: 'Please provide values in all field' },
+                            // { pattern: /^\d+$/, message: 'All values must be a number' },
+                        ]}
                     >
                         <Input.Group compact>
-                            <Form.Item initialValue={'+1'} name={['contact','countryCode']} noStyle>
+
+                            <Form.Item  initialValue={'+1'} name={['contact','countryCode']} noStyle>
                                 <Input allowClear style={{width:'10%'}} disabled size="large"/>
                             </Form.Item>
-                            <Form.Item name={['contact','areaCode']} noStyle>
+
+                            <Form.Item  rules={[ { pattern: /^\d+$/, message: 'Area code must be a number' },]} name={['contact','areaCode']} noStyle>
                                 <Input allowClear ref={areaCodeRef} maxLength={3} onChange={handleAreaCodeRef} style={{width:'20%'}} size="large" placeholder="235" />
                             </Form.Item>
-                            <Form.Item name={['contact','centralOfficeCode']} noStyle>
-                                <Input allowClear ref={centralOfficeCodeRef} onChange={handleCentralOfficeCode} maxLength={3} style={{width:'20%'}} size="large" placeholder="380" />
+
+                            <Form.Item rules={[ { pattern: /^\d+$/, message: 'Central Office Code must be a number' },]} name={['contact','centralOfficeCode']} noStyle>
+                                <Input  allowClear ref={centralOfficeCodeRef} onChange={handleCentralOfficeCode} maxLength={3} style={{width:'20%'}} size="large" placeholder="380" />
                             </Form.Item>
+
                             <div style={{height:'40px',margin:'0 .3rem 0 .3rem', display:'inline-flex', alignItems:'center',  verticalAlign:'center'}}>
                             <MinusOutlined style={{color:"#e7e7e7"}} />
                             </div>
-                            <Form.Item name={['contact','tailNumber']} noStyle>
+
+                            <Form.Item  rules={[ { pattern: /^\d+$/, message: 'Tail Number must be a number' },]} name={['contact','tailNumber']} noStyle>
                                 <Input ref={tailNoRef} maxLength={4} style={{width:'20%'}} size="large" placeholder="3480" />
                             </Form.Item>
+
                         </Input.Group>
                     </Form.Item>
 
