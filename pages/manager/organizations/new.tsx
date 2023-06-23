@@ -1,5 +1,5 @@
-import React, { useRef, useState } from "react";
-import {Form, Row, Col, Image, Input,Upload,Button,notification, Typography, Space, Select, Divider, InputRef} from 'antd';
+import React, { useRef, useEffect, useState } from "react";
+import {Form, Row, Col, Image, Input,Upload,Button,notification, Typography, Space, Select, Divider, InputRef, FormInstance} from 'antd';
 import {UploadOutlined, MinusOutlined, ArrowLeftOutlined} from '@ant-design/icons'
 const {Title,Text} = Typography
 const {TextArea} = Input
@@ -223,7 +223,7 @@ export default function NewOrgForm(){
                 <Row>
                     <Col offset={1}> 
                          <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
-                            <Button shape='round' style={{marginRight:'.2rem'}} type='link' onClick={()=>router.back()} icon={<ArrowLeftOutlined/>}/>
+                            <Button shape='round' style={{marginRight:'.2rem'}} type='link' onClick={()=>router.back()} icon={<ArrowLeftOutlined rev={undefined}/>}/>
                             <Title style={{margin:'0'}} level={3}>New Organization</Title>
                         </div>
                     </Col>
@@ -252,6 +252,7 @@ export default function NewOrgForm(){
                     <Form.Item
                         name="name"
                         label="Name"
+                        hasFeedback
                         rules={[{ required: true, message: 'Please input a valid name' }]}
                     >
                         <Input size="large" placeholder="Flexable org" />
@@ -260,9 +261,10 @@ export default function NewOrgForm(){
                     <Form.Item
                         name="email"
                         label='Email'
-                        rules={[{ required: true, message: 'Please input a valid email!' }]}
+                        hasFeedback
+                        rules={[{ required: true, message: 'This field is required!' }, { type: 'email', message: 'Please input a valid email!' }]}
                     >
-                        <Input size="large" placeholder="mujahid.bappai@flexable.com" />
+                        <Input size="large" type="email" placeholder="mujahid.bappai@flexable.com" />
                     </Form.Item>
 
                     <Form.Item
@@ -271,29 +273,29 @@ export default function NewOrgForm(){
                         required
                         rules={[{ required: true, message: 'Please input a valid phone number' }]}
                     >
-                        <Input.Group compact>
+                        <Space.Compact block>
                             <Form.Item initialValue={'+1'} name={['contact','countryCode']} noStyle>
                                 <Input style={{width:'10%'}} disabled size="large"/>
                             </Form.Item>
-                            <Form.Item name={['contact','areaCode']} noStyle>
-                                <Input ref={areaCodeRef} maxLength={3} onChange={handleAreaCodeRef} style={{width:'20%'}} size="large" placeholder="235" />
+                            <Form.Item rules={[ { pattern: /^\d+$/, message: 'Area code must be a number' },]}  name={['contact','areaCode']} noStyle>
+                                <Input  ref={areaCodeRef} maxLength={3} onChange={handleAreaCodeRef} style={{width:'20%'}} size="large" placeholder="235" />
                             </Form.Item>
-                            <Form.Item name={['contact','centralOfficeCode']} noStyle>
+                            <Form.Item rules={[ { pattern: /^\d+$/, message: 'Central code must be a number' },]} name={['contact','centralOfficeCode']} noStyle>
                                 <Input ref={centralOfficeCodeRef} onChange={handleCentralOfficeCode} maxLength={3} style={{width:'20%'}} size="large" placeholder="380" />
                             </Form.Item>
                             <div style={{height:'40px',margin:'0 .3rem 0 .3rem', display:'inline-flex', alignItems:'center',  verticalAlign:'center'}}>
-                            <MinusOutlined style={{color:"#e7e7e7"}} />
+                            <MinusOutlined style={{ color: "#e7e7e7" }} rev={undefined} />
                             </div>
-                            <Form.Item name={['contact','tailNumber']} noStyle>
+                            <Form.Item rules={[ { pattern: /^\d+$/, message: 'Tail number must be a number' },]} name={['contact','tailNumber']} noStyle>
                                 <Input ref={tailNoRef} maxLength={4} style={{width:'20%'}} size="large" placeholder="3480" />
                             </Form.Item>
-                        </Input.Group>
+                        </Space.Compact>
                     </Form.Item>
 
                     <Form.Item 
                         name="address"
                         label='Address'
-                        // hasFeedback
+                        hasFeedback
                         rules={[{ required: true, message: 'Please input a valid address!' }]}
                     >
                         {/* <TextArea rows={3} placeholder='Apt. 235 30B NorthPointsettia Street, Syracuse'/> */}
@@ -349,11 +351,13 @@ export default function NewOrgForm(){
                         <Space >
                             <Button shape="round" onClick={()=>{}} type='ghost'>
                                 Cancel
-                            </Button>
+                            </Button> 
 
-                            <Button shape="round" type="primary" size="large" loading={isHashingAssets || isCreatingData}  htmlType="submit" >
-                                Create Organization
-                            </Button>
+                            <SubmitButton
+                                isCreatingData={isCreatingData}
+                                isHashingAssets={isHashingAssets}
+                                form={form}
+                            />
                         </Space>
                         
                     </Form.Item>
@@ -364,3 +368,39 @@ export default function NewOrgForm(){
        </div>    
     )
 }
+
+
+interface SubmitButtonProps{
+    isHashingAssets: boolean,
+    isCreatingData: boolean,
+    form: FormInstance
+}
+
+
+const SubmitButton = ({ form, isCreatingData, isHashingAssets }:SubmitButtonProps) => {
+    const [submittable, setSubmittable] = useState(false);
+  
+    // Watch all values
+    const values = Form.useWatch([], form);
+
+    const router = useRouter() 
+  
+    useEffect(() => {
+        
+
+      form.validateFields({validateOnly:true}).then(
+        (res) => {
+          setSubmittable(true);
+        },
+        () => {
+          setSubmittable(false);
+        },
+      );
+    }, [values]);
+  
+    return (
+        <Button shape="round" type="primary" disabled={!submittable} size="large" loading={isHashingAssets || isCreatingData}  htmlType="submit" >
+        Create Organization
+     </Button>
+    );
+  };
