@@ -1,9 +1,10 @@
-import React, { useRef, useState } from "react";
-import {Form, Row, Col, Image, Tooltip, Input,Upload,Button,notification, Typography, Space, Select, Radio, Divider, TimePicker, InputRef} from 'antd';
+import React, { useRef, useState, useEffect } from "react";
+import {Form, Row, Col, Image, Tooltip, Input, Upload, Button, notification, Typography, Space, Select, Radio, Divider, TimePicker, InputRef, FormInstance} from 'antd';
 import {UploadOutlined,MinusOutlined, QuestionCircleOutlined, ArrowLeftOutlined, InfoCircleOutlined,  InboxOutlined} from '@ant-design/icons'
+
 const {Title,Text} = Typography
 const {TextArea} = Input
-import dayjs from 'dayjs'
+
 var utc = require('dayjs/plugin/utc')
 
 
@@ -33,9 +34,6 @@ export default function NewService(){
 
     const queryClient = useQueryClient()
 
-
-
-
     const {paseto} = useAuthContext()
     const {currentOrg} = useOrgContext()
 
@@ -47,6 +45,7 @@ export default function NewService(){
         country:'',
         city:''
     })
+
     const [isHashingAssets, setIsHashingAssets] = useState(false)
     const [logoImage, setLogoImage] = useState(PLACEHOLDER_IMAGE)
 
@@ -213,7 +212,8 @@ export default function NewService(){
                 <Row>
                     <Col offset={1}> 
                          <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
-                            <Button shape='round' style={{marginRight:'.3rem'}} type='link' onClick={()=>router.back()} icon={<ArrowLeftOutlined/>}/>
+                            {/* @ts-ignore */}
+                            <Button shape='round' style={{marginRight:'.3rem'}} type='link' onClick={()=>router.back()} icon={<ArrowLeftOutlined />} />
                             <Title style={{margin:'0'}} level={3}>{`New ${router.isReady?router.query.label:'...'}`}</Title>
                         </div>
                     </Col>
@@ -259,6 +259,8 @@ export default function NewService(){
                     <Form.Item  
                         name="address"
                         label='Address'
+                        hasFeedback
+                        // @ts-ignore
                         extra={<Text type="secondary"><InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} /> Please refresh the page if the address you selected is not being displayed in the field </Text> }
                         rules={[{ required: true, message: 'Please input a valid address!' }]}
                     >
@@ -290,7 +292,7 @@ export default function NewService(){
                             // { pattern: /^\d+$/, message: 'All values must be a number' },
                         ]}
                     >
-                        <Input.Group compact>
+                        <Space.Compact block>
 
                             <Form.Item  initialValue={'+1'} name={['contact','countryCode']} noStyle>
                                 <Input allowClear style={{width:'10%'}} disabled size="large"/>
@@ -305,14 +307,14 @@ export default function NewService(){
                             </Form.Item>
 
                             <div style={{height:'40px',margin:'0 .3rem 0 .3rem', display:'inline-flex', alignItems:'center',  verticalAlign:'center'}}>
-                            <MinusOutlined style={{color:"#e7e7e7"}} />
+                            {/* <MinusOutlined style={{ color: "#e7e7e7" }} /> */}
                             </div>
 
                             <Form.Item  rules={[ { pattern: /^\d+$/, message: 'Tail Number must be a number' },]} name={['contact','tailNumber']} noStyle>
                                 <Input ref={tailNoRef} maxLength={4} style={{width:'20%'}} size="large" placeholder="3480" />
                             </Form.Item>
 
-                        </Input.Group>
+                        </Space.Compact>
                     </Form.Item>
 
 {/* 
@@ -346,6 +348,7 @@ export default function NewService(){
                         <Title level={3}>Image Upload</Title>
                         <Text >Your logo and artwork will be visible on marketplace</Text>
                         <Tooltip trigger={['click']} placement='right' title={<LogoTip/>}>
+                        {/* @ts-ignore */}
                             <Button type="link">Show me <QuestionCircleOutlined /></Button>
                         </Tooltip>
                     </div>
@@ -390,13 +393,15 @@ export default function NewService(){
                     {/* onCancelFormCreation */}
                     <Form.Item style={{marginTop:'4rem'}}>
                         <Space>
-                            <Button shape="round" onClick={()=>{}} type='ghost'>
+                            <Button shape="round" onClick={()=>router.back()} type='ghost'>
                                 Cancel
                             </Button>
 
-                            <Button shape="round" type="primary" size="large" loading={isHashingAssets || isCreatingData}  htmlType="submit" >
-                               {router.isReady? `Launch ${router.query.label}`: '...'}
-                            </Button>
+                           <SubmitButton
+                            form={form}
+                            isHashingAssets={isHashingAssets}
+                            isCreatingData = {isCreatingData}
+                           />
                         </Space>     
                     </Form.Item>
 
@@ -417,3 +422,40 @@ function LogoTip(){
         </div>
     ) 
 }
+
+interface SubmitButtonProps{
+    isHashingAssets: boolean,
+    isCreatingData: boolean,
+    form: FormInstance
+}
+
+const SubmitButton = ({ form, isCreatingData, isHashingAssets }:SubmitButtonProps) => {
+    const [submittable, setSubmittable] = useState(false);
+  
+    // Watch all values
+    const values = Form.useWatch([], form);
+
+    const router = useRouter() 
+  
+    useEffect(() => {
+        
+
+      form.validateFields({validateOnly:true}).then(
+        (res) => {
+            console.log('issubmittable',res)
+          setSubmittable(true);
+        },
+        () => {
+            console.log('isNot')
+          setSubmittable(false);
+        },
+      );
+    }, [values]);
+  
+    return (
+        <Button shape="round" type="primary" disabled={!submittable} size="large" loading={isHashingAssets || isCreatingData}  htmlType="submit" >
+        {router.isReady? `Launch ${router.query.label}`: '...'}
+     </Button>
+    );
+  };
+  
