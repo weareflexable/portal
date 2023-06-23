@@ -247,7 +247,7 @@ export default function NewService(){
                         rules={[
                             { required: true, message: 'This field is required' },
                             { pattern:/^[A-Za-z ]+$/, message: 'Please provide only string values' },
-                            { max: 20, message: 'Sorry, your service name cant be more than 20 characters' },
+                            { max: 100, message: 'Sorry, your service name cant be more than 100 characters' },
                     
                             ]}
                     >
@@ -439,7 +439,6 @@ const SubmitButton = ({ form, isCreatingData, isHashingAssets }:SubmitButtonProp
   
     useEffect(() => {
         
-
       form.validateFields({validateOnly:true}).then(
         (res) => {
             console.log('issubmittable',res)
