@@ -264,7 +264,7 @@ function gotoServiceItemsPage(service:Service){
         if(currentFilter.name === 'In-active'){
           return (<Button  onClick={()=>reactivateService.mutate(record)}>Reactivate</Button>)
         }else{
-          return <Button onClick= {()=>onMenuClick(record)} type="text" icon={<MoreOutlined/>}/> 
+          return <Button onClick= {()=>onMenuClick(record)} type="text" icon={<MoreOutlined rev={undefined}/>}/> 
         }
       }
     }
@@ -295,8 +295,8 @@ function gotoServiceItemsPage(service:Service){
                           )}
                       </Radio.Group>
                       <div style={{display:'flex'}}>
-                        <Button shape='round' style={{marginRight:'1rem'}} loading={servicesQuery.isRefetching} onClick={()=>servicesQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
-                        <Dropdown.Button  trigger={['click']} type="primary"   icon={<PlusOutlined/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
+                        <Button shape='round' style={{marginRight:'1rem'}} loading={servicesQuery.isRefetching} onClick={()=>servicesQuery.refetch()} icon={<ReloadOutlined rev={undefined} />}>Refresh</Button>
+                        <Dropdown.Button  trigger={['click']} type="primary"   icon={<PlusOutlined rev={undefined}/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
                       </div>
                     </div>
 
@@ -310,15 +310,17 @@ function gotoServiceItemsPage(service:Service){
                 {
                   allServicesQuery.data && allServicesLength === 0
                   ? <EmptyState>
-                      <Dropdown.Button trigger={['click']} type="primary"   icon={<PlusOutlined/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
+                      <Dropdown.Button trigger={['click']} type="primary"   icon={<PlusOutlined rev={undefined}/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
                   </EmptyState> 
                   : <Table 
                       style={{width:'100%'}} 
                       scroll={{ x: 'calc(500px + 50%)'}} 
                       size='large' 
                       rowKey={(record)=>record.id}
+                      // @ts-ignore 
                       onChange={handleChange} 
                       loading={servicesQuery.isLoading || servicesQuery.isRefetching} 
+                      // @ts-ignore 
                       columns={columns} 
                       dataSource={data||[]}
                       pagination={{

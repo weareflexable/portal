@@ -170,7 +170,7 @@ export default function ServiceItemTypesView(){
       width:'70px',
       render:(_,record)=>{
         // const items = getTableRecordActions()
-        return (<Button type="text" icon={<MoreOutlined/>} onClick={()=>viewServiceItemTypeDetails(record)}/>)
+        return (<Button type="text" icon={<MoreOutlined rev={undefined}/>} onClick={()=>viewServiceItemTypeDetails(record)}/>)
       } 
     }
     ];
@@ -187,7 +187,7 @@ export default function ServiceItemTypesView(){
                     )}
                 </Radio.Group>}
                 <div style={{width: "100%",display:'flex', justifyContent:'flex-end', alignItems:'center'}}>
-                  <Button type='link' loading={serviceItemTypesQuery.isRefetching} onClick={()=>serviceItemTypesQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                  <Button type='link' loading={serviceItemTypesQuery.isRefetching} onClick={()=>serviceItemTypesQuery.refetch()} icon={<ReloadOutlined rev={undefined} />}>Refresh</Button>
                   <Button
                    disabled
                     type="primary"
@@ -205,6 +205,7 @@ export default function ServiceItemTypesView(){
                 scroll={{ x: 'calc(500px + 50%)'}} 
                  key='dfadfe' 
                  loading={serviceItemTypesQuery.isLoading||serviceItemTypesQuery.isRefetching} 
+                 // @ts-ignore 
                  columns={columns}  
                  dataSource={serviceItemTypesQuery && serviceItemTypesQuery.data && serviceItemTypesQuery.data.data || []}
                   />

@@ -146,7 +146,7 @@ export default function UsersView(){
         key: 'country',
         width:'150px',
         render: (_,record)=>{
-          return record.country !== '' ? <Text style={{textTransform:'capitalize'}}>{record.country}</Text> : <DashOutlined/>
+          return record.country !== '' ? <Text style={{textTransform:'capitalize'}}>{record.country}</Text> : <DashOutlined rev={undefined}/>
           // <div style={{display:'flex',flexDirection:'column'}}>
           //   <Text>{record.country}</Text>
           //   {/* <Text type="secondary">{record.city}</Text> */}
@@ -162,7 +162,7 @@ export default function UsersView(){
         width:'100px',
         render: (gender)=>{
 
-          return gender !== '' ? <Text>{gender}</Text> : <DashOutlined />
+          return gender !== '' ? <Text>{gender}</Text> : <DashOutlined rev={undefined} />
         }
       },
       {
@@ -171,7 +171,7 @@ export default function UsersView(){
         key: 'contactNumber',
         width:'200px',
         render:(contactNumber)=>{
-          return contactNumber !== ''? <Text>{convertToAmericanFormat(contactNumber)}</Text> : <DashOutlined/>
+          return contactNumber !== ''? <Text>{convertToAmericanFormat(contactNumber)}</Text> : <DashOutlined rev={undefined}/>
         }
       },
       // {
@@ -187,8 +187,8 @@ export default function UsersView(){
         key: 'deviceType',
         width:'120px',
         render: (deviceType)=>{
-          const deviceIcon = deviceType === 'mobile' ? <MobileOutlined /> : <LaptopOutlined />
-          return deviceType !== '' ? <Tag icon={deviceIcon} style={{textTransform:'capitalize'}}>{deviceType}</Tag> : <DashOutlined />
+          const deviceIcon = deviceType === 'mobile' ? <MobileOutlined rev={undefined} /> : <LaptopOutlined rev={undefined} />
+          return deviceType !== '' ? <Tag icon={deviceIcon} style={{textTransform:'capitalize'}}>{deviceType}</Tag> : <DashOutlined rev={undefined} />
         }
         
       },
@@ -199,7 +199,7 @@ export default function UsersView(){
         key: 'userType',
         width:'100px',
         render: (userType)=>{
-          return userType !== '' ? <Tag style={{textTransform:'capitalize'}}>{userType}</Tag> : <DashOutlined />
+          return userType !== '' ? <Tag style={{textTransform:'capitalize'}}>{userType}</Tag> : <DashOutlined rev={undefined} />
         }
         
       },
@@ -235,7 +235,7 @@ export default function UsersView(){
       fixed: 'right',
       render:(_,record)=>{
         // const items = getTableRecordActions()
-        return (<Button icon={<MoreOutlined/>} type='text' onClick={()=>viewUserDetails(record)}/>)
+        return (<Button icon={<MoreOutlined rev={undefined}/>} type='text' onClick={()=>viewUserDetails(record)}/>)
       } 
     }
     ];
@@ -251,7 +251,7 @@ export default function UsersView(){
                 </Radio.Group> */}
                 {/* <div style={{width: "100%",display:'flex', marginTop:'2rem', justifyContent:'flex-end', alignItems:'center'}}> */} 
                   <Title style={{margin:'0'}} level={2}>Users</Title>
-                  <Button shape="round" loading={usersQuery.isRefetching} onClick={()=>usersQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                  <Button shape="round" loading={usersQuery.isRefetching} onClick={()=>usersQuery.refetch()} icon={<ReloadOutlined rev={undefined} />}>Refresh</Button>
                 {/* </div> */}
 
                 </div>
@@ -264,8 +264,10 @@ export default function UsersView(){
                     total:totalLength,  
                     showTotal:(total) => `Total ${total} items`,
                   }} 
+                  // @ts-ignore 
                   onChange={handleChange}
                   loading={usersQuery.isLoading||usersQuery.isRefetching} 
+                  // @ts-ignore 
                   columns={columns}  
                   dataSource={data} 
                   />

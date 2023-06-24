@@ -112,7 +112,7 @@ const {Text, Title} = Typography
             <Col style={{display:'flex', justifyContent:'space-between',alignItems:'center'}} span={23}>
                 <div style={{display:'flex', flex:'7',  height:'100%'}}>
                   <div style={{marginRight:'2rem',  width:'100%',  marginBottom:'0', display:'flex', alignItems:'center'}}>
-                    <Button type='link' onClick={()=>router.push('/organizations/venues')} icon={<LeftOutlined />}/>
+                    <Button type='link' onClick={()=>router.push('/organizations/venues')} icon={<LeftOutlined rev={undefined} />}/>
                     <Title ellipsis style={{marginLeft:'.5rem', width:'100%',  padding:'0', marginBottom:'0', display:'flex', alignItems:'center'}} level={4}>{isHydrated?currentService.name:'...'}</Title>
                   </div>
                   <Menu theme="light" style={{background:'#f7f7f7',  width:'100%'}} mode="horizontal" defaultSelectedKeys={[currentPage]} selectedKeys={[currentPage]} onSelect={onClickNavItemHandler} items={items} />

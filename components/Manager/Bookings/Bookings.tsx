@@ -210,7 +210,7 @@ export default function ManagerBookingsView(){
       fixed:'right',
       render: (paymentStatus)=>{
         const color = paymentStatus === 'successful'?'green':paymentStatus === 'failed'?'red':paymentStatus === 'cancelled'?'grey':'blue'
-        const icon = paymentStatus === 'successful'?<CheckOutlined />:paymentStatus === 'cancelled'?<StopOutlined />:null
+        const icon = paymentStatus === 'successful'?<CheckOutlined rev={undefined} />:paymentStatus === 'cancelled'?<StopOutlined rev={undefined} />:null
         return <Tag icon={icon} color={color} style={{textTransform:'capitalize'}}>{paymentStatus}</Tag>
       }
     },
@@ -251,7 +251,7 @@ export default function ManagerBookingsView(){
                             <Text>{` · ${dayjs(bookingsQuery.dataUpdatedAt).tz('America/New_York').format('HH:mm:ss')} secs ago`}</Text>
                           </div>
                       </div>
-                      <Button shape="round" loading={bookingsQuery.isRefetching} onClick={()=>bookingsQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                      <Button shape="round" loading={bookingsQuery.isRefetching} onClick={()=>bookingsQuery.refetch()} icon={<ReloadOutlined rev={undefined} />}>Refresh</Button>
                   </div>
                </div>
                 <Table 
@@ -260,11 +260,13 @@ export default function ManagerBookingsView(){
                   size='small'  
                   scroll={{ x: 'calc(450px + 50%)'}} 
                   loading={bookingsQuery.isLoading||bookingsQuery.isRefetching} 
+                  // @ts-ignore 
                   columns={columns} 
                   pagination={{
                     total:totalLength,  
                     showTotal:(total) => `Total ${total} items`,
                   }} 
+                  // @ts-ignore 
                   onChange={handleChange} 
                   dataSource={data} 
                   />

@@ -115,7 +115,7 @@ const {Text, Title} = Typography
             <Col style={{display:'flex', justifyContent:'space-between',alignItems:'center'}} span={23}>
                 <div style={{display:'flex',   height:'100%', justifyContent:'space-between'}}>
                   <div style={{marginRight:'4rem', marginBottom:'0', display:'flex', alignItems:'center'}}>
-                    <Button type='link' onClick={()=>router.push('/organizations/communities')} icon={<LeftOutlined />}/>
+                    <Button type='link' onClick={()=>router.push('/organizations/communities')} icon={<LeftOutlined rev={undefined} />}/>
                     <Title style={{marginLeft:'.5rem', padding:'0', marginBottom:'0', display:'flex', alignItems:'center'}} level={4}>{isHydrated?currentCommunity.name:'...'}</Title>
                   </div>
                   <Menu theme="light" style={{background:'#f7f7f7'}} mode="horizontal" defaultSelectedKeys={[currentPage]} selectedKeys={[currentPage]} onSelect={onClickNavItemHandler} items={items} />

@@ -132,21 +132,21 @@ const navItems=[
   {
     key:'organizations',
     label:<Link href='/manager/organizations'>Organizations</Link>,
-    icon: <BranchesOutlined />
+    icon: <BranchesOutlined rev={undefined} />
   },
   {
     key:'bookings',
     label:<Link href='/manager/bookings/venues'>Bookings</Link>,
-    icon: <BookOutlined />
+    icon: <BookOutlined rev={undefined} />
   },
   {
     key:'users',
     label:<Link href='/manager/users'>Users</Link>,
-    icon: <UserOutlined />
+    icon: <UserOutlined rev={undefined} />
   },
   {
     key:'platform',
     label:<Link href='/manager/platform/service-types'>Platform</Link>,
-    icon: <BankOutlined />
+    icon: <BankOutlined rev={undefined} />
   },
 ]

@@ -236,7 +236,7 @@ function CommunityVenues(){
         if(currentFilter.name === 'In-active'){
           return (<Button   onClick={()=>reactivateVenue.mutate(record)}>Reactivate</Button>)
         }else{
-          return <Button type="text" onClick={()=>viewDetails(record)} icon={<MoreOutlined/>}/> 
+          return <Button type="text" onClick={()=>viewDetails(record)} icon={<MoreOutlined rev={undefined}/>}/> 
         }
       }
     }
@@ -250,8 +250,8 @@ function CommunityVenues(){
                  <div style={{width:'100%',  marginBottom:'1rem', marginTop:'2rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                       <Title style={{margin: '0'}} level={2}>Community Venues</Title>
                       <div style={{display:'flex'}}>
-                        <Button shape='round' style={{marginRight:'1rem'}} loading={communityVenuesQuery.isRefetching} onClick={()=>communityVenuesQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
-                        <Button type="primary" onClick={()=>{router.push('/organizations/communities/communityVenues/new')}}   icon={<PlusOutlined/>} >Add Venue</Button>
+                        <Button shape='round' style={{marginRight:'1rem'}} loading={communityVenuesQuery.isRefetching} onClick={()=>communityVenuesQuery.refetch()} icon={<ReloadOutlined rev={undefined} />}>Refresh</Button>
+                        <Button type="primary" onClick={()=>{router.push('/organizations/communities/communityVenues/new')}}   icon={<PlusOutlined rev={undefined}/>} >Add Venue</Button>
                       </div>
                     </div>
                   <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
@@ -270,7 +270,7 @@ function CommunityVenues(){
                 {
                   servicesData && allCommunityVenuesLength === 0
                   ?<EmptyState>
-                    <Button type="primary" onClick={()=>{router.push('/organizations/communities/communityVenues/new')}} icon={<PlusOutlined/>} >Add Venue</Button>
+                    <Button type="primary" onClick={()=>{router.push('/organizations/communities/communityVenues/new')}} icon={<PlusOutlined rev={undefined}/>} >Add Venue</Button>
                   </EmptyState>
                   :<Table 
                   style={{width:'100%'}} 
@@ -281,7 +281,9 @@ function CommunityVenues(){
                     showTotal:(total) => `Total ${total} items`,
                   }} 
                   loading={communityVenuesQuery.isLoading || communityVenuesQuery.isRefetching} 
+                  // @ts-ignore 
                   columns={columns} 
+                  // @ts-ignore 
                   onChange={handleChange} 
                   dataSource={servicesData} 
                 />

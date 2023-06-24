@@ -158,7 +158,7 @@ export default function ServiceTypesView(){
       width:'70px',
       render:(_,record)=>{
         // const items = getTableRecordActions()
-        return (<Button type="text" icon={<MoreOutlined/>} onClick={()=>viewServiceTypeDetails(record)}/>)
+        return (<Button type="text" icon={<MoreOutlined rev={undefined}/>} onClick={()=>viewServiceTypeDetails(record)}/>)
       } 
     }
     ];
@@ -173,7 +173,7 @@ export default function ServiceTypesView(){
                     )}
                 </Radio.Group> */}
                 <div style={{width: "100%",display:'flex', justifyContent:'flex-end', alignItems:'center'}}>
-                  <Button type='link' loading={ServiceTypesQuery.isRefetching} onClick={()=>ServiceTypesQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                  <Button type='link' loading={ServiceTypesQuery.isRefetching} onClick={()=>ServiceTypesQuery.refetch()} icon={<ReloadOutlined rev={undefined} />}>Refresh</Button>
                   <Button
                    disabled
                     type="primary"
@@ -191,6 +191,7 @@ export default function ServiceTypesView(){
                   scroll={{ x: 'calc(500px + 50%)'}} 
                   key='dfadfe' 
                   loading={ServiceTypesQuery.isLoading||ServiceTypesQuery.isRefetching} 
+                  // @ts-ignore 
                   columns={columns}  
                   dataSource={ServiceTypesQuery && ServiceTypesQuery.data && ServiceTypesQuery.data.data || []}
                 />

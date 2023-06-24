@@ -86,7 +86,7 @@ export default function CreateBankAccountForm(){
                 <Row>
                     <Col offset={1}> 
                         <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
-                            <Button shape='round' style={{marginRight:'.2rem'}} type='link' onClick={()=>router.back()} icon={<ArrowLeftOutlined/>}/>
+                            <Button shape='round' style={{marginRight:'.2rem'}} type='link' onClick={()=>router.back()} icon={<ArrowLeftOutlined rev={undefined}/>}/>
                             <Title style={{margin:'0'}} level={3}>Add Bank Details</Title>
                         </div>
                     </Col>
