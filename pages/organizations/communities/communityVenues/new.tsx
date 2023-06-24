@@ -1,5 +1,5 @@
-import React, { useRef, useState } from "react";
-import {Form, Row, Col, Image, Tooltip, Input,Upload,Button,notification, Typography, Space, Select, Radio, Divider, TimePicker, InputRef} from 'antd';
+import React, { useEffect, useRef, useState } from "react";
+import {Form, Row, Col, Image, Tooltip, Input,Upload,Button,notification, Typography, Space, Select, Radio, Divider, TimePicker, InputRef, FormInstance} from 'antd';
 import {UploadOutlined,MinusOutlined, QuestionCircleOutlined, ArrowLeftOutlined, InfoCircleOutlined,  InboxOutlined} from '@ant-design/icons'
 const {Title,Text} = Typography
 const {TextArea} = Input
@@ -186,7 +186,7 @@ export default function NewCommunityVenue(){
                 <Row>
                     <Col offset={1}> 
                          <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
-                            <Button shape='round' style={{marginRight:'.3rem'}} type='link' onClick={()=>router.back()} icon={<ArrowLeftOutlined/>}/>
+                            <Button shape='round' style={{marginRight:'.3rem'}} type='link' onClick={()=>router.back()} icon={<ArrowLeftOutlined rev={undefined}/>}/>
                             <Title style={{margin:'0'}} level={3}>New Venue</Title>
                         </div>
                     </Col>
@@ -213,15 +213,15 @@ export default function NewCommunityVenue(){
                     <Form.Item
                         name="name"
                         label="Name" 
-                        
+                        hasFeedback
                         // extra="The name you provide here will be used as display on marketplace listing"
-                        rules={[{ required: true, message: 'Please input a valid service name' }]}
+                        rules={[{ required: true, message: 'Please input a valid service name'}]}
                     >
                         <Input allowClear size="large" placeholder="Bill Cage coffee" />
                     </Form.Item>
 
 
-                    <Form.Item name='promotion' rules={[{ required: true, message: 'Please write a what promotion you are offering' }]}  label="Promotion">
+                    <Form.Item name='promotion' hasFeedback rules={[{ required: true, message: 'Please write a what promotion you are offering' }]}  label="Promotion">
                         <TextArea allowClear maxLength={500} size='large' showCount  placeholder='Tell us more about this venue' rows={2} />
                     </Form.Item>
 
@@ -229,10 +229,14 @@ export default function NewCommunityVenue(){
                         <Col span={16} style={{height:'100%'}}>
                             <Form.Item
                                 name='marketValue'
+                                hasFeedback
                                 extra="Market Value of the promotion is required so that the Community DAT can be properly priced on the Marketplace"
                                 label='Market Value'
                                 style={{width:'100%'}}
-                                rules={[{ required: true, message: 'Please input a valid price!' }]}
+                                rules={[
+                                    { required: true, message: 'This field is required!' },
+                                    { pattern: /^\d+$/, message: 'Value must be a number'}
+                                ]}
                             >
                                 <Input size='large' style={{width:'100%'}}  prefix="$" placeholder="0.00" /> 
                             </Form.Item> 
@@ -243,8 +247,12 @@ export default function NewCommunityVenue(){
                     <Form.Item  
                         name="address"
                         label='Address'
-                        extra={<Text type="secondary"><InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} /> Please refresh the page if the address you selected is not being displayed in the field </Text> }
-                        rules={[{ required: true, message: 'Please input a valid address!' }]}
+                        hasFeedback
+                        extra={<Text type="secondary"><InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} rev={undefined} /> Please refresh the page if the address you selected is not being displayed in the field </Text> }
+                        rules={[
+                            { required: true, message: 'This field is required!'},
+                            
+                        ]}
                     >
                         <Input 
                             // suffix={
@@ -268,29 +276,29 @@ export default function NewCommunityVenue(){
                         // name="contactNumber"
                         label="Contact Number"
                         required
+                        hasFeedback
                         style={{marginBottom:'0'}}
-                        rules={[{ required: true, message: 'Please input a valid phone number' }]}
-                    >
-                        <Input.Group compact>
+
+                    > 
+                        <Space.Compact block>
                             <Form.Item initialValue={'+1'} name={['contact','countryCode']} noStyle>
                                 <Input allowClear style={{width:'10%'}} disabled size="large"/>
                             </Form.Item>
-                            <Form.Item name={['contact','areaCode']} noStyle>
-                                <Input allowClear ref={areaCodeRef} maxLength={3} onChange={handleAreaCodeRef} style={{width:'20%'}} size="large" placeholder="235" />
+                            <Form.Item hasFeedback  rules={[ { required: true, message: 'This field is required' }, { pattern: /^\d+$/, message: 'Area code must be a number' },]}  name={['contact','areaCode']} noStyle>
+                                <Input ref={areaCodeRef} maxLength={3} onChange={handleAreaCodeRef} style={{width:'20%'}} size="large" placeholder="235" />
                             </Form.Item>
-                            <Form.Item name={['contact','centralOfficeCode']} noStyle>
-                                <Input allowClear ref={centralOfficeCodeRef} onChange={handleCentralOfficeCode} maxLength={3} style={{width:'20%'}} size="large" placeholder="380" />
+                            <Form.Item hasFeedback  rules={[ { required: true, message: 'This field is required' }, { pattern: /^\d+$/, message: 'Central office code must be a number' },]}  name={['contact','centralOfficeCode']} noStyle>
+                                <Input  ref={centralOfficeCodeRef} onChange={handleCentralOfficeCode} maxLength={3} style={{width:'20%'}} size="large" placeholder="380" />
                             </Form.Item>
                             <div style={{height:'40px',margin:'0 .3rem 0 .3rem', display:'inline-flex', alignItems:'center',  verticalAlign:'center'}}>
-                            <MinusOutlined style={{color:"#e7e7e7"}} />
+                            <MinusOutlined style={{ color: "#e7e7e7" }} rev={undefined} />
                             </div>
-                            <Form.Item name={['contact','tailNumber']} noStyle>
+                            <Form.Item hasFeedback  rules={[ { required: true, message: 'This field is required' }, {min:4, message: 'Field has to be 4 digits'}, { pattern: /^\d+$/, message: 'Tail number must be a number' },]}  name={['contact','tailNumber']} noStyle>
                                 <Input ref={tailNoRef} maxLength={4} style={{width:'20%'}} size="large" placeholder="3480" />
                             </Form.Item>
-                        </Input.Group>
+                        </Space.Compact>
                     </Form.Item>
 
-                    
                 </div>
 
 
@@ -302,9 +310,10 @@ export default function NewCommunityVenue(){
                                 Cancel
                             </Button>
 
-                            <Button shape="round" type="primary" size="large" loading={isCreatingData}  htmlType="submit" >
-                               Add Venue
-                            </Button>
+                            <SubmitButton
+                                form={form}
+                                isCreatingData={isCreatingData}
+                            />
                         </Space>     
                     </Form.Item>
 
@@ -315,3 +324,40 @@ export default function NewCommunityVenue(){
     )
 }
 
+
+
+
+
+interface SubmitButtonProps{
+    isCreatingData: boolean,
+    form: FormInstance
+}
+
+
+const SubmitButton = ({ form, isCreatingData }:SubmitButtonProps) => {
+    const [submittable, setSubmittable] = useState(false);
+  
+    // Watch all values
+    const values = Form.useWatch([], form);
+
+    const router = useRouter() 
+  
+    useEffect(() => {
+        
+
+      form.validateFields({validateOnly:true}).then(
+        (res) => {
+          setSubmittable(true);
+        },
+        () => {
+          setSubmittable(false);
+        },
+      );
+    }, [values]);
+  
+    return (
+        <Button shape="round" type="primary" disabled={!submittable} size="large" loading={ isCreatingData}  htmlType="submit" >
+        Create Organization
+     </Button>
+    );
+  };

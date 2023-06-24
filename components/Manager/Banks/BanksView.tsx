@@ -196,7 +196,7 @@ export default function BankView(){
         const items = getCurrentFilterActions()
         return (
         <Dropdown menu={{ items , onClick: (e)=>onMenuClick(e,record) }}>
-            <MoreOutlined />
+            <MoreOutlined rev={undefined} />
             </Dropdown>)
       } 
     }
@@ -211,14 +211,16 @@ export default function BankView(){
                      )
                     )} 
                 </Radio.Group>
-                <Button type='link' loading={banksQuery.isRefetching} onClick={()=>banksQuery.refetch()} icon={<ReloadOutlined />}>Refresweh</Button>
+                <Button type='link' loading={banksQuery.isRefetching} onClick={()=>banksQuery.refetch()} icon={<ReloadOutlined rev={undefined} />}>Refresweh</Button>
 
                 </div>
                 <Table 
                   style={{width:'100%'}} 
                   rowKey={(record)=>record.id}
+                  // @ts-ignore
                   onChange={handleChange} 
                   loading={banksQuery.isLoading||banksQuery.isRefetching} 
+                  // @ts-ignore
                   columns={columns} 
                   dataSource={data} 
                   pagination={{

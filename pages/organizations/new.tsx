@@ -384,11 +384,9 @@ const SubmitButton = ({ form, isCreatingData, isHashingAssets }:SubmitButtonProp
 
       form.validateFields({validateOnly:true}).then(
         (res) => {
-            console.log('issubmittable',res)
           setSubmittable(true);
         },
         () => {
-            console.log('isNot')
           setSubmittable(false);
         },
       );
