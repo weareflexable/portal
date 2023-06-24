@@ -830,19 +830,15 @@ const SubmitButton = ({ form, isCreatingData, isHashingAssets }:SubmitButtonProp
   
     // Watch all values
     const values = Form.useWatch([], form);
-
-    const router = useRouter() 
   
     useEffect(() => {
         
 
       form.validateFields({validateOnly:true}).then(
         (res) => {
-            console.log('issubmittable',res)
           setSubmittable(true);
         },
         () => {
-            console.log('isNot')
           setSubmittable(false);
         },
       );
@@ -850,7 +846,7 @@ const SubmitButton = ({ form, isCreatingData, isHashingAssets }:SubmitButtonProp
   
     return (
         <Button shape="round" type="primary" disabled={!submittable} size="large" loading={isHashingAssets || isCreatingData}  htmlType="submit" >
-        Create Community
+       Add Venue
      </Button>
     );
   };

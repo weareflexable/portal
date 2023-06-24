@@ -357,7 +357,7 @@ const SubmitButton = ({ form, isCreatingData }:SubmitButtonProps) => {
   
     return (
         <Button shape="round" type="primary" disabled={!submittable} size="large" loading={ isCreatingData}  htmlType="submit" >
-        Create Organization
+        Add Venue
      </Button>
     );
   };

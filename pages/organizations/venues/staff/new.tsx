@@ -1,9 +1,10 @@
-import { Row, Col, Button, Form, Input, Space, Typography, notification } from "antd";
+import { Row, Col, Button, Form, Input, Space, Typography, notification, FormInstance } from "antd";
 const {Title, Text} = Typography
-import router from "next/router";
+import router, { useRouter } from "next/router";
 import { useServicesContext } from "../../../../context/ServicesContext";
 import { Staff } from "../../../../types/Staff";
 import {ArrowLeftOutlined} from '@ant-design/icons'
+import { useState, useEffect } from "react";
 
 
 export default function NewStaffForm(){
@@ -34,7 +35,7 @@ export default function NewStaffForm(){
                 <Row>
                     <Col offset={1}> 
                         <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
-                            <Button shape='round' style={{marginRight:'1rem'}} type='text' onClick={()=>router.back()} icon={<ArrowLeftOutlined/>}/>
+                            <Button shape='round' style={{marginRight:'1rem'}} type='text' onClick={()=>router.back()} icon={<ArrowLeftOutlined rev={undefined}/>}/>
                             <Title style={{margin:'0'}} level={3}>Add staff to service</Title>
                         </div>
                     </Col>
@@ -52,7 +53,8 @@ export default function NewStaffForm(){
             <Form.Item
                 name="emailId"
                 label="Email"
-                rules={[{ required: true, message: 'Please input a valid email' }]}
+                hasFeedback
+                rules={[{type:'email', message: 'Please provide a valid email address'},{ required: true, message: 'Please input a valid email' }]}
              >
                 <Input placeholder="eg. billcage@yahoo.com" />
             </Form.Item>
@@ -92,3 +94,39 @@ export default function NewStaffForm(){
         </div>
     )
 }
+
+
+interface SubmitButtonProps{
+    isLoading: boolean,
+    form: FormInstance
+  }
+  
+  
+  const SubmitButton = ({ form, isLoading }:SubmitButtonProps) => {
+    const [submittable, setSubmittable] = useState(false);
+  
+    // Watch all values
+    const values = Form.useWatch([], form);
+  
+  
+    useEffect(() => {
+        
+  
+      form.validateFields({validateOnly:true}).then(
+        (res) => {
+            console.log('issubmittable',res)
+          setSubmittable(true);
+        },
+        () => {
+            console.log('isNot')
+          setSubmittable(false);
+        },
+      );
+    }, [values]);
+  
+    return (
+        <Button shape="round" type="primary" disabled={!submittable} size="large" loading={isLoading}  htmlType="submit" >
+        Add Staff
+     </Button>
+    );
+  };
