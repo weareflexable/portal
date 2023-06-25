@@ -30,9 +30,9 @@ export default function AvailabilitySection({selectedServiceItem}:Props){
      
      const {data, isLoading} = useQuery({queryKey:['availability',selectedServiceItem.id], queryFn:fetchItemAvailability})
      console.log(data)
-     const availabilityData = data && data[0].availability;
+     const availabilityData = data && data;
 
-     const isAvailabilityEmpty = data && data[0].availability.length == 0
+     const isAvailabilityEmpty = data && data.length == 0
 
      console.log(availabilityData)
 

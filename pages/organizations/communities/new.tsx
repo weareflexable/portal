@@ -690,7 +690,7 @@ function CommunityVenueForm({remove, name, formInstance, restField}:CommunityVen
 
                                 {/* promotion */}
                             <Form.Item  {...restField} name={[name,'promotion']} rules={[{ required: true, message: 'Please write a description for your venue' }]}  label="Promotion">
-                                <TextArea allowClear maxLength={500} size='large' showCount  placeholder='Tell us more about this venue' rows={2} />
+                                <TextArea allowClear maxLength={500} size='large' showCount  placeholder='One flight of our award winning wines' rows={2} />
                             </Form.Item>
 
                             {/* marketValue */}
