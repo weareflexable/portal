@@ -40,6 +40,10 @@ export default function ServiceLayout({children}:ServiceLayoutProps){
         {
             key:'communities',
             label: 'Communities'
+        },
+        {
+            key:'events',
+            label: 'Events'
         }
     ]
 
@@ -53,13 +57,14 @@ export default function ServiceLayout({children}:ServiceLayoutProps){
 
 
     function onChangeHandler(e:any){
-        if(e.key === 'venues'){
-            router.push('/organizations/venues')
-        }else if(e.key === 'communities'){
-            router.push('/organizations/communities')
-        }else{
-            router.push('/organizations/billings')
-        }
+        router.push(`/organizations/${e.key}`)
+        // if(e.key === 'venues'){
+        //     router.push('/organizations/venues')
+        // }else if(e.key === 'communities'){
+        //     router.push('/organizations/communities')
+        // }else{
+        //     router.push('/organizations/billings')
+        // }
 
         setSelectedPage(e.key) 
     }

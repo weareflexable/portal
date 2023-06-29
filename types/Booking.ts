@@ -65,3 +65,16 @@ export interface Order {
     unitPrice: number
     paymentStatus: string
   }
+
+  export type EventOrder = {
+    id: string
+    name: string
+    user: any
+    createdAt: string
+    createdBy: string
+    coverImageHash: string
+    quantity: number
+    price: number
+    unitPrice: number
+    paymentStatus: string
+  }
