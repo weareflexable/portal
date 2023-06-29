@@ -582,7 +582,7 @@ const communityHashes = [
 function LogoTip(){
     return(
         <div>
-            <AntImage style={{objectFit:'cover'}}  src={'/explainers/serviceItem-explainer.png'} alt='Service explainer as displayed on marketplace'/>
+            <AntImage style={{objectFit:'cover'}}  src={'/explainers/artworkHash-explainer.png'} alt='Artwork explainer as displayed on marketplace'/>
             <Text style={{color:'white'}}>{"It is very important to provide the requested image size (2400 x 1200) or else the image will appear distorted on the marketplace"}</Text>
         </div>
     ) 
