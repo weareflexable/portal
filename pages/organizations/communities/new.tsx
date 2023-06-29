@@ -261,18 +261,18 @@ function BasicForm({nextStep}:BasicInfoProps){
 
         <div style={{marginBottom:'2rem', marginTop:'3rem'}}>
             <Title level={3}>Image Upload</Title>
-            <Text >Your logo and artwork will be visible on the marketplace</Text>
-            <Tooltip trigger={['click']} placement='right' title={<LogoTip/>}>
+            <Text >Your logo  will be visible on the marketplace listing</Text> 
+            <Tooltip trigger={['click']} placement='right' title={<LogoTip src='/explainers/community-logo-explainer.png'/>}>
                 <Button type="link">Show me <QuestionCircleOutlined rev={undefined} /></Button>
             </Tooltip>
         </div>
 
         <AntImage alt='community logo' src={logoImage} style={{width:'150px',height:'150px', borderRadius:'50%', border:'1px solid #e5e5e5'}}/>
         <Form.Item
-            name="logoImageHash"
+            name="logoImageHash"  
             valuePropName="logoImageHash"
             getValueFromEvent={extractLogoImage}
-            extra={'Please upload a PNG or JPEG that is 1024px x 1024px'}
+            extra={'Please upload a PNG or JPEG that is 1024px x 1024px'} 
             rules={[{ required: true, message: 'Please upload an image' }]}
         >
             
@@ -493,10 +493,10 @@ function Artwork({onHandleArtwork}:ArtworkProps){
         <div>
             <div style={{display:'flex', marginTop:'3rem',alignItems:'baseline'}}>
                 <Title style={{margin:'0'}} level={3}>Artwork</Title>
-                <Tooltip trigger={['click']} placement='right' title={<LogoTip/>}>
+                <Tooltip trigger={['click']} placement='right' title={<LogoTip src='/explainers/community-artwork-explainer.png'/>}>
                         <Button type="link">Learn more<QuestionCircleOutlined rev={undefined} /></Button>
                 </Tooltip>
-            </div>
+            </div> 
             <div style={{display:'flex',width:'400px', marginTop:'2rem', flexDirection:'column'}}>
                 <div style={{alignSelf:'flex-end',display:'flex'}}>
                 <Button shape='round' icon={<SelectOutlined rev={undefined} />} style={{ marginBottom:'.5rem'}} onClick={toggleDrawer}>Select a different artwork</Button>
@@ -579,10 +579,10 @@ const communityHashes = [
 
 
 
-function LogoTip(){
+function LogoTip({src}:{src:string}){
     return(
         <div>
-            <AntImage style={{objectFit:'cover'}}  src={'/explainers/artworkHash-explainer.png'} alt='Artwork explainer as displayed on marketplace'/>
+            <AntImage style={{objectFit:'cover'}}  src={src} alt='Artwork explainer as displayed on marketplace'/>
             <Text style={{color:'white'}}>{"It is very important to provide the requested image size (2400 x 1200) or else the image will appear distorted on the marketplace"}</Text>
         </div>
     ) 
