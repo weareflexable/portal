@@ -27,7 +27,6 @@ dayjs.extend(timezone)
 dayjs.extend(advanced)
 
 
-import CommunitiesLayout from "../../../../components/Layout/CommunitiesLayout";
 import EventsLayout from "../../../../components/Layout/EventsLayout";
 
 const {Text} = Typography
@@ -39,7 +38,6 @@ export default function EventBookings(){
     const [pageSize, setPageSize] = useState<number|undefined>(10)
   
 
-    type DataIndex = keyof ServiceItem;
 
 
     const urlPrefix = useUrlPrefix()
