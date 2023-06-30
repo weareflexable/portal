@@ -61,7 +61,7 @@ function Events(){
     const res = await axios({
             method:'get',
             //@ts-ignore
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
 
             headers:{
                 "Authorization": paseto 
@@ -76,7 +76,7 @@ function Events(){
       const res = await axios({
               method:'get',
               //@ts-ignore
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
 
               headers:{
                   "Authorization": paseto
@@ -90,7 +90,7 @@ function Events(){
     async function reActivateEventHandler(record:Event){
         const res = await axios({
             method:'patch',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,
             data:{
                 key:'status',
                 value: '1', 
@@ -106,7 +106,7 @@ function Events(){
 
     const reactivateEvent = useMutation(reActivateEventHandler,{
       onSettled:()=>{
-        queryClient.invalidateQueries({queryKey:['community']})
+        queryClient.invalidateQueries({queryKey:['events']})
       }
     })
 
@@ -118,13 +118,13 @@ function Events(){
     // console.log('shouldfetch',shouldFetch)
 
     // @ts-ignore
-    const communityQuery = useQuery({queryKey:['community',{currentOrg: currentOrg.orgId, status:currentFilter.name, pageNumber} ], queryFn:fetchEvents, enabled: paseto !== ''})
-    const data = communityQuery.data && communityQuery.data
-    // const totalLength = communityQuery.data && communityQuery.data;
+    const eventsQuery = useQuery({queryKey:['events',{currentOrg: currentOrg.orgId, status:currentFilter.name, pageNumber} ], queryFn:fetchEvents, enabled: paseto !== ''})
+    const data = eventsQuery.data && eventsQuery.data
+    // const totalLength = eventsQuery.data && eventsQuery.data;
     const totalLength = 0;
 
     // @ts-ignore
-    const allEventsQuery = useQuery({queryKey:['all-communities',{currentOrg: currentOrg.orgId}], queryFn:fetchAllEvents, enabled: paseto !== '', staleTime:Infinity})
+    const allEventsQuery = useQuery({queryKey:['all-events',{currentOrg: currentOrg.orgId}], queryFn:fetchAllEvents, enabled: paseto !== '', staleTime:Infinity})
     const allEventsLength = allEventsQuery.data && allEventsQuery.data.dataLength;
 
 
@@ -139,16 +139,15 @@ function Events(){
    
 function gotoEventPage(event:Event){
   // switch org
-  // get community switcher here
   switchEvent(event)
   // navigate user to services page
-  router.push('/organizations/communities/communityVenues') // 
+  router.push('/organizations/events/bookings') // 
 }
 
 
-    function viewEventDetails(service:Event){
+    function viewEventDetails(event:Event){
       // set state
-      setSelectedRecord(service)
+      setSelectedRecord(event)
       // opne drawer
       setIsDrawerOpen(true)
 
@@ -182,9 +181,9 @@ function gotoEventPage(event:Event){
         },
       },
       {
-        title: 'Number of Venues',
-        dataIndex: 'communityVenuesCount',
-        key: 'communityVenuesCount',
+        title: 'Venue Name',
+        dataIndex: 'locationName',
+        key: 'locationName',
         width:'100px',
       },
       {
@@ -200,14 +199,35 @@ function gotoEventPage(event:Event){
         )
       },
       {
-        title: 'Market Value',
-        dataIndex: 'totalMarketValue',
-        key: 'totalMarketValue',
+        title: 'Total Tickets',
+        dataIndex: 'totalTickets',
+        key: 'totalTickets',
         width:'100px',
-        render: (totalMarketValue)=>(
+        render: (totalTickets)=>(
           <div>
-            <Text>$</Text>
-            <Text>{totalMarketValue/100}</Text>
+            <Text>{totalTickets}</Text>
+          </div>
+        )
+      },
+      {
+        title: 'Timezone',
+        dataIndex: 'timeZone',
+        key: 'timeZone',
+        width:'100px',
+        render: (timezone)=>(
+          <div>
+            <Text>{timezone}</Text>
+          </div>
+        )
+      },
+      {
+        title: 'Contact Number',
+        dataIndex: 'contactNumber',
+        key: 'contactNumber',
+        width:'100px',
+        render: (contactNumber)=>(
+          <div>
+            <Text>{contactNumber}</Text>
           </div>
         )
       },
@@ -259,14 +279,11 @@ function gotoEventPage(event:Event){
                           )}
                       </Radio.Group>
                       <div style={{display:'flex'}}>
-                        <Button shape='round' style={{marginRight:'1rem'}} loading={communityQuery.isRefetching} onClick={()=>communityQuery.refetch()} icon={<ReloadOutlined rev={undefined} />}>Refresh</Button>
-                        <Button  type="primary" onClick={()=>router.push('/organizations/communities/new')}  icon={<PlusOutlined rev={undefined}/>} >Launch Event</Button>
+                        <Button shape='round' style={{marginRight:'1rem'}} loading={eventsQuery.isRefetching} onClick={()=>eventsQuery.refetch()} icon={<ReloadOutlined rev={undefined} />}>Refresh</Button>
+                        <Button  type="primary" onClick={()=>router.push('/organizations/events/new')}  icon={<PlusOutlined rev={undefined}/>} >Launch Event</Button>
                       </div>
                     </div>
 
-                      
-
-                    
                      
                    </div>
                    }
@@ -274,7 +291,7 @@ function gotoEventPage(event:Event){
                 {
                   allEventsQuery.data && allEventsLength === 0
                   ? <EmptyState>
-                      <Button type="primary"  onClick={()=>router.push('/organizations/communities/new')}  icon={<PlusOutlined rev={undefined}/>} >Launch Event</Button>
+                      <Button type="primary"  onClick={()=>router.push('/organizations/events/new')}  icon={<PlusOutlined rev={undefined}/>} >Launch Event</Button>
                   </EmptyState> 
                   : <Table 
                       style={{width:'100%'}} 
@@ -283,7 +300,7 @@ function gotoEventPage(event:Event){
                       rowKey={(record)=>record.id}
                       // @ts-ignore 
                       onChange={handleChange} 
-                      loading={communityQuery.isLoading || communityQuery.isRefetching} 
+                      loading={eventsQuery.isLoading || eventsQuery.isRefetching} 
                       // @ts-ignore 
                       columns={columns} 
                       dataSource={data}
@@ -350,14 +367,14 @@ function deleteEvent(){
   deleteData.mutate(selectedRecord,{
     onSuccess:()=>{
       notification['success']({
-        message: 'Successfully deactivated community!'
+        message: 'Successfully deactivated event!'
       })
-      queryClient.invalidateQueries(['community'])
+      queryClient.invalidateQueries(['event'])
       toggleDeleteModal()
       closeDrawerHandler()
     },
     onSettled:()=>{
-      queryClient.invalidateQueries(['community'])
+      queryClient.invalidateQueries(['event'])
     },
     onError:(err)=>{
         console.log(err)
@@ -373,7 +390,7 @@ function deleteEvent(){
 const deleteDataHandler = async(record:Event)=>{      
   const {data} = await axios({
     method:'patch',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,
+    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,
     data: {
         id:record.id,
         key:'status',
@@ -450,7 +467,7 @@ export function EditableDescription({selectedRecord}:EditableProp){
   const urlPrefix = useUrlPrefix()
 
   const recordMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -467,7 +484,7 @@ export function EditableDescription({selectedRecord}:EditableProp){
       toggleEdit()
     },
     onSettled:()=>{
-      queryClient.invalidateQueries(['community'])
+      queryClient.invalidateQueries(['event'])
     }
   })
 
@@ -506,9 +523,9 @@ export function EditableDescription({selectedRecord}:EditableProp){
         <Col span={16} style={{height:'100%'}}>
         <Form.Item 
             name="description"
-            rules={[{ required: true, message: 'Please input a description for your community!' }]}
+            rules={[{ required: true, message: 'Please input a description for your events!' }]}
         >
-            <TextArea rows={3} placeholder='Tell us what your community is all about.'/>
+            <TextArea rows={3} placeholder='Tell us what your events is all about.'/>
 
         </Form.Item>
 
@@ -559,7 +576,7 @@ export function EditablePrice({selectedRecord}:EditableProp){
  const urlPrefix = useUrlPrefix()
 
   const recordMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -575,7 +592,7 @@ export function EditablePrice({selectedRecord}:EditableProp){
     },
     onSettled:(data)=>{
       setState(data.data[0].price)
-      queryClient.invalidateQueries(['community'])
+      queryClient.invalidateQueries(['events'])
     }
   })
 
@@ -650,11 +667,9 @@ export function EditableName({selectedRecord}:EditableProp){
 
   const queryClient = useQueryClient()
 
-  const splittedName = selectedRecord && selectedRecord.name.split(':')
 
-  const communityName = splittedName[1].trim();
 
-  console.log(communityName)
+
 
   function toggleEdit(){
     setIsEditMode(!isEditMode)
@@ -663,7 +678,7 @@ export function EditableName({selectedRecord}:EditableProp){
  const urlPrefix = useUrlPrefix()
 
   const recordMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -678,7 +693,7 @@ export function EditableName({selectedRecord}:EditableProp){
       toggleEdit()
     },
     onSettled:()=>{
-      queryClient.invalidateQueries(['community'])
+      queryClient.invalidateQueries(['events'])
     }
   })
 
@@ -710,7 +725,7 @@ export function EditableName({selectedRecord}:EditableProp){
     <Form
      style={{ marginTop:'.5rem' }}
      name="editableName"
-     initialValues={{name: communityName}}
+     initialValues={{name: selectedRecord.name}}
      onFinish={onFinish}
      >
       <Row>
@@ -771,7 +786,7 @@ export function EditableLogoImage({selectedRecord}:EditableProp){
   )
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -787,7 +802,7 @@ export function EditableLogoImage({selectedRecord}:EditableProp){
     },
     onSettled:(data)=>{
       setUpdatedLogoImageHash(data.data[0].logoImageHash)
-      queryClient.invalidateQueries(['community'])
+      queryClient.invalidateQueries(['events'])
     }
   })
 
@@ -906,7 +921,7 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
         name="name"
         style={{marginBottom:'.6rem'}}
         label={`Please type "${selectedRecord.name}" to confirm`}
-        rules={[{ required: true, message: 'Please type correct community name!' }]}
+        rules={[{ required: true, message: 'This field is required!' }]}
       >
         <Input size="large" disabled={isDeletingItem} />
       </Form.Item>

@@ -792,9 +792,7 @@ function CommunityVenueForm({remove, name, formInstance, restField}:CommunityVen
                              </Form.Item>
 
 
-                    
-            
-                            
+                                     
                             {/* controls */}
                             <Col span={4}>
                                 <Form.Item style={{marginBottom:'0', width:'100%'}}>

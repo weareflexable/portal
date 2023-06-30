@@ -14,10 +14,7 @@ import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { useOrgContext } from "../../../context/OrgContext";
 
-// import { EditableAddress, EditableCoverImage, EditableCurrency, EditableLogoImage, EditableName, EditablePhone } from "../EditServiceForm/EditServiceForm";
-import useServiceTypes from "../../../hooks/useServiceTypes";
-import { convertToAmericanFormat } from "../../../utils/phoneNumberFormatter";
-import { EditableText} from "../../../components/shared/Editables";
+
 import useUrlPrefix from "../../../hooks/useUrlPrefix";
 import ServiceLayout from "../../../components/Layout/ServiceLayout";
 import { Community } from "../../../types/Community";
@@ -41,7 +38,6 @@ function Communities(){
     const {switchCommunity} = useCommunity()
     // const [items, setItems] = useState([])
 
-    const {switchService} = useServicesContext()
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const [pageNumber, setPageNumber] = useState<number|undefined>(1)
