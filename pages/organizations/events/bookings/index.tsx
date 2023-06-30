@@ -28,6 +28,7 @@ dayjs.extend(advanced)
 
 
 import CommunitiesLayout from "../../../../components/Layout/CommunitiesLayout";
+import EventsLayout from "../../../../components/Layout/EventsLayout";
 
 const {Text} = Typography
 
@@ -237,4 +238,4 @@ export default function EventBookings(){
 }
 
 
-EventBookings.PageLayout = CommunitiesLayout
+EventBookings.PageLayout = EventsLayout
