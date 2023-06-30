@@ -125,7 +125,7 @@ export default function NewEvent(){
 
     const onFinish = async(formData:any)=>{
 
-        const logoRes = await formData.logoImageHash
+        const logoRes = await formData.coverImageHash
         setIsHashingAssets(true)
         //@ts-ignore
         const imageHash = await asyncStore(logoRes[0].originFileObj)
@@ -297,131 +297,138 @@ export default function NewEvent(){
                         >
                         <Input size='large' style={{width:'50%'}}  placeholder="0" /> 
                     </Form.Item> 
+                    </div>
 
-                    <Form.Item
-                        name="locationName"
-                        label="Venue Name" 
+                    <div style={{margin:'3rem 0'}}>
+                        <Title level={3}>{`Location info`}</Title>
+                        {/* <Text>All changes here will be reflected in the marketplace</Text> */}
+                    </div>
+                    <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}> 
+
+                        <Form.Item
+                            name="locationName"
+                            label="Venue Name" 
+                            
+                            hasFeedback
+                            // extra="The name you provide here will be used as display on marketplace listing"
+                            rules={[
+                                { required: true, message: 'This field is required' },
+                                { pattern:/^[A-Za-z ]+$/, message: 'Please provide only string values' },
+                                { max: 100, message: 'Sorry, your event name cant be more than 100 characters' },
                         
-                        hasFeedback
-                        // extra="The name you provide here will be used as display on marketplace listing"
-                        rules={[
-                            { required: true, message: 'This field is required' },
-                            { pattern:/^[A-Za-z ]+$/, message: 'Please provide only string values' },
-                            { max: 100, message: 'Sorry, your event name cant be more than 100 characters' },
-                    
-                            ]}
-                    >
-                        <Input 
-                        type="string"
-                        allowClear size="large" placeholder="Eg. Benjamins On Franklin" />
-                    </Form.Item>
+                                ]}
+                        >
+                            <Input 
+                            type="string"
+                            allowClear size="large" placeholder="Eg. Benjamins On Franklin" />
+                        </Form.Item>
 
-                    <Form.Item  
-                        name="address"
-                        label='Address'
-                        hasFeedback
-                        // @ts-ignore
-                        extra={<Text type="secondary"><InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} /> Please refresh the page if the address you selected is not being displayed in the field </Text> }
-                        rules={[{ required: true, message: 'Please input a valid address!' }]}
-                    >
-                        <Input 
-                            // suffix={
-                            //     <Tooltip title="Please refresh the page if the date you selected is not being displayed in the field">
-                            //       <InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
-                            //     </Tooltip>
-                            //   }
-                            size="large" 
-                            allowClear
-                            ref={(c) => {
+                        <Form.Item  
+                            name="address"
+                            label='Address'
+                            hasFeedback
                             // @ts-ignore
-                            antInputRef.current = c;
-                            // @ts-ignore
-                            if (c) antRef.current = c.input;
-                            }} 
-                            placeholder="Syracuse, United states" 
-                            />
-                    </Form.Item>
-
-                    <Form.Item
-                        // name="contactNumber"
-                        label="Contact Number"
-                        required
-                        style={{marginBottom:'0'}}
-                        rules={[
-                            { required: true, message: 'Please provide values in all field' },
-                            // { pattern: /^\d+$/, message: 'All values must be a number' },
-                        ]}
-                    >
-                        <Space.Compact block>
-
-                            <Form.Item  initialValue={'+1'} name={['contact','countryCode']} noStyle>
-                                <Input allowClear style={{width:'10%'}} disabled size="large"/>
-                            </Form.Item>
-
-                            <Form.Item  rules={[ { pattern: /^\d+$/, message: 'Area code must be a number' },]} name={['contact','areaCode']} noStyle>
-                                <Input allowClear ref={areaCodeRef} maxLength={3} onChange={handleAreaCodeRef} style={{width:'20%'}} size="large" placeholder="235" />
-                            </Form.Item>
-
-                            <Form.Item rules={[ { pattern: /^\d+$/, message: 'Central Office Code must be a number' },]} name={['contact','centralOfficeCode']} noStyle>
-                                <Input  allowClear ref={centralOfficeCodeRef} onChange={handleCentralOfficeCode} maxLength={3} style={{width:'20%'}} size="large" placeholder="380" />
-                            </Form.Item>
-
-                            <div style={{height:'40px',margin:'0 .3rem 0 .3rem', display:'inline-flex', alignItems:'center',  verticalAlign:'center'}}>
-                            {/* <MinusOutlined style={{ color: "#e7e7e7" }} /> */}
-                            </div>
-
-                            <Form.Item  rules={[ { pattern: /^\d+$/, message: 'Tail Number must be a number' },]} name={['contact','tailNumber']} noStyle>
-                                <Input ref={tailNoRef} maxLength={4} style={{width:'20%'}} size="large" placeholder="3480" />
-                            </Form.Item>
-
-                        </Space.Compact>
-                    </Form.Item>
-
-
-                    <Form.Item
-                        label="Pick Date and Time"
-                        hasFeedback
-                        required
-                        style={{marginBottom:'0',marginTop:'2rem', width:'70%'}}
-                        // extra={`Enter a timeframe you want your DAT to be redeemable by customers. This may vary based on your industry and service you provide. Eg: a "Saturday Night Line Skip" at a bar might be valid from 7pm on Saturday night until 4am Sunday morning, to allow the late night partygoers a chance to redeem their tickets. A restaurant DAT for a "Last Minute Saturday Reservation" might only need to have validity period of 12 noon - 12 midnight`} 
-                        rules={[{required: true, message: 'Please select a time period' }]}
-                    >
-                        <Space.Compact  block>
-                            <Form.Item   rules={[{required:true, message:'Please provide a start time'}]}  name={['validity','date']} noStyle>
-                                <DatePicker   placeholder="Date"   size="large" />
-                            </Form.Item>
-
-                            <Form.Item   rules={[{required:true, message:'Please provide a start time'}]}  name={['validity','time']} noStyle>
-                                <TimePicker   placeholder="Time" format={'H A'}   size="large" />
-                            </Form.Item>
-
-                            <Form.Item  rules={[{required:true, message:'Please provide a end time'}]}  name={['validity','timezone']} noStyle>
-                                <Select
-                                    defaultValue="EST"
-                                    style={{ width: 120 }}
-                                    // onChange={handleChange}
-                                    options={[
-                                        { value: 'EST', label: 'EST' },
-                                        { value: 'PDT', label: 'PDT' },
-                                        { value: 'GMT', label: 'GMT' },
-                                        { value: 'WAT', label: 'WAT'},
-                                    ]}
+                            extra={<Text type="secondary"><InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} /> Please refresh the page if the address you selected is not being displayed in the field </Text> }
+                            rules={[{ required: true, message: 'Please input a valid address!' }]}
+                        >
+                            <Input 
+                                // suffix={
+                                //     <Tooltip title="Please refresh the page if the date you selected is not being displayed in the field">
+                                //       <InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
+                                //     </Tooltip>
+                                //   }
+                                size="large" 
+                                allowClear
+                                ref={(c) => {
+                                // @ts-ignore
+                                antInputRef.current = c;
+                                // @ts-ignore
+                                if (c) antRef.current = c.input;
+                                }} 
+                                placeholder="Syracuse, United states" 
                                 />
-                            </Form.Item>
-                        </Space.Compact> 
+                        </Form.Item>
 
-                         {/* <Text style={{marginLeft:'1rem'}}>9 hrs interval for all tickets</Text>   */}
+                        <Form.Item
+                            // name="contactNumber"
+                            label="Contact Number"
+                            required
+                            style={{marginBottom:'0'}}
+                            rules={[
+                                { required: true, message: 'Please provide values in all field' },
+                                // { pattern: /^\d+$/, message: 'All values must be a number' },
+                            ]}
+                        >
+                            <Space.Compact block>
 
-                    </Form.Item>  
+                                <Form.Item  initialValue={'+1'} name={['contact','countryCode']} noStyle>
+                                    <Input allowClear style={{width:'10%'}} disabled size="large"/>
+                                </Form.Item>
 
-                    
-                </div>
+                                <Form.Item  rules={[ { pattern: /^\d+$/, message: 'Area code must be a number' },]} name={['contact','areaCode']} noStyle>
+                                    <Input allowClear ref={areaCodeRef} maxLength={3} onChange={handleAreaCodeRef} style={{width:'20%'}} size="large" placeholder="235" />
+                                </Form.Item>
+
+                                <Form.Item rules={[ { pattern: /^\d+$/, message: 'Central Office Code must be a number' },]} name={['contact','centralOfficeCode']} noStyle>
+                                    <Input  allowClear ref={centralOfficeCodeRef} onChange={handleCentralOfficeCode} maxLength={3} style={{width:'20%'}} size="large" placeholder="380" />
+                                </Form.Item>
+
+                                <div style={{height:'40px',margin:'0 .3rem 0 .3rem', display:'inline-flex', alignItems:'center',  verticalAlign:'center'}}>
+                                {/* <MinusOutlined style={{ color: "#e7e7e7" }} /> */}
+                                </div>
+
+                                <Form.Item  rules={[ { pattern: /^\d+$/, message: 'Tail Number must be a number' },]} name={['contact','tailNumber']} noStyle>
+                                    <Input ref={tailNoRef} maxLength={4} style={{width:'20%'}} size="large" placeholder="3480" />
+                                </Form.Item>
+
+                            </Space.Compact>
+                        </Form.Item>
+
+
+                        <Form.Item
+                            label="Pick Date and Time"
+                            hasFeedback
+                            required
+                            style={{marginBottom:'0',marginTop:'2rem', width:'70%'}}
+                            // extra={`Enter a timeframe you want your DAT to be redeemable by customers. This may vary based on your industry and service you provide. Eg: a "Saturday Night Line Skip" at a bar might be valid from 7pm on Saturday night until 4am Sunday morning, to allow the late night partygoers a chance to redeem their tickets. A restaurant DAT for a "Last Minute Saturday Reservation" might only need to have validity period of 12 noon - 12 midnight`} 
+                            rules={[{required: true, message: 'Please select a time period' }]}
+                        >
+                            <Space.Compact size="large"  block>
+                                <Form.Item   rules={[{required:true, message:'This field is required'}]}  name={['validity','date']} >
+                                    <DatePicker  placeholder="Date"   size="large" />
+                                </Form.Item>
+
+                                <Form.Item   rules={[{required:true, message:'Please provide a start time'}]}  name={['validity','time']} >
+                                    <TimePicker   placeholder="Time" format={'H A'}   size="large" />
+                                </Form.Item>
+
+                                <Form.Item  rules={[{required:true, message:'Please provide a end time'}]}  name={['validity','timezone']} >
+                                    <Select
+                                        defaultValue="EST"
+                                        style={{ width: 120 }}
+                                        // onChange={handleChange}
+                                        options={[
+                                            { value: 'EST', label: 'EST' },
+                                            { value: 'PDT', label: 'PDT' },
+                                            { value: 'GMT', label: 'GMT' },
+                                            { value: 'WAT', label: 'WAT'},
+                                        ]}
+                                    />
+                                </Form.Item>
+                            </Space.Compact> 
+
+                            {/* <Text style={{marginLeft:'1rem'}}>9 hrs interval for all tickets</Text>   */}
+
+                        </Form.Item>  
+
+                     </div>
+                     
 
                 
 
                     <div style={{marginBottom:'2rem', marginTop:'3rem'}}>
                         <Title level={3}>Image Upload</Title>
-                        <Text >Your logo and artwork will be visible on marketplace</Text>
+                        <Text >Your cover image and artwork will be visible on marketplace</Text>
                         <Tooltip trigger={['click']} placement='right' title={<LogoTip/>}>
                         {/* @ts-ignore */}
                             <Button type="link">Show me <QuestionCircleOutlined /></Button>
@@ -430,17 +437,17 @@ export default function NewEvent(){
 
                     {/* <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}>  */}
 
-                        <Image alt='Organization logo' src={logoImage} style={{width:'150px',height:'150px', borderRadius:'50%', border:'1px solid #e5e5e5'}}/>
+                        <Image alt='Cover image for events' src={logoImage} style={{width:'150px',height:'150px', borderRadius:'50%', border:'1px solid #e5e5e5'}}/>
                         <Form.Item
-                            name="logoImageHash"
-                            valuePropName="logoImageHash"
+                            name="coverImageHash"
+                            valuePropName="coverImageHash"
                             getValueFromEvent={extractLogoImage}
                             extra={'Please upload a PNG or JPEG that is 1024px x 1024px'}
                             rules={[{ required: true, message: 'Please upload an image' }]}
                         >
                             
-                            <Upload name="logoImageHash" multiple={false} fileList={[]}  >
-                                    <Button size='small' type='link'>Upload logo image</Button>
+                            <Upload name="coverImageHash" multiple={false} fileList={[]}  >
+                                    <Button size='small' type='link'>Upload cover image</Button>
                             </Upload>
                         </Form.Item>
 
