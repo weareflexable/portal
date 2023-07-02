@@ -65,15 +65,13 @@ export default function EventBookings(){
 
   
   
-    const handleChange: TableProps<EventOrder>['onChange'] = (data) => {
+    const handleChange: TableProps<EventOrder>['onChange'] = (data,sorter) => {
       // console.log('Various parameters', pagination, filters, sorter); 
-      console.log(data)
+      console.log(sorter)
       // @ts-ignore
       setPageNumber(data.current) 
       setPageSize(data.pageSize)
-      // set new page
-      // set page number
-      // setFilteredInfo(filters);
+
     };
   
   
@@ -89,11 +87,11 @@ export default function EventBookings(){
         render:(_,record)=>{
 
           const coverImageHash = record.coverImageHash
-            return(
+            return( 
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='community artwork hash' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${coverImageHash}`}/>
+                    {/* <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Event cover image' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${coverImageHash.length < 10? IMAGE_PLACEHOLDER_HASH : coverImageHash}`}/> */}
                     <div style={{display:'flex',flexDirection:'column'}}>
-                        <Text>{record.name}</Text>  
+                        <Text>{record.name}</Text>   
                         {/* <Text type="secondary">{serviceName}</Text>   */}
                     </div>
                 </div>
@@ -103,10 +101,10 @@ export default function EventBookings(){
       
       {
         title: 'Customer',
-        // dataIndex: 'customer',
+        dataIndex: 'user',
         ellipsis:true,
         width:'250px',
-        key: 'customer',
+        key: 'user',
         render:(_,record)=>{
           const user = record.user
           const email = user.email
@@ -121,7 +119,9 @@ export default function EventBookings(){
                     </div>
                 </div>
             )
-        },
+        }, 
+        // defaultSortOrder: 'ascend', 
+        // sorter: (a, b) => a.user.name.length - b.user.name.length, 
       },
     
       {
@@ -148,7 +148,9 @@ export default function EventBookings(){
             <Text >x</Text>
             <Text>{quantity}</Text>
           </div>
-        )
+        ),
+        // defaultSortOrder: 'descend', 
+        // sorter: (a, b) => a.quantity - b.quantity,  
       },
       {
         title: 'Total Price',
@@ -208,6 +210,7 @@ export default function EventBookings(){
                             <Text>{` · ${dayjs(bookingsQuery.dataUpdatedAt).tz('America/New_York').format('HH:mm:ss')} secs ago`}</Text>
                           </div>
                       </div>
+                      <Button shape="round" style={{marginRight:'.3rem'}} loading={false} onClick={()=>{}} icon={<ReloadOutlined rev={undefined} />}>Export</Button>
                       <Button shape="round" loading={bookingsQuery.isRefetching} onClick={()=>bookingsQuery.refetch()} icon={<ReloadOutlined rev={undefined} />}>Refresh</Button>
                   </div>
                </div>

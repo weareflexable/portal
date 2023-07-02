@@ -68,6 +68,7 @@ export interface Order {
 
   export type EventOrder = {
     id: string
+    customer: any,
     name: string
     user: any
     createdAt: string
