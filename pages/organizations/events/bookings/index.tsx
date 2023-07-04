@@ -149,6 +149,7 @@ export default function EventBookings(){
             <Text>{quantity}</Text>
           </div>
         ),
+
         // defaultSortOrder: 'descend', 
         // sorter: (a, b) => a.quantity - b.quantity,  
       },
@@ -182,6 +183,18 @@ export default function EventBookings(){
         return <Tag icon={icon} color={color} style={{textTransform:'capitalize'}}>{paymentStatus}</Tag>
       }
     },
+    // {
+    //   title: 'Booking Status',
+    //   dataIndex: 'bookingStatus',
+    //   key: 'bookingStatus',
+    //   width:'150px',
+    //   fixed:'right',
+    //   render: (bookingStatus)=>{
+    //     const color = bookingStatus === 'successful'?'green':bookingStatus === 'failed'?'red':bookingStatus === 'cancelled'?'grey':'blue'
+    //     const icon = bookingStatus === 'successful'?<CheckOutlined rev={undefined} />:bookingStatus === 'cancelled'?<StopOutlined rev={undefined} />:null
+    //     return <Tag icon={icon} color={color} style={{textTransform:'capitalize'}}>{bookingStatus}</Tag>
+    //   }
+    // },
     {
       title: 'Order Date',
       dataIndex: 'createdAt',

@@ -143,6 +143,7 @@ export default function NewEvent(){
 
         const formObject: any = {
             coverImageHash: imageHash,
+            artworkImageHash: imageHash,
             timezone: validity.timezone,
             date: dayjs(validity.date).format() , 
             time: dayjs(validity.time).format(),
@@ -150,6 +151,7 @@ export default function NewEvent(){
             price: Number(formData.price),
             locationName: formData.locationName,
             totalTickets: Number(formData.totalTickets),
+            duration: formData.duration,
             address: {
                 country: fullAddress.country,
                 state: fullAddress.state,
@@ -398,11 +400,11 @@ export default function NewEvent(){
                                     <DatePicker  placeholder="Date"   size="large" />
                                 </Form.Item>
 
-                                <Form.Item   rules={[{required:true, message:'Please provide a start time'}]}  name={['validity','time']} >
+                                <Form.Item   rules={[{required:true, message:'This field is required'}]}  name={['validity','time']} >
                                     <TimePicker   placeholder="Time" format={'H A'}   size="large" />
                                 </Form.Item>
 
-                                <Form.Item  rules={[{required:true, message:'Please provide a end time'}]}  name={['validity','timezone']} >
+                                <Form.Item  rules={[{required:true, message:'This field is required'}]}  name={['validity','timezone']} >
                                     <Select
                                         defaultValue="EST"
                                         style={{ width: 120 }}
@@ -420,6 +422,18 @@ export default function NewEvent(){
                             {/* <Text style={{marginLeft:'1rem'}}>9 hrs interval for all tickets</Text>   */}
 
                         </Form.Item>  
+
+                        <Form.Item
+
+                            name={'duration'} 
+                            // extra="Market Value of the promotion is required so that the Community DAT can be properly priced on the Marketplace"
+                            label='Duration'
+                            style={{width:'100%'}}
+                            rules={[{ required: true, message: 'This field is required' }]}
+                            >
+                            <Input size='large' suffix='Hour(s)' style={{width:'30%'}}  placeholder="2" /> 
+
+                        </Form.Item> 
 
                      </div>
                      
