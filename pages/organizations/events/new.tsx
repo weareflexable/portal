@@ -151,7 +151,7 @@ export default function NewEvent(){
             price: Number(formData.price),
             locationName: formData.locationName,
             totalTickets: Number(formData.totalTickets),
-            duration: formData.duration,
+            duration: Number(formData.duration),
             address: {
                 country: fullAddress.country,
                 state: fullAddress.state,
@@ -204,11 +204,18 @@ export default function NewEvent(){
     }
 
     const createData = useMutation(createDataHandler,{
-       onSuccess:()=>{
-        notification['success']({
-            message: 'Success creating record',
-          });
-          router.back() 
+       onSuccess:(data)=>{
+            if(data.status > 201){
+                notification['error']({
+                    message: data.message,
+                  });
+                // leave modal open
+            }else{
+                notification['success']({
+                    message: 'Success creating record',
+                  });
+                  router.back() 
+            }
        },
         onError:()=>{
             notification['error']({
@@ -264,7 +271,7 @@ export default function NewEvent(){
                         // extra="The name you provide here will be used as display on marketplace listing"
                         rules={[
                             { required: true, message: 'This field is required' },
-                            { pattern:/^[A-Za-z ]+$/, message: 'Please provide only string values' },
+                            // { pattern:/^[A-Za-z ]+$/, message: 'Please provide only string values' },
                             { max: 100, message: 'Sorry, your event name cant be more than 100 characters' },
                     
                             ]}
@@ -275,12 +282,13 @@ export default function NewEvent(){
                     </Form.Item>
 
                     {/* promotion */}
-                    <Form.Item name={'description'} rules={[{ required: true, message: 'Please write a description for your venue' }]}  label="Description">
+                    <Form.Item hasFeedback name={'description'} rules={[{ required: true, message: 'Please write a description for your venue' }]}  label="Description">
                         <TextArea allowClear maxLength={500} size='large' showCount  placeholder='One flight of our award winning wines' rows={2} />
                     </Form.Item>
 
                     <Form.Item
                         name={'price'} 
+                        hasFeedback
                         // extra="Market Value of the promotion is required so that the Community DAT can be properly priced on the Marketplace"
                         label='Price'
                         style={{width:'100%'}}
@@ -290,12 +298,13 @@ export default function NewEvent(){
                     </Form.Item> 
 
                     <Form.Item
+                        hasFeedback
 
                         name={'totalTickets'} 
                         // extra="Market Value of the promotion is required so that the Community DAT can be properly priced on the Marketplace"
-                        label='DATs'
+                        label='Available DATs'
                         style={{width:'100%'}}
-                        rules={[{ required: true, message: 'This field is required' }]}
+                        rules={[{ required: true, message: 'This field is required' },{ pattern: /^\d+$/, message: 'Must be a number' }]}
                         >
                         <Input size='large' style={{width:'50%'}}  placeholder="0" /> 
                     </Form.Item> 
@@ -315,7 +324,7 @@ export default function NewEvent(){
                             // extra="The name you provide here will be used as display on marketplace listing"
                             rules={[
                                 { required: true, message: 'This field is required' },
-                                { pattern:/^[A-Za-z ]+$/, message: 'Please provide only string values' },
+                                // { pattern:/^[A-Za-z ]+$/, message: 'Please provide only string values' },
                                 { max: 100, message: 'Sorry, your event name cant be more than 100 characters' },
                         
                                 ]}
