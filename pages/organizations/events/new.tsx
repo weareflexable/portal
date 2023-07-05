@@ -419,10 +419,8 @@ export default function NewEvent(){
                                         style={{ width: 120 }}
                                         // onChange={handleChange}
                                         options={[
-                                            { value: 'EST', label: 'EST' },
-                                            { value: 'PDT', label: 'PDT' },
-                                            { value: 'GMT', label: 'GMT' },
-                                            { value: 'WAT', label: 'WAT'},
+                                            { value: 'America/New_York', label: 'EST' },
+                                            { value: 'Europe/Belfast', label: 'GMT' },
                                         ]}
                                     />
                                 </Form.Item>
