@@ -190,7 +190,7 @@ function gotoEventPage(event:Event){
         title: 'Venue Name',
         dataIndex: 'locationName',
         key: 'locationName',
-        width:'100px',
+        width:'200px',
       },
       {
         title: 'Price',
@@ -219,7 +219,7 @@ function gotoEventPage(event:Event){
         title: 'Timezone',
         dataIndex: 'timeZone',
         key: 'timeZone',
-        width:'100px',
+        width:'80px',
         render: (timezone:string)=>(
           <div>
             <Text>{timezoneDisplay[timezone]}</Text>
@@ -230,12 +230,15 @@ function gotoEventPage(event:Event){
         title: 'Contact Number',
         dataIndex: 'contactNumber',
         key: 'contactNumber',
-        width:'100px',
-        render: (contactNumber)=>(
+        width:'140px',
+        render: (contactNumber)=>{
+          const formatedNumber = convertToAmericanFormat(contactNumber)
+          return(
           <div>
-            <Text>{contactNumber}</Text>
+            <Text>{formatedNumber}</Text>
           </div>
         )
+      }
       },
       {
           title: 'Event Date',
