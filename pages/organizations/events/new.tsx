@@ -148,6 +148,7 @@ export default function NewEvent(){
             date: dayjs(validity.date).format() , 
             startTime: dayjs(validity.time).format(),
             name: formData.name,
+            description: formData.description,
             price: Number(formData.price)*100,
             locationName: formData.locationName,
             totalTickets: Number(formData.totalTickets),
