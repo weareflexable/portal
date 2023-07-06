@@ -242,10 +242,9 @@ function gotoEventPage(event:Event){
           dataIndex: 'date',
           key: 'date',
           width:'120px',
-          render: (_,record)=>{
-              const date = dayjs(record.date).format('MMM DD, YYYY')
+          render: (date)=>{
               return(
-            <Text type='secondary'>{date}</Text>
+            <Text type='secondary'>{dayjs(date).format('MMM DD, YYYY')}</Text>
             )
         },
     },
@@ -1064,7 +1063,7 @@ export function EditableTimeZone({selectedRecord}:EditableProp){
   
     const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{state.timeZone}</Text>
+        <Text>{timezoneDisplay[state.timeZone]}</Text>
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
   )
@@ -1087,10 +1086,8 @@ export function EditableTimeZone({selectedRecord}:EditableProp){
                     style={{ width: 120 }}
                     // onChange={handleChange}
                     options={[
-                        { value: 'EST', label: 'EST' },
-                        { value: 'PDT', label: 'PDT' },
-                        { value: 'GMT', label: 'GMT' },
-                        { value: 'WAT', label: 'WAT'},
+                      { value: 'America/New_York', label: 'EST/EDT' },
+                      { value: 'Europe/Belfast', label: 'GMT' },
                     ]}
                 />
             </Form.Item>
