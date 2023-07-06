@@ -146,12 +146,12 @@ export default function NewEvent(){
             artworkImageHash: imageHash,
             timezone: validity.timezone,
             date: dayjs(validity.date).format() , 
-            time: dayjs(validity.time).format(),
+            startTime: dayjs(validity.time).format(),
             name: formData.name,
             price: Number(formData.price),
             locationName: formData.locationName,
             totalTickets: Number(formData.totalTickets),
-            duration: Number(formData.duration),
+            duration: Number(formData.duration)*60,
             address: {
                 country: fullAddress.country,
                 state: fullAddress.state,
@@ -207,7 +207,7 @@ export default function NewEvent(){
        onSuccess:(data)=>{
             if(data.status > 201){
                 notification['error']({
-                    message: data.message,
+                    message: 'Error creating events',
                   });
                 // leave modal open
             }else{
@@ -415,9 +415,10 @@ export default function NewEvent(){
 
                                 <Form.Item  rules={[{required:true, message:'This field is required'}]}  name={['validity','timezone']} >
                                     <Select
-                                        defaultValue="EST"
-                                        style={{ width: 120 }}
+                                        // defaultValue="America/New_York"
+                                        style={{ width: 150 }}
                                         // onChange={handleChange}
+                                        placeholder='Timezone'
                                         options={[
                                             { value: 'America/New_York', label: 'EST' },
                                             { value: 'Europe/Belfast', label: 'GMT' },
@@ -426,7 +427,6 @@ export default function NewEvent(){
                                 </Form.Item>
                             </Space.Compact> 
 
-                            {/* <Text style={{marginLeft:'1rem'}}>9 hrs interval for all tickets</Text>   */}
 
                         </Form.Item>  
 
@@ -448,12 +448,11 @@ export default function NewEvent(){
                 
 
                     <div style={{marginBottom:'2rem', marginTop:'3rem'}}>
-                        <Title level={3}>Image Upload</Title>
+                        <Title level={3}>Cover Image Upload</Title>
                         <Text >Your cover image and artwork will be visible on marketplace</Text>
-                        <Tooltip trigger={['click']} placement='right' title={<LogoTip/>}>
-                        {/* @ts-ignore */}
-                            <Button type="link">Show me <QuestionCircleOutlined /></Button>
-                        </Tooltip>
+                        {/* <Tooltip trigger={['click']} placement='right' title={<LogoTip/>}>
+                            <Button type="link">Show me <QuestionCircleOutlined rev={undefined} /></Button>
+                        </Tooltip> */}
                     </div>
 
                     {/* <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}>  */}
@@ -472,26 +471,7 @@ export default function NewEvent(){
                             </Upload>
                         </Form.Item>
 
-                        {/* <Form.Item
-                            name="coverImageHash"
-                            label="Cover image"
-                            valuePropName="coverImageHash"
-                            getValueFromEvent={normFile}
-                            extra={'Please upload PNG or JPEG file with file size of 2400px x 1200px'}
-                            // hidden
-                            style={{marginBottom:'0'}}
-                            rules={[{ required: true, message: 'Please upload an image' }]}
-                        >
-                            <Upload.Dragger  name="coverImageHash" action="">
-                                <p className="ant-upload-drag-icon">
-                                    <InboxOutlined />
-                                </p>
-                                <p style={{marginBottom:'0'}} className="ant-upload-text">Click or drag file to this area to upload</p>
-                                <p style={{marginTop:'0'}} className="ant-upload-hint">Support for a single or bulk upload.</p>
-                            </Upload.Dragger>
-                        </Form.Item> */}
-
-                    {/* </div> */}
+                       
 
                     {/* onCancelFormCreation */}
                     <Form.Item style={{marginTop:'4rem'}}>
