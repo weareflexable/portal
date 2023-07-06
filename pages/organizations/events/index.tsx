@@ -48,7 +48,6 @@ function Events(){
     const {switchEvent} = useEvent()
     // const [items, setItems] = useState([])
 
-    const {switchService} = useServicesContext()
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const [pageNumber, setPageNumber] = useState<number|undefined>(1)
