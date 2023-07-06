@@ -273,7 +273,6 @@ export default function NewEvent(){
                             { required: true, message: 'This field is required' },
                             // { pattern:/^[A-Za-z ]+$/, message: 'Please provide only string values' },
                             { max: 100, message: 'Sorry, your event name cant be more than 100 characters' },
-                    
                             ]}
                     >
                         <Input 
@@ -292,14 +291,13 @@ export default function NewEvent(){
                         // extra="Market Value of the promotion is required so that the Community DAT can be properly priced on the Marketplace"
                         label='Price'
                         style={{width:'100%'}}
-                        rules={[{ required: true, message: 'Please input a valid price!' }]}
+                        rules={[{ required: true, message: 'Please input a valid price!' },{ pattern: /^\d+$/, message: 'Area code must be a number' },{min:1, message: 'Price cannot be any lower than $1'}]}
                         >
                         <Input size='large' style={{width:'50%'}}  prefix="$" suffix='Per DAT' placeholder="0" /> 
                     </Form.Item> 
 
                     <Form.Item
                         hasFeedback
-
                         name={'totalTickets'} 
                         // extra="Market Value of the promotion is required so that the Community DAT can be properly priced on the Marketplace"
                         label='Available DATs'
@@ -420,7 +418,7 @@ export default function NewEvent(){
                                         // onChange={handleChange}
                                         placeholder='Timezone'
                                         options={[
-                                            { value: 'America/New_York', label: 'EST' },
+                                            { value: 'America/New_York', label: 'EST/EDT' },
                                             { value: 'Europe/Belfast', label: 'GMT' },
                                         ]}
                                     />

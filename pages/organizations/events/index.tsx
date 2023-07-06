@@ -33,6 +33,11 @@ var relativeTime = require('dayjs/plugin/relativeTime')
 dayjs.extend(relativeTime)
 
 
+const timezoneDisplay:any = {
+   'America/New_York': 'EST/EDT' ,
+   'Europe/Belfast': 'GMT' ,
+}
+
 
 function Events(){
 
@@ -216,9 +221,9 @@ function gotoEventPage(event:Event){
         dataIndex: 'timeZone',
         key: 'timeZone',
         width:'100px',
-        render: (timezone)=>(
+        render: (timezone:string)=>(
           <div>
-            <Text>{timezone}</Text>
+            <Text>{timezoneDisplay[timezone]}</Text>
           </div>
         )
       },
