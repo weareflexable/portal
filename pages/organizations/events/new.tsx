@@ -419,8 +419,16 @@ export default function NewEvent(){
                                         // onChange={handleChange}
                                         placeholder='Timezone'
                                         options={[
-                                            { value: 'America/New_York', label: 'EST/EDT' },
-                                            { value: 'Europe/Belfast', label: 'GMT' },
+                                            { value: 'EST', label: 'EST' },
+                                            { value: 'EDT', label: 'EDT' },
+                                            { value: 'CST', label: 'CST' },
+                                            { value: 'CDT', label: 'CDT' },
+                                            { value: 'MST', label: 'MST' },
+                                            { value: 'PST', label: 'PST' },
+                                            { value: 'PDT', label: 'PDT' },
+                                            { value: 'AKST', label: 'AKST' },
+                                            { value: 'HST', label: 'HST' },
+                                            { value: 'AST', label: 'AST' },
                                         ]}
                                     />
                                 </Form.Item>

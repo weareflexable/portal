@@ -33,10 +33,6 @@ var relativeTime = require('dayjs/plugin/relativeTime')
 dayjs.extend(relativeTime)
 
 
-const timezoneDisplay:any = {
-   'America/New_York': 'EST/EDT' ,
-   'Europe/Belfast': 'GMT' ,
-}
 
 
 function Events(){
@@ -222,7 +218,7 @@ function gotoEventPage(event:Event){
         width:'80px',
         render: (timezone:string)=>(
           <div>
-            <Text>{timezoneDisplay[timezone]}</Text>
+            <Text>{timezone}</Text>
           </div>
         )
       },
@@ -1066,7 +1062,7 @@ export function EditableTimeZone({selectedRecord}:EditableProp){
   
     const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{timezoneDisplay[state.timeZone]}</Text>
+        <Text>{state.timeZone}</Text>
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
   )
@@ -1089,8 +1085,16 @@ export function EditableTimeZone({selectedRecord}:EditableProp){
                     style={{ width: 120 }}
                     // onChange={handleChange}
                     options={[
-                      { value: 'America/New_York', label: 'EST/EDT' },
-                      { value: 'Europe/Belfast', label: 'GMT' },
+                      { value: 'EST', label: 'EST' },
+                      { value: 'EDT', label: 'EDT' },
+                      { value: 'CST', label: 'CST' },
+                      { value: 'CDT', label: 'CDT' },
+                      { value: 'MST', label: 'MST' },
+                      { value: 'PST', label: 'PST' },
+                      { value: 'PDT', label: 'PDT' },
+                      { value: 'AKST', label: 'AKST' },
+                      { value: 'HST', label: 'HST' },
+                      { value: 'AST', label: 'AST' },
                     ]}
                 />
             </Form.Item>
