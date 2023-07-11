@@ -145,8 +145,7 @@ export default function NewEvent(){
             coverImageHash: imageHash,
             artworkImageHash: imageHash,
             timezone: validity.timezone,
-            date: dayjs(validity.date).format() , 
-            startTime: dayjs(validity.time).format(),
+            startTime: dayjs(validity.startTime).format(),
             name: formData.name,
             description: formData.description,
             price: Number(formData.price)*100,
@@ -173,7 +172,7 @@ export default function NewEvent(){
         // @ts-ignore
         delete formObject.contact
 
-        console.log(formObject)
+        // console.log(formObject)
 
         createData.mutate(formObject)
     }
@@ -396,21 +395,21 @@ export default function NewEvent(){
 
 
                         <Form.Item
-                            label="Pick Date and Time"
+                            label="Select Date and Time"
                             hasFeedback
                             required
                             style={{marginBottom:'0',marginTop:'2rem', width:'70%'}}
                             // extra={`Enter a timeframe you want your DAT to be redeemable by customers. This may vary based on your industry and service you provide. Eg: a "Saturday Night Line Skip" at a bar might be valid from 7pm on Saturday night until 4am Sunday morning, to allow the late night partygoers a chance to redeem their tickets. A restaurant DAT for a "Last Minute Saturday Reservation" might only need to have validity period of 12 noon - 12 midnight`} 
-                            rules={[{required: true, message: 'Please select a time period' }]}
+                            rules={[{required: true, message: 'This field is required' }]}
                         >
                             <Space.Compact size="large"  block>
-                                <Form.Item   rules={[{required:true, message:'This field is required'}]}  name={['validity','date']} >
-                                    <DatePicker  placeholder="Date"   size="large" />
+                                <Form.Item   rules={[{required:true, message:'This field is required'}]}  name={['validity','startTime']} >
+                                    <DatePicker  style={{ width: 300 }}  showTime placeholder="Select Date and Time"  format={'MMM DD, YYYY, H A'}  size="large" />
                                 </Form.Item>
 
-                                <Form.Item   rules={[{required:true, message:'This field is required'}]}  name={['validity','time']} >
+                                {/* <Form.Item   rules={[{required:true, message:'This field is required'}]}  name={['validity','time']} >
                                     <TimePicker   placeholder="Time" format={'H A'}   size="large" />
-                                </Form.Item>
+                                </Form.Item> */}
 
                                 <Form.Item  rules={[{required:true, message:'This field is required'}]}  name={['validity','timezone']} >
                                     <Select
