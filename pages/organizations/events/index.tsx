@@ -30,7 +30,14 @@ import { usePlacesWidget } from "react-google-autocomplete";
 const {TextArea} = Input
 
 var relativeTime = require('dayjs/plugin/relativeTime')
+var utc = require("dayjs/plugin/utc")
+var timezone = require("dayjs/plugin/timezone")
+var advanced = require("dayjs/plugin/advancedFormat")
+
 dayjs.extend(relativeTime)
+dayjs.extend(timezone)
+dayjs.extend(utc)
+dayjs.extend(advanced)
 
 
 
@@ -222,28 +229,40 @@ function gotoEventPage(event:Event){
           </div>
         )
       },
+      // {
+      //   title: 'Contact Number',
+      //   dataIndex: 'contactNumber',
+      //   key: 'contactNumber',
+      //   width:'140px',
+      //   render: (contactNumber)=>{
+      //     const formatedNumber = convertToAmericanFormat(contactNumber)
+      //     return(
+      //     <div>
+      //       <Text>{formatedNumber}</Text>
+      //     </div>
+      //   )
+      // },
       {
-        title: 'Contact Number',
-        dataIndex: 'contactNumber',
-        key: 'contactNumber',
-        width:'140px',
-        render: (contactNumber)=>{
-          const formatedNumber = convertToAmericanFormat(contactNumber)
+        title: 'Duration',
+        dataIndex: 'duration',
+        key: 'duration',
+        width:'120px',
+        render: (duration)=>{
           return(
           <div>
-            <Text>{formatedNumber}</Text>
+            <Text>{duration/60}hrs</Text>
           </div>
         )
       }
       },
       {
-          title: 'Event Date',
-          dataIndex: 'date',
+          title: 'Start Time',
+          dataIndex: 'startTime',
           key: 'date',
-          width:'120px',
-          render: (date)=>{
+          width:'140px',
+          render: (startTime)=>{
               return(
-            <Text type='secondary'>{dayjs(date).format('MMM DD, YYYY')}</Text>
+            <Text type='secondary'>{dayjs(startTime).tz("UTC").format('MMM DD, YYYY H A')}</Text>
             )
         },
     },
@@ -928,7 +947,7 @@ export function EditableDate({selectedRecord}:EditableProp){
         return data;
     }
     const recordMutation = useMutation({
-      mutationKey:['date'],
+      mutationKey:['startTime'],
       mutationFn: recordMutationHandler,
       onSuccess:()=>{
         toggleEdit()
@@ -940,14 +959,14 @@ export function EditableDate({selectedRecord}:EditableProp){
   
     function onFinish(updatedItem:any){
       const payload = {
-        key:'date',
-        value: updatedItem.date,
+        key:'start_time',
+        value: updatedItem.startTime,
         id: selectedRecord.id
       }
   
       const updatedRecord = {
         ...selectedRecord,
-        date: updatedItem.date
+        startTime: updatedItem.startTime
       }
       setState(updatedRecord)
       recordMutation.mutate(payload)
@@ -957,25 +976,30 @@ export function EditableDate({selectedRecord}:EditableProp){
   
     const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{dayjs(state.date).format('MMM DD, YYYY')}</Text>
+        <Text>{dayjs(state.startTime).tz("UTC").format('MMM DD, YYYY H A')}</Text>
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
   )
+
   
-    const editable = (
+  const convertedDate = dayjs(selectedRecord.startTime).tz("UTC").toISOString()
+  // console.log(convertedDate)    
+  console.log( dayjs(selectedRecord.startTime).utc().isValid())
+   
+    const editable = (  
       <Form
-       style={{ marginTop:'.5rem' }}
-       name="editableTickets"
-       initialValues={{date: dayjs(selectedRecord.date)}}
+       style={{ marginTop:'.5rem' }} 
+       name="editableDateAndTime"
+       initialValues={{startTime: dayjs(selectedRecord.startTime).utc()}}  
        onFinish={onFinish}
        >
         <Row>
           <Col span={16} style={{height:'100%'}}>
             <Form.Item
-                name="date"
+                name="startTime"
                 rules={[{ required: true, message: 'This field is required' }]}
             >
-                <DatePicker  placeholder="Date"   size="large" />
+                 <DatePicker  style={{ width: 300 }}  showTime placeholder="Select Date and Time"  format={'MMM DD, YYYY, H A'}  size="large" />
             </Form.Item>
           </Col>
           <Col span={4}>
@@ -996,7 +1020,7 @@ export function EditableDate({selectedRecord}:EditableProp){
     )
     return(
       <div style={{width:'100%', display:'flex', marginTop:'2rem', flexDirection:'column'}}>
-        <Text type="secondary" style={{ marginRight: '2rem',}}>Date</Text>
+        <Text type="secondary" style={{ marginRight: '2rem',}}>Date and Time</Text>
       {isEditMode?editable:readOnly}
       </div>
     )
