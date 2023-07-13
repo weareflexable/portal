@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { TableProps, Tag, Button, Table, Image, Typography } from "antd";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { TableProps, Tag, Button, Table, Image, Typography, Drawer, Form, Input, notification } from "antd";
 import { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import { useState } from "react";
@@ -13,7 +13,7 @@ import { numberFormatter } from "../../../../utils/numberFormatter";
 
 const {Title} = Typography
 
-import {ReloadOutlined, CheckOutlined,StopOutlined} from '@ant-design/icons'
+import {ReloadOutlined, DownloadOutlined, CheckOutlined,StopOutlined} from '@ant-design/icons'
 
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -31,6 +31,8 @@ import EventsLayout from "../../../../components/Layout/EventsLayout";
 
 const {Text} = Typography
 
+
+
 export default function EventBookings(){
 
     const {paseto} = useAuthContext()
@@ -45,7 +47,7 @@ export default function EventBookings(){
     async function fetchBookings(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/bookings/communities?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/bookings/events?pageNumber=${pageNumber}&pageSize=${pageSize}`,
             headers:{
                 "Authorization": paseto
             }
@@ -56,7 +58,7 @@ export default function EventBookings(){
     }
 
 
-    const bookingsQuery = useQuery({queryKey:['managerBookings',pageNumber,pageSize], queryFn:fetchBookings, enabled:paseto !== ''})
+    const bookingsQuery = useQuery({queryKey:['eventBookings',pageNumber,pageSize], queryFn:fetchBookings, enabled:paseto !== ''})
     const data = bookingsQuery.data && bookingsQuery.data.data
     const totalLength = bookingsQuery.data && bookingsQuery.data.dataLength;
 
@@ -73,6 +75,8 @@ export default function EventBookings(){
       setPageSize(data.pageSize)
 
     };
+
+    
   
   
 
@@ -223,7 +227,7 @@ export default function EventBookings(){
                             <Text>{` · ${dayjs(bookingsQuery.dataUpdatedAt).tz('America/New_York').format('HH:mm:ss')} secs ago`}</Text>
                           </div>
                       </div>
-                      <Button shape="round" style={{marginRight:'.3rem'}} loading={false} onClick={()=>{}} icon={<ReloadOutlined rev={undefined} />}>Export</Button>
+                      <Button shape="round" style={{marginRight:'.3rem'}} loading={false} onClick={()=>{}} icon={<DownloadOutlined rev={undefined} />}>Export</Button>
                       <Button shape="round" loading={bookingsQuery.isRefetching} onClick={()=>bookingsQuery.refetch()} icon={<ReloadOutlined rev={undefined} />}>Refresh</Button>
                   </div>
                </div>
@@ -253,3 +257,112 @@ export default function EventBookings(){
 
 
 EventBookings.PageLayout = EventsLayout
+
+
+
+interface DrawerProps{
+  selectedRecord: Event,
+  isDrawerOpen: boolean,
+  closeDrawer: (value:boolean)=>void
+}
+
+function DetailDrawer({selectedRecord,isDrawerOpen,closeDrawer}:DrawerProps){
+
+const queryClient = useQueryClient()
+const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+
+// const {switchEvent} = useEvent()
+const {paseto} = useAuthContext()
+
+
+function closeDrawerHandler(){
+  queryClient.invalidateQueries(['event-bookings']) 
+  closeDrawer(!isDrawerOpen)
+}
+
+function toggleDeleteModal(){
+  setIsDeleteModalOpen(!isDeleteModalOpen)
+}
+
+
+
+const redeemTicketHandler = async(ticketPayload:any)=>{
+  const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/employee/redeem-ticket`, ticketPayload,{
+      headers:{
+          "Authorization": paseto
+      },
+  })
+  return data
+}
+function onFinish(){
+  const payload ={
+    item: {
+        id: "d2e840f3-85a1-4eac-8f0e-00537f8666e0",  //need to valiadte exp using start date time + duration 
+        type: "event",
+        communityVenueId: ""
+    },
+    ticketSecret: "965432",
+    "redeemMethod": "uniqueCode",
+    "userId": "d2e840f3-85a1-4eac-8f0e-00537f8666e0"
+}
+    redeemEventTicket.mutate(payload)
+}
+
+const redeemEventTicket = useMutation(redeemTicketHandler,{
+  onSuccess:(data)=>{
+    if(data.status>201){
+      notification['error']({
+        message: 'Error creating events',
+      });
+    }else{
+    notification['success']({
+      message: 'Success redeeming user ticket',
+    });
+    }
+  },
+    onSettled:()=>{
+        queryClient.invalidateQueries(['event-bookings'])
+    }
+})
+
+const{isLoading:isRedeeming} = redeemEventTicket
+
+const [form] = Form.useForm()
+
+
+return( 
+<Drawer 
+  title="Redeem Ticket" 
+  width={640} 
+  placement="right" 
+  closable={true} 
+  onClose={closeDrawerHandler} 
+  open={isDrawerOpen}
+>
+  <div
+    style={{width:'100%', margin:'3rem 1rem',}}
+  >
+<Form form={form} onFinish={onFinish}>
+  <Form.Item style={{marginBottom:'1rem'}} rules={[{required:true, message: 'This field is required'}, {type:"integer", message: 'Redeem code must be numbers'}]}>
+    <Input name="ticketSecret" size="large" />
+  </Form.Item>
+  <Form.Item>
+    <Button
+      shape="round" 
+      type="primary" 
+      size="large" 
+      loading={isRedeeming}  
+      htmlType="submit"
+    >
+       Redeem Ticket
+    </Button>
+  </Form.Item>
+  
+</Form>
+</div>
+
+
+
+</Drawer>
+)
+}

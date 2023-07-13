@@ -218,17 +218,7 @@ function gotoEventPage(event:Event){
           </div>
         )
       },
-      {
-        title: 'Timezone',
-        dataIndex: 'timeZone',
-        key: 'timeZone',
-        width:'80px',
-        render: (timezone:string)=>(
-          <div>
-            <Text>{timezone}</Text>
-          </div>
-        )
-      },
+      
       // {
       //   title: 'Contact Number',
       //   dataIndex: 'contactNumber',
@@ -259,12 +249,25 @@ function gotoEventPage(event:Event){
           title: 'Start Time',
           dataIndex: 'startTime',
           key: 'date',
+          fixed:'right',
           width:'140px',
           render: (startTime)=>{
               return(
             <Text type='secondary'>{dayjs(startTime).tz("UTC").format('MMM DD, YYYY H A')}</Text>
             )
         },
+    },
+    {
+      title: 'Timezone',
+      dataIndex: 'timeZone',
+      key: 'timeZone',
+      width:'80px',
+      fixed:'right',
+      render: (timezone:string)=>(
+        <div>
+          <Text>{timezone}</Text>
+        </div>
+      )
     },
     {
       dataIndex: 'actions', 
