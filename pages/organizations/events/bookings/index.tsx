@@ -3,15 +3,17 @@ import { TableProps, Tag, Button, Table, Image, Typography, Drawer, Form, Input,
 import { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import { useState } from "react";
-import ManagerBookingsLayout from "../../../../components/Layout/ManagerBookingsLayout"
 import { IMAGE_PLACEHOLDER_HASH } from "../../../../constants";
 import { useAuthContext } from "../../../../context/AuthContext";
 import useUrlPrefix from "../../../../hooks/useUrlPrefix";
 import { EventOrder } from "../../../../types/Booking";
-import { ServiceItem } from "../../../../types/Services";
 import { numberFormatter } from "../../../../utils/numberFormatter";
+// import converter from 'json-2-csv'
+import * as converter from 'json-2-csv';
+// import { json2csv } from 'json-2-csv'
 
 const {Title} = Typography
+
 
 import {ReloadOutlined, DownloadOutlined, MoreOutlined, CheckOutlined,StopOutlined} from '@ant-design/icons'
 
@@ -80,8 +82,38 @@ export default function EventBookings(){
     const downloadBookingsQuery = useQuery({queryKey:['allEventBookings'], queryFn:fetchAllBookings, enabled:false})
 
     async function downloadRecords(){
-      downloadBookingsQuery.refetch()
-      console.log(downloadBookingsQuery.data)
+
+      let csv;
+      try{
+        const res = await axios({
+          method:'get',
+          url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/user-event-ticket`,
+          headers:{
+              "Authorization": paseto
+          }
+      })
+
+      csv =  await converter.json2csv(res.data.data)
+      
+      }catch(err){
+        notification['error']({
+          message: 'Error downloading your records, please try again!'
+        })
+      }
+      
+
+
+
+      let csvContent = "data:text/csv;charset=utf-8," +csv;
+
+      const encodedUri = encodeURI(csvContent)
+    
+
+      const link = document.createElement('a');
+      link.setAttribute("href", encodedUri);
+      link.setAttribute('download', `Event_bookings.csv`);
+      document.body.appendChild(link);
+      link.click();
     }
 
   
