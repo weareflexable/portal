@@ -13,7 +13,7 @@ import { numberFormatter } from "../../../../utils/numberFormatter";
 
 const {Title} = Typography
 
-import {ReloadOutlined, DownloadOutlined, CheckOutlined,StopOutlined} from '@ant-design/icons'
+import {ReloadOutlined, DownloadOutlined, MoreOutlined, CheckOutlined,StopOutlined} from '@ant-design/icons'
 
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -38,6 +38,9 @@ export default function EventBookings(){
     const {paseto} = useAuthContext()
     const [pageNumber, setPageNumber] = useState<number|undefined>(1)
     const [pageSize, setPageSize] = useState<number|undefined>(10)
+
+    const [selectedRecord, setSelectedRecord] = useState<any|EventOrder>({})
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   
 
 
@@ -47,7 +50,7 @@ export default function EventBookings(){
     async function fetchBookings(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/bookings/events?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/event/bookings?pageNumber=${pageNumber}&pageSize=${pageSize}`,
             headers:{
                 "Authorization": paseto
             }
@@ -56,14 +59,30 @@ export default function EventBookings(){
         return res.data;
    
     }
+    async function fetchAllBookings(){
+
+    const res = await axios({
+            method:'get',
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/user-event-ticket`,
+            headers:{
+                "Authorization": paseto
+            }
+        })
+        return res.data; 
+    }
 
 
     const bookingsQuery = useQuery({queryKey:['eventBookings',pageNumber,pageSize], queryFn:fetchBookings, enabled:paseto !== ''})
     const data = bookingsQuery.data && bookingsQuery.data.data
     const totalLength = bookingsQuery.data && bookingsQuery.data.dataLength;
-
-
     
+    
+    const downloadBookingsQuery = useQuery({queryKey:['allEventBookings'], queryFn:fetchAllBookings, enabled:false})
+
+    async function downloadRecords(){
+      downloadBookingsQuery.refetch()
+      console.log(downloadBookingsQuery.data)
+    }
 
   
   
@@ -76,8 +95,21 @@ export default function EventBookings(){
 
     };
 
-    
+    function viewBookingDetails(event:EventOrder){
+      // set state
+      setSelectedRecord(event)
+      // opne drawer
+      setIsDrawerOpen(true)
+
+    }
   
+
+    const onMenuClick=( record:EventOrder) => {
+      viewBookingDetails(record)
+      console.log('click', record);
+    };
+
+
   
 
     const columns: ColumnsType<EventOrder> = [
@@ -90,12 +122,12 @@ export default function EventBookings(){
         fixed:'left',
         render:(_,record)=>{
 
-          const coverImageHash = record.coverImageHash
+          const coverImageHash = record.eventDetails.coverImageHash
             return( 
                 <div style={{display:'flex',alignItems:'center'}}>
-                    {/* <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Event cover image' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${coverImageHash.length < 10? IMAGE_PLACEHOLDER_HASH : coverImageHash}`}/> */}
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Event cover image' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${coverImageHash.length < 10? IMAGE_PLACEHOLDER_HASH : coverImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
-                        <Text>{record.name}</Text>   
+                        <Text>{record.eventDetails.name}</Text>   
                         {/* <Text type="secondary">{serviceName}</Text>   */}
                     </div>
                 </div>
@@ -145,7 +177,7 @@ export default function EventBookings(){
         title: 'Quantity',
         dataIndex: 'quantity',
         key: 'quantity',
-        width:'100px',
+        width:'80px',
         align:'right',
         render:(quantity)=>( 
           <div>
@@ -161,7 +193,7 @@ export default function EventBookings(){
         title: 'Total Price',
         // dataIndex: 'totalPrice',
         key: 'totalPrice',
-        width:'150px',
+        width:'100px',
         align:'right',
         render: (_,record)=>{
           const total = record.quantity * (record.unitPrice/100)
@@ -179,7 +211,7 @@ export default function EventBookings(){
       title: 'Payment Status',
       dataIndex: 'paymentIntentStatus',
       key: 'paymentIntentStatus',
-      width:'150px',
+      width:'140px',
       fixed:'right',
       render: (paymentStatus)=>{
         const color = paymentStatus === 'successful'?'green':paymentStatus === 'failed'?'red':paymentStatus === 'cancelled'?'grey':'blue'
@@ -200,11 +232,24 @@ export default function EventBookings(){
     //   }
     // },
     {
+      title: 'Start Time',
+      dataIndex: 'startTime',
+      key: 'startTime',
+      fixed:'right',
+      width: '140px',
+      render: (_,record)=>{ 
+          const date = dayjs(record.eventDetails.startTime).tz("UTC").format('MMM DD, YYYY H A')
+          return(
+        <Text type='secondary'>{date}</Text>
+        )
+    }
+  },
+    {
       title: 'Order Date',
       dataIndex: 'createdAt',
       key: 'createdAt',
       fixed:'right',
-      width: '110px',
+      width: '100px',
       render: (createdAt)=>{
           const date = dayjs(createdAt).format('MMM DD, YYYY')
           return(
@@ -212,6 +257,16 @@ export default function EventBookings(){
         )
     }
   },
+  {
+    dataIndex: 'actions', 
+    key: 'actions',
+    fixed: 'right',
+    width:'70px',
+    //@ts-ignore
+    render:(_,record:EventOrder)=>{
+        return <Button onClick= {()=>onMenuClick(record)} type="text" icon={<MoreOutlined rev={undefined}/>}/> 
+    }
+  }
     
     ];
 
@@ -227,7 +282,7 @@ export default function EventBookings(){
                             <Text>{` · ${dayjs(bookingsQuery.dataUpdatedAt).tz('America/New_York').format('HH:mm:ss')} secs ago`}</Text>
                           </div>
                       </div>
-                      <Button shape="round" style={{marginRight:'.3rem'}} loading={false} onClick={()=>{}} icon={<DownloadOutlined rev={undefined} />}>Export</Button>
+                      <Button shape="round" style={{marginRight:'.3rem'}} loading={downloadBookingsQuery.isRefetching} onClick={downloadRecords} icon={<DownloadOutlined rev={undefined} />}>Export</Button>
                       <Button shape="round" loading={bookingsQuery.isRefetching} onClick={()=>bookingsQuery.refetch()} icon={<ReloadOutlined rev={undefined} />}>Refresh</Button>
                   </div>
                </div>
@@ -245,11 +300,11 @@ export default function EventBookings(){
                   onChange={handleChange} 
                   dataSource={data} 
                   />
-                {/* {
+                {
                   isDrawerOpen
-                  ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedServiceItem={selectedServiceItem}/>
+                  ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedRecord={selectedRecord}/>
                   :null
-                } */}
+                }
             </div>
     )
 
@@ -261,7 +316,7 @@ EventBookings.PageLayout = EventsLayout
 
 
 interface DrawerProps{
-  selectedRecord: Event,
+  selectedRecord: EventOrder,
   isDrawerOpen: boolean,
   closeDrawer: (value:boolean)=>void
 }
@@ -295,15 +350,19 @@ const redeemTicketHandler = async(ticketPayload:any)=>{
   return data
 }
 function onFinish(){
+
+  // if payment status and booking status is not succesful, don't redeem ticket
+  // check ticket validity
+
   const payload ={
     item: {
-        id: "d2e840f3-85a1-4eac-8f0e-00537f8666e0",  //need to valiadte exp using start date time + duration 
+        id: selectedRecord.eventId,  //need to valiadte exp using start date time + duration 
         type: "event",
         communityVenueId: ""
     },
-    ticketSecret: "965432",
-    "redeemMethod": "uniqueCode",
-    "userId": "d2e840f3-85a1-4eac-8f0e-00537f8666e0"
+    ticketSecret: selectedRecord.ticketSecret,
+    redeemMethod: "uniqueCode",
+    userId: selectedRecord.userId
 }
     redeemEventTicket.mutate(payload)
 }
@@ -333,22 +392,27 @@ const [form] = Form.useForm()
 return( 
 <Drawer 
   title="Redeem Ticket" 
-  width={640} 
+  width={400} 
   placement="right" 
   closable={true} 
   onClose={closeDrawerHandler} 
   open={isDrawerOpen}
 >
   <div
-    style={{width:'100%', margin:'3rem 1rem',}}
+    style={{width:'100%',}}
   >
-<Form form={form} onFinish={onFinish}>
+{/* <Form form={form} onFinish={onFinish}>
   <Form.Item style={{marginBottom:'1rem'}} rules={[{required:true, message: 'This field is required'}, {type:"integer", message: 'Redeem code must be numbers'}]}>
     <Input name="ticketSecret" size="large" />
   </Form.Item>
   <Form.Item>
+  </Form.Item>
+  
+</Form> */}
     <Button
       shape="round" 
+      block
+      onClick={onFinish}
       type="primary" 
       size="large" 
       loading={isRedeeming}  
@@ -356,9 +420,6 @@ return(
     >
        Redeem Ticket
     </Button>
-  </Form.Item>
-  
-</Form>
 </div>
 
 

@@ -165,7 +165,6 @@ function gotoEventPage(event:Event){
     
       const onMenuClick=( record:Event) => {
         viewEventDetails(record)
-        console.log('click', record);
       };
 
   

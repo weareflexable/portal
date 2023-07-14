@@ -67,8 +67,12 @@ export interface Order {
   }
 
   export type EventOrder = {
+    eventDetails: any,
+    eventId:string,
     id: string
     customer: any,
+    ticketSecret: number,
+    userId: string,
     name: string
     user: any
     createdAt: string
