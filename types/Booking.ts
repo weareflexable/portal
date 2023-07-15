@@ -67,6 +67,8 @@ export interface Order {
   }
 
   export type EventOrder = {
+    redeemStatus: string,
+    bookingStatus: string,
     eventDetails: any,
     eventId:string,
     id: string

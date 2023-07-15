@@ -251,18 +251,18 @@ export default function EventBookings(){
         return <Tag icon={icon} color={color} style={{textTransform:'capitalize'}}>{paymentStatus}</Tag>
       }
     },
-    // {
-    //   title: 'Booking Status',
-    //   dataIndex: 'bookingStatus',
-    //   key: 'bookingStatus',
-    //   width:'150px',
-    //   fixed:'right',
-    //   render: (bookingStatus)=>{
-    //     const color = bookingStatus === 'successful'?'green':bookingStatus === 'failed'?'red':bookingStatus === 'cancelled'?'grey':'blue'
-    //     const icon = bookingStatus === 'successful'?<CheckOutlined rev={undefined} />:bookingStatus === 'cancelled'?<StopOutlined rev={undefined} />:null
-    //     return <Tag icon={icon} color={color} style={{textTransform:'capitalize'}}>{bookingStatus}</Tag>
-    //   }
-    // },
+    {
+      title: 'Booking Status',
+      dataIndex: 'bookingStatus',
+      key: 'bookingStatus',
+      width:'150px',
+      fixed:'right',
+      render: (bookingStatus)=>{
+        const color = bookingStatus === 'confirmed'?'green':'red'
+        const icon = bookingStatus === 'confirmed'?<CheckOutlined rev={undefined} />:null
+        return <Tag icon={icon} color={color} style={{textTransform:'capitalize'}}>{bookingStatus}</Tag>
+      }
+    },
     {
       title: 'Start Time',
       dataIndex: 'startTime',
@@ -287,6 +287,18 @@ export default function EventBookings(){
           return(
         <Text type='secondary'>{date}</Text>
         )
+    }
+  },
+  {
+    title: 'Redeem Status',
+    dataIndex: 'redeemStatus',
+    key: 'redeemStatus',
+    width:'150px',
+    fixed:'right',
+    render: (redeemStatus)=>{
+      const color = redeemStatus === 'redeemed'?'green': 'red'
+      const icon = redeemStatus === 'redeemed'?<CheckOutlined rev={undefined} />:null
+      return <Tag icon={icon} color={color} style={{textTransform:'capitalize'}}>{redeemStatus}</Tag>
     }
   },
   {
@@ -444,6 +456,7 @@ return(
     <Button
       shape="round" 
       block
+      disabled={selectedRecord.redeemStatus !== 'redeemed'}
       onClick={onFinish}
       type="primary" 
       size="large" 
@@ -452,6 +465,7 @@ return(
     >
        Redeem Ticket
     </Button>
+    {selectedRecord.redeemStatus!== 'redeemed'?<Text>It appears that your ticket has already been redeemed </Text>:null}
 </div>
 
 
