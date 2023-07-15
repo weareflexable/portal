@@ -12,7 +12,7 @@ import { numberFormatter } from "../../../../utils/numberFormatter";
 import * as converter from 'json-2-csv';
 // import { json2csv } from 'json-2-csv'
 
-const {Title} = Typography
+const {Title,Text} = Typography
 
 
 import {ReloadOutlined, DownloadOutlined, MoreOutlined, CheckOutlined,StopOutlined} from '@ant-design/icons'
@@ -31,7 +31,6 @@ dayjs.extend(advanced)
 
 import EventsLayout from "../../../../components/Layout/EventsLayout";
 
-const {Text} = Typography
 
 
 
@@ -244,7 +243,7 @@ export default function EventBookings(){
       dataIndex: 'paymentIntentStatus',
       key: 'paymentIntentStatus',
       width:'140px',
-      fixed:'right',
+      // fixed:'right',
       render: (paymentStatus)=>{
         const color = paymentStatus === 'successful'?'green':paymentStatus === 'failed'?'red':paymentStatus === 'cancelled'?'grey':'blue'
         const icon = paymentStatus === 'successful'?<CheckOutlined rev={undefined} />:paymentStatus === 'cancelled'?<StopOutlined rev={undefined} />:null
@@ -267,8 +266,7 @@ export default function EventBookings(){
       title: 'Start Time',
       dataIndex: 'startTime',
       key: 'startTime',
-      fixed:'right',
-      width: '140px',
+      width: '150px',
       render: (_,record)=>{ 
           const date = dayjs(record.eventDetails.startTime).tz("UTC").format('MMM DD, YYYY H A')
           return(
@@ -280,7 +278,6 @@ export default function EventBookings(){
       title: 'Order Date',
       dataIndex: 'createdAt',
       key: 'createdAt',
-      fixed:'right',
       width: '100px',
       render: (createdAt)=>{
           const date = dayjs(createdAt).format('MMM DD, YYYY')
@@ -424,7 +421,7 @@ const redeemEventTicket = useMutation(redeemTicketHandler,{
     }
   },
     onSettled:()=>{
-        queryClient.invalidateQueries(['event-bookings'])
+        // queryClient.invalidateQueries(['event-bookings'])
     }
 })
 
@@ -455,17 +452,18 @@ return(
 </Form> */}
     <Button
       shape="round" 
-      block
-      disabled={selectedRecord.redeemStatus !== 'redeemed'}
+      block 
+      disabled={selectedRecord.redeemStatus !== 'redeemed' && selectedRecord.bookingStatus==='confirmed'}
       onClick={onFinish}
       type="primary" 
       size="large" 
+      style={{marginBottom:'.5rem'}}
       loading={isRedeeming}  
       htmlType="submit"
     >
        Redeem Ticket
     </Button>
-    {selectedRecord.redeemStatus!== 'redeemed'?<Text>It appears that your ticket has already been redeemed </Text>:null}
+    {/* {selectedRecord.redeemStatus !== 'redeemed'?<Text type="secondary" >It appears that your ticket has already been redeemed </Text>:null} */}
 </div>
 
 
