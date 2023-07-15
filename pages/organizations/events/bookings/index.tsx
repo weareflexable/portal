@@ -257,7 +257,7 @@ export default function EventBookings(){
       width:'150px',
       fixed:'right',
       render: (bookingStatus)=>{
-        const color = bookingStatus === 'confirmed'?'green':'red'
+        const color = bookingStatus === 'confirmed'?'green':bookingStatus === 'initiated'?'blue': 'red'
         const icon = bookingStatus === 'confirmed'?<CheckOutlined rev={undefined} />:null
         return <Tag icon={icon} color={color} style={{textTransform:'capitalize'}}>{bookingStatus}</Tag>
       }
