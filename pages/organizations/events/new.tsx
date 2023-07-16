@@ -143,7 +143,7 @@ export default function NewEvent(){
 
         const formObject: any = {
             coverImageHash: imageHash,
-            artworkImageHash: imageHash,
+            artworkHash: imageHash,
             timezone: validity.timezone,
             startTime: dayjs(validity.startTime).format(),
             name: formData.name,
