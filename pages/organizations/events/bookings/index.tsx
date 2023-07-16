@@ -86,13 +86,20 @@ export default function EventBookings(){
       try{
         const res = await axios({
           method:'get',
-          url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/user-event-ticket`,
+          url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/user-event-ticket/all`,
           headers:{
               "Authorization": paseto
           }
       })
-
-      csv =  await converter.json2csv(res.data.data)
+ 
+      if(res.data.data.length < 1){
+        notification['warning']({
+          message: "Sorry! There are not successful bookings to download"
+        })
+        return
+      }else{
+        csv =  await converter.json2csv(res.data.data)
+      }
       
       }catch(err){
         notification['error']({
@@ -100,8 +107,6 @@ export default function EventBookings(){
         })
       }
       
-
-
 
       let csvContent = "data:text/csv;charset=utf-8," +csv;
 
