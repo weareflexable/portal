@@ -71,5 +71,9 @@ const navItems=[
     {
       key:'communities',
       label:<Link href='/manager/bookings/communities'>Communities</Link>,
+    },
+    {
+      key:'events',
+      label:<Link href='/manager/bookings/events'>Events</Link>,
     }
   ]
