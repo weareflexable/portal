@@ -189,7 +189,7 @@ function gotoEventPage(event:Event){
         },
       },
       {
-        title: 'Venue Name',
+        title: 'Venue',
         dataIndex: 'locationName',
         key: 'locationName',
         width:'200px',
@@ -207,7 +207,7 @@ function gotoEventPage(event:Event){
         )
       },
       {
-        title: 'Total Tickets',
+        title: 'Tickets',
         dataIndex: 'totalTickets',
         key: 'totalTickets',
         width:'100px',
@@ -247,12 +247,24 @@ function gotoEventPage(event:Event){
       {
           title: 'Start Time',
           dataIndex: 'startTime',
-          key: 'date',
+          key: 'startTime',
           fixed:'right',
           width:'140px',
           render: (startTime)=>{
               return(
-            <Text type='secondary'>{dayjs(startTime).tz("UTC").format('MMM DD, YYYY H A')}</Text>
+            <Text type='secondary'>{dayjs(startTime).tz("UTC").format('MMM DD, YYYY HA')}</Text>
+            )
+        },
+    },
+      {
+          title: 'End Time',
+          dataIndex: 'startTime',
+          key: 'startTime',
+          fixed:'right',
+          width:'140px',
+          render: (_, record)=>{
+              return(
+            <Text type='secondary'>{dayjs(record.startTime).add(record.duration,'m').tz("UTC").format('MMM DD, YYYY HA')}</Text>
             )
         },
     },
@@ -260,7 +272,7 @@ function gotoEventPage(event:Event){
       title: 'Timezone',
       dataIndex: 'timeZone',
       key: 'timeZone',
-      width:'80px',
+      width:'100px',
       fixed:'right',
       render: (timezone:string)=>(
         <div>
@@ -318,7 +330,7 @@ function gotoEventPage(event:Event){
                   </EmptyState> 
                   : <Table 
                       style={{width:'100%'}} 
-                      scroll={{ x: 'calc(500px + 50%)'}} 
+                      scroll={{ x: 'calc(700px + 50%)'}} 
                       size='large' 
                       rowKey={(record)=>record.id}
                       // @ts-ignore 
@@ -449,6 +461,7 @@ return(
   <EditableDescription selectedRecord={selectedRecord}/>
   <EditableTickets selectedRecord={selectedRecord}/>
   <EditableTimeZone selectedRecord={selectedRecord}/>
+  <EditableDuration selectedRecord={selectedRecord}/>
   <EditableDate selectedRecord={selectedRecord}/>
   <EditableAddress selectedRecord={selectedRecord}/>
   {/* <EditableArtwork selectedRecord={selectedRecord}/> */}
@@ -1249,6 +1262,116 @@ export function EditableTickets({selectedRecord}:EditableProp){
     return(
       <div style={{width:'100%', display:'flex', marginTop:'2rem', flexDirection:'column'}}>
         <Text type="secondary" style={{ marginRight: '2rem',}}>Tickets</Text>
+      {isEditMode?editable:readOnly}
+      </div>
+    )
+  }
+export function EditableDuration({selectedRecord}:EditableProp){
+
+    // console.log(selectedRecord.name)
+    
+    const [state, setState] = useState(selectedRecord)
+  
+    const [isEditMode, setIsEditMode] = useState(false)
+  
+    const {paseto} = useAuthContext()
+  
+    const queryClient = useQueryClient()
+  
+  
+  
+  
+  
+    function toggleEdit(){
+      setIsEditMode(!isEditMode)
+    }
+  
+   const urlPrefix = useUrlPrefix()
+  
+    const recordMutationHandler = async(updatedItem:any)=>{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
+        headers:{
+            //@ts-ignore
+            "Authorization": paseto
+        }
+      })
+        return data;
+    }
+    const recordMutation = useMutation({
+      mutationKey:['duration'],
+      mutationFn: recordMutationHandler,
+      onSuccess:()=>{
+        toggleEdit()
+      },
+      onSettled:()=>{
+        queryClient.invalidateQueries({queryKey:['events']})
+      }
+    })
+  
+    function onFinish(updatedItem:any){
+      const payload = {
+        key:'duration',
+        value: String(updatedItem.duration*60),
+        id: selectedRecord.id
+      }
+
+
+  
+      const updatedRecord = {
+        ...selectedRecord,
+        duration: updatedItem.duration*60
+      }
+
+      console.log(updatedRecord)
+
+      setState(updatedRecord)
+      recordMutation.mutate(payload)
+    }
+  
+    const {isLoading:isEditing} = recordMutation ;
+  
+    const readOnly = (
+      <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+        <Text>{state.duration/60}hrs</Text>
+        <Button type="link" onClick={toggleEdit}>Edit</Button>
+      </div>
+  )
+  
+    const editable = (
+      <Form
+       style={{ marginTop:'.5rem' }}
+       name="editableDuration"
+       initialValues={{duration: selectedRecord.duration/60}}
+       onFinish={onFinish}
+       >
+        <Row>
+          <Col span={16} style={{height:'100%'}}>
+            <Form.Item
+                name="duration"
+                rules={[{ required: true, message: 'This field is required' }]}
+            >
+                <Input suffix='hrs'  disabled={isEditing} placeholder=""/>
+            </Form.Item>
+          </Col>
+          <Col span={4}>
+            <Form.Item style={{ width:'100%'}}>
+                <Space >
+                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                        Cancel
+                    </Button>
+                    <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                        Apply changes
+                    </Button>
+                </Space>           
+            </Form.Item>
+          </Col>
+        </Row>
+             
+      </Form>
+    )
+    return(
+      <div style={{width:'100%', display:'flex', marginTop:'2rem', flexDirection:'column'}}>
+        <Text type="secondary" style={{ marginRight: '2rem',}}>Duration</Text>
       {isEditMode?editable:readOnly}
       </div>
     )
