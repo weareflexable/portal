@@ -30,6 +30,7 @@ dayjs.extend(advanced)
 
 
 import EventsLayout from "../../../../components/Layout/EventsLayout";
+import useEvent from "../../../../hooks/useEvents";
 
 
 
@@ -39,9 +40,12 @@ export default function EventBookings(){
     const {paseto} = useAuthContext()
     const [pageNumber, setPageNumber] = useState<number|undefined>(1)
     const [pageSize, setPageSize] = useState<number|undefined>(10)
+    const {currentEvent} = useEvent()
 
     const [selectedRecord, setSelectedRecord] = useState<any|EventOrder>({})
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+
+
   
 
 
@@ -51,7 +55,7 @@ export default function EventBookings(){
     async function fetchBookings(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/event/bookings?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/event/bookings?pageNumber=${pageNumber}&pageSize=${pageSize}&eventId=${currentEvent.id}`,
             headers:{
                 "Authorization": paseto
             }
@@ -296,10 +300,12 @@ export default function EventBookings(){
     key: 'redeemStatus',
     width:'150px',
     fixed:'right',
-    render: (redeemStatus)=>{
-      const color = redeemStatus === 'redeemed'?'green': 'red'
-      const icon = redeemStatus === 'redeemed'?<CheckOutlined rev={undefined} />:null
-      return <Tag icon={icon} color={color} style={{textTransform:'capitalize'}}>{redeemStatus}</Tag>
+    render: (_,record)=>{
+      const isTicketExpired = dayjs().isAfter(dayjs(record.eventDetails.startTime).add(record.eventDetails.duration/60,'h').tz('UTC'))
+      const status = record.redeemStatus === 'redeemed' ? 'redeemed': record.redeemStatus === 'active' && isTicketExpired? 'expired': record.bookingStatus==='Failed'? 'cancelled': 'active'
+      const color = status === 'redeemed'?'green': status === 'expired'?'red': status==='cancelled'? 'grey' :'blue'
+      const icon = status === 'redeemed'?<CheckOutlined rev={undefined} />:status === 'cancelled'?<StopOutlined rev={undefined}/>:null
+      return <Tag icon={icon} color={color} style={{textTransform:'capitalize'}}>{status}</Tag>
     }
   },
   {
@@ -374,6 +380,8 @@ const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 // const {switchEvent} = useEvent()
 const {paseto} = useAuthContext()
 
+const isTicketExpired = dayjs().isAfter(dayjs(selectedRecord.eventDetails.startTime).add(selectedRecord.eventDetails.duration/60,'h').tz('UTC'))
+
 
 function closeDrawerHandler(){
   queryClient.invalidateQueries(['event-bookings']) 
@@ -394,7 +402,19 @@ const redeemTicketHandler = async(ticketPayload:any)=>{
   })
   return data
 }
-function onFinish(){
+function onFinish(values:any){
+  console.log(values)
+  console.log(values)
+
+  const isRedeemCodeValid = selectedRecord.ticketSecret === values.ticketSecret
+  // check if ticket has expired
+  // check if input is the same as redeemCode
+  if(!isRedeemCodeValid) {
+    notification['warning']({
+      message: 'The secret you provided does not match the one on the ticket',
+    });
+    return
+  }
 
   // if payment status and booking status is not succesful, don't redeem ticket
   // check ticket validity
@@ -446,19 +466,17 @@ return(
   <div
     style={{width:'100%',}}
   >
-{/* <Form form={form} onFinish={onFinish}>
-  <Form.Item style={{marginBottom:'1rem'}} rules={[{required:true, message: 'This field is required'}, {type:"integer", message: 'Redeem code must be numbers'}]}>
-    <Input name="ticketSecret" size="large" />
+<Form form={form} onFinish={onFinish}>
+  <Form.Item  style={{marginBottom:'1rem'}} rules={[{required:true, message: 'This field is required'}, {type:"integer", message: 'Redeem code must be numbers'}]}>
+    <Input disabled={selectedRecord.redeemStatus === 'redeemed'} name="ticketSecret" size="large" />
   </Form.Item>
   <Form.Item>
-  </Form.Item>
-  
-</Form> */}
-    <Button
+  {isTicketExpired
+    ?<Text>Ticket has expired</Text>
+    :<Button
       shape="round" 
       block 
-      disabled={selectedRecord.redeemStatus !== 'redeemed' && selectedRecord.bookingStatus==='confirmed'}
-      onClick={onFinish}
+      disabled={selectedRecord.redeemStatus === 'redeemed' || selectedRecord.bookingStatus === 'Failed'}
       type="primary" 
       size="large" 
       style={{marginBottom:'.5rem'}}
@@ -466,8 +484,10 @@ return(
       htmlType="submit"
     >
        Redeem Ticket
-    </Button>
-    {/* {selectedRecord.redeemStatus !== 'redeemed'?<Text type="secondary" >It appears that your ticket has already been redeemed </Text>:null} */}
+    </Button>}
+  </Form.Item>
+</Form>
+    {selectedRecord.redeemStatus === 'redeemed'?<Text type="secondary" >It appears that your ticket has already been redeemed </Text>:null}
 </div>
 
 
