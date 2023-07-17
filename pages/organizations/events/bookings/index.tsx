@@ -395,7 +395,7 @@ function toggleDeleteModal(){
 
 
 const redeemTicketHandler = async(ticketPayload:any)=>{
-  const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/employee/redeem-ticket`, ticketPayload,{
+  const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/employee/redeem-ticket`, ticketPayload,{
       headers:{
           "Authorization": paseto
       },
@@ -404,9 +404,8 @@ const redeemTicketHandler = async(ticketPayload:any)=>{
 }
 function onFinish(values:any){
   console.log(values)
-  console.log(values)
 
-  const isRedeemCodeValid = selectedRecord.ticketSecret === values.ticketSecret
+  const isRedeemCodeValid = selectedRecord.ticketSecret == values.ticketSecret
   // check if ticket has expired
   // check if input is the same as redeemCode
   if(!isRedeemCodeValid) {
@@ -467,7 +466,7 @@ return(
     style={{width:'100%',}}
   >
 <Form form={form} onFinish={onFinish}>
-  <Form.Item  style={{marginBottom:'1rem'}} rules={[{required:true, message: 'This field is required'}, {type:"integer", message: 'Redeem code must be numbers'}]}>
+  <Form.Item name={'ticketSecret'}  style={{marginBottom:'1rem'}} rules={[{required:true, message: 'This field is required'}, {max:6, message: 'You have exceed the max number of digits for a secret'}]}>
     <Input disabled={selectedRecord.redeemStatus === 'redeemed'} name="ticketSecret" size="large" />
   </Form.Item>
   <Form.Item>
