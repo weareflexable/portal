@@ -41,6 +41,7 @@ export default function EventBookings(){
     const [pageNumber, setPageNumber] = useState<number|undefined>(1)
     const [pageSize, setPageSize] = useState<number|undefined>(10)
     const {currentEvent} = useEvent()
+    const [isDownloadingTickets, setIsDownloadingTickets]= useState(false)
 
     const [selectedRecord, setSelectedRecord] = useState<any|EventOrder>({})
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
@@ -87,41 +88,54 @@ export default function EventBookings(){
     async function downloadRecords(){
 
       let csv;
+      setIsDownloadingTickets(true)
       try{
         const res = await axios({
           method:'get',
-          url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/user-event-ticket/all`,
+          url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/user-event-ticket/all&eventId=${currentEvent.id}`,
           headers:{
               "Authorization": paseto
           }
       })
+
+
+      if(res.data.data.status > 201){
+        notification['error']({
+          message: 'Error downloading your records, please try again!'
+        })
+        setIsDownloadingTickets(false)
+        return
+      }
  
       if(res.data.data.length < 1){
         notification['warning']({
           message: "Sorry! There are not successful bookings to download"
         })
+        setIsDownloadingTickets(false)
         return
       }else{
         csv =  await converter.json2csv(res.data.data)
+        let csvContent = "data:text/csv;charset=utf-8," +csv;
+
+        const encodedUri = encodeURI(csvContent)
+      
+  
+        const link = document.createElement('a');
+        link.setAttribute("href", encodedUri);
+        link.setAttribute('download', `Event_bookings.csv`);
+        document.body.appendChild(link);
+        link.click();
+        setIsDownloadingTickets(false)
       }
       
       }catch(err){
         notification['error']({
           message: 'Error downloading your records, please try again!'
         })
+        setIsDownloadingTickets(false)
       }
       
-
-      let csvContent = "data:text/csv;charset=utf-8," +csv;
-
-      const encodedUri = encodeURI(csvContent)
-    
-
-      const link = document.createElement('a');
-      link.setAttribute("href", encodedUri);
-      link.setAttribute('download', `Event_bookings.csv`);
-      document.body.appendChild(link);
-      link.click();
+     
     }
 
   
@@ -153,27 +167,27 @@ export default function EventBookings(){
   
 
     const columns: ColumnsType<EventOrder> = [
-      {
-        title: 'Event',
-        dataIndex: 'name',
-        key: 'name',
-        ellipsis:true,
-        width:'250px',
-        fixed:'left',
-        render:(_,record)=>{
+      // {
+      //   title: 'Event',
+      //   dataIndex: 'name',
+      //   key: 'name',
+      //   ellipsis:true,
+      //   width:'250px',
+      //   fixed:'left',
+      //   render:(_,record)=>{
 
-          const coverImageHash = record.eventDetails.coverImageHash
-            return( 
-                <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Event cover image' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${coverImageHash.length < 10? IMAGE_PLACEHOLDER_HASH : coverImageHash}`}/>
-                    <div style={{display:'flex',flexDirection:'column'}}>
-                        <Text>{record.eventDetails.name}</Text>   
-                        {/* <Text type="secondary">{serviceName}</Text>   */}
-                    </div>
-                </div>
-            )
-        },
-      },
+      //     const coverImageHash = record.eventDetails.coverImageHash
+      //       return( 
+      //           <div style={{display:'flex',alignItems:'center'}}>
+      //               <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Event cover image' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${coverImageHash.length < 10? IMAGE_PLACEHOLDER_HASH : coverImageHash}`}/>
+      //               <div style={{display:'flex',flexDirection:'column'}}>
+      //                   <Text>{record.eventDetails.name}</Text>   
+      //                   {/* <Text type="secondary">{serviceName}</Text>   */}
+      //               </div>
+      //           </div>
+      //       )
+      //   },
+      // },
       
       {
         title: 'Customer',
@@ -333,7 +347,7 @@ export default function EventBookings(){
                             <Text>{` · ${dayjs(bookingsQuery.dataUpdatedAt).tz('America/New_York').format('HH:mm:ss')} secs ago`}</Text>
                           </div>
                       </div>
-                      <Button shape="round" style={{marginRight:'.3rem'}} loading={downloadBookingsQuery.isRefetching} onClick={downloadRecords} icon={<DownloadOutlined rev={undefined} />}>Export</Button>
+                      <Button shape="round" style={{marginRight:'.3rem'}} loading={isDownloadingTickets} onClick={downloadRecords} icon={<DownloadOutlined rev={undefined} />}>Export</Button>
                       <Button shape="round" loading={bookingsQuery.isRefetching} onClick={()=>bookingsQuery.refetch()} icon={<ReloadOutlined rev={undefined} />}>Refresh</Button>
                   </div>
                </div>
