@@ -31,6 +31,7 @@ dayjs.extend(advanced)
 
 import EventsLayout from "../../../components/Layout/EventsLayout";
 import ManagerBookingsLayout from "../../../components/Layout/ManagerBookingsLayout";
+import useEvent from "../../../hooks/useEvents";
 
 
 
@@ -43,7 +44,8 @@ export default function EventBookings(){
 
     const [selectedRecord, setSelectedRecord] = useState<any|EventOrder>({})
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-  
+    const [isDownloadingTickets, setIsDownloadingTickets]= useState(false)
+    const {currentEvent} = useEvent()
 
 
 
@@ -61,66 +63,66 @@ export default function EventBookings(){
         return res.data;
    
     }
-    async function fetchAllBookings(){
-
-    const res = await axios({
-            method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/user-event-ticket`,
-            headers:{
-                "Authorization": paseto
-            }
-        })
-        return res.data; 
-    }
-
-
+    
     const bookingsQuery = useQuery({queryKey:['eventBookings',pageNumber,pageSize], queryFn:fetchBookings, enabled:paseto !== ''})
     const data = bookingsQuery.data && bookingsQuery.data.data
     const totalLength = bookingsQuery.data && bookingsQuery.data.dataLength;
     
     
-    const downloadBookingsQuery = useQuery({queryKey:['allEventBookings'], queryFn:fetchAllBookings, enabled:false})
 
     async function downloadRecords(){
 
-      let csv;
-      try{
-        const res = await axios({
-          method:'get',
-          url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/user-event-ticket/all`,
-          headers:{
-              "Authorization": paseto
-          }
-      })
- 
-      if(res.data.data.length < 1){
-        notification['warning']({
-          message: "Sorry! There are not successful bookings to download"
+        let csv;
+        setIsDownloadingTickets(true)
+        try{
+          const res = await axios({
+            method:'get',
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/user-event-ticket/all&eventId=${currentEvent.id}`,
+            headers:{
+                "Authorization": paseto
+            }
         })
-        return
-      }else{
-        csv =  await converter.json2csv(res.data.data)
-      }
-      
-      }catch(err){
-        notification['error']({
-          message: 'Error downloading your records, please try again!'
-        })
-      }
-      
-
-      let csvContent = "data:text/csv;charset=utf-8," +csv;
-
-      const encodedUri = encodeURI(csvContent)
+  
+  
+        if(res.data.data.status > 201){
+          notification['error']({
+            message: 'Error downloading your records, please try again!'
+          })
+          setIsDownloadingTickets(false)
+          return
+        }
+   
+        if(res.data.data.length < 1){
+          notification['warning']({
+            message: "Sorry! There are not successful bookings to download"
+          })
+          setIsDownloadingTickets(false)
+          return
+        }else{
+          csv =  await converter.json2csv(res.data.data)
+          let csvContent = "data:text/csv;charset=utf-8," +csv;
+  
+          const encodedUri = encodeURI(csvContent)
+        
     
-
-      const link = document.createElement('a');
-      link.setAttribute("href", encodedUri);
-      link.setAttribute('download', `Event_bookings.csv`);
-      document.body.appendChild(link);
-      link.click();
-    }
-
+          const link = document.createElement('a');
+          link.setAttribute("href", encodedUri);
+          link.setAttribute('download', `Event_bookings.csv`);
+          document.body.appendChild(link);
+          link.click();
+          setIsDownloadingTickets(false)
+        }
+        
+        }catch(err){
+          notification['error']({
+            message: 'Error downloading your records, please try again!'
+          })
+          setIsDownloadingTickets(false)
+        }
+        
+       
+      }
+  
   
   
     const handleChange: TableProps<EventOrder>['onChange'] = (data,sorter) => {
@@ -297,10 +299,12 @@ export default function EventBookings(){
     key: 'redeemStatus',
     width:'150px',
     fixed:'right',
-    render: (redeemStatus)=>{
-      const color = redeemStatus === 'redeemed'?'green': 'red'
-      const icon = redeemStatus === 'redeemed'?<CheckOutlined rev={undefined} />:null
-      return <Tag icon={icon} color={color} style={{textTransform:'capitalize'}}>{redeemStatus}</Tag>
+    render: (_,record)=>{
+      const isTicketExpired = dayjs().isAfter(dayjs(record.eventDetails.startTime).add(record.eventDetails.duration/60,'h').tz('UTC'))
+      const status = record.redeemStatus === 'redeemed' ? 'redeemed': record.redeemStatus === 'active' && isTicketExpired? 'expired': record.bookingStatus==='Failed'? 'cancelled': 'active'
+      const color = status === 'redeemed'?'green': status === 'expired'?'red': status==='cancelled'? 'grey' :'blue'
+      const icon = status === 'redeemed'?<CheckOutlined rev={undefined} />:status === 'cancelled'?<StopOutlined rev={undefined}/>:null
+      return <Tag icon={icon} color={color} style={{textTransform:'capitalize'}}>{status}</Tag>
     }
   },
   {
@@ -313,6 +317,7 @@ export default function EventBookings(){
         return <Button onClick= {()=>onMenuClick(record)} type="text" icon={<MoreOutlined rev={undefined}/>}/> 
     }
   }
+
     
     ];
 
@@ -327,7 +332,7 @@ export default function EventBookings(){
                             <Text>{` · ${dayjs(bookingsQuery.dataUpdatedAt).tz('America/New_York').format('HH:mm:ss')} secs ago`}</Text>
                           </div>
                       </div>
-                      <Button shape="round" style={{marginRight:'.3rem'}} loading={downloadBookingsQuery.isRefetching} onClick={downloadRecords} icon={<DownloadOutlined rev={undefined} />}>Export</Button>
+                      <Button shape="round" style={{marginRight:'.3rem'}} loading={isDownloadingTickets} onClick={downloadRecords} icon={<DownloadOutlined rev={undefined} />}>Export</Button>
                       <Button shape="round" loading={bookingsQuery.isRefetching} onClick={()=>bookingsQuery.refetch()} icon={<ReloadOutlined rev={undefined} />}>Refresh</Button>
                   </div>
                </div>
@@ -368,110 +373,123 @@ interface DrawerProps{
 
 function DetailDrawer({selectedRecord,isDrawerOpen,closeDrawer}:DrawerProps){
 
-const queryClient = useQueryClient()
-const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
-
-// const {switchEvent} = useEvent()
-const {paseto} = useAuthContext()
-
-
-function closeDrawerHandler(){
-  queryClient.invalidateQueries(['event-bookings']) 
-  closeDrawer(!isDrawerOpen)
-}
-
-function toggleDeleteModal(){
-  setIsDeleteModalOpen(!isDeleteModalOpen)
-}
-
-
-
-const redeemTicketHandler = async(ticketPayload:any)=>{
-  const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/employee/redeem-ticket`, ticketPayload,{
-      headers:{
-          "Authorization": paseto
+    const queryClient = useQueryClient()
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+    
+    // const {switchEvent} = useEvent()
+    const {paseto} = useAuthContext()
+    
+    const isTicketExpired = dayjs().isAfter(dayjs(selectedRecord.eventDetails.startTime).add(selectedRecord.eventDetails.duration/60,'h').tz('UTC'))
+    
+    
+    function closeDrawerHandler(){
+      queryClient.invalidateQueries(['event-bookings']) 
+      closeDrawer(!isDrawerOpen)
+    }
+    
+    function toggleDeleteModal(){
+      setIsDeleteModalOpen(!isDeleteModalOpen)
+    }
+    
+    
+    
+    const redeemTicketHandler = async(ticketPayload:any)=>{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/employee/redeem-ticket`, ticketPayload,{
+          headers:{
+              "Authorization": paseto
+          },
+      })
+      return data
+    }
+    function onFinish(values:any){
+      console.log(values)
+    
+      const isRedeemCodeValid = selectedRecord.ticketSecret == values.ticketSecret
+      // check if ticket has expired
+      // check if input is the same as redeemCode
+      if(!isRedeemCodeValid) {
+        notification['warning']({
+          message: 'The secret you provided does not match the one on the ticket',
+        });
+        return
+      }
+    
+      // if payment status and booking status is not succesful, don't redeem ticket
+      // check ticket validity
+    
+      const payload ={
+        item: {
+            id: selectedRecord.eventId,  //need to valiadte exp using start date time + duration 
+            type: "event",
+            communityVenueId: ""
+        },
+        ticketSecret: selectedRecord.ticketSecret,
+        redeemMethod: "uniqueCode",
+        userId: selectedRecord.userId
+    }
+        redeemEventTicket.mutate(payload)
+    }
+    
+    const redeemEventTicket = useMutation(redeemTicketHandler,{
+      onSuccess:(data)=>{
+        if(data.status>201){
+          notification['error']({
+            message: 'Error creating events',
+          });
+        }else{
+        notification['success']({
+          message: 'Success redeeming user ticket',
+        });
+        }
       },
-  })
-  return data
-}
-function onFinish(){
-
-  // if payment status and booking status is not succesful, don't redeem ticket
-  // check ticket validity
-
-  const payload ={
-    item: {
-        id: selectedRecord.eventId,  //need to valiadte exp using start date time + duration 
-        type: "event",
-        communityVenueId: ""
-    },
-    ticketSecret: selectedRecord.ticketSecret,
-    redeemMethod: "uniqueCode",
-    userId: selectedRecord.userId
-}
-    redeemEventTicket.mutate(payload)
-}
-
-const redeemEventTicket = useMutation(redeemTicketHandler,{
-  onSuccess:(data)=>{
-    if(data.status>201){
-      notification['error']({
-        message: 'Error creating events',
-      });
-    }else{
-    notification['success']({
-      message: 'Success redeeming user ticket',
-    });
-    }
-  },
-    onSettled:()=>{
-        // queryClient.invalidateQueries(['event-bookings'])
-    }
-})
-
-const{isLoading:isRedeeming} = redeemEventTicket
-
-const [form] = Form.useForm()
-
-
-return( 
-<Drawer 
-  title="Redeem Ticket" 
-  width={400} 
-  placement="right" 
-  closable={true} 
-  onClose={closeDrawerHandler} 
-  open={isDrawerOpen}
->
-  <div
-    style={{width:'100%',}}
-  >
-{/* <Form form={form} onFinish={onFinish}>
-  <Form.Item style={{marginBottom:'1rem'}} rules={[{required:true, message: 'This field is required'}, {type:"integer", message: 'Redeem code must be numbers'}]}>
-    <Input name="ticketSecret" size="large" />
-  </Form.Item>
-  <Form.Item>
-  </Form.Item>
-  
-</Form> */}
-    <Button
-      shape="round" 
-      block 
-      disabled={selectedRecord.redeemStatus !== 'redeemed' && selectedRecord.bookingStatus==='confirmed'}
-      onClick={onFinish}
-      type="primary" 
-      size="large" 
-      style={{marginBottom:'.5rem'}}
-      loading={isRedeeming}  
-      htmlType="submit"
+        onSettled:()=>{
+            // queryClient.invalidateQueries(['event-bookings'])
+        }
+    })
+    
+    const{isLoading:isRedeeming} = redeemEventTicket
+    
+    const [form] = Form.useForm()
+    
+    
+    return( 
+    <Drawer 
+      title="Redeem Ticket" 
+      width={400} 
+      placement="right" 
+      closable={true} 
+      onClose={closeDrawerHandler} 
+      open={isDrawerOpen}
     >
-       Redeem Ticket
-    </Button>
-    {/* {selectedRecord.redeemStatus !== 'redeemed'?<Text type="secondary" >It appears that your ticket has already been redeemed </Text>:null} */}
-</div>
-
-
-
-</Drawer>
-)
-}
+      <div
+        style={{width:'100%',}}
+      >
+    <Form form={form} onFinish={onFinish}>
+      <Form.Item name={'ticketSecret'}  style={{marginBottom:'1rem'}} rules={[{required:true, message: 'This field is required'}, {max:6, message: 'You have exceed the max number of digits for a secret'}]}>
+        <Input disabled={selectedRecord.redeemStatus === 'redeemed'} name="ticketSecret" size="large" />
+      </Form.Item>
+      <Form.Item>
+      {isTicketExpired
+        ?<Text>Ticket has expired</Text>
+        :<Button
+          shape="round" 
+          block 
+          disabled={selectedRecord.redeemStatus === 'redeemed' || selectedRecord.bookingStatus === 'Failed'}
+          type="primary" 
+          size="large" 
+          style={{marginBottom:'.5rem'}}
+          loading={isRedeeming}  
+          htmlType="submit"
+        >
+           Redeem Ticket
+        </Button>}
+      </Form.Item>
+    </Form>
+        {selectedRecord.redeemStatus === 'redeemed'?<Text type="secondary" >It appears that your ticket has already been redeemed </Text>:null}
+    </div>
+    
+    
+    
+    </Drawer>
+    )
+    }
