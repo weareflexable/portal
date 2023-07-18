@@ -109,7 +109,7 @@ export default function EventBookings(){
  
       if(res.data.data.length < 1){
         notification['warning']({
-          message: "Sorry! There are not successful bookings to download"
+          message: "Sorry! There are no successful bookings to download"
         })
         setIsDownloadingTickets(false)
         return
