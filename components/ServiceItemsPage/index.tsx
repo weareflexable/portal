@@ -276,7 +276,7 @@ export default function ServiceItemsView(){
         if(currentFilter.name === 'In-active'){
           return (<Button   onClick={()=>reactivateService.mutate(record)}>Reactivate</Button>)
         }else{
-          return <Button type="text" onClick={()=>viewDetails(record)} icon={<MoreOutlined/>}/> 
+          return <Button type="text" onClick={()=>viewDetails(record)} icon={<MoreOutlined rev={undefined}/>}/> 
         }
       }
     }
@@ -296,8 +296,8 @@ export default function ServiceItemsView(){
                         )}
                   </Radio.Group>
                       <div style={{display:'flex'}}>
-                        <Button shape='round' style={{marginRight:'1rem'}} loading={serviceItemsQuery.isRefetching} onClick={()=>serviceItemsQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
-                        <Dropdown.Button  trigger={['click']} type="primary"   icon={<PlusOutlined/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
+                        <Button shape='round' style={{marginRight:'1rem'}} loading={serviceItemsQuery.isRefetching} onClick={()=>serviceItemsQuery.refetch()} icon={<ReloadOutlined rev={undefined} />}>Refresh</Button>
+                        <Dropdown.Button  trigger={['click']} type="primary"   icon={<PlusOutlined rev={undefined}/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
                       </div>
                     </div>
                  
@@ -311,7 +311,7 @@ export default function ServiceItemsView(){
                 {
                   servicesData && allServiceItemsLength === 0
                   ?<EmptyState>
-                    <Dropdown.Button trigger={['click']} type="primary"   icon={<PlusOutlined/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
+                    <Dropdown.Button trigger={['click']} type="primary"   icon={<PlusOutlined rev={undefined}/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
                   </EmptyState>
                   :<Table 
                   style={{width:'100%'}} 
@@ -322,7 +322,9 @@ export default function ServiceItemsView(){
                     showTotal:(total) => `Total ${total} items`,
                   }} 
                   loading={serviceItemsQuery.isLoading || serviceItemsQuery.isRefetching} 
+                  // @ts-ignore 
                   columns={columns} 
+                  // @ts-ignore 
                   onChange={handleChange} 
                   dataSource={servicesData} 
                 />
@@ -359,7 +361,7 @@ const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
  const urlPrefix = useUrlPrefix()
 
 async function fetchItemAvailability(){
- const res = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items/availability?key=service_item_id&value=${selectedRecord.id}&pageNumber=0&pageSize=10`,{
+ const res = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items/availability?key=service_item_id&value=${selectedRecord.id}&pageNumber=1&pageSize=50`,{
   headers:{
     "Authorization":paseto
   }

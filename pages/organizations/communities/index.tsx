@@ -14,10 +14,7 @@ import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { useOrgContext } from "../../../context/OrgContext";
 
-// import { EditableAddress, EditableCoverImage, EditableCurrency, EditableLogoImage, EditableName, EditablePhone } from "../EditServiceForm/EditServiceForm";
-import useServiceTypes from "../../../hooks/useServiceTypes";
-import { convertToAmericanFormat } from "../../../utils/phoneNumberFormatter";
-import { EditableText} from "../../../components/shared/Editables";
+
 import useUrlPrefix from "../../../hooks/useUrlPrefix";
 import ServiceLayout from "../../../components/Layout/ServiceLayout";
 import { Community } from "../../../types/Community";
@@ -41,7 +38,6 @@ function Communities(){
     const {switchCommunity} = useCommunity()
     // const [items, setItems] = useState([])
 
-    const {switchService} = useServicesContext()
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const [pageNumber, setPageNumber] = useState<number|undefined>(1)
@@ -233,7 +229,7 @@ function gotoCommunityItemsPage(community:Community){
         if(currentFilter.name === 'In-active'){
           return (<Button  onClick={()=>reactivateCommunity.mutate(record)}>Reactivate</Button>)
         }else{
-          return <Button onClick= {()=>onMenuClick(record)} type="text" icon={<MoreOutlined/>}/> 
+          return <Button onClick= {()=>onMenuClick(record)} type="text" icon={<MoreOutlined rev={undefined}/>}/> 
         }
       }
     }
@@ -259,8 +255,8 @@ function gotoCommunityItemsPage(community:Community){
                           )}
                       </Radio.Group>
                       <div style={{display:'flex'}}>
-                        <Button shape='round' style={{marginRight:'1rem'}} loading={communityQuery.isRefetching} onClick={()=>communityQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
-                        <Button  type="primary" onClick={()=>router.push('/organizations/communities/new')}  icon={<PlusOutlined/>} >Launch Community</Button>
+                        <Button shape='round' style={{marginRight:'1rem'}} loading={communityQuery.isRefetching} onClick={()=>communityQuery.refetch()} icon={<ReloadOutlined rev={undefined} />}>Refresh</Button>
+                        <Button  type="primary" onClick={()=>router.push('/organizations/communities/new')}  icon={<PlusOutlined rev={undefined}/>} >Launch Community</Button>
                       </div>
                     </div>
 
@@ -274,15 +270,17 @@ function gotoCommunityItemsPage(community:Community){
                 {
                   allCommunitysQuery.data && allCommunitysLength === 0
                   ? <EmptyState>
-                      <Button type="primary"  onClick={()=>router.push('/organizations/communities/new')}  icon={<PlusOutlined/>} >Launch Community</Button>
+                      <Button type="primary"  onClick={()=>router.push('/organizations/communities/new')}  icon={<PlusOutlined rev={undefined}/>} >Launch Community</Button>
                   </EmptyState> 
                   : <Table 
                       style={{width:'100%'}} 
                       scroll={{ x: 'calc(500px + 50%)'}} 
                       size='large' 
                       rowKey={(record)=>record.id}
+                      // @ts-ignore 
                       onChange={handleChange} 
                       loading={communityQuery.isLoading || communityQuery.isRefetching} 
+                      // @ts-ignore 
                       columns={columns} 
                       dataSource={data}
                       pagination={{

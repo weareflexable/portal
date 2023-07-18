@@ -338,7 +338,7 @@ export default function ManagerOrgsView(){
             <Button
               type="primary"
               onClick={() => handleDateSearch(selectedKeys as string[], confirm, dataIndex)}
-              icon={<SearchOutlined />}
+              icon={<SearchOutlined rev={undefined} />}
               size="small"
               shape='round'
               style={{ width: 90, display:'flex',alignItems:'center' }}
@@ -367,7 +367,7 @@ export default function ManagerOrgsView(){
         </div>
     ),
     filterIcon: (filtered: boolean) => (
-      <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
+      <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} rev={undefined} />
     ),
     render: date =>{
       // console.log('searchedDate',searchedDate)
@@ -516,7 +516,7 @@ export default function ManagerOrgsView(){
         if(currentStatus.name !== 'Deactivated'){
           const items = getCurrentStatusActionItems()
           return (<Dropdown trigger={["click"]} menu={{ items , onClick: (e)=>onMenuClick(e,record) }}>
-          <Button type='text' icon={<MoreOutlined/>}/>
+          <Button type='text' icon={<MoreOutlined rev={undefined}/>}/>
         </Dropdown>)
         }else{
           return (<Button onClick={()=>reactivateOrg.mutate(record)}>Reactivate</Button>)
@@ -540,8 +540,8 @@ export default function ManagerOrgsView(){
                   <div style={{width:'100%', marginBottom:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                           <Title style={{margin: '0'}} level={2}>Organizations</Title>
                           <div>
-                            <Button shape='round' style={{marginRight:'1rem'}} loading={orgQuery.isRefetching} onClick={()=>orgQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
-                            <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/manager/organizations/new')}>New Organization</Button>
+                            <Button shape='round' style={{marginRight:'1rem'}} loading={orgQuery.isRefetching} onClick={()=>orgQuery.refetch()} icon={<ReloadOutlined rev={undefined} />}>Refresh</Button>
+                            <Button shape='round' type='primary' icon={<PlusOutlined rev={undefined}/>} onClick={()=>router.push('/manager/organizations/new')}>New Organization</Button>
                           </div>
                   </div>
                   <Radio.Group defaultValue={currentStatus.id} buttonStyle="solid">
@@ -561,8 +561,10 @@ export default function ManagerOrgsView(){
                   size='middle'
                   scroll={{ x: 'calc(500px + 50%)'}}
                   rowKey={(record)=>record.id}  
-                  loading={orgQuery.isLoading||orgQuery.isRefetching} 
+                  loading={orgQuery.isLoading||orgQuery.isRefetching}
+                  // @ts-ignore  
                   columns={columns} 
+                  // @ts-ignore 
                   onChange={handleChange} 
                   dataSource={orgs} 
                   pagination={{
@@ -843,12 +845,12 @@ const inReviewOrgsActions = [
     {
         key: 'accept',
         label: "Accept",
-        icon: <LikeOutlined />
+        icon: <LikeOutlined rev={undefined} />
     },
     {
         key: 'reject',
         label: 'Reject',
-        icon:<DislikeOutlined />
+        icon:<DislikeOutlined rev={undefined} />
     },
     {
         key: 'viewDetails',
@@ -872,11 +874,11 @@ const rejectedOrgsActions = [
 function EmptyState(){
   const router = useRouter()
   return(
-    <div style={{border: '1px solid #dddddd', display:'flex', justifyContent:'center', height:'30vh', alignItems:'center', padding: '2rem'}}>
+    <div style={{border: '1px solid #dddddd', display:'flex', justifyContent:'center', height:'30vh', marginTop:'4rem', alignItems:'center', padding: '2rem'}}>
       <div style={{maxWidth:'300px', display:'flex', flexDirection:'column', justifyContent:'center'}}>
         <Title style={{textAlign:'center'}} level={3}>Get Started</Title>
         <Text style={{textAlign:'center'}}>Ready to get started listing your services on the Flexable Marketplace? The first step is to load in your organization’s details</Text>
-        <Button size="large" shape="round" type="primary" style={{marginTop:'2rem'}} icon={<PlusOutlined />} onClick={()=>router.push('/manager/organizations/new')}>Create New Organization</Button>
+        <Button size="large" shape="round" type="primary" style={{marginTop:'2rem'}} icon={<PlusOutlined rev={undefined} />} onClick={()=>router.push('/manager/organizations/new')}>Create New Organization</Button>
       </div>
     </div>
   )

@@ -40,6 +40,10 @@ export default function ServiceLayout({children}:ServiceLayoutProps){
         {
             key:'communities',
             label: 'Communities'
+        },
+        {
+            key:'events',
+            label: 'Events'
         }
     ]
 
@@ -53,13 +57,14 @@ export default function ServiceLayout({children}:ServiceLayoutProps){
 
 
     function onChangeHandler(e:any){
-        if(e.key === 'venues'){
-            router.push('/organizations/venues')
-        }else if(e.key === 'communities'){
-            router.push('/organizations/communities')
-        }else{
-            router.push('/organizations/billings')
-        }
+        router.push(`/organizations/${e.key}`)
+        // if(e.key === 'venues'){
+        //     router.push('/organizations/venues')
+        // }else if(e.key === 'communities'){
+        //     router.push('/organizations/communities')
+        // }else{
+        //     router.push('/organizations/billings')
+        // }
 
         setSelectedPage(e.key) 
     }
@@ -71,7 +76,7 @@ export default function ServiceLayout({children}:ServiceLayoutProps){
         <Header style={{background:'#f7f7f7',borderBottom:'1px solid', borderBottomColor:'#e3e3e3', justifyContent:'space-between', width:'100%', display:'flex', alignItems:'center'}}>
                 <Col style={{display:'flex', justifyContent:'space-between'}} offset={1} span={22}>
                     <div style={{display:'flex', flex:'7',alignItems:'center'}}> 
-                        <Button style={{display:'flex', padding: '0', margin:'0', alignItems:'center', textAlign:'left'}} onClick={()=>router.replace('/')} icon={<ArrowLeftOutlined />} type='link'/>
+                        <Button style={{display:'flex', padding: '0', margin:'0', alignItems:'center', textAlign:'left'}} onClick={()=>router.replace('/')} icon={<ArrowLeftOutlined rev={undefined} />} type='link'/>
                         {isHydrated ? <Title style={{margin:'0'}} level={4}>{currentOrg.name}</Title>:<Skeleton.Input active size='default'/> } 
                     </div>
 

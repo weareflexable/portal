@@ -227,7 +227,7 @@ export default function BookingsView(){
         fixed:'right',
         render: (paymentStatus)=>{
           const color = paymentStatus === 'successful'?'green':paymentStatus === 'failed'?'red':paymentStatus === 'cancelled'?'grey':'blue'
-          const icon = paymentStatus === 'successful'?<CheckOutlined />:paymentStatus === 'cancelled'?<StopOutlined />:null
+          const icon = paymentStatus === 'successful'?<CheckOutlined rev={undefined} />:paymentStatus === 'cancelled'?<StopOutlined rev={undefined} />:null
           return <Tag icon={icon} color={color} style={{textTransform:'capitalize'}}>{paymentStatus}</Tag>
         }
       },
@@ -265,7 +265,7 @@ export default function BookingsView(){
               <div style={{marginBottom:'2em', marginTop:'1rem', display:'flex', width:'100%', flexDirection:'column', alignItems:'center'}}>
                <div style={{display:'flex', marginTop:'1rem', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                  <Title style={{ margin:'0'}} level={2}>Bookings</Title>
-                 <Button shape="round" loading={bookingsQuery.isRefetching} onClick={()=>bookingsQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                 <Button shape="round" loading={bookingsQuery.isRefetching} onClick={()=>bookingsQuery.refetch()} icon={<ReloadOutlined rev={undefined} />}>Refresh</Button>
                </div>
                <div style={{display:'flex', marginTop:'.5rem', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                   <div>
@@ -285,12 +285,14 @@ export default function BookingsView(){
                   style={{width:'100%'}} 
                   key='dfadfe' 
                   scroll={{ x: 'calc(600px + 50%)'}} 
-                  loading={bookingsQuery.isLoading||bookingsQuery.isRefetching} 
+                  loading={bookingsQuery.isLoading||bookingsQuery.isRefetching}
+                  // @ts-ignore 
                   columns={columns} 
                   pagination={{
                     total:totalLength,  
                     showTotal:(total) => `Total ${total} items`,
                   }} 
+                  // @ts-ignore 
                   onChange={handleChange} 
                   dataSource={data}
                  />}

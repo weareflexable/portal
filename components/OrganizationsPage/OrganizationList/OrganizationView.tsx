@@ -279,7 +279,7 @@ export default function AdminOrgsView(){
             <Button
               type="primary"
               onClick={() => handleDateSearch(selectedKeys as string[], confirm, dataIndex)}
-              icon={<SearchOutlined />}
+              icon={<SearchOutlined rev={undefined} />}
               size="small"
               shape='round'
               style={{ width: 90, display:'flex',alignItems:'center' }}
@@ -308,7 +308,7 @@ export default function AdminOrgsView(){
         </div>
     ),
     filterIcon: (filtered: boolean) => (
-      <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
+      <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} rev={undefined} />
     ),
     render: date =>{
       // console.log('searchedDate',searchedDate)
@@ -412,7 +412,7 @@ export default function AdminOrgsView(){
       //@ts-ignore
       render:(_,record:NewOrg)=>{
         if(currentStatus.name !== 'Deactivated'){
-          return (<Button type='text' onClick={()=>viewOrgDetails(record)} icon={<MoreOutlined/>}/>)
+          return (<Button type='text' onClick={()=>viewOrgDetails(record)} icon={<MoreOutlined rev={undefined}/>}/>)
         }else{
           return (<Button onClick={()=>reactivateOrg.mutate(record)}>Reactivate</Button>)
         }
@@ -465,8 +465,8 @@ export default function AdminOrgsView(){
                   <div style={{width:'100%', marginBottom:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                       <Title style={{margin: '0'}} level={2}>Organizations</Title>
                       <div>
-                        <Button shape='round' style={{marginRight:'1rem'}} loading={orgQuery.isRefetching} onClick={()=>orgQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
-                        <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/new')}>New Organization</Button>
+                        <Button shape='round' style={{marginRight:'1rem'}} loading={orgQuery.isRefetching} onClick={()=>orgQuery.refetch()} icon={<ReloadOutlined rev={undefined} />}>Refresh</Button>
+                        <Button shape='round' type='primary' icon={<PlusOutlined rev={undefined}/>} onClick={()=>router.push('/organizations/new')}>New Organization</Button>
                       </div>
                   </div>
 
@@ -488,7 +488,9 @@ export default function AdminOrgsView(){
                   size="middle"
                   scroll={{ x: 'calc(500px + 50%)'}}
                   loading={orgQuery.isLoading||orgQuery.isRefetching} 
+                  // @ts-ignore 
                   columns={columns} 
+                  // @ts-ignore 
                   onChange={handleChange} 
                   dataSource={orgs}
                   pagination={{

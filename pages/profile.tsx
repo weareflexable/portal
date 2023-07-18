@@ -98,7 +98,7 @@ export default function Profile(){
                 <Row>
                     <Col offset={1}> 
                         <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
-                            <Button shape='round'  type='text' onClick={()=>router.back()} icon={<ArrowLeftOutlined/>}/>
+                            <Button shape='round'  type='text' onClick={()=>router.back()} icon={<ArrowLeftOutlined rev={undefined}/>}/>
                             <Title style={{margin:'0'}} level={3}>Profile</Title>
                         </div>
                     </Col>

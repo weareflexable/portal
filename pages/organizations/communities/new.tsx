@@ -65,7 +65,7 @@ export default function CommunityForm(){
                 <Row>
                     <Col offset={1}> 
                          <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
-                            <Button  type='link' onClick={()=>router.back()} icon={<ArrowLeftOutlined/>}/>
+                            <Button  type='link' onClick={()=>router.back()} icon={<ArrowLeftOutlined rev={undefined}/>}/>
                             <Title style={{margin:'0', textTransform:'capitalize'}} level={3}>Create Community</Title>
                         </div>
                     </Col>
@@ -229,12 +229,15 @@ function BasicForm({nextStep}:BasicInfoProps){
         <Form.Item
             name="name"
             label="Name"
-            rules={[{ required: true, message: 'Please input a valid community name' }]}
+            rules={[
+                { required: true, message: 'This field is required' },
+                { max: 150, message: 'Sorry, your service name cant be more than 150 characters' },
+                ]}
          >
-            <Input allowClear size='large' addonBefore='Key to:' maxLength={150} placeholder="Napoli" />
+            <Input allowClear size='large' addonBefore='Key to:' maxLength={150} showCount placeholder="Napoli" />
         </Form.Item>
 
-        <Form.Item name='description' rules={[{ required: true, message: 'Please write a description for your service' }]}  label="Description">
+        <Form.Item name='description' rules={[{max:500, message:"Description shouldn't exceed 500 characters"},{ required: true, message: 'This field is required' }]}  label="Description">
             <TextArea allowClear maxLength={500} size='large' showCount  placeholder='Tell us more about this community' rows={2} />
         </Form.Item>
 
@@ -245,7 +248,7 @@ function BasicForm({nextStep}:BasicInfoProps){
                     name='price'
                     label='Price'
                     style={{width:'100%'}}
-                    rules={[{ required: true, message: 'Please input a valid price!' }]}
+                    rules={[{ required: true, message: 'Please input a valid price!' }, { pattern: /^\d+$/, message: 'Price must be a number'}]}
                 >
                     <Input size='large' style={{width:'100%'}} suffix='Per DAT' prefix="$" placeholder="0.00" /> 
                 </Form.Item> 
@@ -258,18 +261,18 @@ function BasicForm({nextStep}:BasicInfoProps){
 
         <div style={{marginBottom:'2rem', marginTop:'3rem'}}>
             <Title level={3}>Image Upload</Title>
-            <Text >Your logo and artwork will be visible on the marketplace</Text>
-            <Tooltip trigger={['click']} placement='right' title={<LogoTip/>}>
-                <Button type="link">Show me <QuestionCircleOutlined /></Button>
+            <Text >Your logo  will be visible on the marketplace listing</Text> 
+            <Tooltip trigger={['click']} placement='right' title={<LogoTip src='/explainers/community-logo-explainer.png'/>}>
+                <Button type="link">Show me <QuestionCircleOutlined rev={undefined} /></Button>
             </Tooltip>
         </div>
 
         <AntImage alt='community logo' src={logoImage} style={{width:'150px',height:'150px', borderRadius:'50%', border:'1px solid #e5e5e5'}}/>
         <Form.Item
-            name="logoImageHash"
+            name="logoImageHash"  
             valuePropName="logoImageHash"
             getValueFromEvent={extractLogoImage}
-            extra={'Please upload a PNG or JPEG that is 1024px x 1024px'}
+            extra={'Please upload a PNG or JPEG that is 1024px x 1024px'} 
             rules={[{ required: true, message: 'Please upload an image' }]}
         >
             
@@ -284,9 +287,11 @@ function BasicForm({nextStep}:BasicInfoProps){
                     Cancel
                 </Button>
 
-                <Button shape='round' size='large' loading={isHashingAssets||isCreatingData} type="primary"  htmlType="submit" >
-                    Create Community
-                </Button>
+               <SubmitButton
+                    form={form}
+                    isCreatingData={isCreatingData}
+                    isHashingAssets={isHashingAssets}
+                />
 
             </Space>
             
@@ -412,7 +417,7 @@ function VenuesForm({communityId}:VenueFormProp){
                     ))}
 
                     <Form.Item>
-                        <Button icon={<PlusCircleOutlined />} size='large' shape='round' onClick={() => add()}>
+                        <Button icon={<PlusCircleOutlined rev={undefined} />} size='large' shape='round' onClick={() => add()}>
                              Add Venue
                         </Button>
                     </Form.Item>
@@ -436,9 +441,9 @@ function VenuesForm({communityId}:VenueFormProp){
                     >
                     {() => (
                      <Button
-                     size='large' 
-                    type='primary'
-                    shape='round'
+                        size='large' 
+                        type='primary'
+                        shape='round'
                     loading={isCreatingData}
                     htmlType="submit"
                 >
@@ -488,13 +493,13 @@ function Artwork({onHandleArtwork}:ArtworkProps){
         <div>
             <div style={{display:'flex', marginTop:'3rem',alignItems:'baseline'}}>
                 <Title style={{margin:'0'}} level={3}>Artwork</Title>
-                <Tooltip trigger={['click']} placement='right' title={<LogoTip/>}>
-                        <Button type="link">Learn more<QuestionCircleOutlined /></Button>
+                <Tooltip trigger={['click']} placement='right' title={<LogoTip src='/explainers/community-artwork-explainer.png'/>}>
+                        <Button type="link">Learn more<QuestionCircleOutlined rev={undefined} /></Button>
                 </Tooltip>
-            </div>
+            </div> 
             <div style={{display:'flex',width:'400px', marginTop:'2rem', flexDirection:'column'}}>
                 <div style={{alignSelf:'flex-end',display:'flex'}}>
-                <Button shape='round' icon={<SelectOutlined />} style={{ marginBottom:'.5rem'}} onClick={toggleDrawer}>Select a different artwork</Button>
+                <Button shape='round' icon={<SelectOutlined rev={undefined} />} style={{ marginBottom:'.5rem'}} onClick={toggleDrawer}>Select a different artwork</Button>
                 </div>
                 <AntImage alt='artwork'  style={{width:'400px', height:'400px', marginBottom:'.5rem', objectFit:'cover'}}  src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${selectedArtwork}`}/>
                 <Text type='secondary'>This cover image will be used for your listing on marketplace and for the Digital access token NFT</Text>
@@ -574,10 +579,10 @@ const communityHashes = [
 
 
 
-function LogoTip(){
+function LogoTip({src}:{src:string}){
     return(
         <div>
-            <AntImage style={{objectFit:'cover'}}  src={'/explainers/serviceItem-explainer.png'} alt='Service explainer as displayed on marketplace'/>
+            <AntImage style={{objectFit:'cover'}}  src={src} alt='Artwork explainer as displayed on marketplace'/>
             <Text style={{color:'white'}}>{"It is very important to provide the requested image size (2400 x 1200) or else the image will appear distorted on the marketplace"}</Text>
         </div>
     ) 
@@ -685,7 +690,7 @@ function CommunityVenueForm({remove, name, formInstance, restField}:CommunityVen
 
                                 {/* promotion */}
                             <Form.Item  {...restField} name={[name,'promotion']} rules={[{ required: true, message: 'Please write a description for your venue' }]}  label="Promotion">
-                                <TextArea allowClear maxLength={500} size='large' showCount  placeholder='Tell us more about this venue' rows={2} />
+                                <TextArea allowClear maxLength={500} size='large' showCount  placeholder='One flight of our award winning wines' rows={2} />
                             </Form.Item>
 
                             {/* marketValue */}
@@ -713,7 +718,7 @@ function CommunityVenueForm({remove, name, formInstance, restField}:CommunityVen
                                     <Form.Item  
                                     name={[name,'address','fullAddress']}
                                     label='Address'
-                                    extra={<Text type="secondary"><InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} /> Please refresh the page if the address you selected is not being displayed in the field </Text> }
+                                    extra={<Text type="secondary"><InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} rev={undefined} /> Please refresh the page if the address you selected is not being displayed in the field </Text> }
                                     rules={[{ required: true, message: 'Please input a valid address!' }]}
                                 >
                                     <Input 
@@ -778,7 +783,7 @@ function CommunityVenueForm({remove, name, formInstance, restField}:CommunityVen
                                         <Input allowClear ref={centralOfficeCodeRef} onChange={handleCentralOfficeCode} maxLength={3} style={{width:'20%'}} size="large" placeholder="380" />
                                     </Form.Item>
                                     <div style={{height:'40px',margin:'0 .3rem 0 .3rem', display:'inline-flex', alignItems:'center',  verticalAlign:'center'}}>
-                                    <MinusOutlined style={{color:"#e7e7e7"}} />
+                                    <MinusOutlined style={{ color: "#e7e7e7" }} rev={undefined} />
                                     </div>
                                     <Form.Item name={[name,'contact','tailNumber']} noStyle>
                                         <Input ref={tailNoRef} maxLength={4} style={{width:'20%'}} size="large" placeholder="3480" />
@@ -787,12 +792,7 @@ function CommunityVenueForm({remove, name, formInstance, restField}:CommunityVen
                              </Form.Item>
 
 
-                        
-
-            
-                           
-            
-                            
+                                     
                             {/* controls */}
                             <Col span={4}>
                                 <Form.Item style={{marginBottom:'0', width:'100%'}}>
@@ -805,6 +805,7 @@ function CommunityVenueForm({remove, name, formInstance, restField}:CommunityVen
                                         okText="Yes, Remove"
                                         cancelText="No"
                                     >
+                                        {/* @ts-ignore */}
                                         <Button shape="round" icon={<MinusCircleOutlined  />} size='small'  type='text'>Remove Venue</Button>
                                     </Popconfirm>
                                     </Space>           
@@ -813,3 +814,37 @@ function CommunityVenueForm({remove, name, formInstance, restField}:CommunityVen
                          </div>
     )
 }
+
+
+interface SubmitButtonProps{
+    isHashingAssets: boolean,
+    isCreatingData: boolean,
+    form: FormInstance
+}
+
+
+const SubmitButton = ({ form, isCreatingData, isHashingAssets }:SubmitButtonProps) => {
+    const [submittable, setSubmittable] = useState(false);
+  
+    // Watch all values
+    const values = Form.useWatch([], form);
+  
+    useEffect(() => {
+        
+
+      form.validateFields({validateOnly:true}).then(
+        (res) => {
+          setSubmittable(true);
+        },
+        () => {
+          setSubmittable(false);
+        },
+      );
+    }, [values]);
+  
+    return (
+        <Button shape="round" type="primary" disabled={!submittable} size="large" loading={isHashingAssets || isCreatingData}  htmlType="submit" >
+       Add Venue
+     </Button>
+    );
+  };

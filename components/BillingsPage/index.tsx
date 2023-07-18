@@ -246,7 +246,7 @@ export default function BillingsView(){
         }
         return (
         <Dropdown trigger={['click']} menu={{ items , onClick: (e)=>onMenuClick(e,record) }}>
-            <Button type='text' icon={<MoreOutlined />}/>
+            <Button type='text' icon={<MoreOutlined rev={undefined} />}/>
           </Dropdown>)
       } 
     }
@@ -265,21 +265,23 @@ export default function BillingsView(){
                       )}
                   </Radio.Group>
                   <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-                    <Button shape="round" style={{marginRight:'1rem'}} loading={banksQuery.isRefetching} onClick={()=>banksQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
-                    <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/billings/new')}>New Bank</Button>
+                    <Button shape="round" style={{marginRight:'1rem'}} loading={banksQuery.isRefetching} onClick={()=>banksQuery.refetch()} icon={<ReloadOutlined rev={undefined} />}>Refresh</Button>
+                    <Button shape='round' type='primary' icon={<PlusOutlined rev={undefined}/>} onClick={()=>router.push('/organizations/billings/new')}>New Bank</Button>
                   </div>
                 </div>}
                 {
                   allBanksQuery.data && allBanksLength == 0
                   ?<EmptyState>
-                    <Button shape='round' type='primary' icon={<PlusOutlined/>} onClick={()=>router.push('/organizations/billings/new')}>New Bank</Button>
+                    <Button shape='round' type='primary' icon={<PlusOutlined rev={undefined}/>} onClick={()=>router.push('/organizations/billings/new')}>New Bank</Button>
                   </EmptyState>
                   : <Table 
                   style={{width:'100%'}} 
                   scroll={{ x: 'calc(500px + 50%)'}} 
                   rowKey={(record)=>record.id}
+                  // @ts-ignore
                   onChange={handleChange} 
                   loading={banksQuery.isLoading||banksQuery.isRefetching} 
+                  // @ts-ignore
                   columns={columns} 
                   dataSource={data} 
                   pagination={{
@@ -607,12 +609,12 @@ const unVerifiedBankActions = [
     {
         key: 'accept',
         label: 'Accept',
-        icon: <LikeOutlined/>
+        icon: <LikeOutlined rev={undefined}/>
     },
     {
         key: 'reject',
         label: 'Reject',
-        icon: <DislikeOutlined/>
+        icon: <DislikeOutlined rev={undefined}/>
     },
     {
         key: 'viewDetails',

@@ -105,7 +105,7 @@ export default function RegisterOrgForm({onRegisterNewOrg,isRegisteringOrg}:Regi
                 extra="Upload file upto 2MB"
             >
                 <Upload name="logo" action="" listType="picture">
-                <Button icon={<UploadOutlined />}>Click to upload</Button>
+                <Button icon={<UploadOutlined rev={undefined} />}>Click to upload</Button>
                 </Upload>
             </Form.Item>
 

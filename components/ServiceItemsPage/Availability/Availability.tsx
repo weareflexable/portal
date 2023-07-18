@@ -30,9 +30,9 @@ export default function AvailabilitySection({selectedServiceItem}:Props){
      
      const {data, isLoading} = useQuery({queryKey:['availability',selectedServiceItem.id], queryFn:fetchItemAvailability})
      console.log(data)
-     const availabilityData = data && data[0].availability;
+     const availabilityData = data && data;
 
-     const isAvailabilityEmpty = data && data[0].availability.length == 0
+     const isAvailabilityEmpty = data && data.length == 0
 
      console.log(availabilityData)
 
@@ -161,7 +161,7 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
             </Col>
             <Col span={1}>
               <Space direction="vertical">
-                    <Button  onClick={toggleEdit} icon={<EditOutlined />}/>
+                    <Button  onClick={toggleEdit} icon={<EditOutlined rev={undefined} />}/>
                     <Popconfirm
                         title="Delete custom date"
                         description="Are you sure to delete this custom date?"
@@ -170,7 +170,7 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
                         okText="Yes, Delete"
                         cancelText="No"
                         >
-                    <Button  icon={<DeleteOutlined/>}/>
+                    <Button  icon={<DeleteOutlined rev={undefined}/>}/>
                     </Popconfirm>
               </Space>
             </Col>
@@ -342,7 +342,7 @@ export function NewAvailability({selectedServiceItem}:NewAvailabilityProps){
   
     const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', marginTop:'1rem', marginBottom:'1rem', alignItems:'center'}}>
-        <Button icon={<PlusCircleOutlined />} style={{display:'flex',alignItems:'center'}} type="link" onClick={toggleEdit}>Add Custom Date</Button>
+        <Button icon={<PlusCircleOutlined rev={undefined} />} style={{display:'flex',alignItems:'center'}} type="link" onClick={toggleEdit}>Add Custom Date</Button>
       </div>
   )
   

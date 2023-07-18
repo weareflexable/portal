@@ -478,7 +478,7 @@ interface EditableProp{
         <Row>
           <Col span={10}>
            <Image alt='Artwork preview' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${artwork}`} height='300px' width='300px'/>
-           <Button shape='round' icon={<SelectOutlined />} style={{ marginTop:'.5rem'}} onClick={toggleDrawer}>Select a different artwork</Button>
+           <Button shape='round' icon={<SelectOutlined rev={undefined} />} style={{ marginTop:'.5rem'}} onClick={toggleDrawer}>Select a different artwork</Button>
             <ArtworkPicker
               currentServiceItemType={serviceItemTypeName}
               isOpen ={isDrawerOpen}

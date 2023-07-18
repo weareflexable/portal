@@ -15,7 +15,7 @@ import OrgSwitcherModal from '../shared/OrgSwitcherModal/OrgSwitcherModal';
 import ServicesSwitcherModal from '../shared/ServicesSwitcherModal/ServicesSwitcherModal';
 import UnAuthenticatedView from '../shared/UnAuthenticated/UnAuthenticatedView';
 import useCommunity from '../../hooks/useCommunity';
-import useServices from '../../hooks/useServices';
+import useEvent from '../../hooks/useEvents';
 
 
 
@@ -33,16 +33,15 @@ const {Text, Title} = Typography
     selectedRoute: string
   }
   
-  const VenuesLayout: React.FC<LayoutProps> = ({children}) => {
+  const EventsLayout: React.FC<LayoutProps> = ({children}) => {
     
     const {asPath, isReady} = useRouter()  
     const {isAuthenticated, currentUser, paseto} = useAuthContext()
-    const {currentService} = useServices()
-
+    const {currentEvent} = useEvent()
     const [showSwitcherModal, setSwitcherModal] = useState(false) 
     const [showOrgSwitcher, setShowOrgSwitcher] = useState(false) 
     const [pageRoutes, setPageRoutes] = useState<PageRoute>({basePath:'',selectedRoute:'dashboard'})
-    const [currentPage, setCurrentPage] = useState('serviceItems')
+    const [currentPage, setCurrentPage] = useState('communityVenues')
     const [isHydrated, setIsHydrated] = useState(false)
 
     const router = useRouter()
@@ -51,18 +50,15 @@ const {Text, Title} = Typography
     // console.log('from layout',asPath)\\
 
     const items: MenuProps['items'] = [
-        {
-            key:'serviceItems',
-            label: 'Services'
-        },
+
         {
             key:'bookings',
             label: 'Bookings'
         },
-        {
-            key:'staff',
-            label: 'Staff'
-        }
+        // {
+        //     key:'staff',
+        //     label: 'Staff'
+        // }
     ]
 
     const splittedRoutes = asPath.split('/')
@@ -73,8 +69,8 @@ const {Text, Title} = Typography
 
     function onClickNavItemHandler(e:any){
 
-        router.push(`/organizations/venues/${e.key}`)
-      
+            router.push(`/organizations/events/${e.key}`)
+       
         setCurrentPage(e.key)
         
     }
@@ -82,6 +78,11 @@ const {Text, Title} = Typography
     useEffect(() => {
       setIsHydrated(true)
       if(isReady){
+        // const basePath =splittedRoutes.join('/')
+        //   setPageRoutes({
+        //     basePath:basePath,
+        //     selectedRoute:selectedRoute,
+        //   })
         setCurrentPage(selectedRoute)
         } 
     }, [isReady])
@@ -110,15 +111,15 @@ const {Text, Title} = Typography
           <Header style={{background:'#f7f7f7',borderBottom:'1px solid', borderBottomColor:'#e3e3e3', justifyContent:'space-between', width:'100%', display:'flex', alignItems:'center'}}>
                   
             <Col style={{display:'flex', justifyContent:'space-between',alignItems:'center'}} span={23}>
-                <div style={{display:'flex', flex:'7',  height:'100%'}}>
-                  <div style={{marginRight:'2rem',  width:'100%',  marginBottom:'0', display:'flex', alignItems:'center'}}>
-                    <Button type='link' onClick={()=>router.push('/organizations/venues')} icon={<LeftOutlined rev={undefined} />}/>
-                    <Title ellipsis style={{marginLeft:'.5rem', width:'100%',  padding:'0', marginBottom:'0', display:'flex', alignItems:'center'}} level={4}>{isHydrated?currentService.name:'...'}</Title>
+                <div style={{display:'flex',   height:'100%', justifyContent:'space-between'}}>
+                  <div style={{marginRight:'4rem', marginBottom:'0', display:'flex', alignItems:'center'}}>
+                    <Button type='link' onClick={()=>router.push('/organizations/events')} icon={<LeftOutlined rev={undefined} />}/>
+                    <Title style={{marginLeft:'.5rem', padding:'0', marginBottom:'0', display:'flex', alignItems:'center'}} level={4}>{isHydrated?currentEvent.name:'...'}</Title>
                   </div>
-                  <Menu theme="light" style={{background:'#f7f7f7',  width:'100%'}} mode="horizontal" defaultSelectedKeys={[currentPage]} selectedKeys={[currentPage]} onSelect={onClickNavItemHandler} items={items} />
+                  <Menu theme="light" style={{background:'#f7f7f7'}} mode="horizontal" defaultSelectedKeys={[currentPage]} selectedKeys={[currentPage]} onSelect={onClickNavItemHandler} items={items} />
                 </div> 
 
-                <div style={{display:'flex',  flex:'3', justifyContent:'flex-end'}}>
+                <div style={{display:'flex', justifyContent:'flex-end'}}>
                   {
                       !isAuthenticated ? <Button type='primary' onClick={()=>{location.href=`${process.env.NEXT_PUBLIC_AUTH}/login?redirect_to=portal`}}>Login</Button>
                       :(
@@ -144,5 +145,5 @@ const {Text, Title} = Typography
     );
   };
 
-export default VenuesLayout
+export default EventsLayout
 

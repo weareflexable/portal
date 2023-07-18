@@ -5,8 +5,8 @@ import CommunitiesLayout from '../../../../components/Layout/CommunitiesLayout'
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 const {Text,Title} = Typography
-import React, { useRef, useState } from 'react'
-import {Typography,Button,Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Modal, Alert, notification, Empty, Tag} from 'antd'
+import React, { useEffect, useRef, useState } from 'react'
+import {Typography,Button,Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Modal, Alert, notification, Empty, Tag, FormInstance} from 'antd'
 import axios from 'axios';
 import {MoreOutlined,ReloadOutlined} from '@ant-design/icons'
 import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
@@ -183,7 +183,7 @@ function CommunityStaff(){
       // width: currentFilter.name == 'pending'
       render:(_,record)=>{
         // const items = getTableRecordActions()
-        return (<Button type="text" icon={<MoreOutlined/>} onClick={()=>viewStaffDetails(record)}/>)
+        return (<Button type="text" icon={<MoreOutlined rev={undefined}/>} onClick={()=>viewStaffDetails(record)}/>)
       } 
     }
     ];
@@ -201,10 +201,10 @@ function CommunityStaff(){
                           )}
                       </Radio.Group>
                         <div style={{width: "100%",display:'flex', marginTop:'1.5rem', justifyContent:'flex-end', alignItems:'center'}}>
-                          <Button shape="round" style={{marginRight:'1rem'}} loading={staffQuery.isRefetching} onClick={()=>staffQuery.refetch()} icon={<ReloadOutlined />}>Refresh</Button>
+                          <Button shape="round" style={{marginRight:'1rem'}} loading={staffQuery.isRefetching} onClick={()=>staffQuery.refetch()} icon={<ReloadOutlined rev={undefined} />}>Refresh</Button>
                           <Button
                             type="primary"
-                            icon={<PlusOutlined/>}
+                            icon={<PlusOutlined rev={undefined}/>}
                             onClick={() => {
                               setShowForm(true)
                             }}
@@ -226,8 +226,10 @@ function CommunityStaff(){
                       style={{width:'100%'}} 
                       scroll={{ x: 'calc(500px + 50%)'}} 
                       rowKey={(record)=>record.id}
+                      // @ts-ignore
                       onChange={handleChange} 
                       loading={staffQuery.isLoading||staffQuery.isRefetching} 
+                      // @ts-ignore
                       columns={columns}  
                       dataSource={data} 
                       pagination={{
@@ -346,9 +348,10 @@ function handleSubmit(formData:any){
         <Form.Item
           name="email"
           label="Email"
+          hasFeedback
           extra={'Please be sure to provide an email of a registered user.'}
           style={{marginTop:'1rem'}}
-          rules={[{ required: true, message: 'Please provide a valid email' }]}
+          rules={[{type:'email',message:'Please provide a valid email address'},{required: true, message: 'Please provide a valid email' }]}
         >
           <Input allowClear size="large" />
         </Form.Item>
@@ -369,9 +372,10 @@ function handleSubmit(formData:any){
                     Cancel
                 </Button>
 
-                <Button shape="round" type="primary" size="large" loading={staffMutation.isLoading}  htmlType="submit" >
-                    Add staff
-                </Button>
+                <SubmitButton
+                  form={form}
+                  isLoading={staffMutation.isLoading}
+                />
             </Space>     
         </Form.Item>
       </Form>
@@ -386,6 +390,7 @@ interface DrawerProps{
   isDrawerOpen: boolean,
   closeDrawer: (value:boolean)=>void
 }
+
 function DetailDrawer({selectedStaff,isDrawerOpen,closeDrawer}:DrawerProps){
 
 const queryClient = useQueryClient()
@@ -689,8 +694,46 @@ function EmptyState({onOpenForm}:EmptyProps){
       <div style={{maxWidth:'350px', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
         <Title level={3}>Get Started</Title> 
         <Text style={{textAlign:'center'}}>Add staff to your community to help you manage it</Text>
-        <Button size="large" type="primary" shape="round" icon={<PlusOutlined />} onClick={onOpenForm} style={{marginTop:'1rem'}}>Add Staff</Button>
+        <Button size="large" type="primary" shape="round" icon={<PlusOutlined rev={undefined} />} onClick={onOpenForm} style={{marginTop:'1rem'}}>Add Staff</Button>
       </div>
     </div>
   )
 }
+
+
+
+interface SubmitButtonProps{
+  isLoading: boolean,
+  form: FormInstance
+}
+
+
+const SubmitButton = ({ form, isLoading }:SubmitButtonProps) => {
+  const [submittable, setSubmittable] = useState(false);
+
+  // Watch all values
+  const values = Form.useWatch([], form);
+
+  const router = useRouter() 
+
+  useEffect(() => {
+      
+
+    form.validateFields({validateOnly:true}).then(
+      (res) => {
+          console.log('issubmittable',res)
+        setSubmittable(true);
+      },
+      () => {
+          console.log('isNot')
+        setSubmittable(false);
+      },
+    );
+  }, [values]);
+
+  return (
+      <Button shape="round" type="primary" disabled={!submittable} size="large" loading={isLoading}  htmlType="submit" >
+      Add Staff
+   </Button>
+  );
+};
