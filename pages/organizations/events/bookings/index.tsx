@@ -92,7 +92,7 @@ export default function EventBookings(){
       try{
         const res = await axios({
           method:'get',
-          url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/user-event-ticket/all&eventId=${currentEvent.id}`,
+          url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/user-event-ticket/all?eventId=${currentEvent.id}`,
           headers:{
               "Authorization": paseto
           }
