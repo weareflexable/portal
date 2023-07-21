@@ -509,6 +509,13 @@ interface EditableProp{
     const {paseto} = useAuthContext()
 
     const queryClient = useQueryClient()
+
+
+    const dummyRequest = ({ onSuccess}:{onSuccess:any}) => {
+      setTimeout(() => {
+        onSuccess("ok");
+      }, 0);
+    };
   
     function toggleEdit(){
       setIsEditMode(!isEditMode)
@@ -590,10 +597,10 @@ interface EditableProp{
                 rules={[{ required: true, message: 'Please input a valid zip code' }]}
             >
                 
-                <Upload name="logoImageHash" listType="picture" multiple={false}>
+                <Upload beforeUpload={()=>false} name="logoImageHash" listType="picture" multiple={false}>
                      <Button size='small' disabled={isHashingImage} type='link'>Upload logo image</Button>
                 </Upload>
-            </Form.Item>
+            </Form.Item> 
           </Col>
           <Col span={4}>
             <Form.Item style={{ width:'100%'}}>
