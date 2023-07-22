@@ -833,7 +833,7 @@ function EditableLogoImage({selectedOrg}:EditableProp){
               rules={[{ required: true, message: 'Please input a valid zip code' }]}
           >
               
-              <Upload name="logoImageHash" listType="picture" multiple={false}>
+              <Upload beforeUpload={()=>false} name="logoImageHash" listType="picture" multiple={false}>
                    <Button size='small' disabled={isHashingImage} type='link'>Upload logo image</Button>
               </Upload>
           </Form.Item>
