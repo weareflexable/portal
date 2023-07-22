@@ -83,7 +83,6 @@ export default function EventBookings(){
     const totalLength = bookingsQuery.data && bookingsQuery.data.dataLength;
     
     
-    const downloadBookingsQuery = useQuery({queryKey:['allEventBookings'], queryFn:fetchAllBookings, enabled:false})
 
     async function downloadRecords(){
 
