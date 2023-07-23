@@ -493,7 +493,7 @@ function Artwork({onHandleArtwork}:ArtworkProps){
         <div>
             <div style={{display:'flex', marginTop:'3rem',alignItems:'baseline'}}>
                 <Title style={{margin:'0'}} level={3}>Artwork</Title>
-                <Tooltip trigger={['click']} placement='right' title={<LogoTip src='/explainers/community-artwork-explainer.png'/>}>
+                <Tooltip trigger={['click']} placement='right' overlayInnerStyle={{width:'500px'}}  title={<LogoTip  src='/explainers/community-artwork-explainer.png'/>}>
                         <Button type="link">Learn more<QuestionCircleOutlined rev={undefined} /></Button>
                 </Tooltip>
             </div> 
@@ -581,8 +581,8 @@ const communityHashes = [
 
 function LogoTip({src}:{src:string}){
     return(
-        <div>
-            <AntImage style={{objectFit:'cover'}}  src={src} alt='Artwork explainer as displayed on marketplace'/>
+        <div style={{}}>
+            <AntImage style={{objectFit:'cover', marginBottom:'1rem'}}  src={src} alt='Artwork explainer as displayed on marketplace'/>
             <Text style={{color:'white'}}>{"It is very important to provide the requested image size (2400 x 1200) or else the image will appear distorted on the marketplace"}</Text>
         </div>
     ) 
