@@ -360,7 +360,7 @@ export default function NewService(){
                             name="logoImageHash"
                             valuePropName="logoImageHash"
                             getValueFromEvent={extractLogoImage}
-                            extra={'Please upload a PNG or JPEG that is 1024px x 1024px'}
+                            extra={'Please upload a PNG or JPEG that is 2400px x 1200px'}
                             rules={[{ required: true, message: 'Please upload an image' }]}
                         >
                             

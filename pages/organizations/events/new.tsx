@@ -468,7 +468,7 @@ export default function NewEvent(){
                             name="coverImageHash"
                             valuePropName="coverImageHash"
                             getValueFromEvent={extractLogoImage}
-                            extra={'Please upload a PNG or JPEG that is 1024px x 1024px'}
+                            extra={'Please upload a PNG or JPEG that is 2400px x 1200px'}
                             rules={[{ required: true, message: 'Please upload an image' }]}
                         >
                             
