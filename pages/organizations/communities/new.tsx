@@ -120,7 +120,7 @@ function BasicForm({nextStep}:BasicInfoProps){
 
     function handleArtworkChange(hash:string){
         artworkRef.current = hash
-        setLogoImage(hash)
+        console.log(hash)
     }
 
 
@@ -131,12 +131,10 @@ function BasicForm({nextStep}:BasicInfoProps){
         return e;
         }
 
-        console.log(e)
         const imageBlob = e.fileList[0].originFileObj
         console.log("blob",imageBlob)
         const src = await getBase64(imageBlob)
-        handleArtworkChange(src)
-        // setLogoImage(src)
+        setLogoImage(src)
    
 
     return e?.fileList;
@@ -150,7 +148,7 @@ function BasicForm({nextStep}:BasicInfoProps){
             //@ts-ignore
             const imageHash = await asyncStore(logoRes[0].originFileObj)
             //@ts-ignore
-            // const coverImageHash = await asyncStore(formData.coverImageHash[0].originFileObj)
+            const artworkHash = typeof artworkRef.current === 'object'? await asyncStore(artworkRef.current): artworkRef.current
             setIsHashingAssets(false)
 
 
@@ -163,9 +161,10 @@ function BasicForm({nextStep}:BasicInfoProps){
                 price: String(formData.price * 100),
                 currency: 'USD',
                 description:formData.description,
-                artworkHash: artworkRef.current,
+                artworkHash: artworkHash,
                 logoImageHash: imageHash
             }
+
 
             createData.mutate(formObject)
 
@@ -257,14 +256,14 @@ function BasicForm({nextStep}:BasicInfoProps){
             </Col>
         </Row>
 
-
+ 
 
         <Artwork onHandleArtwork={handleArtworkChange}/>
 
         <div style={{marginBottom:'2rem', marginTop:'3rem'}}>
             <Title level={3}>Image Upload</Title>
             <Text >Your logo  will be visible on the marketplace listing</Text> 
-            <Tooltip trigger={['click']} placement='right' title={<LogoTip src='/explainers/community-logo-explainer.png'/>}>
+            <Tooltip trigger={['click']} placement='right' overlayInnerStyle={{width:'500px'}}  title={<LogoTip src='/explainers/community-logo-explainer.png'/>}>
                 <Button type="link">Show me <QuestionCircleOutlined rev={undefined}/></Button>
             </Tooltip>
         </div>
@@ -465,7 +464,7 @@ function VenuesForm({communityId}:VenueFormProp){
 }
 
 interface ArtworkProps{
-    onHandleArtwork: (value:string)=>void
+    onHandleArtwork: (value:any)=>void
 }
 function Artwork({onHandleArtwork}:ArtworkProps){
 
@@ -476,7 +475,6 @@ function Artwork({onHandleArtwork}:ArtworkProps){
 
     const isDataSource = selectedArtwork.startsWith('data')
 
-    console.log(isDataSource)
 
     const props: UploadProps = {
         name: 'file',
@@ -487,15 +485,7 @@ function Artwork({onHandleArtwork}:ArtworkProps){
             const imageBlob = info.file.originFileObj
               const src = await getBase64(imageBlob)
               setSelectedArtwork(src)
-        //   if (info.file.status !== 'uploading') {
-        //     console.log(info.file);
-        //   }
-        //   if (info.file.status === 'done') {
-              
-        //       console.log(src)
-        //   } else if (info.file.status === 'error') {
-        //     message.error(`${info.file.name} file upload failed.`);
-        //   }
+              onHandleArtwork(info.file.originFileObj)
         },
       };
 
@@ -526,9 +516,10 @@ function Artwork({onHandleArtwork}:ArtworkProps){
             </div> 
             <div style={{display:'flex',width:'400px', marginTop:'2rem', flexDirection:'column'}}>
                 <div style={{alignSelf:'flex-end',display:'flex'}}>
-                <Button shape='round' icon={<SelectOutlined rev={undefined} />} style={{ marginBottom:'.5rem'}} onClick={toggleDrawer}>Select a different artwork</Button>
+                <Button shape='round' icon={<SelectOutlined rev={undefined} />} style={{ marginBottom:'.5rem'}} onClick={toggleDrawer}>Select a different artwork</Button> 
+                <Text style={{margin:'0 .5rem'}}>or</Text>
                 <Upload fileList={[]} {...props}>
-                    <Button icon={<UploadOutlined rev={''} style={{ marginBottom:'.5rem'}}  />} size='small' type='link'>Upload from computer</Button>
+                    <Button icon={<UploadOutlined rev={''} style={{ marginBottom:'.5rem'}}  />} size='small' type='link'>Upload image</Button>
                 </Upload>
                 </div>
                 <AntImage alt='artwork'  style={{width:'400px', height:'400px', marginBottom:'.5rem', objectFit:'cover'}}  src={isDataSource? selectedArtwork: `${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${selectedArtwork}`}/>
