@@ -31,6 +31,7 @@ dayjs.extend(advanced)
 
 import EventsLayout from "../../../../components/Layout/EventsLayout";
 import useEvent from "../../../../hooks/useEvents";
+import React from "react";
 
 
 
@@ -307,20 +308,20 @@ export default function EventBookings(){
         )
     }
   },
-  {
-    title: 'Redeem Status',
-    dataIndex: 'redeemStatus',
-    key: 'redeemStatus',
-    width:'150px',
-    fixed:'right',
-    render: (_,record)=>{
-      const isTicketExpired = dayjs().isAfter(dayjs(record.eventDetails.startTime).add(record.eventDetails.duration/60,'h').tz('UTC'))
-      const status = record.redeemStatus === 'redeemed' ? 'redeemed': record.redeemStatus === 'active' && isTicketExpired? 'expired': record.bookingStatus==='Failed'? 'cancelled': 'active'
-      const color = status === 'redeemed'?'green': status === 'expired'?'red': status==='cancelled'? 'grey' :'blue'
-      const icon = status === 'redeemed'?<CheckOutlined rev={undefined} />:status === 'cancelled'?<StopOutlined rev={undefined}/>:null
-      return <Tag icon={icon} color={color} style={{textTransform:'capitalize'}}>{status}</Tag>
-    }
-  },
+  // {
+  //   title: 'Redeem Status',
+  //   dataIndex: 'redeemStatus',
+  //   key: 'redeemStatus',
+  //   width:'150px',
+  //   fixed:'right',
+  //   render: (_,record)=>{
+  //     const isTicketExpired = dayjs().isAfter(dayjs(record.eventDetails.startTime).add(record.eventDetails.duration/60,'h').tz('UTC'))
+  //     const status = record.redeemStatus === 'redeemed' ? 'redeemed': record.redeemStatus === 'active' && isTicketExpired? 'expired': record.bookingStatus==='Failed'? 'cancelled': 'active'
+  //     const color = status === 'redeemed'?'green': status === 'expired'?'red': status==='cancelled'? 'grey' :'blue'
+  //     const icon = status === 'redeemed'?<CheckOutlined rev={undefined} />:status === 'cancelled'?<StopOutlined rev={undefined}/>:null
+  //     return <Tag icon={icon} color={color} style={{textTransform:'capitalize'}}>{status}</Tag>
+  //   }
+  // },
   {
     dataIndex: 'actions', 
     key: 'actions',
@@ -478,27 +479,15 @@ return(
   <div
     style={{width:'100%',}}
   >
-<Form form={form} onFinish={onFinish}>
-  <Form.Item name={'ticketSecret'}  style={{marginBottom:'1rem'}} rules={[{required:true, message: 'This field is required'}, {max:6, message: 'You have exceed the max number of digits for a secret'}]}>
-    <Input disabled={selectedRecord.redeemStatus === 'redeemed'} name="ticketSecret" size="large" />
-  </Form.Item>
-  <Form.Item>
-  {isTicketExpired
-    ?<Text>Ticket has expired</Text>
-    :<Button
-      shape="round" 
-      block 
-      disabled={selectedRecord.redeemStatus === 'redeemed' || selectedRecord.bookingStatus === 'Failed'}
-      type="primary" 
-      size="large" 
-      style={{marginBottom:'.5rem'}}
-      loading={isRedeeming}  
-      htmlType="submit"
-    >
-       Redeem Ticket
-    </Button>}
-  </Form.Item>
-</Form>
+{selectedRecord.ticketDetails.map((ticket:any)=>{
+          return(
+          <RedeemTicketForm
+            key={ticket.id}
+            isTicketExpired = {isTicketExpired}
+            ticket={ticket}
+          />
+          )
+        })}
     {selectedRecord.redeemStatus === 'redeemed'?<Text type="secondary" >It appears that your ticket has already been redeemed </Text>:null}
 </div>
 
@@ -506,4 +495,105 @@ return(
 
 </Drawer>
 )
+}
+
+
+
+interface IRedeemTicketForm{
+  ticket: any,
+  isTicketExpired: boolean
+}
+function RedeemTicketForm({ticket, isTicketExpired}:IRedeemTicketForm){
+
+  const {paseto} = useAuthContext()
+
+  const redeemTicketHandler = async(ticketPayload:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/employee/redeem-ticket`, ticketPayload,{
+        headers:{
+            "Authorization": paseto
+        },
+    })
+    return data
+  }
+
+  function onFinish(values:any){
+    console.log(values)
+  
+    const isRedeemCodeValid = ticket.ticketSecret == values.ticketSecret
+    // check if ticket has expired
+    // check if input is the same as redeemCode
+    if(!isRedeemCodeValid) {
+      notification['warning']({
+        message: 'The secret you provided does not match the one on the ticket',
+      });
+      return
+    }
+  
+    // if payment status and booking status is not succesful, don't redeem ticket
+    // check ticket validity
+  
+    const payload ={
+      item: {
+          id: ticket.eventId,  //need to valiadte exp using start date time + duration 
+          type: "event",
+          communityVenueId: ""
+      },
+      ticketSecret: ticket.ticketSecret,
+      redeemMethod: "uniqueCode",
+      userId: ticket.userId
+  }
+      redeemEventTicket.mutate(payload)
+  }
+  
+  const redeemEventTicket = useMutation(redeemTicketHandler,{
+    onSuccess:(data)=>{
+      if(data.status>201){
+        notification['error']({
+          message: 'Error creating events',
+        });
+      }else{
+      notification['success']({
+        message: 'Success redeeming user ticket',
+      });
+      }
+    },
+      onSettled:()=>{
+          // queryClient.invalidateQueries(['event-bookings'])
+      }
+  })
+  
+  const{isLoading:isRedeeming} = redeemEventTicket
+  
+
+  const [form] = Form.useForm()
+
+
+  return(
+      <React.Fragment>
+            <div style={{marginBottom:'.5rem'}}>
+            <Text >Redeem for <Text strong >{ticket.firstName} {ticket.lastName}</Text></Text>
+            </div>
+            <Form form={form} onFinish={onFinish}>
+            <Form.Item name={'ticketSecret'}  style={{marginBottom:'1rem'}} rules={[{required:true, message: 'This field is required'}, {max:6, message: 'You have exceed the max number of digits for a secret'}]}>
+              <Input disabled={ticket.redeemStatus === 'redeemed'} name="ticketSecret" size="large" />
+            </Form.Item>
+            <Form.Item>
+            {isTicketExpired
+              ?<Text>Ticket has expired</Text>
+              :<Button
+                shape="round" 
+                block 
+                disabled={ticket.ticketStatus === 'redeemed' || ticket.bookingStatus === 'Failed'}
+                type="primary" 
+                size="large" 
+                style={{marginBottom:'.5rem'}}
+                loading={isRedeeming}  
+                htmlType="submit"
+              >
+                 Redeem Ticket
+              </Button>}
+            </Form.Item>
+          </Form>
+          </React.Fragment>
+  )
 }
