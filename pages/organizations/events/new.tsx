@@ -404,7 +404,7 @@ export default function NewEvent(){
                         >
                             <Space.Compact size="large"  block>
                                 <Form.Item   rules={[{required:true, message:'This field is required'}]}  name={['validity','startTime']} >
-                                    <DatePicker  style={{ width: 300 }}  showTime placeholder="Select Date and Time"  format={'MMM DD, YYYY, H A'}  size="large" />
+                                    <DatePicker  style={{ width: 300 }}  showTime placeholder="Select Date and Time"  format={'MMM DD, YYYY, h A'}  size="large" />
                                 </Form.Item>
 
                                 {/* <Form.Item   rules={[{required:true, message:'This field is required'}]}  name={['validity','time']} >

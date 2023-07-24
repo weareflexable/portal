@@ -289,7 +289,7 @@ export default function EventBookings(){
       key: 'startTime',
       width: '150px',
       render: (_,record)=>{ 
-          const date = dayjs(record.eventDetails.startTime).tz("UTC").format('MMM DD, YYYY H A')
+          const date = dayjs(record.eventDetails.startTime).tz("UTC").format('MMM DD, YYYY h A')
           return(
         <Text type='secondary'>{date}</Text>
         )

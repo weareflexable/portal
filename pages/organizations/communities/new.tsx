@@ -1,5 +1,5 @@
 import React,{useEffect, useRef, useState} from 'react';
-import {Card,Form, Image as AntImage, Input,InputNumber, DatePicker,Upload,Button,notification, Space, Alert, Typography, TimePicker, Select, Row, Col, Steps, Radio, Tooltip, Popconfirm, message, Drawer, Collapse, InputRef, FormInstance} from 'antd';
+import {Card,Form, Image as AntImage, Input,InputNumber, DatePicker,Upload,Button,notification, Space, Alert, Typography, TimePicker, Select, Row, Col, Steps, Radio, Tooltip, Popconfirm, message, Drawer, Collapse, InputRef, FormInstance, UploadProps} from 'antd';
 const { TextArea } = Input;
 import Image from 'next/image'
 
@@ -7,7 +7,7 @@ import Image from 'next/image'
 
 
 const {Text,Title} = Typography;
-import {QuestionCircleOutlined,SelectOutlined,ArrowLeftOutlined, MinusOutlined,MinusCircleOutlined,InfoCircleOutlined,PlusCircleOutlined} from '@ant-design/icons'
+import {QuestionCircleOutlined,SelectOutlined,ArrowLeftOutlined, UploadOutlined, MinusOutlined,MinusCircleOutlined,InfoCircleOutlined,PlusCircleOutlined} from '@ant-design/icons'
 
 
 import router, { useRouter } from 'next/router';
@@ -120,6 +120,7 @@ function BasicForm({nextStep}:BasicInfoProps){
 
     function handleArtworkChange(hash:string){
         artworkRef.current = hash
+        setLogoImage(hash)
     }
 
 
@@ -134,7 +135,8 @@ function BasicForm({nextStep}:BasicInfoProps){
         const imageBlob = e.fileList[0].originFileObj
         console.log("blob",imageBlob)
         const src = await getBase64(imageBlob)
-        setLogoImage(src)
+        handleArtworkChange(src)
+        // setLogoImage(src)
    
 
     return e?.fileList;
@@ -263,7 +265,7 @@ function BasicForm({nextStep}:BasicInfoProps){
             <Title level={3}>Image Upload</Title>
             <Text >Your logo  will be visible on the marketplace listing</Text> 
             <Tooltip trigger={['click']} placement='right' title={<LogoTip src='/explainers/community-logo-explainer.png'/>}>
-                <Button type="link">Show me <QuestionCircleOutlined rev={undefined} /></Button>
+                <Button type="link">Show me <QuestionCircleOutlined rev={undefined}/></Button>
             </Tooltip>
         </div>
 
@@ -276,7 +278,7 @@ function BasicForm({nextStep}:BasicInfoProps){
             rules={[{ required: true, message: 'Please upload an image' }]}
         >
             
-            <Upload name="logoImageHash" multiple={false} fileList={[]}  >
+            <Upload  name="logoImageHash" multiple={false} fileList={[]}  >
                     <Button size='small' type='link'>Upload logo image</Button>
             </Upload>
         </Form.Item>
@@ -470,7 +472,32 @@ function Artwork({onHandleArtwork}:ArtworkProps){
     const router = useRouter()
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const [currentServiceItemType, setCurrentServiceItemType] = useState<null|string|string[]|undefined>(undefined)
-    const [selectedArtwork, setSelectedArtwork] = useState('') // 
+    const [selectedArtwork, setSelectedArtwork] = useState('') 
+
+    const isDataSource = selectedArtwork.startsWith('data')
+
+    console.log(isDataSource)
+
+    const props: UploadProps = {
+        name: 'file',
+        multiple:false, 
+        // fileList:[],
+        showUploadList:false,
+        onChange: async (info) => {
+            const imageBlob = info.file.originFileObj
+              const src = await getBase64(imageBlob)
+              setSelectedArtwork(src)
+        //   if (info.file.status !== 'uploading') {
+        //     console.log(info.file);
+        //   }
+        //   if (info.file.status === 'done') {
+              
+        //       console.log(src)
+        //   } else if (info.file.status === 'error') {
+        //     message.error(`${info.file.name} file upload failed.`);
+        //   }
+        },
+      };
 
     function toggleDrawer(){
         setIsDrawerOpen(!isDrawerOpen)
@@ -500,8 +527,11 @@ function Artwork({onHandleArtwork}:ArtworkProps){
             <div style={{display:'flex',width:'400px', marginTop:'2rem', flexDirection:'column'}}>
                 <div style={{alignSelf:'flex-end',display:'flex'}}>
                 <Button shape='round' icon={<SelectOutlined rev={undefined} />} style={{ marginBottom:'.5rem'}} onClick={toggleDrawer}>Select a different artwork</Button>
+                <Upload fileList={[]} {...props}>
+                    <Button icon={<UploadOutlined rev={''} style={{ marginBottom:'.5rem'}}  />} size='small' type='link'>Upload from computer</Button>
+                </Upload>
                 </div>
-                <AntImage alt='artwork'  style={{width:'400px', height:'400px', marginBottom:'.5rem', objectFit:'cover'}}  src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${selectedArtwork}`}/>
+                <AntImage alt='artwork'  style={{width:'400px', height:'400px', marginBottom:'.5rem', objectFit:'cover'}}  src={isDataSource? selectedArtwork: `${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${selectedArtwork}`}/>
                 <Text type='secondary'>This cover image will be used for your listing on marketplace and for the Digital access token NFT</Text>
             </div>
             <ArtworkPicker 
@@ -527,15 +557,17 @@ function ArtworkPicker({isOpen, selected, currentServiceItemType, onSelectImage,
  
     const currentHashes = communityHashes
 
+    
+
     return(
         <Drawer
-        height={'500px'}
-        title="Select an artwork for your service"
-        placement={'bottom'}
-        closable={true}
-        onClose={onToggleDrawer}
-        open={isOpen}
-      >
+            height={'500px'}
+            title="Select an artwork for your service"
+            placement={'bottom'}
+            closable={true}
+            onClose={onToggleDrawer}
+            open={isOpen}
+       >
         <div style={{width:'100%', height:'100%', position:'relative',   overflowY: 'hidden', whiteSpace:'nowrap', overflowX:'scroll'}}>
             {/* <Image alt='artwork for lineskip' style={{objectFit: 'cover', height:'300px', width:'400px'}} src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${lineSkipHash}`}/> */}
             {
@@ -637,7 +669,6 @@ function CommunityVenueForm({remove, name, formInstance, restField}:CommunityVen
             if(type === 'locality') addressObj.state = address.short_name
             if(type === 'administrative_area_level_1') addressObj.city = address.short_name
         })
-
         return addressObj
     }
 
