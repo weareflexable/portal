@@ -120,7 +120,6 @@ function BasicForm({nextStep}:BasicInfoProps){
 
     function handleArtworkChange(hash:string){
         artworkRef.current = hash
-        console.log(hash)
     }
 
 
@@ -463,10 +462,11 @@ function VenuesForm({communityId}:VenueFormProp){
     )
 }
 
-interface ArtworkProps{
+interface IArtwork{
     onHandleArtwork: (value:any)=>void
 }
-function Artwork({onHandleArtwork}:ArtworkProps){
+
+function Artwork({onHandleArtwork}:IArtwork){
 
     const router = useRouter()
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)

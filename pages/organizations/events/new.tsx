@@ -120,7 +120,7 @@ export default function NewEvent(){
           antInputRef.current.input.value = place?.formatted_address
 
         },
-      });
+      }); 
     
 
     const onFinish = async(formData:any)=>{
@@ -404,7 +404,7 @@ export default function NewEvent(){
                         >
                             <Space.Compact size="large"  block>
                                 <Form.Item   rules={[{required:true, message:'This field is required'}]}  name={['validity','startTime']} >
-                                    <DatePicker  style={{ width: 300 }}  showTime placeholder="Select Date and Time"  format={'MMM DD, YYYY, h A'}  size="large" />
+                                    <DatePicker  style={{ width: 300 }}  showTime placeholder="Select Date and Time"  format={'MMM DD, YYYY, H A'}  size="large" />
                                 </Form.Item>
 
                                 {/* <Form.Item   rules={[{required:true, message:'This field is required'}]}  name={['validity','time']} >
@@ -468,7 +468,7 @@ export default function NewEvent(){
                             name="coverImageHash"
                             valuePropName="coverImageHash"
                             getValueFromEvent={extractLogoImage}
-                            extra={'Please upload a PNG or JPEG that is 2400px x 1200px'}
+                            extra={'Please upload a PNG or JPEG that is 2400px x 120px'}
                             rules={[{ required: true, message: 'Please upload an image' }]}
                         >
                             
