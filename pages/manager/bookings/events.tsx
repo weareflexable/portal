@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { TableProps, Tag, Button, Table, Image, Typography, Drawer, Form, Input, notification } from "antd";
+import { TableProps, Tag, Button, Table, Image, Typography, Drawer, Form, Input, notification, Alert } from "antd";
 import { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import { useState } from "react";
@@ -494,6 +494,8 @@ function RedeemTicketForm({ticket, isTicketExpired}:IRedeemTicketForm){
 
   const {paseto} = useAuthContext()
 
+  const [isRedeemed, setIsRedeemed] = useState(false)
+
   const queryClient = useQueryClient()
 
   const redeemTicketHandler = async(ticketPayload:any)=>{
@@ -544,6 +546,7 @@ function RedeemTicketForm({ticket, isTicketExpired}:IRedeemTicketForm){
       notification['success']({
         message: 'Success redeeming user ticket',
       });
+      setIsRedeemed(true)
       }
     },
       onSettled:()=>{
@@ -558,31 +561,33 @@ function RedeemTicketForm({ticket, isTicketExpired}:IRedeemTicketForm){
 
 
   return(
-      <React.Fragment>
-            <div style={{marginBottom:'.5rem'}}>
-            <Text >Redeem for <Text strong >{ticket.firstName} {ticket.lastName}</Text></Text>
-            </div>
-            <Form form={form} onFinish={onFinish}>
-            <Form.Item name={'ticketSecret'}  style={{marginBottom:'1rem'}} rules={[{required:true, message: 'This field is required'}, {max:6, message: 'You have exceed the max number of digits for a secret'}]}>
-              <Input disabled={ticket.redeemStatus === 'redeemed'} name="ticketSecret" size="large" />
-            </Form.Item>
-            <Form.Item>
-            {isTicketExpired
-              ?<Text>Ticket has expired</Text>
-              :<Button
-                shape="round" 
-                block 
-                disabled={ticket.ticketStatus === 'redeemed' || ticket.bookingStatus === 'Failed'}
-                type="primary" 
-                size="large" 
-                style={{marginBottom:'.5rem'}}
-                loading={isRedeeming}  
-                htmlType="submit"
-              >
-                 Redeem Ticket
-              </Button>}
-            </Form.Item>
-          </Form>
-          </React.Fragment>
+    <React.Fragment>
+    <div style={{marginBottom:'.5rem'}}>
+    <Text >Redeem for <Text strong >{ticket.firstName} {ticket.lastName}</Text></Text>
+    </div>
+    {isRedeemed || ticket.ticketStatus === 'redeemed'
+    ?<Alert style={{marginBottom:'2rem'}} message="Ticket has been redeemed" type="success" />
+    :<Form form={form} onFinish={onFinish}>
+    <Form.Item name={'ticketSecret'}  style={{marginBottom:'1rem'}} rules={[{required:true, message: 'This field is required'}, {max:6, message: 'You have exceed the max number of digits for a secret'}]}>
+      <Input disabled={ticket.redeemStatus === 'redeemed'} name="ticketSecret" size="large" />
+    </Form.Item>
+    <Form.Item>
+    {isTicketExpired
+      ?<Text>Ticket has expired</Text>
+      :<Button
+        shape="round" 
+        block 
+        disabled={ticket.ticketStatus === 'redeemed' || ticket.bookingStatus === 'Failed'}
+        type="primary" 
+        size="large" 
+        style={{marginBottom:'.5rem'}}
+        loading={isRedeeming}  
+        htmlType="submit"
+      >
+         Redeem Ticket
+      </Button>}
+    </Form.Item>
+  </Form>}
+  </React.Fragment>
   )
 }
