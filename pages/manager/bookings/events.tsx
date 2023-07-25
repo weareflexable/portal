@@ -65,7 +65,7 @@ export default function EventBookings(){
    
     }
     
-    const bookingsQuery = useQuery({queryKey:['eventBookings',pageNumber,pageSize], queryFn:fetchBookings, enabled:paseto !== ''})
+    const bookingsQuery = useQuery({queryKey:['manager-event-bookings',pageNumber,pageSize], queryFn:fetchBookings, enabled:paseto !== ''})
     const data = bookingsQuery.data && bookingsQuery.data.data
     const totalLength = bookingsQuery.data && bookingsQuery.data.dataLength;
     
@@ -384,7 +384,7 @@ function DetailDrawer({selectedRecord,isDrawerOpen,closeDrawer}:DrawerProps){
     
     
     function closeDrawerHandler(){
-      queryClient.invalidateQueries(['event-bookings']) 
+      queryClient.invalidateQueries(['manager-event-bookings']) 
       closeDrawer(!isDrawerOpen)
     }
     
@@ -494,6 +494,8 @@ function RedeemTicketForm({ticket, isTicketExpired}:IRedeemTicketForm){
 
   const {paseto} = useAuthContext()
 
+  const queryClient = useQueryClient()
+
   const redeemTicketHandler = async(ticketPayload:any)=>{
     const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/employee/redeem-ticket`, ticketPayload,{
         headers:{
@@ -545,7 +547,7 @@ function RedeemTicketForm({ticket, isTicketExpired}:IRedeemTicketForm){
       }
     },
       onSettled:()=>{
-          // queryClient.invalidateQueries(['event-bookings'])
+          queryClient.invalidateQueries(['manager-event-bookings'])
       }
   })
   

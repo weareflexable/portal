@@ -79,7 +79,7 @@ export default function EventBookings(){
     }
 
 
-    const bookingsQuery = useQuery({queryKey:['eventBookings',pageNumber,pageSize], queryFn:fetchBookings, enabled:paseto !== ''})
+    const bookingsQuery = useQuery({queryKey:['event-bookings',pageNumber,pageSize], queryFn:fetchBookings, enabled:paseto !== ''})
     const data = bookingsQuery.data && bookingsQuery.data.data
     const totalLength = bookingsQuery.data && bookingsQuery.data.dataLength;
     
@@ -391,9 +391,6 @@ function DetailDrawer({selectedRecord,isDrawerOpen,closeDrawer}:DrawerProps){
 const queryClient = useQueryClient()
 const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
-// const {switchEvent} = useEvent()
-const {paseto} = useAuthContext()
-
 const isTicketExpired = dayjs().isAfter(dayjs(selectedRecord.eventDetails.startTime).add(selectedRecord.eventDetails.duration/60,'h').tz('UTC'))
 
 
@@ -408,61 +405,6 @@ function toggleDeleteModal(){
 
 
 
-const redeemTicketHandler = async(ticketPayload:any)=>{
-  const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/employee/redeem-ticket`, ticketPayload,{
-      headers:{
-          "Authorization": paseto
-      },
-  })
-  return data
-}
-function onFinish(values:any){
-  console.log(values)
-
-  const isRedeemCodeValid = selectedRecord.ticketSecret == values.ticketSecret
-  // check if ticket has expired
-  // check if input is the same as redeemCode
-  if(!isRedeemCodeValid) {
-    notification['warning']({
-      message: 'The secret you provided does not match the one on the ticket',
-    });
-    return
-  }
-
-  // if payment status and booking status is not succesful, don't redeem ticket
-  // check ticket validity
-
-  const payload ={
-    item: {
-        id: selectedRecord.eventId,  //need to valiadte exp using start date time + duration 
-        type: "event",
-        communityVenueId: ""
-    },
-    ticketSecret: selectedRecord.ticketSecret,
-    redeemMethod: "uniqueCode",
-    userId: selectedRecord.userId
-}
-    redeemEventTicket.mutate(payload)
-}
-
-const redeemEventTicket = useMutation(redeemTicketHandler,{
-  onSuccess:(data)=>{
-    if(data.status>201){
-      notification['error']({
-        message: 'Error creating events',
-      });
-    }else{
-    notification['success']({
-      message: 'Success redeeming user ticket',
-    });
-    }
-  },
-    onSettled:()=>{
-        // queryClient.invalidateQueries(['event-bookings'])
-    }
-})
-
-const{isLoading:isRedeeming} = redeemEventTicket
 
 const [form] = Form.useForm()
 
@@ -506,6 +448,8 @@ interface IRedeemTicketForm{
 function RedeemTicketForm({ticket, isTicketExpired}:IRedeemTicketForm){
 
   const {paseto} = useAuthContext()
+
+  const queryClient = useQueryClient()
 
   const redeemTicketHandler = async(ticketPayload:any)=>{
     const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/employee/redeem-ticket`, ticketPayload,{
@@ -558,7 +502,7 @@ function RedeemTicketForm({ticket, isTicketExpired}:IRedeemTicketForm){
       }
     },
       onSettled:()=>{
-          // queryClient.invalidateQueries(['event-bookings'])
+          queryClient.invalidateQueries(['event-bookings'])
       }
   })
   
