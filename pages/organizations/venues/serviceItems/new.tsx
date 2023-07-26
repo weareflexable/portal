@@ -1,5 +1,5 @@
 import React,{useEffect, useRef, useState} from 'react';
-import {Card,Form, Image as AntImage, Input,InputNumber, DatePicker,Upload,Button,notification, Space, Alert, Typography, TimePicker, Select, Row, Col, Steps, Radio, Tooltip, Popconfirm, message, Drawer, Collapse, FormInstance} from 'antd';
+import {Card,Form, Image as AntImage, Input,InputNumber, DatePicker,Upload,Button,notification, Space, Alert, Typography, TimePicker, Select, Row, Col, Steps, Radio, Tooltip, Popconfirm, message, Drawer, Collapse, FormInstance, UploadProps} from 'antd';
 const { TextArea } = Input;
 import Image from 'next/image'
 
@@ -7,7 +7,7 @@ const { Panel } = Collapse;
 
 
 const {Text,Title} = Typography;
-import {QuestionCircleOutlined,SelectOutlined,ArrowLeftOutlined,MinusCircleOutlined,InfoCircleOutlined,PlusCircleOutlined} from '@ant-design/icons'
+import {QuestionCircleOutlined,SelectOutlined,ArrowLeftOutlined,MinusCircleOutlined,InfoCircleOutlined,PlusCircleOutlined,UploadOutlined} from '@ant-design/icons'
 
 
 import { useRouter } from 'next/router';
@@ -25,6 +25,15 @@ import useUrlPrefix from '../../../../hooks/useUrlPrefix';
 
 
 
+
+
+const getBase64 = (file: any): Promise<string> => 
+new Promise((resolve, reject) => {
+const reader = new FileReader();
+reader.readAsDataURL(file);
+reader.onload = () => resolve(reader.result as string);
+reader.onerror = (error) => reject(error);
+});
 
 
 interface ServiceFormProps{
@@ -105,7 +114,7 @@ function BasicForm({nextStep}:BasicInfoProps){
      const urlPrefix = useUrlPrefix()
 
      // make this default value to be lineskip images first element
-    const artworkRef = useRef<string|null>(lineSkipHashes[0])
+    const artworkRef = useRef<string|any>(lineSkipHashes[0])
     
 
     const queryClient = useQueryClient()
@@ -120,6 +129,9 @@ function BasicForm({nextStep}:BasicInfoProps){
 
         // availability should return empty array whenever user decides not to add custom dates
         // const transformedAvailability = formData.availability?convertDates(formData.availability):[]
+        setIsHashingImage(true)
+        const artworkHash = typeof artworkRef.current === 'object'? await asyncStore(artworkRef.current): artworkRef.current
+        setIsHashingImage(false)
 
         // // only generate key if it's a new service
             const formObject: ServiceItemReqPaylod = {
@@ -129,7 +141,7 @@ function BasicForm({nextStep}:BasicInfoProps){
                 description:formData.description,
                 orgServiceId: currentService.id,
                 serviceItemTypeId: router.query.key, // TODO: Get this value from context,
-                logoImageHash: artworkRef.current,
+                logoImageHash: artworkHash,
                 validityStartDate: dayjs(formData.validity.start).format(),
                 validityEndDate: dayjs(formData.validity.end).format()
             }
@@ -507,15 +519,34 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
     )
 }
 
-interface ArtworkProps{
-    onHandleArtwork: (value:string)=>void
+
+
+interface IArtwork{
+    onHandleArtwork: (value:any)=>void
 }
-function Artwork({onHandleArtwork}:ArtworkProps){
+
+function Artwork({onHandleArtwork}:IArtwork){
 
     const router = useRouter()
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const [currentServiceItemType, setCurrentServiceItemType] = useState<null|string|string[]|undefined>(undefined)
-    const [selectedArtwork, setSelectedArtwork] = useState('') // 
+    const [selectedArtwork, setSelectedArtwork] = useState('') 
+
+    const isDataSource = selectedArtwork.startsWith('data')
+
+
+    const props: UploadProps = {
+        name: 'file',
+        multiple:false, 
+        // fileList:[],
+        showUploadList:false,
+        onChange: async (info) => {
+            const imageBlob = info.file.originFileObj
+              const src = await getBase64(imageBlob)
+              setSelectedArtwork(src)
+              onHandleArtwork(info.file.originFileObj)
+        },
+      };
 
     function toggleDrawer(){
         setIsDrawerOpen(!isDrawerOpen)
@@ -538,16 +569,20 @@ function Artwork({onHandleArtwork}:ArtworkProps){
         <div>
             <div style={{display:'flex', marginTop:'3rem',alignItems:'baseline'}}>
                 <Title style={{margin:'0'}} level={3}>Artwork</Title>
-                <Tooltip trigger={['click']} placement='right' title={<LogoTip/>}>
+                <Tooltip trigger={['click']} placement='right' overlayInnerStyle={{width:'500px'}}  title={<LogoTip  src='/explainers/serviceItem-explainer.png'/>}>
                         <Button type="link">Learn more<QuestionCircleOutlined rev={undefined} /></Button>
                 </Tooltip>
-            </div>
+            </div> 
             <div style={{display:'flex',width:'400px', marginTop:'2rem', flexDirection:'column'}}>
                 <div style={{alignSelf:'flex-end',display:'flex'}}>
-                <Button shape='round' icon={<SelectOutlined rev={undefined} />} style={{ marginBottom:'.5rem'}} onClick={toggleDrawer}>Select a different artwork</Button>
+                <Button shape='round' icon={<SelectOutlined rev={undefined} />} style={{ marginBottom:'.5rem'}} onClick={toggleDrawer}>Select a different artwork</Button> 
+                <Text style={{margin:'0 .5rem'}}>or</Text>
+                <Upload fileList={[]} {...props}>
+                    <Button icon={<UploadOutlined rev={''} style={{ marginBottom:'.5rem'}}  />} size='small' type='link'>Upload image</Button>
+                </Upload>
                 </div>
-                <AntImage alt='artwork'  style={{width:'400px', height:'400px', objectFit:'cover'}}  src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${selectedArtwork}`}/>
-                <Text type='secondary'>This cover image will be used for listing on marketplace and Digital access token NFT</Text>
+                <AntImage alt='artwork'  style={{width:'400px', height:'400px', marginBottom:'.5rem', objectFit:'cover'}}  src={isDataSource? selectedArtwork: `${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${selectedArtwork}`}/>
+                <Text type='secondary'>This cover image will be used for your listing on marketplace and for the Digital access token NFT</Text>
             </div>
             <ArtworkPicker 
                 currentServiceItemType={currentServiceItemType}
@@ -638,11 +673,14 @@ const reservationHashes = [
 ]
 
 
+interface ILogoTip{
+    src:string
+}
 
-function LogoTip(){
+function LogoTip({src}:ILogoTip){
     return(
         <div>
-            <AntImage style={{objectFit:'cover'}}  src={'/explainers/serviceItem-explainer.png'} alt='Service explainer as displayed on marketplace'/>
+            <AntImage style={{objectFit:'cover'}}  src={src} alt='Service explainer as displayed on marketplace'/>
             <Text style={{color:'white'}}>It is very important that you provide the requested the image size else, it will look distorted on marketplace.</Text>
         </div>
     ) 

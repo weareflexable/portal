@@ -347,7 +347,7 @@ export default function NewService(){
                     <div style={{marginBottom:'2rem', marginTop:'3rem'}}>
                         <Title level={3}>Image Upload</Title>
                         <Text >Your logo and artwork will be visible on marketplace</Text>
-                        <Tooltip trigger={['click']} placement='right' title={<LogoTip/>}>
+                        <Tooltip trigger={['click']}  overlayInnerStyle={{width:'500px'}}  placement='right' title={<LogoTip/>}>
                         {/* @ts-ignore */}
                             <Button type="link">Show me <QuestionCircleOutlined /></Button>
                         </Tooltip>
@@ -360,7 +360,7 @@ export default function NewService(){
                             name="logoImageHash"
                             valuePropName="logoImageHash"
                             getValueFromEvent={extractLogoImage}
-                            extra={'Please upload a PNG or JPEG that is 1024px x 1024px'}
+                            extra={'Please upload a PNG or JPEG that is 2400px x 1200px'}
                             rules={[{ required: true, message: 'Please upload an image' }]}
                         >
                             
@@ -417,7 +417,7 @@ export default function NewService(){
 function LogoTip(){
     return(
         <div>
-            <Image style={{objectFit:'cover'}} src={'/explainers/service-explainer.png'} alt='Service explainer as displayed on marketplace'/>
+            <Image style={{objectFit:'cover', marginBottom:'1rem'}} src={'/explainers/service-explainer.png'} alt='Service explainer as displayed on marketplace'/>
             <Text style={{color:'white'}}>It is very important that you provide the requested the image size else, it will look distorted on marketplace.</Text>
         </div>
     ) 
