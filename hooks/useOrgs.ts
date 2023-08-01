@@ -1,5 +1,5 @@
 import {useState} from 'react'
-import { Org } from '../types/OrganisationTypes'
+import { Org,NewOrg } from '../types/OrganisationTypes'
 import { deleteStorage} from '../utils/storage'
 import useLocalStorage from './useLocalStorage'
 // import useLocalStorage
@@ -8,7 +8,7 @@ export default function useOrgs(){
     // const [activeOrg, setActiveOrg] = useState<Org>({id:'weea434',logoUrl:'dfaerefadf',name:'Mujeex labs'})
     const [currentOrg, setCurrentOrg] = useLocalStorage('currentOrg',[])
 
-    const switchOrg = (org:Org)=>{
+    const switchOrg = (org:NewOrg)=>{
         // setInLocal storage
         setCurrentOrg(org)
     }

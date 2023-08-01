@@ -1,29 +1,43 @@
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import { useAuthContext } from '../context/AuthContext'
 import { useServicesContext } from '../context/ServicesContext'
+import useUrlPrefix from './useUrlPrefix'
 
-export default function useServiceTypes(){
+export default function useServiceItemTypes(){
     const {paseto} = useAuthContext()
     const {currentService} = useServicesContext()
+    // console.log('currenService', currentService.serviceType[0])
+    // @ts-ignore
+    // const [hydrated,setHydrated] = useState(false)
+    // const [serviceTypeId, setServiceTypeId] = useState('')
+
+    const serviceTypeId = currentService.serviceTypeId
+
+    // useEffect(() => {
+    //     setServiceTypeId(currentService.serviceType[0].id) 
+    // }, [currentService.serviceType, hydrated])
+
+    const urlPrefix = useUrlPrefix()
 
     const fetchServiceItemTypes = async()=>{
-        const {data} = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/services/user/get-generic-service?orgServiceId=${currentService.id}`,{
+        const {data} = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-item-types?pageNumber=1&pageSize=20&key=service_type_id&value=${serviceTypeId}&key2=status&value2=1`,{
             headers:{
                 //@ts-ignore
-                "Authorization":JSON.parse(paseto)
+                "Authorization":paseto
             }
         })
-        return data?.payload
+        return data?.data
     }
 
-    const {data:serviceTypes} = useQuery(['serviceItemTypes'],fetchServiceItemTypes)
+    const {data:serviceItemTypes} = useQuery({queryKey:['serviceItemTypes'],queryFn:fetchServiceItemTypes,enabled:serviceTypeId!==''||undefined})
 
-    const menuItems = serviceTypes && serviceTypes.map((service:any)=>({
-            label: service.serviceItemName,
-            value: service.serviceItemId
+    const menuItems = serviceItemTypes && serviceItemTypes.map((service:any)=>({
+            label: service.name,
+            value: service.id
     }))
+ 
 
-    return menuItems
+    return menuItems || []
 }

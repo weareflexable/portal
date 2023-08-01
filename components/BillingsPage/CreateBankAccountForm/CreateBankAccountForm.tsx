@@ -1,29 +1,31 @@
 import React,{useState} from 'react'
-import {Card,Form,Input, InputNumber,Button, notification} from 'antd'
+import {Card,Form,Input, InputNumber,Button, Radio, notification} from 'antd'
 import { BankAccount } from '../../../types/BankAccount'
+import { useOrgContext } from '../../../context/OrgContext'
 
 
 
 interface CreateBankAccountFormProps{
     onCreateBankAccount: (formData:BankAccount)=>void
-    onCloseForm: ()=>void
+    isCreatingData: boolean
 }
 
-export default function CreateBankAccountForm({onCloseForm,onCreateBankAccount}:CreateBankAccountFormProps){
+export default function CreateBankAccountForm({ isCreatingData, onCreateBankAccount}:CreateBankAccountFormProps){
+
+    const {currentOrg} = useOrgContext()
 
     const onFinish = (formData:BankAccount)=>{
         // call function to create store
-        onCreateBankAccount(formData)
-        showStoreCreationNotification()
-        onCloseForm()
+        const formObject = {
+            ...formData,
+            //@ts-ignore
+            orgId: currentOrg.orgId
+        }
+        onCreateBankAccount(formObject)
+        // showStoreCreationNotification()
+        // onCloseForm()
     }
 
-    const showStoreCreationNotification = () => {
-        notification['success']({
-          message: 'BankAccount created succesfully',
-        });
-      };
-      
     return(
              <Form
             name="billingsForm"
@@ -31,16 +33,9 @@ export default function CreateBankAccountForm({onCloseForm,onCreateBankAccount}:
             layout='vertical'
             onFinish={onFinish}
             >
-            <Form.Item
-                name="currency"
-                label="Beneficiary account currency"
-                rules={[{ required: true, message: 'Please select your currency' }]}
-             >
-                <Input placeholder="USD" />
-            </Form.Item>
 
             <Form.Item
-                name="accountName"
+                name="beneficiaryName"
                 label='Beneficiary name'
                 rules={[{ required: true, message: 'Please input name used on card' }]}
             >
@@ -48,7 +43,7 @@ export default function CreateBankAccountForm({onCloseForm,onCreateBankAccount}:
             </Form.Item>
 
             <Form.Item
-                name="accountNumber"
+                name="accountNo"
                 label='Beneficiary account number'
                 rules={[{ required: true, message: 'Please input a valid account number' }]}
             >
@@ -56,7 +51,26 @@ export default function CreateBankAccountForm({onCloseForm,onCreateBankAccount}:
             </Form.Item>
 
             <Form.Item
-                name="address"
+                name="currency"
+                label="Currency"
+                rules={[{ required: true, message: 'Please select your currency' }]}
+             >
+                <Input placeholder="USD" />
+            </Form.Item>
+
+            <Form.Item 
+                label="Account type" 
+                name="accountType"
+                rules={[{ required: true, message: 'Please select an accountType' }]}
+                >
+                <Radio.Group>
+                    <Radio.Button value="savings">Savings</Radio.Button>
+                    <Radio.Button value="current">Current</Radio.Button>
+                </Radio.Group>
+            </Form.Item>
+
+            <Form.Item
+                name="beneficiaryAddress"
                 label='Beneficiary address'
                 rules={[{ required: true, message: 'Please enter valid address' }]}
             >
@@ -72,6 +86,14 @@ export default function CreateBankAccountForm({onCloseForm,onCreateBankAccount}:
             </Form.Item>
 
             <Form.Item
+                name="bankAddress"
+                label='Bank address'
+                rules={[{ required: true, message: 'Please enter valid address' }]}
+            >
+                <Input placeholder="89, Highstreet Boston" />
+            </Form.Item>
+
+            <Form.Item
                 name="routingNumber"
                 label='Routing number'
                 rules={[{ required: true, message: 'Please input a valid routing number' }]}
@@ -81,7 +103,7 @@ export default function CreateBankAccountForm({onCloseForm,onCreateBankAccount}:
 
             <Form.Item
                 name="swiftCode"
-                label='Swift/Bic code'
+                label='Swift/BIC code'
                 rules={[{ required: true, message: 'Please input a valid routing number!' }]}
             >
                 <Input type='number' placeholder="37567489374" />
@@ -89,8 +111,8 @@ export default function CreateBankAccountForm({onCloseForm,onCreateBankAccount}:
 
 
             <Form.Item>
-                <Button type="primary" htmlType="submit">
-                Add bank details
+                <Button type="primary" loading={isCreatingData} htmlType="submit">
+                { isCreatingData? 'Creating...' :'Add bank details'}
                 </Button>
             </Form.Item>
 

@@ -13,21 +13,20 @@ export default function useFetchUserServices(){
     const {currentOrg} = useOrgContext()
 
     const fetchServices = async()=>{
-        const {data} =  await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/services/user/get-services?orgId=${currentOrg.id}`,{
+        //@ts-ignore
+        const {data} =  await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/services?key=org_id&value=${currentOrg.orgId}&pageNumber=1&pageSize=20`,{
             headers:{
                 //@ts-ignore
                 "Authorization": paseto
             }
         })
-        return data?.payload;
+        return data?.data;
     }
 
     // use react query to fetch all services
-    const {data,isLoading,isSuccess} = useQuery(['services'],fetchServices);
-    console.log(data, isSuccess);
+    const servicesQuery = useQuery(['services'],fetchServices,{enabled:currentOrg != undefined});
 
-    const fetchedServices: Service[] = data && data;
-
+    // const fetchedServices: Service[] = servicesQuery && servicesQuery.data;
 
     const determineCurrentService = (services: Service[])=>{
         const servicesCopy = services && [...services]
@@ -39,17 +38,12 @@ export default function useFetchUserServices(){
         ))
     } 
 
-    // indicates the service user is currently in
-    const activeServices = fetchedServices && determineCurrentService(fetchedServices)
-    // console.log(test)
-    // const activeServices = fetchedServices
-
-
-
+    // // indicates the service user is currently in
+    const activeServices = servicesQuery.data && determineCurrentService(servicesQuery.data)
 
     // fetch all services belonging to a user
     return {
         services:activeServices,
-        isFetchingServices: isLoading
+        isFetchingServices: servicesQuery.isLoading
     }
 }

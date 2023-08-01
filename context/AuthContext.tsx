@@ -1,13 +1,16 @@
 import { useRouter } from 'next/router';
-import React,{useState,useContext,createContext, ReactNode, useEffect} from 'react';
+import React,{useState,useContext,createContext, ReactNode, useEffect, useMemo, useCallback} from 'react';
 import useLocalStorage from '../hooks/useLocalStorage';
 import { deleteStorage, getStorage, setStorage } from '../utils/storage';
+import  {QueryCache, QueryClient, useQuery} from '@tanstack/react-query'
+import axios from 'axios';
 
 
 const AuthContext = createContext<Values|undefined>(undefined);
 
 type Values = {
     isAuthenticated: boolean,
+    currentUser: any,
     setIsAuthenticated: (isAuthenticate:boolean)=>void,
     paseto: string | undefined | null | string[],
     logout: ()=>void
@@ -22,8 +25,8 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
     const {push,replace,query} = useRouter()
 
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+    const [currentUser, setCurrentUser] = useLocalStorage('currentUser','')
 
-    // const [paseto, setPaseto] =useLocalStorage<string>('PLATFORM_PASETO','v4.local.UozESpGaJorQ6WXrSFFFCMCcekZvVbokgIOejGniDGsz2_2XyIPKkrppb-FMsnKAVZtLNnOawvpIuPQXywGETc2X2xX9HNnzX5Auz4QvyTuyhLej-aizUv6GtroSxIZM4_ktrup8zHoVWkKbcP0qwrcrqbHg7Rd23v-okg8UpeJKFkc3rxsr40EdvPQx7ejsUlvGyGVkV8cvMz2h9Hhmj1cs')
     const [paseto, setPaseto] =useState<string|string[]|undefined>(()=>{
         const storedPaseto = getStorage('PLATFORM_PASETO')
         if(storedPaseto){
@@ -32,12 +35,20 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
         return ''
     })
 
+    /*
+    * Get paseto that got passed through query parameter
+    * from auth-web
+    */ 
     const pasetoFromUrl = query.paseto 
-    // console.log('urlpaseto',pasetoFromUrl)
 
+
+    /*
+    * Effect for setting isAuthenticated state to true if paseto exist
+    * in local storage
+    */
     useEffect(()=>{
         if(paseto !== '' && paseto !== null){
-            setIsAuthenticated(true)
+            setIsAuthenticated(true) 
         }
     },[paseto])
 
@@ -53,18 +64,51 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
 
     }, [pasetoFromUrl])
 
+    // Effect for decoding user paseto and fetching user role.
+    async function fetchCurrentUser(){
+        // use axios to fetch
+        const res =  await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/users`,{
+            headers:{
+                "Authorization": paseto
+            }
+        })
+
+        return res && res.data.data[0]; 
+    }
+
+    const userQuery = useQuery({
+        queryKey:['user'], 
+        queryFn:fetchCurrentUser, 
+        enabled:paseto!=='', 
+        onSuccess:(user)=>{
+            const isArray = Array.isArray(user)
+            setCurrentUser(isArray?user[0]:user)
+        }, 
+        // staleTime:Infinity,
+        refetchInterval: 30000,
+        retry: (failureCount, error) =>{
+          if(failureCount >2) return false
+          return true  
+        },
+        onError:(error:any)=>{ 
+            console.log(error)
+            // const statusCode = error.response.status
+            // if(statusCode === 401){ // 401: user token has expired
+            //     // logout user if token has expired
+            //     logout()
+            // }
+        }
+    })
 
 
-
-
-
+    
 
     const logout = () =>{
         setIsAuthenticated(false)
         // clear all caches
         localStorage.clear()
         // redirect user to login page
-        replace('/login')
+        replace('/')
     }
 
 
@@ -72,6 +116,7 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
     const values: Values = {
         isAuthenticated,
         setIsAuthenticated,
+        currentUser,
         paseto,
         logout
     }

@@ -1,8 +1,8 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import {useState, useEffect}  from 'react'
 import { useAuthContext } from '../context/AuthContext'
-import { ActiveOrgs, Org } from '../types/OrganisationTypes';
+import { ActiveOrgs, NewOrg, Org } from '../types/OrganisationTypes';
 import useOrgs from './useOrgs';
 
 // const initOrgs: Org[] = [
@@ -16,35 +16,46 @@ export default function useFetchUserOrgs(){
     const {currentOrg} = useOrgs()
     const {paseto} = useAuthContext()
 
-    const {data,isLoading:isLoadingOrgs} = useQuery(['orgs'],async()=>{
-        const {data} = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/org/user/get-org`,{
+    const queryClient = useQueryClient()
+
+    useEffect(() => {
+        queryClient.invalidateQueries(['orgs'])
+    }, [])
+
+    const orgsQuery = useQuery(['orgs'],async()=>{
+        const {data} = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/orgs?key=status&value=1&pageNumber=1&pageSize=30&key2=created_by`,{
             headers:{
                 //@ts-ignore
                 "Authorization": paseto
             }
         })
         return data;
-    })
+    },
+    {
+        staleTime:Infinity
+    }
+    )
 
-    console.log(data)
-
-    const orgs: Org[] = data ? data?.payload :[]
-
+    
+    const orgs: NewOrg[] = orgsQuery.data ? orgsQuery.data.data :[]
+    
 
     // use react query to fetch all orgs 
 
-    const determineCurrentOrg = (orgs:Org[])=>{
-        return orgs.map((org:Org):ActiveOrgs =>(
+    const determineCurrentOrg = (orgs:NewOrg[])=>{
+        return orgs.map((org:NewOrg):ActiveOrgs =>(
              {
                 ...org,
-                isActive: org.id == currentOrg.id? true:false
+                // @ts-ignore
+                isActive: org.orgId == currentOrg.orgId? true:false
             }
         ))
 
     }
 
-    // // indicates the org user is currently in
+    // // // indicates the org user is currently in
     const activeOrgs = determineCurrentOrg(orgs)
+    console.log(activeOrgs)
 
 
 
@@ -52,6 +63,6 @@ export default function useFetchUserOrgs(){
     // fetch all orgs belonging to a user
     return {
         orgs:activeOrgs,
-        isLoadingOrgs
+        isLoadingOrgs: orgsQuery.isLoading
     }
 }

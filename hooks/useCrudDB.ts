@@ -17,7 +17,7 @@ export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
     state:T[],
     deleteItem: (id:string)=>void
     isLoading: boolean,
-    editItem: (id:T)=>void,
+    editItem: (id:any)=>void,
     isPatchingData: boolean,
     createItem: (newItem:any)=>void,
     closeCreateForm: ()=>void,
@@ -43,18 +43,18 @@ export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
     
 
     const fetchData = async(url:string)=>{
-        const {data} = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/${url}`,{
+        const {data} = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}${url}`,{
             headers:{
                 //@ts-ignore
                 "Authorization": paseto
             }
         })
-        return data?.payload;
+        return data.data;
     }
 
     const createDataHandler = async(newItem:any)=>{
         console.log('paseto',paseto)
-        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/${mutateUrl}`, newItem,{
+        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}${mutateUrl}`, newItem,{
             headers:{
                 //@ts-ignore
                 "Authorization": paseto
@@ -64,7 +64,7 @@ export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
     }
 
     const patchDataHandler = async(updatedItem:any)=>{
-        const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/${patchUrl}`,updatedItem,{
+        const {data} = await axios.put(`${process.env.NEXT_PUBLIC_NEW_API_URL}${patchUrl}`,updatedItem,{
             headers:{
                 //@ts-ignore
                 "Authorization": paseto
@@ -75,7 +75,9 @@ export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
 
     const patchData = useMutation(patchDataHandler,{
         onSuccess:()=>{
+
             queryClient.invalidateQueries({queryKey:[...queryKeys]})
+
             notification['success']({
                 message: 'Updated record succesfully!',
               });
@@ -110,10 +112,8 @@ export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
         
     const {isError, isLoading:isCreatingData, isSuccess:isDataCreated, data:createdData} = createData
     const {isLoading:isPatchingData, data: patchedData} = patchData
-    console.log(patchedData)
 
     const {data, isLoading, isSuccess} = useQuery({queryKey:[...queryKeys],queryFn:()=>fetchData(fetchUrl),enabled:paseto !== ''})
-
 
     // return empty array if req successful and no payload
     const state: T[] = data && data
@@ -128,7 +128,6 @@ export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
 
     const createItem = (newItem:T) =>{
 
-        console.log('new item',newItem)
         createData.mutate(newItem)
         // setState(stateCopy);
         // setShowCreateForm(false);

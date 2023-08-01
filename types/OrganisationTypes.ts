@@ -17,12 +17,46 @@ export type OrgFormData = {
 export interface Org {
     name: string,
     id: string,
-    logoUrl: string,
+    imageHash: string,
     role: string,
     approved: boolean
 }
 
-export interface ActiveOrgs extends Org {
+export interface NewOrg{
+    contact?:any,
+    status: number,
+    id: string,
+    name: string,
+    email: string,
+    phone: string,
+    contactNumber?:string|undefined,
+    street: string,
+    city: string,
+    country: string,
+    zipCode: string,
+    logoImageHash: string,
+    coverImageHash: string,
+    createdBy: string,
+    createdAt: string,
+    statusName: string,
+    updatedBy: string,
+    updatedAt: string
+}
+
+export interface OrgPayload{
+    name: string,
+    email: string,
+    phone: string,
+    street: string,
+    contactNumber: string,
+    city: string,
+    country: string,
+    zipCode: string,
+    logoImageHash: string,
+    coverImageHash: string,
+}
+
+export interface ActiveOrgs extends NewOrg {
     isActive:boolean
 }
 
