@@ -113,19 +113,4 @@ jobs:
             sudo podman rm portal
             sudo podman run --name="portal" -p 9082:3000 -d ghcr.io/weareflexable/portal:staging
 
-      - name: Deploy on Prod server 
-        if: github.ref == 'refs/heads/prod'
-        uses: appleboy/ssh-action@v0.1.7
-        with:         
-          host: ${{ secrets.DEV_REMOTE_SERVER_ADDRESS }}
-          username: ${{ secrets.DEV_SERVER_USERNAME }}
-          key:  ${{ secrets.DEV_REMOTE_SERVER_KEY }}
-          port: ${{ secrets.DEV_SSH_PORT }}
-          script: |
-            pwd
-            cd ~
-            echo ${{ secrets.GHCR_TOKEN }} | podman login ghcr.io -u secrets.GHCR_USERNAME --password-stdin
-            podman pull ghcr.io/weareflexable/portal:prod
-            podman stop portal
-            podman rm portal
-            podman run --name="portal" -p 9082:3000 -d ghcr.io/weareflexable/portal:prod
+     
