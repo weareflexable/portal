@@ -7,11 +7,9 @@ import {MoreOutlined,ReloadOutlined} from '@ant-design/icons'
 
 import { useAuthContext } from '../../../context/AuthContext';
 import { useServicesContext } from '../../../context/ServicesContext';
-import {PlusOutlined} from '@ant-design/icons'
 import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import useUrlPrefix from "../../../hooks/useUrlPrefix";
-import PlatformLayout from "../../Layout/PlatformLayout";
 const {TextArea} = Input 
 
 
@@ -21,11 +19,8 @@ const {TextArea} = Input
 export default function ServiceItemTypesView(){
 
     const {paseto} = useAuthContext()
-    const queryClient = useQueryClient()
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
-
-    const [pageNumber, setPageNumber] = useState(0)
 
     const urlPrefix = useUrlPrefix()
   
@@ -57,7 +52,7 @@ export default function ServiceItemTypesView(){
     async function fetchServiceItemType(){
       const res = await axios({
               method:'get',
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-item-types?pageNumber=1&pageSize=10&key=service_type_id&value=${selectedFilter.id}`,
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-item-types?pageNumber=1&pageSize=10&serviceTypeId=${selectedFilter.id}`,
               headers:{
                   "Authorization": paseto
               }
