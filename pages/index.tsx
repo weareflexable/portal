@@ -56,9 +56,10 @@ interface LoginViewProps{
 }
 function LoginView({handleLogin}: LoginViewProps) {
     return <div style={{ width: '100vw', display: 'flex', background: '#f9f9f9', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <Card style={{ width: '30%' }}>
-            <Title level={5}>Login to portal</Title>
-            <Button size='large' shape='round' type='primary' onClick={handleLogin}>Login</Button>
-        </Card>
+        <div style={{ display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', width: '50%' }}>
+            <Title style={{textAlign:'center'}} level={1}>Start creating and managing <br/> events • communities • services  </Title>
+            <Text style={{width:'70%', textAlign:'center', marginTop:'.5rem', marginBottom:'2rem'}}>Flexable provides the easiest and fastest way to create and manage events, communities and services</Text>
+            <Button size='large' shape='round' type='primary' onClick={handleLogin}>Login to Dashboard</Button>
+        </div> 
     </div>;
 }
