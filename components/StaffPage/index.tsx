@@ -45,21 +45,21 @@ export default function StaffView(){
     async function fetchAllStaff(){
       const res = await axios({
               method:'get',
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff?key=service_id&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=10`,
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/service?serviceId=${currentService.id}&pageNumber=${pageNumber}&pageSize=10`,
               headers:{
                   "Authorization": paseto
               }
           })
-
+ 
           return res.data;
     }
     async function fetchStaff(){
-      const res = await axios({
+      const res = await axios({ 
               method:'get',
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff?key=service_id&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=10&key2=status&value2=${currentFilter.id}`,
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/service?serviceId=${currentService.id}&pageNumber=${pageNumber}&pageSize=10&status=${currentFilter.id}`,
               headers:{
-                  "Authorization": paseto
-              }
+                  "Authorization": paseto 
+              } 
           })
 
           return res.data;
