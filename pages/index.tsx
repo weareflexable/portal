@@ -3,6 +3,8 @@ import Head from 'next/head';
 import { useRouter } from 'next/router'
 import { useEffect,useState } from 'react'
 import { useAuthContext } from '../context/AuthContext';
+import Logo from './logo.svg'
+import Image from 'next/image'
 
 const {Title,Text} = Typography;
 
@@ -51,14 +53,16 @@ export default function Login(){
 }
 
 interface LoginViewProps{
-    handleLogin:()=>void
+    handleLogin:()=>void 
 
 }
 function LoginView({handleLogin}: LoginViewProps) {
-    return <div style={{ width: '100vw', display: 'flex', background: '#f9f9f9', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <Card style={{ width: '30%' }}>
-            <Title level={5}>Login to portal</Title>
-            <Button size='large' shape='round' type='primary' onClick={handleLogin}>Login</Button>
-        </Card>
+    return <div style={{ width: '100vw', background:' rgba(0,0,0,.5) url("/landing-flexable.jpeg")', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <div style={{ display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', width: '50%' }}>
+            <Image src="/logo.svg" width="200" height="200" />
+            <Title style={{textAlign:'center', color:'white'}} level={1}>Start creating and managing <br/> events • communities • services  </Title>
+            <Text style={{width:'70%', color:'white', textAlign:'center', marginTop:'.5rem', marginBottom:'2rem'}}>Flexable provides the easiest and fastest way to create and manage events, communities and services</Text>
+            <Button size='large' shape='round' type='primary' onClick={handleLogin}>Login to Dashboard</Button>
+        </div> 
     </div>;
 }

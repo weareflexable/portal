@@ -216,7 +216,7 @@ function BasicForm({nextStep}:BasicInfoProps){
             { required: true, message: 'Please write a description for your service' },
             { min: 50, message: 'Please provide a minimum of 50 characters' },
             ]}  label="Description">
-            <TextArea allowClear maxLength={500} minLength={100} size='large' showCount  placeholder='Tell us more about this service' rows={2} />
+            <TextArea allowClear maxLength={1000} minLength={100} size='large' showCount  placeholder='Tell us more about this service' rows={2} />
         </Form.Item>
 
           {/* price and tickets per day */}

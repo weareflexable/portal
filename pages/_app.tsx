@@ -6,6 +6,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { OrgContextProvider } from '../context/OrgContext';
 import { ServicesContextProvider } from '../context/ServicesContext';
 import ErrorBoundary from '../components/shared/ErrorBoundary/ErrorBoundary';
+import {ConfigProvider} from 'antd'
 import Head from 'next/head'
 import { ComponentType, ReactNode } from 'react';
 
@@ -42,6 +43,13 @@ function MyApp({ Component, pageProps }: ComponentWithPageLayout) {
       <AuthContextProvider>
         <OrgContextProvider>
             <ServicesContextProvider>
+              <ConfigProvider
+                theme={{
+                  token: {
+                    colorPrimary: '#AB4DF7',
+                  },
+                }}
+              >
               <ErrorBoundary name='entire app'>
                 {/* <ConfigProvider theme={{token:{}}}> */}
                 {Component.PageLayout?
@@ -54,6 +62,7 @@ function MyApp({ Component, pageProps }: ComponentWithPageLayout) {
               }
                 {/* </ConfigProvider> */}
               </ErrorBoundary>
+              </ConfigProvider>
             </ServicesContextProvider>
         </OrgContextProvider>
       </AuthContextProvider>

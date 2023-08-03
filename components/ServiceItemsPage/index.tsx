@@ -77,7 +77,7 @@ export default function ServiceItemsView(){
     async function fetchAllServiceItems(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items?key=org_service_id&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=10`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items?serviceId=${currentService.id}&pageNumber=${pageNumber}&pageSize=10`,
             headers:{
                 "Authorization": paseto
             }
@@ -89,7 +89,7 @@ export default function ServiceItemsView(){
     async function fetchServiceItems(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items?key=org_service_id&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=${pageSize}&key2=status&value2=${currentFilter.id}`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items?serviceId=${currentService.id}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
             headers:{
                 "Authorization": paseto
             }
@@ -361,7 +361,7 @@ const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
  const urlPrefix = useUrlPrefix()
 
 async function fetchItemAvailability(){
- const res = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items/availability?key=service_item_id&value=${selectedRecord.id}&pageNumber=1&pageSize=50`,{
+ const res = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items/availability?serviceItemId=${selectedRecord.id}&pageNumber=1&pageSize=50`,{
   headers:{
     "Authorization":paseto
   }
