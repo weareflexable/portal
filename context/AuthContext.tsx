@@ -135,8 +135,7 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
             const isArray = Array.isArray(user)
             setCurrentUser(isArray?user[0]:user)
         }, 
-        // staleTime:Infinity,
-        refetchInterval: 30000,
+        staleTime:Infinity,
         retry: (failureCount, error) =>{
           if(failureCount >2) return false
           return true  
