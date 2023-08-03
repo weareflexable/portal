@@ -75,8 +75,6 @@ function CommunityStaff(){
 
     
 
-  
-
 
     const staffQuery = useQuery({queryKey:['community-staff',currentCommunity.id,currentFilter.id], queryFn:fetchStaff, enabled:paseto !== ''})
     const data = staffQuery.data && staffQuery.data.data

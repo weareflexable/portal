@@ -14,6 +14,7 @@ import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { Staff } from "../../types/Staff";
 import useUrlPrefix from "../../hooks/useUrlPrefix";
 import { useRouter } from "next/router";
+import EventsLayout from "../Layout/EventsLayout";
 const {TextArea} = Input
 
 
@@ -268,6 +269,9 @@ export default function StaffView(){
             </div>
     )
 }
+
+
+StaffView.PageLayout = EventsLayout
 
 
 interface StaffFormProps {

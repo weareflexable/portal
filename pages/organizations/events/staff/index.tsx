@@ -13,6 +13,7 @@ import { Staff } from "../../../../types/Staff";
 import useUrlPrefix from "../../../../hooks/useUrlPrefix";
 import { useRouter } from "next/router";
 import useEvent from "../../../../hooks/useEvents";
+import EventsLayout from "../../../../components/Layout/EventsLayout";
 const {TextArea} = Input
 
 
@@ -268,6 +269,7 @@ export default function StaffView(){
     )
 }
 
+StaffView.PageLayout = EventsLayout
 
 interface StaffFormProps {
   open: boolean;
@@ -288,7 +290,7 @@ const AddStaffForm: React.FC<StaffFormProps> = ({
   const urlPrefix = useUrlPrefix()
 
   const createDataHandler = async(newItem:any)=>{
-    const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff`, newItem,{
+    const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/event`, newItem,{
         headers:{
             "Authorization": paseto
         },
@@ -335,6 +337,7 @@ function handleSubmit(formData:any){
   // console.log(formData)
   const payload = {
     ...formData,
+    role: Number(formData.role),
     eventId: currentEvent.id
   }
   // console.log(payload)
@@ -447,7 +450,7 @@ const urlPrefix = useUrlPrefix()
 const deleteDataHandler = async(record:Staff)=>{      
   const {data} = await axios({
     method:'delete',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff`,
+    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/event`,
     data: {
         id:record.id,
         eventId: currentEvent.id
@@ -520,7 +523,7 @@ export function EditableRadio({id, options, selectedItem, fieldName, currentFiel
  const queryClient = useQueryClient()
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/event`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto

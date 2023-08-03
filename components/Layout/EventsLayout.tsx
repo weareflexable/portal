@@ -55,10 +55,10 @@ const {Text, Title} = Typography
             key:'bookings',
             label: 'Bookings'
         },
-        // {
-        //     key:'staff',
-        //     label: 'Staff'
-        // }
+        {
+            key:'staff',
+            label: 'Staff'
+        }
     ]
 
     const splittedRoutes = asPath.split('/')
