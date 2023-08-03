@@ -14,7 +14,7 @@ const nextConfig = {
         pathname: '/ipfs/**',
       },
     ],
-  },
+  }
 };
 
 module.exports =  nextConfig;
