@@ -128,4 +128,4 @@ jobs:
             sudo podman pull ghcr.io/weareflexable/portal:prod
             sudo podman stop portal
             sudo podman rm portal
-            podman run --name="portal" -p 9082:3000 -d ghcr.io/weareflexable/portal:prod
+            sudo podman run --name="portal" -p 9083:3000 -d ghcr.io/weareflexable/portal:prod
