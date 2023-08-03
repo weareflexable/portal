@@ -439,7 +439,7 @@ function deleteService(){
     onError:(err)=>{
         console.log(err)
         notification['error']({
-            message: 'Encountered an error while deleting record custom custom dates',
+            message: 'Encountered an error while deleting staff',
           });
     }
   })
