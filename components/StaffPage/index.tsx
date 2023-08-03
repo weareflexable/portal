@@ -293,7 +293,7 @@ const AddStaffForm: React.FC<StaffFormProps> = ({
   const urlPrefix = useUrlPrefix()
 
   const createDataHandler = async(newItem:any)=>{
-    const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff`, newItem,{
+    const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/service`, newItem,{
         headers:{
             "Authorization": paseto
         },
@@ -452,7 +452,7 @@ const urlPrefix = useUrlPrefix()
 const deleteDataHandler = async(record:Staff)=>{      
   const {data} = await axios({
     method:'delete',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff`,
+    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/service`,
     data: {
         id:record.id,
         serviceId: currentService.id
