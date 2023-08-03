@@ -1,26 +1,25 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import useOrgs from "../../../hooks/useOrgs";
+
 const {Text, Title} = Typography;
-import React, { ReactNode, useEffect, useRef, useState } from 'react'
-import {Typography,Button, Skeleton, Badge, Image, Table, Input, Radio,  Drawer, Row, Col, Form, Modal, Alert, notification, Dropdown, MenuProps, Tag} from 'antd'
+import React, { ReactNode, useState } from 'react'
+import {Typography,Button,  Image, Table, Input, Radio,  Drawer, Form, Modal, notification, Dropdown, MenuProps, Tag} from 'antd'
 import { useRouter } from 'next/router'
 import axios from 'axios';
-import { MoreOutlined, ReloadOutlined, ArrowLeftOutlined, PlusOutlined} from '@ant-design/icons'
+import { MoreOutlined, ReloadOutlined,  PlusOutlined} from '@ant-design/icons'
 
 import { useAuthContext } from '../../../context/AuthContext';
 import { useServicesContext } from '../../../context/ServicesContext';
 import dayjs from 'dayjs'
-import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
+import  { ColumnsType, TableProps } from 'antd/lib/table';
 import { useOrgContext } from "../../../context/OrgContext";
 import { Service } from "../Services.types";
 
-import { EditableAddress, EditableCoverImage, EditableCurrency, EditableLogoImage, EditableName, EditablePhone } from "../EditServiceForm/EditServiceForm";
-import CurrentUser from "../../Header/CurrentUser/CurrentUser";
+import { EditableAddress, EditableLogoImage } from "../EditServiceForm/EditServiceForm";
 import useServiceTypes from "../../../hooks/useServiceTypes";
 import { convertToAmericanFormat } from "../../../utils/phoneNumberFormatter";
 import { EditableText} from "../../shared/Editables";
 import useUrlPrefix from "../../../hooks/useUrlPrefix";
-import ServiceLayout from "../../Layout/ServiceLayout";
+
 
 var relativeTime = require('dayjs/plugin/relativeTime')
 dayjs.extend(relativeTime)
@@ -63,7 +62,7 @@ function VenuesTable(){
     const res = await axios({
             method:'get',
             //@ts-ignore
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services?key=org_id&value=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=10`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=10`,
 
             headers:{
                 "Authorization": paseto
@@ -78,7 +77,7 @@ function VenuesTable(){
       const res = await axios({
               method:'get',
               //@ts-ignore
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services?key=org_id&value=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&key2=status&value2=${currentFilter.id}`,
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
 
               headers:{
                   "Authorization": paseto

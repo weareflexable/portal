@@ -1,9 +1,10 @@
 import { useRouter } from 'next/router';
-import React,{useState,useContext,createContext, ReactNode, useEffect, useMemo, useCallback} from 'react';
+import React,{useState,useContext,createContext, ReactNode, useEffect} from 'react';
 import useLocalStorage from '../hooks/useLocalStorage';
-import { deleteStorage, getStorage, setStorage } from '../utils/storage';
-import  {QueryCache, QueryClient, useQuery} from '@tanstack/react-query'
+import { getStorage, setStorage } from '../utils/storage';
+import  {useQuery} from '@tanstack/react-query'
 import axios from 'axios';
+import dayjs from 'dayjs'
 
 
 const AuthContext = createContext<Values|undefined>(undefined);
@@ -22,7 +23,9 @@ interface AuthContextProviderProps{
 
 const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
 
-    const {push,replace,query} = useRouter()
+    const router = useRouter()
+
+    
 
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [currentUser, setCurrentUser] = useLocalStorage('currentUser','')
@@ -39,7 +42,7 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
     * Get paseto that got passed through query parameter
     * from auth-web
     */ 
-    const pasetoFromUrl = query.paseto 
+    const pasetoFromUrl = router.query.paseto 
 
 
     /*
@@ -51,6 +54,54 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
             setIsAuthenticated(true) 
         }
     },[paseto])
+
+    useEffect(()=>{
+
+        async function decodePaseto(){
+          const paseto = localStorage.getItem('PLATFORM_PASETO')
+          const tokenExpiry = localStorage.getItem('tokenExpiry')
+    
+          if(!paseto) return
+    
+          // if token already exist just check storage without having to call API
+          if(tokenExpiry){
+            const isExpired = dayjs().isAfter(tokenExpiry)
+            if(isExpired){
+              logout()
+            }
+            return
+          }
+    
+    
+          try{
+    
+            const res =  await axios.post(`https://platform.dev.flexabledats.com/decodePaseto`, {token: paseto },
+            {
+              headers:{
+              'Authorization': paseto
+              }
+            }
+            )
+    
+            if(res.status < 201){
+              const expiryDate = res.data.data.exp
+              localStorage.setItem('tokenExpiry',expiryDate)
+              const isExpired = dayjs().isAfter(expiryDate)
+              if(isExpired){
+                logout()
+              }
+            }
+    
+          }catch(err){
+    
+            console.log(err)
+    
+          }
+          
+          
+        }
+        decodePaseto()
+    },[router])
 
     useEffect(() => {
         // set state if url paseto exist
@@ -84,8 +135,7 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
             const isArray = Array.isArray(user)
             setCurrentUser(isArray?user[0]:user)
         }, 
-        // staleTime:Infinity,
-        refetchInterval: 30000,
+        staleTime:Infinity,
         retry: (failureCount, error) =>{
           if(failureCount >2) return false
           return true  
@@ -108,7 +158,7 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
         // clear all caches
         localStorage.clear()
         // redirect user to login page
-        replace('/')
+        router.replace('/')
     }
 
 

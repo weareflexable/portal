@@ -1,36 +1,30 @@
-
-import CommunitiesLayout from '../../../../components/Layout/CommunitiesLayout'
-
-
-
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 const {Text,Title} = Typography
 import React, { useEffect, useRef, useState } from 'react'
-import {Typography,Button,Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Modal, Alert, notification, Empty, Tag, FormInstance} from 'antd'
+import {Typography,Button,Image,  Table, InputRef, Input, Space,  Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Modal, Alert, notification, Empty, Tag, FormInstance} from 'antd'
 import axios from 'axios';
 import {MoreOutlined,ReloadOutlined} from '@ant-design/icons'
-import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
 
 import { useAuthContext } from '../../../../context/AuthContext';
-import { useServicesContext } from '../../../../context/ServicesContext';
 import {PlusOutlined} from '@ant-design/icons'
 import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { Staff } from "../../../../types/Staff";
 import useUrlPrefix from "../../../../hooks/useUrlPrefix";
 import { useRouter } from "next/router";
-import useCommunity from '../../../../hooks/useCommunity';
+import useEvent from "../../../../hooks/useEvents";
+import EventsLayout from "../../../../components/Layout/EventsLayout";
 const {TextArea} = Input
 
 
 
 
 
-function CommunityStaff(){
+export default function StaffView(){
 
     const {paseto} = useAuthContext()
     const queryClient = useQueryClient()
-    const {currentService} = useServicesContext()
+    const {currentEvent} = useEvent()
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
 
@@ -46,41 +40,70 @@ function CommunityStaff(){
     const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Approved'})
     const [showForm, setShowForm] = useState(false)
 
-    const {currentCommunity} = useCommunity()
-
     const urlPrefix = useUrlPrefix()
 
     async function fetchAllStaff(){
       const res = await axios({
               method:'get',
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/community?communityId=${currentCommunity.id}&pageNumber=${pageNumber}&pageSize=10`,
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/event?eventId=${currentEvent.id}&pageNumber=${pageNumber}&pageSize=10`,
               headers:{
                   "Authorization": paseto
               }
           })
-
+ 
           return res.data;
     }
     async function fetchStaff(){
-      const res = await axios({
+      const res = await axios({ 
               method:'get',
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/community?communityId=${currentCommunity.id}&pageNumber=${pageNumber}&pageSize=10&status=${currentFilter.id}`,
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/event?eventId=${currentEvent.id}&pageNumber=${pageNumber}&pageSize=10&status=${currentFilter.id}`,
               headers:{
-                  "Authorization": paseto
-              }
+                  "Authorization": paseto  
+              } 
           })
 
           return res.data;
     }
 
+
+    // async function changeServiceItemStatus({serviceItemId, statusNumber}:{serviceItemId:string, statusNumber: string}){
+    //     const res = await axios({
+    //         method:'patch',
+    //         url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,
+    //         data:{
+    //             key:'status',
+    //             value: statusNumber, // 0 means de-activated in db
+    //             serviceItemId: serviceItemId 
+    //         },
+    //         headers:{
+    //             "Authorization": paseto
+    //         }
+    //     })
+    //     return res; 
+    // }
+
     
 
+    // const changeStatusMutation = useMutation(['data'],{
+    //     mutationFn: changeServiceItemStatus,
+    //     onSuccess:(data:any)=>{
+    //         queryClient.invalidateQueries({queryKey:['users']})
+    //     },
+    //     onError:()=>{
+    //         console.log('Error changing status')
+    //     }
+    // })
 
-    const staffQuery = useQuery({queryKey:['community-staff',currentCommunity.id,currentFilter.id], queryFn:fetchStaff, enabled:paseto !== ''})
+    
+
+  
+
+
+    const staffQuery = useQuery({queryKey:['event-staff',currentEvent.id,currentFilter.id], queryFn:fetchStaff, enabled:paseto !== ''})
     const data = staffQuery.data && staffQuery.data.data
     const totalLength = staffQuery.data && staffQuery.data.dataLength;
 
-    const allStaffQuery = useQuery({queryKey:['all-community-staff'], queryFn:fetchAllStaff, enabled:paseto !== '', staleTime:Infinity})
+    const allStaffQuery = useQuery({queryKey:['all-event-staff'], queryFn:fetchAllStaff, enabled:paseto !== '', staleTime:Infinity})
     const allStaffLength = allStaffQuery.data && allStaffQuery.data.dataLength
 
 
@@ -164,7 +187,7 @@ function CommunityStaff(){
           title: 'Created On',
           dataIndex: 'createdAt',
           key: 'createdAt',
-          width:'150px',
+          width:'120px',
           render: (_,record)=>{
               const date = dayjs(record.createdAt).format('MMM DD, YYYY')
               return(
@@ -189,30 +212,27 @@ function CommunityStaff(){
         return (
             <div>
                 {data && allStaffLength === 0 ? null : 
-                <div style={{marginBottom:'1.5em', marginTop:'2rem', display:'flex', width:'100%', flexDirection:'column'}}>
-                    <Title style={{margin:'0', width:'100%'}} level={2}>Staff</Title>
+                <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
                   <div style={{display:'flex', justifyContent:'space-between', width:'100%', alignItems:'center'}}>
-                        <Radio.Group defaultValue={currentFilter.id} style={{width:'100%'}} buttonStyle="solid">
-                          {filters.map(filter=>(
-                              <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
-                          )
-                          )}
-                      </Radio.Group>
-                        <div style={{width: "100%",display:'flex', marginTop:'1.5rem', justifyContent:'flex-end', alignItems:'center'}}>
-                          <Button shape="round" style={{marginRight:'1rem'}} loading={staffQuery.isRefetching} onClick={()=>staffQuery.refetch()} icon={<ReloadOutlined rev={undefined} />}>Refresh</Button>
-                          <Button
-                            type="primary"
-                            icon={<PlusOutlined rev={undefined}/>}
-                            onClick={() => {
-                              setShowForm(true)
-                            }}
-                          >
-                            New Staff
-                          </Button>
-                      </div>
-                   </div>
-                  
-                 
+                  <Radio.Group defaultValue={currentFilter.id} style={{width:'100%'}} buttonStyle="solid">
+                      {staffFilter.map(filter=>(
+                          <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
+                      )
+                      )}
+                  </Radio.Group>
+                    <div style={{width: "100%",display:'flex', marginTop:'1.5rem', justifyContent:'flex-end', alignItems:'center'}}>
+                      <Button shape="round" style={{marginRight:'1rem'}} loading={staffQuery.isRefetching} onClick={()=>staffQuery.refetch()} icon={<ReloadOutlined rev={undefined} />}>Refresh</Button>
+                      <Button
+                        type="primary"
+                        icon={<PlusOutlined rev={undefined}/>}
+                        onClick={() => {
+                          setShowForm(true)
+                        }}
+                      >
+                        New Staff
+                      </Button>
+                    </div>
+                  </div>
                   
                 </div>
                 }
@@ -249,11 +269,7 @@ function CommunityStaff(){
     )
 }
 
-
-CommunityStaff.PageLayout = CommunitiesLayout
-
-export default CommunityStaff
-
+StaffView.PageLayout = EventsLayout
 
 interface StaffFormProps {
   open: boolean;
@@ -269,12 +285,12 @@ const AddStaffForm: React.FC<StaffFormProps> = ({
   const [form] = Form.useForm();
 
   const {paseto} = useAuthContext()
-  const {currentCommunity} = useCommunity()
+ const {currentEvent} = useEvent()
 
   const urlPrefix = useUrlPrefix()
 
   const createDataHandler = async(newItem:any)=>{
-    const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/community`, newItem,{
+    const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/event`, newItem,{
         headers:{
             "Authorization": paseto
         },
@@ -293,7 +309,7 @@ const createData = useMutation(createDataHandler,{
 
     const user = data.data[0]
     const status = user.status
-    message = status == 0 ? `Staff could not be added because they aren't registered. A registration link has beens sent to ${user.email} to register and will be added automatically to as ${user.userRoleName} after registration`:`User has been added to service as a ${user.userRoleName}`
+    message = status == 0 ? `Staff could not be added because they aren't registered. A registration link has beens sent to ${user.email} to register and will be added automatically to as ${user.userRoleName} after registration`:`User has been added to event as a ${user.userRoleName}`
     notification['success']({
         message: message,
         style:{
@@ -304,15 +320,14 @@ const createData = useMutation(createDataHandler,{
       onCancel()
    },
     onError:(data:any)=>{
-      console.log(data)
         notification['error']({
             message:data.message ,
           });
         // leave modal open
     },
     onSettled:()=>{
-      queryClient.invalidateQueries(['community-staff',currentCommunity.id])
-      queryClient.invalidateQueries(['all-community-staff'])
+      queryClient.invalidateQueries(['event-staff',currentEvent.id])
+      queryClient.invalidateQueries(['all-event-staff'])
     }
 })
 
@@ -322,7 +337,8 @@ function handleSubmit(formData:any){
   // console.log(formData)
   const payload = {
     ...formData,
-    communityId: currentCommunity.id
+    role: Number(formData.role),
+    eventId: currentEvent.id
   }
   // console.log(payload)
   createData.mutate(payload)
@@ -331,7 +347,7 @@ function handleSubmit(formData:any){
   return (
     <Modal
       open={open}
-      title="Add staff to your community"
+      title="Add staff to your venue"
       onCancel={onCancel}
       footer={null}
 
@@ -349,7 +365,7 @@ function handleSubmit(formData:any){
           hasFeedback
           extra={'Please be sure to provide an email of a registered user.'}
           style={{marginTop:'1rem'}}
-          rules={[{type:'email',message:'Please provide a valid email address'},{required: true, message: 'Please provide a valid email' }]}
+          rules={[{type:'email', message:'Please provide a valid email'},{ required: true, message: 'Please provide a valid email' }]}
         >
           <Input allowClear size="large" />
         </Form.Item>
@@ -388,14 +404,12 @@ interface DrawerProps{
   isDrawerOpen: boolean,
   closeDrawer: (value:boolean)=>void
 }
-
 function DetailDrawer({selectedStaff,isDrawerOpen,closeDrawer}:DrawerProps){
 
 const queryClient = useQueryClient()
 
 const {currentUser,paseto} = useAuthContext()
-
-const {currentCommunity} = useCommunity()
+const {currentEvent} = useEvent()
 
 const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
@@ -408,7 +422,7 @@ function toggleDeleteModal(){
   setIsDeleteModalOpen(!isDeleteModalOpen)
 }
 
-function deleteStaff(){ 
+function deleteService(){ 
   // mutate record
   deleteMutation.mutate(selectedStaff,{
     onSuccess:()=>{
@@ -420,12 +434,12 @@ function deleteStaff(){
 
     },
     onSettled:()=>{
-      queryClient.invalidateQueries(['staff'])
+      queryClient.invalidateQueries(['event-staff'])
     },
     onError:(err)=>{
         console.log(err)
         notification['error']({
-            message: 'Encountered an error while deleting staff',
+            message: 'Encountered an error while deleting record custom custom dates',
           });
     }
   })
@@ -436,10 +450,10 @@ const urlPrefix = useUrlPrefix()
 const deleteDataHandler = async(record:Staff)=>{      
   const {data} = await axios({
     method:'delete',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/community`,
+    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/event`,
     data: {
         id:record.id,
-        communityId: currentCommunity.id
+        eventId: currentEvent.id
       },
     headers:{
           "Authorization": paseto 
@@ -460,7 +474,7 @@ return(
     selectedItem={selectedStaff.role}
     fieldName="role"
     title = 'Staff Role'
-    options ={{queryKey:'staff'}}
+    options ={{queryKey:'event-staff'}}
   /> 
 
   
@@ -472,7 +486,7 @@ return(
   <DeleteRecordModal 
     isDeletingItem={deleteMutation.isLoading} 
     onCloseModal={toggleDeleteModal} 
-    onDeleteRecord={deleteStaff} 
+    onDeleteRecord={deleteService} 
     isOpen={isDeleteModalOpen} 
     selectedStaff={selectedStaff}
   />
@@ -509,7 +523,7 @@ export function EditableRadio({id, options, selectedItem, fieldName, currentFiel
  const queryClient = useQueryClient()
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/community`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/event`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -616,14 +630,14 @@ function DeleteRecordModal({selectedStaff, isOpen, isDeletingItem, onDeleteRecor
     <Modal title="Are you absolutely sure?" footer={null} open={isOpen} onOk={()=>{}} onCancel={onCloseModal}>
       <Alert style={{marginBottom:'.5rem'}} showIcon message="Bad things will happen if you don't read this!" type="warning" />
       <Text >
-        {`This action cannot be undone. This will permanently delete the ${selectedStaff.name} service item, staff, bookings, and remove from listing on marketplace 
+        {`This action cannot be undone. This will permanently delete the ${selectedStaff.name} event, staff, bookings, and remove from listing on marketplace 
         `}
       </Text>
 
       <Form 
       form={form} 
       style={{marginTop:'1rem'}}
-      name="deleteStaffForm" 
+      name="deleteServiceForm" 
       layout='vertical'
       onFinish={onFinish}>
       <Form.Item
@@ -668,7 +682,7 @@ function DeleteRecordModal({selectedStaff, isOpen, isDeletingItem, onDeleteRecor
 
 
 
-const filters = [
+const staffFilter = [
   {
     id:'1',
     name:'Approved'
@@ -681,6 +695,24 @@ const filters = [
 
 
 
+
+
+// const users:Staff[] = [
+//     {
+//         id: '34343',
+//         name: 'Mujahid Bappai',
+//         email: 'mujahid.bappai@yahoo.com',
+//         mobileNumber: '08043437583',
+//         gender: 'male',
+//         createdAt: "2023-01-07T10:45:24.002929Z",
+//         city: 'Kano',
+//         country: 'Nigeria',
+//         userRoleName: 'Staff',
+//         profilePic: 'bafkreic3hz2mfy7rpyffzwbf2jfklehmuxnvvy3ardoc5vhtkq3cjd7of4'  
+//     },
+   
+// ]
+
 interface EmptyProps{
   onOpenForm: ()=>void
 }
@@ -691,14 +723,12 @@ function EmptyState({onOpenForm}:EmptyProps){
     <div style={{border: '1px solid #d6d6d6', marginTop:'2rem', borderRadius:'4px', height:'50vh', display:'flex', justifyContent:'center', alignItems:'center', padding: '2rem'}}>
       <div style={{maxWidth:'350px', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
         <Title level={3}>Get Started</Title> 
-        <Text style={{textAlign:'center'}}>Add staff to your community to help you manage it</Text>
-        <Button size="large" type="primary" shape="round" icon={<PlusOutlined rev={undefined} />} onClick={onOpenForm} style={{marginTop:'1rem'}}>Add Staff</Button>
+        <Text style={{textAlign:'center'}}>Ready to get started listing your events on the Flexable Marketplace? The first step is to load in your organization’s details</Text>
+        <Button size="large" type="primary" shape="round" icon={<PlusOutlined rev={undefined} />} onClick={onOpenForm} style={{marginTop:'1rem'}}>Add your first staff</Button>
       </div>
     </div>
   )
 }
-
-
 
 interface SubmitButtonProps{
   isLoading: boolean,

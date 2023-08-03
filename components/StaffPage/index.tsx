@@ -14,6 +14,7 @@ import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { Staff } from "../../types/Staff";
 import useUrlPrefix from "../../hooks/useUrlPrefix";
 import { useRouter } from "next/router";
+import EventsLayout from "../Layout/EventsLayout";
 const {TextArea} = Input
 
 
@@ -45,21 +46,21 @@ export default function StaffView(){
     async function fetchAllStaff(){
       const res = await axios({
               method:'get',
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff?key=service_id&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=10`,
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/service?serviceId=${currentService.id}&pageNumber=${pageNumber}&pageSize=10`,
               headers:{
                   "Authorization": paseto
               }
           })
-
+ 
           return res.data;
     }
     async function fetchStaff(){
-      const res = await axios({
+      const res = await axios({ 
               method:'get',
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff?key=service_id&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=10&key2=status&value2=${currentFilter.id}`,
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/service?serviceId=${currentService.id}&pageNumber=${pageNumber}&pageSize=10&status=${currentFilter.id}`,
               headers:{
-                  "Authorization": paseto
-              }
+                  "Authorization": paseto 
+              } 
           })
 
           return res.data;
@@ -270,6 +271,9 @@ export default function StaffView(){
 }
 
 
+StaffView.PageLayout = EventsLayout
+
+
 interface StaffFormProps {
   open: boolean;
   onCreate?: (values:any) => void;
@@ -289,7 +293,7 @@ const AddStaffForm: React.FC<StaffFormProps> = ({
   const urlPrefix = useUrlPrefix()
 
   const createDataHandler = async(newItem:any)=>{
-    const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff`, newItem,{
+    const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/service`, newItem,{
         headers:{
             "Authorization": paseto
         },
@@ -448,7 +452,7 @@ const urlPrefix = useUrlPrefix()
 const deleteDataHandler = async(record:Staff)=>{      
   const {data} = await axios({
     method:'delete',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff`,
+    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/service`,
     data: {
         id:record.id,
         serviceId: currentService.id

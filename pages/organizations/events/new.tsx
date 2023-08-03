@@ -282,7 +282,7 @@ export default function NewEvent(){
 
                     {/* promotion */}
                     <Form.Item hasFeedback name={'description'} rules={[{ required: true, message: 'Please write a description for your venue' }]}  label="Description">
-                        <TextArea allowClear maxLength={500} size='large' showCount  placeholder='One flight of our award winning wines' rows={2} />
+                        <TextArea allowClear maxLength={1000} size='large' showCount  placeholder='One flight of our award winning wines' rows={2} />
                     </Form.Item>
 
                     <Form.Item
