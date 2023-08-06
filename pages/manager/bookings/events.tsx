@@ -475,7 +475,12 @@ function DetailDrawer({selectedRecord,isDrawerOpen,closeDrawer}:DrawerProps){
           )
         })}
    
-        {selectedRecord.redeemStatus === 'redeemed'?<Text type="secondary" >It appears that your ticket has already been redeemed </Text>:null}
+   {selectedRecord.redeemStatus === 'redeemed'
+    ?<Text type="secondary" >It appears that your ticket has already been redeemed </Text>
+    :selectedRecord.paymentStatus!== 'sucessful'
+    ?<Text>Payment status for this ticket has to be successful before it can be redeemed</Text>
+    :null
+    }
     </div>
     
     
