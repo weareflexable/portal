@@ -133,7 +133,7 @@ export default function NewService(){
             ...formData,
             ...fullAddress,
             logoImageHash: imageHash,
-            coverImageHash: "coverimagehash",
+            coverImageHash: imageHash,
             latitude:String(fullAddress.latitude),
             longitude:String(fullAddress.longitude),
             contactNumber: formatedContact,

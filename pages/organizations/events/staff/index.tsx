@@ -309,7 +309,7 @@ const createData = useMutation(createDataHandler,{
 
     const user = data.data[0]
     const status = user.status
-    message = status == 0 ? `Staff could not be added because they aren't registered. A registration link has beens sent to ${user.email} to register and will be added automatically to as ${user.userRoleName} after registration`:`User has been added to event as a ${user.userRoleName}`
+    message = status == 0 ? `Staff could not be added because they aren't registered. A registration link has beens sent to ${user.email} to register and will be added automatically to as ${user.staffRoleName} after registration`:`User has been added to event as a ${user.staffRoleName}`
     notification['success']({
         message: message,
         style:{
