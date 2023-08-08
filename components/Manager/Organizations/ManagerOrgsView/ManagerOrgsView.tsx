@@ -73,7 +73,7 @@ export default function ManagerOrgsView(){
     async function fetchOrgs(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?key=status&value=${currentStatus.id}&pageNumber=${pageNumber}&pageSize=${pageSize}`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?status=${currentStatus.id}&pageNumber=${pageNumber}&pageSize=${pageSize}`,
             headers:{
                 "Authorization": paseto
             }
