@@ -84,5 +84,5 @@ export interface Order {
     quantity: number
     price: number
     unitPrice: number
-    paymentStatus: string
+    paymentIntentStatus: string
   }

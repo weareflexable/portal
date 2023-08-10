@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { TableProps, Tag, Button, Table, Image, Typography, Drawer, Form, Input, notification, Alert } from "antd";
+import { TableProps, Tag, Button, Table, Image,  Typography, Drawer, Form, Input, notification, Alert } from "antd";
 import { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import { useState } from "react";
@@ -432,10 +432,15 @@ return(
         })}
     {selectedRecord.redeemStatus === 'redeemed'
     ?<Text type="secondary" >It appears that your ticket has already been redeemed </Text>
-    :selectedRecord.paymentStatus!== 'sucessful'
+    :selectedRecord.paymentIntentStatus!== 'successful'
     ?<Text>Payment status for this ticket has to be successful before it can be redeemed</Text>
     :null
     }
+
+    {/* <MintNFT
+      bookingId={selectedRecord?.bookingId}
+      ticketId={selectedRecord?.ticketDetails.id}
+    /> */}
 </div>
 
 
@@ -457,6 +462,34 @@ function RedeemTicketForm({ticket, isTicketExpired}:IRedeemTicketForm){
   const [isRedeemed, setIsRedeemed] = useState(false)
 
   const queryClient = useQueryClient()
+
+  const urlPrefix =  useUrlPrefix()
+
+
+  const nftMutation = useMutation({
+    mutationFn: async(payload:any)=>{
+      const res = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/nft/event`,payload,{
+        headers:{
+            "Authorization": paseto
+        },
+    })
+      return res;
+    },
+    onSuccess: async()=>{
+      notification['success']({
+        message: 'Success minting NFT'
+      })
+    },
+    onError: async()=>{
+      notification['error']({
+        message: 'Error minting NFT!'
+      })
+    }
+  })
+
+  function mintToken(){
+    nftMutation.mutate({bookingId: ticket.eventBookingId, ticketId: ticket.id})
+  }
 
   const redeemTicketHandler = async(ticketPayload:any)=>{
     const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/employee/redeem-ticket`, ticketPayload,{
@@ -521,12 +554,12 @@ function RedeemTicketForm({ticket, isTicketExpired}:IRedeemTicketForm){
 
 
   return(
-      <React.Fragment>
-            <div style={{marginBottom:'.5rem'}}>
+      <div style={{marginBottom:'4rem'}}>
+            <div style={{marginBottom:'.4rem'}}>
             <Text >Redeem for <Text strong >{ticket.firstName} {ticket.lastName}</Text></Text>
             </div>
             {isRedeemed || ticket.ticketStatus === 'redeemed'
-            ?<Alert style={{marginBottom:'2rem'}} message="Ticket has been redeemed" type="success" />
+            ?<Alert style={{marginBottom:'.3rem'}} message="Ticket has been redeemed" type="success" />
             :<Form form={form} onFinish={onFinish}>
             <Form.Item name={'ticketSecret'}  style={{marginBottom:'1rem'}} rules={[{required:true, message: 'This field is required'}, {max:6, message: 'You have exceed the max number of digits for a secret'}]}>
               <Input disabled={ticket.redeemStatus === 'redeemed'} name="ticketSecret" size="large" />
@@ -548,6 +581,59 @@ function RedeemTicketForm({ticket, isTicketExpired}:IRedeemTicketForm){
               </Button>}
             </Form.Item>
           </Form>}
-          </React.Fragment>
+            {ticket.transactionHash.length > 10
+              ?<Alert style={{marginBottom:'0'}} message="NFT has been minted for this ticket" type="success" />
+              :<Button
+                shape="round" 
+                block 
+                type="default" 
+                onClick={mintToken} 
+                size="large" 
+                style={{marginBottom:'4rem'}}
+                loading={nftMutation.isLoading}  
+              >
+                 Mint NFT
+              </Button>}
+          </div>
+  )
+}
+
+
+interface IMintNFT{
+  bookingId: string,
+  ticketId: string
+}
+
+function MintNFT({bookingId, ticketId}:IMintNFT){
+
+  const urlPrefix =  useUrlPrefix()
+
+  const nftMutation = useMutation({
+    mutationFn: async(payload:any)=>{
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/nft/event`,payload)
+      return res;
+    },
+    onSuccess: async()=>{
+      notification['success']({
+        message: 'Success minting NFT'
+      })
+    },
+    onError: async()=>{
+      notification['error']({
+        message: 'Error minting NFT!'
+      })
+    }
+  })
+
+  function mintToken(){
+    nftMutation.mutate({bookingId: bookingId, ticketId: ticketId})
+  }
+
+  return(
+    <div style={{marginTop:'2rem'}}>
+      <Title level={4}>Mint NFT</Title>
+      <Button onClick={mintToken} loading={nftMutation.isLoading} block shape="round" type='default' size="large">Mint NFT for ticket</Button>
+      <Text type="secondary">Only manually mint NFT when automatic minting doesn't occur</Text>
+    </div>
   )
 }

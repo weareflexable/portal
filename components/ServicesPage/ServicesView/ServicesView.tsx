@@ -191,7 +191,7 @@ function gotoServiceItemsPage(service:Service){
         key: 'serviceType',
         width:'120px',
         render: (_,record)=>{
-          const type = record && record.serviceType[0]
+          const type = record && record.serviceType
             return <Tag>{type && type.name}</Tag>
         }
       },
