@@ -76,19 +76,19 @@ export default function CommunityBookings(){
       // setFilteredInfo(filters);
     };
 
-    function viewBookingDetails(event:CommunityOrder){
-      // set state
-      setSelectedRecord(event)
-      // opne drawer
-      setIsDrawerOpen(true)
+    // function viewBookingDetails(event:CommunityOrder){
+    //   // set state
+    //   setSelectedRecord(event)
+    //   // opne drawer
+    //   setIsDrawerOpen(true)
 
-    }
+    // }
   
 
-    const onMenuClick=( record:CommunityOrder) => {
-      viewBookingDetails(record)
-      console.log('click', record);
-    };
+    // const onMenuClick=( record:CommunityOrder) => {
+    //   viewBookingDetails(record)
+    //   console.log('click', record);
+    // };
 
   
   
@@ -270,7 +270,7 @@ CommunityBookings.PageLayout = ManagerBookingsLayout
 
 // interface DrawerProps{
 //   selectedRecord: EventOrder,
-//   isDrawerOpen: boolean,
+//   isDrawerOpen: boolean, 
 //   closeDrawer: (value:boolean)=>void
 // }
 

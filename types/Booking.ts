@@ -53,6 +53,11 @@ export interface Order {
 
   export type CommunityOrder = {
     id: string
+    ticketDetails:any,
+    paymentIntentStatus: string,
+    targetDate: string,
+    userTicketId: string,
+    redeemStatus: string,
     name: string
     communityDetails: CommunityDats
     user: any

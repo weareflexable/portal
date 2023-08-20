@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useOrgs from "../../hooks/useOrgs";
 const {Text, Title} = Typography
 import React, { useRef, useState } from 'react'
-import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge} from 'antd'
+import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Alert, notification} from 'antd'
 import { useRouter } from 'next/router'
 import axios from 'axios';
 import {MoreOutlined,ReloadOutlined, CheckOutlined, StopOutlined} from '@ant-design/icons'
@@ -25,6 +25,7 @@ import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import advanced from "dayjs/plugin/advancedFormat"
 import relativeTime from 'dayjs/plugin/relativeTime'
+import { EventOrder } from "../../types/Booking";
 
 dayjs.extend(relativeTime)
 dayjs.extend(utc)
@@ -73,7 +74,7 @@ export default function BookingsView(){
     const res = await axios({
             method:'get',
             //@ts-ignore
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/bookings?key=service_id&value=${currentService.id}&pageNumber=${pageNumber}&pageSize=${pageSize}`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/bookings?serviceId=${currentService.id}&pageNumber=${pageNumber}&pageSize=${pageSize}`,
             headers:{
                 "Authorization": paseto
             }
@@ -88,7 +89,7 @@ export default function BookingsView(){
   
 
 
-    const bookingsQuery = useQuery({queryKey:['Bookings',pageNumber,pageSize], queryFn:fetchBookings, enabled:paseto !== ''})
+    const bookingsQuery = useQuery({queryKey:['service-bookings',pageNumber,pageSize], queryFn:fetchBookings, enabled:paseto !== ''})
     const data = bookingsQuery.data && bookingsQuery.data.data
     const totalLength = bookingsQuery.data && bookingsQuery.data.dataLength;
 
@@ -105,6 +106,21 @@ export default function BookingsView(){
   
 
   
+    function viewBookingDetails(event:Order){
+      // set state
+      setSelectedServiceItem(event)
+      // opne drawer
+      setIsDrawerOpen(true)
+
+    }
+  
+
+    const onMenuClick=( record:Order) => {
+      viewBookingDetails(record)
+      console.log('click', record);
+    };
+
+
   
   
     const columns: ColumnsType<Order> = [
@@ -258,6 +274,16 @@ export default function BookingsView(){
             )
         },
     },
+    {
+      dataIndex: 'actions', 
+      key: 'actions',
+      fixed: 'right',
+      width:'70px',
+      //@ts-ignore
+      render:(_,record:Order)=>{
+          return <Button onClick= {()=>onMenuClick(record)} type="text" icon={<MoreOutlined rev={undefined}/>}/> 
+      }
+    }
     ];
 
         return (
@@ -296,6 +322,12 @@ export default function BookingsView(){
                   onChange={handleChange} 
                   dataSource={data}
                  />}
+
+{
+                  isDrawerOpen
+                  ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedRecord={selectedServiceItem}/>
+                  :null
+                }
             </div>
     )
 
@@ -303,35 +335,228 @@ export default function BookingsView(){
 
 }
 
-// interface DrawerProps{
-//   selectedServiceItem: ServiceItem,
-//   isDrawerOpen: boolean,
-//   closeDrawer: (value:boolean)=>void
-// }
-// function DetailDrawer({selectedServiceItem,isDrawerOpen,closeDrawer}:DrawerProps){
 
-// const queryClient = useQueryClient()
+interface DrawerProps{
+  selectedRecord: Order,
+  isDrawerOpen: boolean,
+  closeDrawer: (value:boolean)=>void
+}
 
-// function closeDrawerHandler(){
-//   queryClient.invalidateQueries(['serviceItems'])
-//   closeDrawer(!isDrawerOpen)
-// }
+function DetailDrawer({selectedRecord,isDrawerOpen,closeDrawer}:DrawerProps){
 
-// return( 
-// <Drawer title="Organization Details" width={640} placement="right" closable={true} onClose={closeDrawerHandler} open={isDrawerOpen}>
+const queryClient = useQueryClient()
+const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+
+const isTicketExpired = dayjs().isAfter(dayjs(selectedRecord.targetDate))
+
+
+function closeDrawerHandler(){
+  queryClient.invalidateQueries(['event-bookings']) 
+  closeDrawer(!isDrawerOpen)
+}
+
+function toggleDeleteModal(){
+  setIsDeleteModalOpen(!isDeleteModalOpen)
+}
+
+
+
+
+const [form] = Form.useForm()
+
+
+return( 
+<Drawer 
+  title="Redeem Ticket" 
+  width={400} 
+  placement="right" 
+  closable={true} 
+  onClose={closeDrawerHandler} 
+  open={isDrawerOpen}
+>
+  <div
+    style={{width:'100%',}}
+  >
+{selectedRecord.ticketDetails.map((ticket:any)=>{
+          return(
+          <RedeemTicketForm
+            key={ticket.id}
+            isTicketExpired = {isTicketExpired}
+            ticket={ticket}
+            userId = {selectedRecord.userTicketId}
+          />
+          )
+        })}
+    {selectedRecord.redeemStatus === 'redeemed'
+    ?<Text type="secondary" >It appears that your ticket has already been redeemed </Text>
+    :selectedRecord.paymentIntentStatus!== 'successful'
+    ?<Text>Payment status for this ticket has to be successful before it can be redeemed</Text>
+    :null
+    }
+
+    {/* <MintNFT
+      bookingId={selectedRecord?.bookingId}
+      ticketId={selectedRecord?.ticketDetails.id}
+    /> */}
+</div>
+
+
+
+</Drawer>
+)
+}
+
+
+
+interface IRedeemTicketForm{
+  ticket: any,
+  isTicketExpired: boolean,
+  userId: string
+}
+
+function RedeemTicketForm({ticket, userId, isTicketExpired}:IRedeemTicketForm){
+
+  const {paseto} = useAuthContext()
   
-//   {/* <EditableName selectedServiceItem={selectedServiceItem}/> */}
-//   {/* <EditableDescription selectedServiceItem={selectedServiceItem}/> */}
+  const [isRedeemed, setIsRedeemed] = useState(false)
 
-//   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
-//     <Divider/>
-//     <Button danger type="link">Deactivate service-item</Button>
-//     <Divider/>
-//   </div>
+  const queryClient = useQueryClient()
 
-// </Drawer>
-// )
-// }
+  const urlPrefix =  useUrlPrefix()
+
+
+  const nftMutation = useMutation({
+    mutationFn: async(payload:any)=>{
+      const res = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/nft/service`,payload,{
+        headers:{
+            "Authorization": paseto
+        },
+    })
+      return res;
+    },
+    onSuccess: async()=>{
+      notification['success']({
+        message: 'Success minting NFT'
+      })
+    },
+    onError: async()=>{
+      notification['error']({
+        message: 'Error minting NFT!'
+      })
+    }
+  })
+
+  function mintToken(){
+    nftMutation.mutate({bookingId: ticket.serviceBookingId, ticketId: ticket.id})
+  }
+
+  const redeemTicketHandler = async(ticketPayload:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/employee/redeem-ticket`, ticketPayload,{
+        headers:{
+            "Authorization": paseto
+        },
+    })
+    return data
+  }
+
+  function onFinish(values:any){
+    console.log(values)
+  
+    const isRedeemCodeValid = ticket.ticketSecret == values.ticketSecret
+    // check if ticket has expired
+    // check if input is the same as redeemCode
+    if(!isRedeemCodeValid) {
+      notification['warning']({
+        message: 'The secret you provided does not match the one on the ticket',
+      });
+      return
+    }
+  
+    // if payment status and booking status is not succesful, don't redeem ticket
+    // check ticket validity
+  
+    const payload ={
+      item: {
+          id: ticket.id,  //need to valiadte exp using start date time + duration 
+          type: "venue",
+          communityVenueId: ""
+      },
+      ticketSecret: ticket.ticketSecret,
+      redeemMethod: "uniqueCode",
+      userId: ticket.targetUserID
+  }
+      redeemServiceTicket.mutate(payload)
+  }
+  
+  const redeemServiceTicket = useMutation(redeemTicketHandler,{
+    onSuccess:(data)=>{
+      if(data.status>201){
+        notification['error']({
+          message: 'Error redeeming ticket',
+        });
+      }else{
+      notification['success']({
+        message: 'Success redeeming user ticket',
+      });
+      setIsRedeemed(true)
+      }
+    },
+      onSettled:()=>{
+          queryClient.invalidateQueries(['service-bookings'])
+      }
+  })
+  
+  const{isLoading:isRedeeming} = redeemServiceTicket
+  
+
+  const [form] = Form.useForm()
+
+
+  return(
+      <div style={{marginBottom:'4rem'}}>
+            <div style={{marginBottom:'.4rem'}}>
+            <Text >Redeem for <Text strong >{ticket.firstName} {ticket.lastName}</Text></Text>
+            </div>
+            {isRedeemed || ticket.ticketStatus === 'redeemed'
+            ?<Alert style={{marginBottom:'.3rem'}} message="Ticket has been redeemed" type="success" />
+            :<Form form={form} onFinish={onFinish}>
+            <Form.Item name={'ticketSecret'}  style={{marginBottom:'1rem'}} rules={[{required:true, message: 'This field is required'}, {max:6, message: 'You have exceed the max number of digits for a secret'}]}>
+              <Input disabled={ticket.redeemStatus === 'redeemed'} name="ticketSecret" size="large" />
+            </Form.Item>
+            <Form.Item>
+            {isTicketExpired
+              ?<Text>Ticket has expired</Text>
+              :<Button
+                shape="round" 
+                block 
+                disabled={ticket.ticketStatus === 'redeemed' || ticket.bookingStatus === 'Failed'}
+                type="primary" 
+                size="large" 
+                style={{marginBottom:'.5rem'}}
+                loading={isRedeeming}  
+                htmlType="submit"
+              >
+                 Redeem Ticket
+              </Button>}
+            </Form.Item>
+          </Form>}
+            {ticket.transactionHash.length > 10
+              ?<Alert style={{marginBottom:'0'}} message="NFT has been minted for this ticket" type="success" />
+              :<Button
+                shape="round" 
+                block 
+                type="default" 
+                onClick={mintToken} 
+                size="large" 
+                style={{marginBottom:'4rem'}}
+                loading={nftMutation.isLoading}  
+              >
+                 Mint NFT
+              </Button>}
+          </div>
+  )
+}
+
 
 
 
@@ -348,69 +573,3 @@ function EmptyState(){
 }
 
 
-
-// const managerBookings:Order[] = [
-//     {
-//         id: '34343',
-//         serviceName: 'Benjamins On Franklin',
-//         quantity: 4,
-//         unitPrice: 3499,
-//         ticketStatus: '',
-//         paymentIntentId: 'erefdfa',
-//         paymentIntentStatus: 'PAID',
-//         userId: 'ninja3@flexable.com',
-//         orgServiceItemId: 'dfadeir32',
-//         hash:'',
-//         currency: 'USD',
-//         startTime: 'Jan 23, 2022',
-//         endTime: 'Dec 27, 2023',
-//         uniqueCode: 'dfadf23',
-//         userTicketId: 'dfadf9375',
-//         name: 'Line Skip + cover',
-//         orderStatus: ''    
-//     },
-//     {
-//         id: '34343',
-//         serviceName: 'Benjamins On Franklin',
-//         quantity: 4,
-//         unitPrice: 2000,
-//         ticketStatus: '',
-//         paymentIntentId: 'erefdfa',
-//         paymentIntentStatus: 'PAID',
-//         userId: 'dynamoboy@yahoo.com',
-//         orgServiceItemId: 'dfadeir32',
-//         hash:'', 
-//         currency: 'USD',
-//         startTime: 'Jan 23, 2022',
-//         endTime: 'Dec 27, 2023',
-//         uniqueCode: 'dfadf23',
-//         userTicketId: 'dfadf9375',
-//         name: 'Bottle service',
-//         orderStatus: ''    
-//     },
-//     {
-//         id: '34343',
-//         serviceName: 'Benjamins On Franklin',
-//         quantity: 4,
-//         unitPrice: 3532,
-//         ticketStatus: '',
-//         paymentIntentId: 'erefdfa',
-//         paymentIntentStatus: 'PAID',
-//         userId: 'mujahid.bappai@yahoo.com',
-//         orgServiceItemId: 'dfadeir32',
-//         hash:'',
-//         currency: 'USD',
-//         startTime: 'Jan 23, 2022',
-//         endTime: 'Dec 27, 2023',
-//         uniqueCode: 'dfadf23',
-//         userTicketId: 'dfadf9375',
-//         name: 'Line Skip + cover',
-//         orderStatus: ''    
-//     }
-// ]
-
-
-
-
-
-// const lastUpdate = moment(dataUpdatedAt).format('HH:mm:ss')

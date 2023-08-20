@@ -104,9 +104,9 @@ export default function ManagerBookingsView(){
         width:'250px',
         fixed:'left',
         render:(_,record)=>{
-          const serviceItemName = record.serviceItemDetails[0].name
-          const serviceName = record.serviceDetails[0].name
-          const logoImageHash = record.serviceItemDetails[0].logoImageHash
+          const serviceItemName = record.serviceItemDetails[0]?.name
+          const serviceName = record?.serviceDetails[0]?.name
+          const logoImageHash = record.serviceItemDetails[0]?.logoImageHash
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
                     <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${logoImageHash}`}/>
@@ -124,10 +124,10 @@ export default function ManagerBookingsView(){
         key: 'unitPrice',
         width:'120px',
         render: (_,record)=>{
-          const serviceItemType = record.serviceDetails[0].serviceType[0].name
+          const serviceType = record?.serviceDetails[0]?.serviceType?.name
           return(
           <div>
-            <Tag style={{textTransform:'capitalize'}}>{serviceItemType}</Tag>
+            <Tag style={{textTransform:'capitalize'}}>{serviceType}</Tag>
           </div>
         )}
       },
