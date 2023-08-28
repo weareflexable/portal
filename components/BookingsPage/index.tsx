@@ -132,9 +132,9 @@ export default function BookingsView(){
         width: '270px',
         ellipsis:true,
         render:(_,record)=>{
-          const serviceItemName = record.serviceItemDetails[0].name
-          const serviceName = record.serviceDetails[0].name
-          const logoImageHash = record.serviceItemDetails[0].logoImageHash
+          const serviceItemName = record?.serviceItemDetails[0]?.name
+          const serviceName = record?.serviceDetails[0]?.name
+          const logoImageHash = record?.serviceItemDetails[0]?.logoImageHash
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
                     <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${logoImageHash.length < 10? IMAGE_PLACEHOLDER_HASH : logoImageHash}`}/>
@@ -153,10 +153,10 @@ export default function BookingsView(){
         width: '270px',
         ellipsis:true,
         render:(_,record)=>{
-          const user = record.user[0]
-          const email = user.email
-          const name = user.name
-          const profilePicHash = user.profilePic
+          const user = record?.user[0]
+          const email = user?.email
+          const name = user?.name
+          const profilePicHash = user?.profilePic
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
                     <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${profilePicHash.length < 10? IMAGE_PLACEHOLDER_HASH : profilePicHash}`}/>
@@ -174,7 +174,7 @@ export default function BookingsView(){
         key: 'serviceItemType',
         width: '120px',
         render:(_,record)=>{
-          const serviceItemType = record.serviceItemDetails[0].serviceItemType[0].name
+          const serviceItemType = record?.serviceItemDetails[0]?.serviceItemType[0]?.name
           return(
             <Tag>{serviceItemType}</Tag>
           )
@@ -416,6 +416,8 @@ interface IRedeemTicketForm{
 
 function RedeemTicketForm({ticket, userId, isTicketExpired}:IRedeemTicketForm){
 
+  // console.log('id',ticket.serviceItemID) 
+
   const {paseto} = useAuthContext()
   
   const [isRedeemed, setIsRedeemed] = useState(false)
@@ -477,11 +479,11 @@ function RedeemTicketForm({ticket, userId, isTicketExpired}:IRedeemTicketForm){
   
     const payload ={
       item: {
-          id: ticket.id,  //need to valiadte exp using start date time + duration 
-          type: "venue",
+          id: ticket.serviceItemID,  //need to valiadte exp using start date time + duration 
+          type: "venue", 
           communityVenueId: ""
       },
-      ticketSecret: ticket.ticketSecret,
+      ticketSecret: ticket.ticketSecret, 
       redeemMethod: "uniqueCode",
       userId: ticket.targetUserID
   }
