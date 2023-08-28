@@ -140,13 +140,14 @@ export default function ManagerBookingsView(){
         render:(_,record)=>{
           const user = record.user[0] 
           const email = user && user.email
-          const name = user?.name 
+          const firstName = user?.firstName 
+          const lastName = user?.lastName 
           const profilePicHash = user && user.profilePic
             return( 
                 <div style={{display:'flex',alignItems:'center'}}>
                     <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Profile image' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${profilePicHash && profilePicHash.length < 20 ? IMAGE_PLACEHOLDER_HASH : profilePicHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
-                        <Text>{name}</Text>  
+                        <Text>{firstName} {lastName}</Text>  
                         <Text type="secondary">{email}</Text>  
                     </div>
                 </div>
@@ -190,7 +191,7 @@ export default function ManagerBookingsView(){
           const total = record.quantity * (record.unitPrice/100)
           return(
             <div>
-            <Text>$</Text>
+            <Text>$</Text> 
             <Text>{`${numberFormatter.from(total)}`}</Text>
           </div>
           )

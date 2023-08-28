@@ -26,6 +26,8 @@ export interface ManagerOrder {
 
   type User = {
     email: string
+    firstName: string
+    lastName: string
     name: string
     profilePic: string
   }

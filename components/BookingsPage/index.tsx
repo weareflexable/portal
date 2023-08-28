@@ -519,14 +519,14 @@ function RedeemTicketForm({ticket, userId, isTicketExpired}:IRedeemTicketForm){
             </div>
             {isRedeemed || ticket.ticketStatus === 'redeemed'
             ?<Alert style={{marginBottom:'.3rem'}} message="Ticket has been redeemed" type="success" />
+            : isTicketExpired
+            ? <Text>Ticket has expired</Text>
             :<Form form={form} onFinish={onFinish}>
             <Form.Item name={'ticketSecret'}  style={{marginBottom:'1rem'}} rules={[{required:true, message: 'This field is required'}, {max:6, message: 'You have exceed the max number of digits for a secret'}]}>
               <Input disabled={ticket.redeemStatus === 'redeemed'} name="ticketSecret" size="large" />
             </Form.Item>
             <Form.Item>
-            {isTicketExpired
-              ?<Text>Ticket has expired</Text>
-              :<Button
+              <Button
                 shape="round" 
                 block 
                 disabled={ticket.ticketStatus === 'redeemed' || ticket.bookingStatus === 'Failed'}
@@ -537,7 +537,7 @@ function RedeemTicketForm({ticket, userId, isTicketExpired}:IRedeemTicketForm){
                 htmlType="submit"
               >
                  Redeem Ticket
-              </Button>}
+              </Button>
             </Form.Item>
           </Form>}
             {ticket.transactionHash.length > 10
