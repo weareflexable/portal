@@ -26,6 +26,7 @@ export interface NewOrg{
     contact?:any,
     status: number,
     id: string,
+    orgId?: string,
     name: string,
     email: string,
     phone: string,
