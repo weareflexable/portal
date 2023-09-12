@@ -146,7 +146,7 @@ function VenuesTable(){
 function gotoServiceItemsPage(service:Service){
   switchService(service)
   // navigate user to services page
-  router.push('/organizations/venues/serviceItems') // redirect to dashboard later
+  router.push('/organizations/venues/exclusive-access') // redirect to dashboard later
 }
 
 
@@ -369,7 +369,7 @@ function gotoServices(service:Service){
   // switch org 
   switchService(service)
   // navigate user to services page
-  router.push('/organizations/venues/serviceItems') // redirect to dashboard later
+  router.push('/organizations/venues/exclusive-access') // redirect to dashboard later
 }
 
 function toggleDeleteModal(){
