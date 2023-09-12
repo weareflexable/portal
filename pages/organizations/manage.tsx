@@ -67,26 +67,28 @@ export default function Manage(){
 
 
     const coAdminMutation = useMutation({
-        mutationFn:async()=>{
+        mutationFn:async(payload:any)=>{
             const res = await axios.delete(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${prefix}/co-admin`,{
+                
                 headers:{
                     'Authorization': paseto
-                }
+                },
+                data: payload
             })
             
             return res
         },
         onSuccess:()=>{
             notification['success']({
-                message: 'Succesfully delete co-admin',
+                message: 'Succesfully deleted co-admin',
                 style:{
                   width:500
                 },
-                duration: 4000
+                duration: 4
               });
             queryClient.invalidateQueries(['co-Admins'])  
         },
-        
+
         onError:()=>{
             notification['error']({
                 message: 'Error deleting co-admin',
@@ -98,12 +100,11 @@ export default function Manage(){
         }
     })
 
-    function deleteCoAdmin(index:number){
+    function deleteCoAdmin(userId:string){
         const payload = {
-            orgId: currentOrg.orgId,
-
+            id: userId
         }
-        coAdminMutation.mutate()
+        coAdminMutation.mutate(payload)
     }
     
     return(
@@ -113,7 +114,7 @@ export default function Manage(){
             <Text>Any user that gets added here will assume the same role as you to continue to be a co-admin in your organization; meaning they also get permision to create, read, edit and delete all assets in your organization </Text>
         </div>
         
-        <Button shape='round' onClick={()=>setIsOpen(true)} icon={<PlusCircleOutlined rev={undefined}/>} style={{marginTop:'3rem'}}>Add new co-admin</Button>
+        <Button shape='round' type='primary' onClick={()=>setIsOpen(true)} icon={<PlusCircleOutlined rev={undefined}/>} style={{marginTop:'3rem'}}>Add new co-admin</Button>
 
         <div style={{display:'flex', width:'50%', marginTop:'3rem', flexDirection: 'column'}}>
 
@@ -125,7 +126,7 @@ export default function Manage(){
             loading={coAdminQuery.isLoading || coAdminQuery.isRefetching}
             renderItem={(item:any, index) => (
             <List.Item
-               actions={[<Button shape='round' onClick={()=>deleteCoAdmin(index)} danger key="list-loadmore-more">Delete</Button>]}
+               actions={[<Button shape='round'  onClick={()=>deleteCoAdmin(item.id)} danger key="list-loadmore-more">Delete</Button>]}
             >
                 <List.Item.Meta
                 // avatar={<Avatar src={`https://xsgames.co/randomusers/avatar.php?g=pixel&key=${index}`} />}
@@ -133,7 +134,7 @@ export default function Manage(){
                 description={
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{item.email}</Text>
-                        <Tag style={{width: 'fit-content', marginTop:'.3rem'}}>{item.role===4?'Admin':'Owner'}</Tag> 
+                        <Tag style={{width: 'fit-content', marginTop:'.3rem'}}>{item.role===4?'Co-admin':'Owner'}</Tag> 
                     </div>
                 }
                 />
@@ -186,7 +187,7 @@ const CoAdminForm: React.FC<ICoAdmin> = ({
           style:{
             width:500
           },
-          duration: 4000
+          duration: 4
         });
         onCancel()
      },
