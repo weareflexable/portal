@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import {Form, Row, Col, Image, Tooltip, Input, Upload, Button, notification, Typography, Space, Select, Radio, Divider, TimePicker, InputRef, FormInstance, DatePicker} from 'antd';
+import {Form, Row, Col, Image, Tooltip, Input, Upload, Button, notification, Typography, Space, Select, Radio, Divider, TimePicker, InputRef, FormInstance, DatePicker, Switch, Checkbox} from 'antd';
 import {UploadOutlined,MinusOutlined, QuestionCircleOutlined, ArrowLeftOutlined, InfoCircleOutlined,  InboxOutlined} from '@ant-design/icons'
 import dayjs from 'dayjs'
 
@@ -49,6 +49,7 @@ export default function NewEvent(){
         city:''
     })
 
+    const [isEventFree, setIsEventFree] = useState(false)
     const [isHashingAssets, setIsHashingAssets] = useState(false)
     const [logoImage, setLogoImage] = useState(PLACEHOLDER_IMAGE)
 
@@ -122,6 +123,11 @@ export default function NewEvent(){
         },
       }); 
     
+      function makeEventFree(){
+        form.setFieldValue('price',0)
+        form.resetFields(['price'])
+        setIsEventFree(!isEventFree)
+      }
 
     const onFinish = async(formData:any)=>{
 
@@ -140,6 +146,8 @@ export default function NewEvent(){
 
         const validity = formData.validity
 
+       
+
 
         const formObject: any = {
             coverImageHash: imageHash,
@@ -148,6 +156,7 @@ export default function NewEvent(){
             startTime: dayjs(validity.startTime).format(),
             name: formData.name,
             description: formData.description,
+            type: formData.privacy,
             price: Number(formData.price)*100,
             locationName: formData.locationName,
             totalTickets: Number(formData.totalTickets),
@@ -285,16 +294,19 @@ export default function NewEvent(){
                         <TextArea allowClear maxLength={1000} size='large' showCount  placeholder='One flight of our award winning wines' rows={2} />
                     </Form.Item>
 
+                    <div style={{display:'flex', alignItems:'center'}}> 
                     <Form.Item
                         name={'price'} 
                         hasFeedback
                         // extra="Market Value of the promotion is required so that the Community DAT can be properly priced on the Marketplace"
                         label='Price'
-                        style={{width:'100%'}}
+                        style={{width:'50%'}}
                         rules={[{ required: true, message: 'Please input a valid price!' },{ pattern: /^\d+$/, message: 'Area code must be a number' },{min:1, message: 'Price cannot be any lower than $1'}]}
                         >
-                        <Input size='large' style={{width:'50%'}}  prefix="$" suffix='Per DAT' placeholder="0" /> 
+                        <Input disabled={isEventFree} size='large' style={{width:'100%', marginRight:'1rem'}}  prefix="$" suffix='Per DAT' placeholder="0" /> 
                     </Form.Item> 
+                    <Checkbox  style={{ height:'100%', marginTop:'.2rem', marginLeft:'1rem', alignItems:'center'}} onChange={makeEventFree} value={isEventFree}>Free</Checkbox>
+                    </div> 
 
                     <Form.Item
                         hasFeedback
@@ -306,7 +318,22 @@ export default function NewEvent(){
                         >
                         <Input size='large' style={{width:'50%'}}  placeholder="0" /> 
                     </Form.Item> 
+
+                    <Form.Item
+                        label='Privacy'
+                        initialValue={'public'}
+                        style={{width:'100%'}}
+                        hasFeedback
+                        help='Determine whether or not your event gets displayed on marketplace or shared privately'
+                        name={'type'} 
+                     >
+                        <Radio.Group defaultValue={'public'}>
+                            <Radio.Button value="public">Public</Radio.Button>
+                            <Radio.Button value="private">Private</Radio.Button>
+                        </Radio.Group>
+                    </Form.Item>   
                     </div>
+
 
                     <div style={{margin:'3rem 0'}}>
                         <Title level={3}>{`Location info`}</Title>

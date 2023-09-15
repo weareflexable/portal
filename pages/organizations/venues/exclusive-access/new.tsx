@@ -175,7 +175,7 @@ function BasicForm({nextStep}:BasicInfoProps){
        },
        onSettled:()=>{
         queryClient.invalidateQueries(['all-serviceItems'])
-   },
+       },
         onError:(err)=>{
             console.log(err)
             notification['error']({
