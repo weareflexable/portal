@@ -3,21 +3,16 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useOrgs from "../../../hooks/useOrgs";
 const {Text, Title} = Typography;
 import React, { ReactNode, useEffect, useRef, useState } from 'react'
-import {Typography,Button, Skeleton, Badge, Image, Table, Input, Radio,  Drawer, Row, Col, Form, Modal, Alert, notification, Dropdown, MenuProps, Tag, Space, Upload, DatePicker, Select} from 'antd'
+import {Typography,Button, Skeleton, Badge, Image, Table, Input, Radio,  Drawer, Row, Col, Form, Modal, Alert, notification, Dropdown, MenuProps, Tag, Space, Upload, DatePicker, Select, Popover} from 'antd'
 import { useRouter } from 'next/router'
 import axios from 'axios';
-import { MoreOutlined, ReloadOutlined, ArrowLeftOutlined, PlusOutlined} from '@ant-design/icons'
+import { MoreOutlined, ReloadOutlined, CopyOutlined, PlusOutlined} from '@ant-design/icons'
 
 import { useAuthContext } from '../../../context/AuthContext';
-import { useServicesContext } from '../../../context/ServicesContext';
 import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { useOrgContext } from "../../../context/OrgContext";
 
-// import { EditableAddress, EditableCoverImage, EditableCurrency, EditableLogoImage, EditableName, EditablePhone } from "../EditServiceForm/EditServiceForm";
-import useServiceTypes from "../../../hooks/useServiceTypes";
-import { convertToAmericanFormat } from "../../../utils/phoneNumberFormatter";
-import { EditableText} from "../../../components/shared/Editables";
 import useUrlPrefix from "../../../hooks/useUrlPrefix";
 import ServiceLayout from "../../../components/Layout/ServiceLayout";
 import { Event } from "../../../types/Event";
@@ -445,12 +440,27 @@ const deleteData = useMutation(deleteDataHandler,{
 
 const{isLoading:isDeletingItem} = deleteData
 
+function copyLink(selectedRecord:any){
+  navigator.clipboard.writeText('')
+  const eventId = selectedRecord.id
+  const marketplaceLink = `https://marketplace.flexable.com/events/${eventId}`
+   // Copy the text inside the text field
+   navigator.clipboard.writeText(marketplaceLink);
+  console.log(selectedRecord)
+}
+
 
 return( 
 <Drawer 
   title="Event Details" 
   width={640} placement="right" 
-  extra={<Button size='large' onClick={()=>gotoEvents(selectedRecord)}>Visit Event</Button>}
+  extra={
+  <Space>
+  <Popover placement="bottom" content={'Copied!'} trigger="click">
+    <Button size='large' icon={<CopyOutlined rev={undefined} />} onClick={()=>copyLink(selectedRecord)}>Copy Link</Button>
+    </Popover>
+     <Button size='large' onClick={()=>gotoEvents(selectedRecord)}>Visit Event</Button>
+     </Space>}
   closable={true} 
   onClose={closeDrawerHandler} 
   open={isDrawerOpen}
