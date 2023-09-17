@@ -833,7 +833,7 @@ function CommunityVenueForm({remove, name, formInstance, restField}:CommunityVen
                                     </Space>           
                                 </Form.Item>
                             </Col>
-                         </div>
+         </div>
     )
 }
 

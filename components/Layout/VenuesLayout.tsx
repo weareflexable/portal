@@ -52,8 +52,8 @@ const {Text, Title} = Typography
 
     const items: MenuProps['items'] = [
         {
-            key:'serviceItems',
-            label: 'Services'
+            key:'exclusive-access',
+            label: 'Exclusive Access'
         },
         {
             key:'bookings',

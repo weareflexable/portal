@@ -619,8 +619,6 @@ const mutation = useMutation({
 })
 
 function onFinish(updatedItem:any){
-
-
   const payload = { 
     // communityId: currentCommunity.id,
     //@ts-ignore
@@ -663,7 +661,6 @@ const {isLoading:isEditing} = mutation
            <Input allowClear  ref={(c) => {
                 // @ts-ignore
                 antInputRef.current = c;
-            
                 // @ts-ignore
                 if (c) antRef.current = c.input;
                 }} 

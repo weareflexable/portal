@@ -13,7 +13,7 @@
         longitude:string,
         contactNumber: string,
         currency: 'USD',
-        serviceType: Array<any>,
+        serviceType: any,
         timeZone: 'UTC',
         serviceTypeId: string,
         serviceTypeName: string,
