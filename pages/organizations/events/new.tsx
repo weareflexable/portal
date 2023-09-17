@@ -125,7 +125,6 @@ export default function NewEvent(){
     
       function makeEventFree(){
         form.setFieldValue('price',0)
-        form.resetFields(['price'])
         setIsEventFree(!isEventFree)
       }
 
@@ -156,8 +155,8 @@ export default function NewEvent(){
             startTime: dayjs(validity.startTime).format(),
             name: formData.name,
             description: formData.description,
-            type: formData.privacy,
-            price: Number(formData.price)*100,
+            type: formData.type,
+            price: Number(formData.price)*100 || 0,
             locationName: formData.locationName,
             totalTickets: Number(formData.totalTickets),
             duration: Number(formData.duration)*60,
@@ -181,7 +180,7 @@ export default function NewEvent(){
         // @ts-ignore
         delete formObject.contact
 
-        // console.log(formObject)
+        console.log(formObject)
 
         createData.mutate(formObject)
     }
@@ -301,9 +300,9 @@ export default function NewEvent(){
                         // extra="Market Value of the promotion is required so that the Community DAT can be properly priced on the Marketplace"
                         label='Price'
                         style={{width:'50%'}}
-                        rules={[{ required: true, message: 'Please input a valid price!' },{ pattern: /^\d+$/, message: 'Area code must be a number' },{min:1, message: 'Price cannot be any lower than $1'}]}
+                        rules={[{ pattern: /^\d+$/, message: 'Price must be a number' }]}
                         >
-                        <Input disabled={isEventFree} size='large' style={{width:'100%', marginRight:'1rem'}}  prefix="$" suffix='Per DAT' placeholder="0" /> 
+                        <Input disabled={isEventFree}  size='large' style={{width:'100%', marginRight:'1rem'}}  prefix="$" suffix='Per DAT' placeholder="0" /> 
                     </Form.Item> 
                     <Checkbox  style={{ height:'100%', marginTop:'.2rem', marginLeft:'1rem', alignItems:'center'}} onChange={makeEventFree} value={isEventFree}>Free</Checkbox>
                     </div> 
@@ -550,7 +549,6 @@ const SubmitButton = ({ form, isCreatingData, isHashingAssets }:SubmitButtonProp
   
     // Watch all values
     const values = Form.useWatch([], form);
-
   
     useEffect(() => {
         

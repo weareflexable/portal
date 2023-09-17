@@ -190,14 +190,22 @@ function gotoEventPage(event:Event){
         width:'200px',
       },
       {
+        title: 'Type',
+        dataIndex: 'eventType',
+        key: 'eventType',
+        width:'100px',
+        render: (type)=>( 
+          <Tag style={{textTransform:'capitalize'}}>{type}</Tag>
+        )
+      },
+      {
         title: 'Price',
         dataIndex: 'price',
         key: 'price',
         width:'100px',
         render: (price)=>(
           <div>
-            <Text>$</Text>
-            <Text>{price/100}</Text>
+            {price===0?<Text>Free</Text>:<Text>${price/100}</Text>}
           </div>
         )
       },
@@ -207,8 +215,8 @@ function gotoEventPage(event:Event){
         key: 'totalTickets',
         width:'100px',
         render: (totalTickets)=>(
-          <div>
-            <Text>{totalTickets}</Text>
+          <div> 
+            <Text>{totalTickets.toLocaleString()}</Text>
           </div>
         )
       },
