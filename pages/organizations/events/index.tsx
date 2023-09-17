@@ -252,7 +252,7 @@ function gotoEventPage(event:Event){
           dataIndex: 'startTime',
           key: 'startTime',
           fixed:'right',
-          width:'140px',
+          width:'150px',
           render: (startTime)=>{
               return(
             <Text type='secondary'>{dayjs(startTime).tz("UTC").format('MMM DD, YYYY HA')}</Text>
@@ -264,7 +264,7 @@ function gotoEventPage(event:Event){
           dataIndex: 'startTime',
           key: 'startTime',
           fixed:'right',
-          width:'140px',
+          width:'150px',
           render: (_, record)=>{
               return(
             <Text type='secondary'>{dayjs(record.startTime).add(record.duration,'m').tz("UTC").format('MMM DD, YYYY HA')}</Text>
@@ -313,7 +313,7 @@ function gotoEventPage(event:Event){
                         {/* filters */}
                         <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
                           {filters.map((filter:any)=>(
-                              <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
+                            <Radio.Button key={filter.id} onClick={()=>setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
                           )
                           )}
                        </Radio.Group>
@@ -333,7 +333,7 @@ function gotoEventPage(event:Event){
                   </EmptyState> 
                   : <Table 
                       style={{width:'100%'}} 
-                      scroll={{ x: 'calc(700px + 50%)'}} 
+                      scroll={{ x: 'calc(600px + 40%)'}} 
                       size='large' 
                       rowKey={(record)=>record.id}
                       // @ts-ignore 
