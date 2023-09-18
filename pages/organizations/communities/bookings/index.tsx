@@ -280,7 +280,7 @@ function DetailDrawer({selectedRecord,isDrawerOpen,closeDrawer}:DrawerProps){
 const queryClient = useQueryClient()
 const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
-const isTicketExpired = dayjs().isAfter(dayjs(selectedRecord.targetDate))
+// const isTicketExpired = dayjs().isAfter(dayjs(selectedRecord.targetDate))
 
 
 function closeDrawerHandler(){
@@ -310,13 +310,15 @@ return(
   <div
     style={{width:'100%',}}
   >
-{selectedRecord.ticketDetails.map((ticket:any)=>{
+    {/* @ts-ignore */}
+{selectedRecord?.communityDetails?.venuesDetails?.map((ticket:any)=>{
           return(
           <RedeemTicketForm
             key={ticket.id}
-            isTicketExpired = {isTicketExpired}
+            communityId={selectedRecord.communityId} 
+            isTicketExpired = {false} // community tickets never expire
             ticket={ticket}
-            userId = {selectedRecord.userTicketId}
+            userId = {ticket.targetUserId}
           />
           )
         })}
@@ -344,10 +346,11 @@ return(
 interface IRedeemTicketForm{
   ticket: any,
   isTicketExpired: boolean,
-  userId: string
+  userId: string,
+  communityId: string
 }
 
-function RedeemTicketForm({ticket, userId, isTicketExpired}:IRedeemTicketForm){
+function RedeemTicketForm({ticket, communityId, userId, isTicketExpired}:IRedeemTicketForm){
 
   const {paseto} = useAuthContext()
   
@@ -410,13 +413,13 @@ function RedeemTicketForm({ticket, userId, isTicketExpired}:IRedeemTicketForm){
   
     const payload ={
       item: {
-          id: ticket.id,  //need to valiadte exp using start date time + duration 
+          id: communityId,  //need to valiadte exp using start date time + duration 
           type: "community",
-          communityVenueId: ""
+          communityVenueId: ticket.id
       },
       ticketSecret: ticket.ticketSecret,
       redeemMethod: "uniqueCode",
-      userId: ticket.targetUserID
+      userId: userId
   }
       redeemServiceTicket.mutate(payload)
   }
@@ -448,9 +451,9 @@ function RedeemTicketForm({ticket, userId, isTicketExpired}:IRedeemTicketForm){
   return(
       <div style={{marginBottom:'4rem'}}>
             <div style={{marginBottom:'.4rem'}}>
-            <Text >Redeem for <Text strong >{ticket.firstName} {ticket.lastName}</Text></Text>
+            <Text >Redeem for <Text strong >{ticket.name}</Text></Text>
             </div>
-            {isRedeemed || ticket.ticketStatus === 'redeemed'
+            {ticket.isRedeem === 'redeemed'
             ?<Alert style={{marginBottom:'.3rem'}} message="Ticket has been redeemed" type="success" />
             :<Form form={form} onFinish={onFinish}>
             <Form.Item name={'ticketSecret'}  style={{marginBottom:'1rem'}} rules={[{required:true, message: 'This field is required'}, {max:6, message: 'You have exceed the max number of digits for a secret'}]}>
@@ -473,7 +476,7 @@ function RedeemTicketForm({ticket, userId, isTicketExpired}:IRedeemTicketForm){
               </Button>}
             </Form.Item>
           </Form>}
-            {ticket.transactionHash.length > 10
+            {/* {ticket.transactionHash.length > 10
               ?<Alert style={{marginBottom:'0'}} message="NFT has been minted for this ticket" type="success" />
               :<Button
                 shape="round" 
@@ -485,7 +488,7 @@ function RedeemTicketForm({ticket, userId, isTicketExpired}:IRedeemTicketForm){
                 loading={nftMutation.isLoading}  
               >
                  Mint NFT
-              </Button>}
+              </Button>} */}
           </div>
   )
 }

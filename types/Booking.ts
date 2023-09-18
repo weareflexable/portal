@@ -57,6 +57,8 @@ export interface Order {
     paymentIntentStatus: string,
     targetDate: string,
     userTicketId: string,
+    communityId: string,
+    targetUserID: string,
     redeemStatus: string,
     name: string
     communityDetails: CommunityDats
