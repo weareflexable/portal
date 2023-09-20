@@ -78,7 +78,8 @@ export default function Manage(){
             
             return res
         },
-        onSuccess:()=>{
+        onSuccess:(data:any)=>{
+            
             notification['success']({
                 message: 'Succesfully deleted co-admin',
                 style:{

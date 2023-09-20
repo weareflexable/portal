@@ -65,7 +65,7 @@ function Events(){
     const res = await axios({
             method:'get',
             //@ts-ignore
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}&type=all`,
 
             headers:{
                 "Authorization": paseto 
@@ -80,7 +80,7 @@ function Events(){
       const res = await axios({
               method:'get',
               //@ts-ignore
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}&type=all`,
 
               headers:{
                   "Authorization": paseto
@@ -451,7 +451,7 @@ const{isLoading:isDeletingItem} = deleteData
 function copyLink(selectedRecord:any){
   navigator.clipboard.writeText('')
   const eventId = selectedRecord.id
-  const marketplaceLink = `https://marketplace.flexable.com/events/${eventId}`
+  const marketplaceLink = `https://marketplace.dev.flexable.com/events/${eventId}`
    // Copy the text inside the text field
    navigator.clipboard.writeText(marketplaceLink);
   console.log(selectedRecord)
