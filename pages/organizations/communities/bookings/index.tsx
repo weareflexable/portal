@@ -426,9 +426,9 @@ function RedeemTicketForm({ticket, communityId, userId, isTicketExpired}:IRedeem
   
   const redeemServiceTicket = useMutation(redeemTicketHandler,{
     onSuccess:(data)=>{
-      if(data.status>201){
+      if(data.colour === 'red'){
         notification['error']({
-          message: 'Error redeeming ticket',
+          message: 'All tickets have been redeemed',
         });
       }else{
       notification['success']({
