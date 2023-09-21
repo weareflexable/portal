@@ -191,8 +191,8 @@ function gotoEventPage(event:Event){
       },
       {
         title: 'Type',
-        dataIndex: 'eventType',
-        key: 'eventType',
+        dataIndex: 'type',
+        key: 'type',
         width:'100px',
         render: (type)=>( 
           <Tag style={{textTransform:'capitalize'}}>{type}</Tag>
@@ -451,10 +451,10 @@ const{isLoading:isDeletingItem} = deleteData
 function copyLink(selectedRecord:any){
   navigator.clipboard.writeText('')
   const eventId = selectedRecord.id
-  const marketplaceLink = `https://marketplace.dev.flexable.com/events/${eventId}`
+  const marketplaceLink = `https://marketplace.dev.flexabledats.com/events/${eventId}`
+  // const marketplaceLink = `http://localhost:3002/events/${eventId}`
    // Copy the text inside the text field
    navigator.clipboard.writeText(marketplaceLink);
-  console.log(selectedRecord)
 }
 
 
