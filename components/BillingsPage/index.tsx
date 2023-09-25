@@ -317,7 +317,7 @@ const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 const {paseto} = useAuthContext()
 
 function closeDrawerHandler(){
-  queryClient.invalidateQueries(['services']) 
+  queryClient.invalidateQueries(['banks']) 
   closeDrawer(!isDrawerOpen)
 }
 

@@ -7,7 +7,7 @@ export interface ManagerOrder {
     serviceItemDetails: any[],
     user: User[]
     targetDate: string,
-    serviceDetails: any[],
+    serviceDetails: any,
     quantity: number,
     orderStatus: string,
     ticketStatus: string,
@@ -26,6 +26,8 @@ export interface ManagerOrder {
 
   type User = {
     email: string
+    firstName: string
+    lastName: string
     name: string
     profilePic: string
   }

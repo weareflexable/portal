@@ -4,7 +4,7 @@ import {UploadOutlined, ArrowLeftOutlined} from '@ant-design/icons'
 import {QueryClient, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 
 const {Option} = Select
-const {Title,Text} = Typography;
+const {Title,Text, Paragraph} = Typography;
 const {Content} = Layout
 
 const countryList = require('country-list')
@@ -120,7 +120,11 @@ export default function Profile(){
                     {userQuery.isLoading
                     ?<Skeleton.Input active size={'large'}  block />
                     :<EditableImage selectedRecord={userQuery.data&&userQuery.data[0]}/>
-                    }
+                    } 
+                    <div style={{ display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+                      <Text type="secondary" style={{ marginRight: '2rem',}}>Wallet Address</Text>
+                        <Paragraph style={{margin:'0'}} copyable={{ text: userQuery.data && userQuery.data[0].walletaddress }}>{`${userQuery.data && userQuery.data[0].walletaddress.substring(0,6)}....${userQuery.data && userQuery.data[0].walletaddress.slice(-4)}`}</Paragraph>
+                    </div>
                     <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
                       <Text type="secondary" style={{ marginRight: '2rem',}}>Role</Text>
                       <Tag color={userQuery.data&&userQuery.data[0].userRoleName === 'Manager' ? 'purple': userQuery.data&&userQuery.data[0].userRoleName==='Admin'? 'volcano': userQuery.data&&userQuery.data[0].userRoleName === 'Supervisor'?'cyan':userQuery.data&&userQuery.data[0].userRoleName === 'Superadmin'?'blue':'green'} style={{width:'max-content'}}>{userQuery.data && userQuery.data[0].userRoleName}</Tag>

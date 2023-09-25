@@ -22,7 +22,7 @@ export default function Services(){ // ServiceItems
                 <Row>
                     <Col offset={0} span={23}>
                     <div style={{display:'flex', marginTop:'1rem', marginBottom:'1rem', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
-                        <Title style={{ margin:'0'}} level={2}>Services</Title>
+                        <Title style={{ margin:'0'}} level={2}>Exclusive Access</Title>
                     </div>
                         <Content 
                             style={{
@@ -33,8 +33,8 @@ export default function Services(){ // ServiceItems
                             // minHeight:'70vh',
                             }}
                         > 
-                            <ServiceItemErrorBoundary name='Service page'>
-                                    <ServiceItemPageView/>
+                            <ServiceItemErrorBoundary name='Exlclusive Access page'>
+                                <ServiceItemPageView/>
                             </ServiceItemErrorBoundary>
                         </Content>
                     </Col>

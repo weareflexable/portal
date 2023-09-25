@@ -75,7 +75,7 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
     
           try{
     
-            const res =  await axios.post(`https://platform.dev.flexabledats.com/decodePaseto`, {token: paseto },
+            const res =  await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/decodePaseto`, {token: paseto },
             {
               headers:{
               'Authorization': paseto

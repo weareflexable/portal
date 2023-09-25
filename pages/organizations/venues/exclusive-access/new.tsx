@@ -175,7 +175,7 @@ function BasicForm({nextStep}:BasicInfoProps){
        },
        onSettled:()=>{
         queryClient.invalidateQueries(['all-serviceItems'])
-   },
+       },
         onError:(err)=>{
             console.log(err)
             notification['error']({
@@ -251,7 +251,7 @@ function BasicForm({nextStep}:BasicInfoProps){
             extra={`Enter a timeframe you want your DAT to be redeemable by customers. This may vary based on your industry and service you provide. Eg: a "Saturday Night Line Skip" at a bar might be valid from 7pm on Saturday night until 4am Sunday morning, to allow the late night partygoers a chance to redeem their tickets. A restaurant DAT for a "Last Minute Saturday Reservation" might only need to have validity period of 12 noon - 12 midnight`} 
             rules={[{required: true, message: 'This field is required' }]}
         >
-            <Space.Compact  block>
+            <Space.Compact size='large'  block>
             <Form.Item  rules={[{required:true, message:'Please provide a start time'}]}  name={['validity','start']} noStyle>
                 <TimePicker  use12Hours placeholder="Start"  format="h A" size="large" />
             </Form.Item>

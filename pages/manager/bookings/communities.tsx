@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { TableProps, Tag, Button, Table, Image, Typography } from "antd";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { TableProps, Tag, Button, Table, Image, Typography, Alert, Drawer, Form, Input, notification } from "antd";
 import { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import { useState } from "react";
@@ -7,11 +7,11 @@ import ManagerBookingsLayout from "../../../components/Layout/ManagerBookingsLay
 import { IMAGE_PLACEHOLDER_HASH } from "../../../constants";
 import { useAuthContext } from "../../../context/AuthContext";
 import useUrlPrefix from "../../../hooks/useUrlPrefix";
-import { CommunityOrder } from "../../../types/Booking";
+import { CommunityOrder, EventOrder } from "../../../types/Booking";
 import { ServiceItem } from "../../../types/Services";
 import { numberFormatter } from "../../../utils/numberFormatter";
 
-import {ReloadOutlined, CheckOutlined,StopOutlined} from '@ant-design/icons'
+import {ReloadOutlined, CheckOutlined,StopOutlined, MoreOutlined} from '@ant-design/icons'
 
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -32,6 +32,9 @@ export default function CommunityBookings(){
     const {paseto} = useAuthContext()
     const [pageNumber, setPageNumber] = useState<number|undefined>(1)
     const [pageSize, setPageSize] = useState<number|undefined>(10)
+
+    const [selectedRecord, setSelectedRecord] = useState<any|EventOrder>({})
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   
 
     type DataIndex = keyof ServiceItem;
@@ -72,6 +75,21 @@ export default function CommunityBookings(){
       // set page number
       // setFilteredInfo(filters);
     };
+
+    // function viewBookingDetails(event:CommunityOrder){
+    //   // set state
+    //   setSelectedRecord(event)
+    //   // opne drawer
+    //   setIsDrawerOpen(true)
+
+    // }
+  
+
+    // const onMenuClick=( record:CommunityOrder) => {
+    //   viewBookingDetails(record)
+    //   console.log('click', record);
+    // };
+
   
   
 
@@ -192,6 +210,16 @@ export default function CommunityBookings(){
         )
     }
   },
+  // {
+  //   dataIndex: 'actions', 
+  //   key: 'actions',
+  //   fixed: 'right',
+  //   width:'70px',
+  //   //@ts-ignore
+  //   render:(_,record:CommunityOrder)=>{
+  //       return <Button onClick= {()=>onMenuClick(record)} type="text" icon={<MoreOutlined rev={undefined}/>}/> 
+  //   }
+  // }
     
     ];
 
@@ -225,7 +253,10 @@ export default function CommunityBookings(){
                   />
                 {/* {
                   isDrawerOpen
-                  ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedServiceItem={selectedServiceItem}/>
+                  ?<DetailDrawer 
+                  isDrawerOpen={isDrawerOpen} 
+                  closeDrawer={setIsDrawerOpen} 
+                  selectedRecord={selectedRecord}/>
                   :null
                 } */}
             </div>
@@ -235,3 +266,125 @@ export default function CommunityBookings(){
 
 
 CommunityBookings.PageLayout = ManagerBookingsLayout
+
+
+// interface DrawerProps{
+//   selectedRecord: EventOrder,
+//   isDrawerOpen: boolean, 
+//   closeDrawer: (value:boolean)=>void
+// }
+
+// function DetailDrawer({selectedRecord,isDrawerOpen,closeDrawer}:DrawerProps){
+
+//     const queryClient = useQueryClient()
+    
+    
+//     const isTicketExpired = dayjs().isAfter(dayjs(selectedRecord.eventDetails.startTime).add(selectedRecord.eventDetails.duration/60,'h').tz('UTC'))
+    
+    
+//     function closeDrawerHandler(){
+//       queryClient.invalidateQueries(['manager-event-bookings']) 
+//       closeDrawer(!isDrawerOpen)
+//     }
+    
+    
+    
+    
+//     return( 
+//     <Drawer 
+//       title="Redeem Ticket" 
+//       width={400} 
+//       placement="right" 
+//       closable={true} 
+//       onClose={closeDrawerHandler} 
+//       open={isDrawerOpen}
+//     >
+//       <div
+//         style={{width:'100%',}}
+//       >
+//         {selectedRecord.ticketDetails.map((ticket:any)=>{
+//           return(
+//             <RedeemTicketForm
+//             key={ticket.id}
+//             isTicketExpired = {isTicketExpired}
+//             ticket={ticket}
+//           />
+//           )
+//         })}
+   
+//    {selectedRecord.redeemStatus === 'redeemed'
+//     ?<Text type="secondary" >It appears that your ticket has already been redeemed </Text>
+//     :selectedRecord.paymentIntentStatus!== 'successful'
+//     ?<Text>Payment status for this ticket has to be successful before it can be redeemed</Text>
+//     :null
+//     }
+//     </div>
+    
+    
+    
+//     </Drawer>
+//     )
+//     }
+
+
+
+
+//     interface IRedeemTicketForm{
+//       ticket: any,
+//       isTicketExpired: boolean
+//     }
+//     function RedeemTicketForm({ticket}:IRedeemTicketForm){
+    
+//       const {paseto} = useAuthContext()
+  
+    
+//       const urlPrefix =  useUrlPrefix()
+    
+    
+//       const nftMutation = useMutation({
+//         mutationFn: async(payload:any)=>{
+//           const res = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/nft/community`,payload,{
+//             headers:{
+//                 "Authorization": paseto
+//             },
+//         })
+//           return res;
+//         },
+//         onSuccess: async()=>{
+//           notification['success']({
+//             message: 'Success minting NFT'
+//           })
+//         },
+//         onError: async()=>{
+//           notification['error']({
+//             message: 'Error minting NFT!'
+//           })
+//         }
+//       })
+    
+//       function mintToken(){
+//         nftMutation.mutate({bookingId: ticket.eventBookingId, ticketId: ticket.id})
+//       }
+
+    
+    
+//       return(
+//           <div style={{marginBottom:'4rem'}}>
+//                 {ticket.transactionHash.length > 10
+//                   ?<Alert style={{marginBottom:'0'}} message="NFT has been minted for this ticket" type="success" />
+//                   :<Button
+//                     shape="round" 
+//                     block 
+//                     type="default" 
+//                     onClick={mintToken} 
+//                     size="large" 
+//                     style={{marginBottom:'4rem'}}
+//                     loading={nftMutation.isLoading}  
+//                   >
+//                      Mint NFT
+//                   </Button>}
+//               </div>
+//       )
+//     }
+    
+    
