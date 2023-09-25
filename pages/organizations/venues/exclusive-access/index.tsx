@@ -33,8 +33,8 @@ export default function Services(){ // ServiceItems
                             // minHeight:'70vh',
                             }}
                         > 
-                            <ServiceItemErrorBoundary name='Service page'>
-                                    <ServiceItemPageView/>
+                            <ServiceItemErrorBoundary name='Exlclusive Access page'>
+                                <ServiceItemPageView/>
                             </ServiceItemErrorBoundary>
                         </Content>
                     </Col>

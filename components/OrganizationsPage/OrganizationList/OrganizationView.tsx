@@ -10,7 +10,7 @@ import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, Input
 import { useRouter } from 'next/router'
 import Highlighter from 'react-highlight-words'
 import axios from 'axios';
-import {MoreOutlined,ReloadOutlined} from '@ant-design/icons'
+import {MoreOutlined,ReloadOutlined,DashOutlined} from '@ant-design/icons'
 import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
 
 import { useAuthContext } from '../../../context/AuthContext';
@@ -61,7 +61,7 @@ export default function AdminOrgsView(){
     async function fetchAllOrgs(){
       const res = await axios({
               method:'get',
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?pageNumber=${pageNumber}&pageSize=10&key2=created_by`,
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?pageNumber=${pageNumber}&pageSize=10&status=1`,
               headers:{
                   "Authorization": paseto
               }
@@ -74,7 +74,7 @@ export default function AdminOrgsView(){
     async function fetchOrgs(){
         const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?key=status&value=${currentStatus.id}&pageNumber=${pageNumber}&pageSize=${pageSize}&key2=created_by`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentStatus.id}`,
             headers:{
                 "Authorization": paseto
             }
@@ -83,8 +83,6 @@ export default function AdminOrgsView(){
         return res.data;
    
     }
-
-   
 
     async function changeOrgStatus({orgId, statusNumber}:{orgId:string, statusNumber: string}){
         const res = await axios({
@@ -102,8 +100,6 @@ export default function AdminOrgsView(){
         return res; 
     }
 
-   
-    
 
     const changeStatusMutation = useMutation(['orgs'],{
         mutationFn: changeOrgStatus,
@@ -369,27 +365,39 @@ export default function AdminOrgsView(){
       },
       {
         title: 'Address',
-        // dataIndex: 'address',
+        dataIndex: 'address',
         key: 'address',
         width:'370px',
-        ellipsis:true,
-        render:(_,record)=>(
-          <div style={{display:'flex',flexDirection:'column'}}>
-              <Text style={{textTransform:'capitalize'}}>{record.country}</Text>  
-              <Text type="secondary">{record.street}</Text>
-          </div>
+        ellipsis: true,
+        render:(_,record)=>{
+          return(
+            <>
+            {
+              record.street !== ''
+              ? <div style={{display:'flex',flexDirection:'column'}}>
+                    <Text style={{textTransform:'capitalize'}}>{record.country}</Text>  
+                    <Text type="secondary">{record.street}</Text>
+                </div>
+              : <DashOutlined rev={undefined}/>
+            }
+          </>
         )
+      }
       },
       
-      {
+     {
         title: 'Contact Number',
         dataIndex: 'contactNumber',
         key: 'contactNumber',
         width:'150px',
-        render:(number)=>{
-          const formattedNumber = convertToAmericanFormat(number)
-          return <Text>{formattedNumber}</Text>
-        }
+        render: (_,record)=>(
+          <>
+          {
+          //@ts-ignore
+          record.contactNumber !=='' ?<Text>{convertToAmericanFormat(record.contactNumber)}</Text>: <DashOutlined rev={undefined}/>
+           }
+          </>
+        )
       },
       {
           title: 'Created On',

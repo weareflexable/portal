@@ -191,8 +191,8 @@ function gotoEventPage(event:Event){
       },
       {
         title: 'Type',
-        dataIndex: 'eventType',
-        key: 'eventType',
+        dataIndex: 'type',
+        key: 'type',
         width:'100px',
         render: (type)=>( 
           <Tag style={{textTransform:'capitalize'}}>{type}</Tag>
@@ -454,7 +454,6 @@ function copyLink(selectedRecord:any){
   const marketplaceLink = `https://marketplace.staging.flexabledats.com/events/${eventId}`
    // Copy the text inside the text field
    navigator.clipboard.writeText(marketplaceLink);
-  console.log(selectedRecord)
 }
 
 
