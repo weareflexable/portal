@@ -84,8 +84,6 @@ export default function AdminOrgsView(){
    
     }
 
-   
-
     async function changeOrgStatus({orgId, statusNumber}:{orgId:string, statusNumber: string}){
         const res = await axios({
             method:'patch',
@@ -102,9 +100,7 @@ export default function AdminOrgsView(){
         return res; 
     }
 
-   
     
-
     const changeStatusMutation = useMutation(['orgs'],{
         mutationFn: changeOrgStatus,
         onSuccess:(data:any)=>{
