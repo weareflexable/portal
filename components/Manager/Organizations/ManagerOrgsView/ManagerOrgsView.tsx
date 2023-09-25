@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { NewOrg } from "../../../../types/OrganisationTypes";
 import useOrgs from "../../../../hooks/useOrgs";
 const {Text,Title} = Typography
-import { SearchOutlined, PlusOutlined, LikeOutlined, DislikeOutlined } from '@ant-design/icons';
+import { SearchOutlined, PlusOutlined, LikeOutlined, DashOutlined, DislikeOutlined } from '@ant-design/icons';
 import type { FilterConfirmProps } from 'antd/es/table/interface';
 import React, { useRef, useState } from 'react'
 import {Typography,Button,Avatar, Alert, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Modal, notification} from 'antd'
@@ -477,12 +477,20 @@ export default function ManagerOrgsView(){
         key: 'address',
         width:'370px',
         ellipsis: true,
-        render:(_,record)=>(
-          <div style={{display:'flex',flexDirection:'column'}}>
-              <Text style={{textTransform:'capitalize'}}>{record.country}</Text>  
-              <Text type="secondary">{record.street}</Text>
-          </div>
+        render:(_,record)=>{
+          return(
+            <>
+            {
+              record.street !== ''
+              ? <div style={{display:'flex',flexDirection:'column'}}>
+                    <Text style={{textTransform:'capitalize'}}>{record.country}</Text>  
+                    <Text type="secondary">{record.street}</Text>
+                </div>
+              : <DashOutlined rev={undefined}/>
+            }
+          </>
         )
+      }
       },
     
       {
@@ -491,8 +499,12 @@ export default function ManagerOrgsView(){
         key: 'contactNumber',
         width:'150px',
         render: (_,record)=>(
+          <>
+          {
           //@ts-ignore
-          <Text>{convertToAmericanFormat(record.contactNumber)}</Text> 
+          record.contactNumber !=='' ?<Text>{convertToAmericanFormat(record.contactNumber)}</Text>: <DashOutlined rev={undefined}/>
+           }
+          </>
         )
       },
       {
