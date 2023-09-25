@@ -61,7 +61,7 @@ export default function AdminOrgsView(){
     async function fetchAllOrgs(){
       const res = await axios({
               method:'get',
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?pageNumber=${pageNumber}&pageSize=10&key2=created_by`,
+              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?pageNumber=${pageNumber}&pageSize=10&status=1`,
               headers:{
                   "Authorization": paseto
               }
@@ -74,7 +74,7 @@ export default function AdminOrgsView(){
     async function fetchOrgs(){
         const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?key=status&value=${currentStatus.id}&pageNumber=${pageNumber}&pageSize=${pageSize}&key2=created_by`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentStatus.id}`,
             headers:{
                 "Authorization": paseto
             }
