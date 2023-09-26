@@ -74,18 +74,19 @@ export default function ServiceItemsView(){
 
     const items = serviceItemTypes && serviceItemTypes.map((item:any)=>({label:item.label, key:item.value}))
 
-    async function fetchAllServiceItems(){
-    const res = await axios({
-            method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items?serviceId=${currentService.id}&pageNumber=${pageNumber}&pageSize=10`,
-            headers:{
-                "Authorization": paseto
-            }
-        })
+    // async function fetchAllServiceItems(){
+    // const res = await axios({
+    //         method:'get',
+    //         url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items?serviceId=${currentService.id}&pageNumber=${pageNumber}&pageSize=10`,
+    //         headers:{
+    //             "Authorization": paseto
+    //         }
+    //     })
 
-        return res.data;
+    //     return res.data;
    
-    }
+    // }
+
     async function fetchServiceItems(){
     const res = await axios({
             method:'get',
@@ -105,8 +106,8 @@ export default function ServiceItemsView(){
             method:'patch',
             url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,
             data:{
-                key:'status',
-                value: statusNumber, // 0 means de-activated in db
+                // key:'status',
+                status: statusNumber, // 0 means de-activated in db
                 serviceItemId: serviceItemId 
             },
             headers:{
@@ -138,11 +139,11 @@ export default function ServiceItemsView(){
 
     const serviceItemsQuery = useQuery({queryKey:['serviceItems', {currentSerive:currentService.id, filter:currentFilter.id,pageNumber:pageNumber}], queryFn:fetchServiceItems, enabled:paseto !== ''})
     const res = serviceItemsQuery.data && serviceItemsQuery.data;
-    const servicesData = res && res.data
-    const totalLength = res && res.dataLength;
+    const servicesData = res?.data
+    const totalLength = res?.dataLength;
 
-    const allServiceItemsQuery = useQuery({queryKey:['all-serviceItems',{currentService: currentService.id}], queryFn:fetchAllServiceItems, enabled:paseto !== '', staleTime:Infinity})
-    const allServiceItemsLength = allServiceItemsQuery.data && allServiceItemsQuery.data.dataLength;
+    // const allServiceItemsQuery = useQuery({queryKey:['all-serviceItems',{currentService: currentService.id}], queryFn:fetchAllServiceItems, enabled:paseto !== '', staleTime:Infinity})
+    // const allServiceItemsLength = allServiceItemsQuery.data && allServiceItemsQuery.data.dataLength;
  
 
 
@@ -167,8 +168,8 @@ export default function ServiceItemsView(){
           method:'patch',
           url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,
           data:{
-              key:'status',
-              value: '1', 
+              // key:'status',
+              status: '1', 
               id: record.id  
           },
           headers:{
@@ -201,7 +202,7 @@ export default function ServiceItemsView(){
                 <div style={{display:'flex',alignItems:'center'}}>
                     <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.logoImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
-                        <Text style={{textTransform:'capitalize'}}>{record.name}</Text>  
+                        <Text style={{textTransform:'capitalize'}}>{record?.name}</Text>  
                     </div>
                 </div>
             )
@@ -214,7 +215,7 @@ export default function ServiceItemsView(){
         width:'120px',
         render:(_,record)=>{
           const type = record.serviceItemType[0]
-          return <Tag style={{textTransform:'capitalize'}}>{type.name}</Tag>
+          return <Tag style={{textTransform:'capitalize'}}>{type?.name}</Tag>
         }
       },
       {
@@ -249,7 +250,7 @@ export default function ServiceItemsView(){
         key: 'customDates',
         width:'150px',
         render: (_,record)=>{
-          const customDatesLength = record.availability.length
+          const customDatesLength = record?.availability?.length
           return <Text>{`${customDatesLength}`}</Text>
         }
       },
@@ -259,7 +260,7 @@ export default function ServiceItemsView(){
           key: 'createdAt',
           width:'120px',
           render: (_,record)=>{
-              const date = dayjs(record.createdAt).format('MMM DD, YYYY')
+              const date = dayjs(record?.createdAt).format('MMM DD, YYYY')
               return(
             <Text type="secondary">{date}</Text>
             )
@@ -284,9 +285,10 @@ export default function ServiceItemsView(){
 
         return (
             <div>
-               { servicesData && allServiceItemsLength === 0  
+               { servicesData 
                ? null 
-               : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
+               : 
+               <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
                  <div style={{width:'100%',  marginBottom:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                      
                  <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
@@ -307,13 +309,16 @@ export default function ServiceItemsView(){
                   {/* <Dropdown.Button trigger={['click']} type="primary"   icon={<PlusOutlined/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button> */}
                 </div>
 
-                </div>}
-                {
+                </div>
+                } 
+
+                {/* {
                   servicesData && allServiceItemsLength === 0
                   ?<EmptyState>
                     <Dropdown.Button trigger={['click']} type="primary"   icon={<PlusOutlined rev={undefined}/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
                   </EmptyState>
-                  :<Table 
+                  : */}
+                  <Table 
                   style={{width:'100%'}} 
                   scroll={{ x: 'calc(500px + 50%)'}} 
                   rowKey={(record) => record.id}
@@ -328,7 +333,7 @@ export default function ServiceItemsView(){
                   onChange={handleChange} 
                   dataSource={servicesData} 
                 />
-                }
+                {/* } */}
                 
                 {
                   isDrawerOpen
@@ -402,8 +407,8 @@ const deleteDataHandler = async(record:ServiceItem)=>{
     url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,
     data: {
         id:record.id,
-        key:'status',
-        value: '0'
+        // key:'status',
+        status: '0'
       },
     headers:{
           "Authorization": paseto

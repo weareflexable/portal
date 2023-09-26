@@ -50,8 +50,8 @@ interface EditableProp{
   
     function onFinish(updatedItem:any){
       const payload = {
-        key:'name',
-        value: updatedItem.name,
+        // key:'name',
+        name: updatedItem.name,
         //@ts-ignore
         id: selectedOrg.orgId
       }
@@ -342,8 +342,8 @@ interface EditableProp{
   
     function onFinish(field:any){
       const payload = {
-        key:'contact_number',
-        value: field.contactNumber,
+        // key:'contact_number',
+        contactNumber: field.contactNumber,
         id: selectedOrg.id
       }
       console.log(payload)
@@ -433,8 +433,8 @@ interface EditableProp{
   
     function onFinish(field:any){
       const payload = {
-        key:'zip_code',
-        value: field.zipCode,
+        // key:'zip_code',
+        zipCode: field.zipCode,
         id: selectedOrg.id
       }
       mutation.mutate(payload)

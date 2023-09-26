@@ -544,8 +544,8 @@ export function EditableRadio({id, options, selectedItem, fieldName, currentFiel
 
   function onFinish(formData:any){
     const payload = {
-      key:fieldKey,
-      value: formData[fieldName],
+      // key:fieldKey,
+      fieldKey: formData[fieldName],
       id: id
     }
     mutation.mutate(payload)

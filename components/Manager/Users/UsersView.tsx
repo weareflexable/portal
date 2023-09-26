@@ -337,8 +337,8 @@ const deleteDataHandler = async(record:User)=>{
     url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/users-role`,
     data: {
         targetUserId:record.id,
-        key:'status',
-        value: "0"
+        // key:'status',
+        status: "0"
       },
     headers:{
           "Authorization": paseto 

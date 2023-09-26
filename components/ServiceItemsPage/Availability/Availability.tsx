@@ -20,7 +20,7 @@ export default function AvailabilitySection({selectedServiceItem}:Props){
     const urlPrefix = useUrlPrefix()
   
     async function fetchItemAvailability(){
-      const res = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items/availability?key=service_item_id&value=${selectedServiceItem.id}&pageNumber=1&pageSize=50`,{
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items/availability?serviceItemId=${selectedServiceItem.id}&pageNumber=1&pageSize=50`,{
        headers:{
          "Authorization":paseto
        }
@@ -29,12 +29,11 @@ export default function AvailabilitySection({selectedServiceItem}:Props){
      }
      
      const {data, isLoading} = useQuery({queryKey:['availability',selectedServiceItem.id], queryFn:fetchItemAvailability})
-     console.log(data)
+
      const availabilityData = data && data;
 
      const isAvailabilityEmpty = data && data.length == 0
 
-     console.log(availabilityData)
 
 
     return(
@@ -327,7 +326,6 @@ export function NewAvailability({selectedServiceItem}:NewAvailabilityProps){
             serviceItemId: selectedServiceItem.id,
             availability: [transformedItem]
         }
-        console.log(payload)
       
     //   const updatedRecord = {
     //     ...selectedRecord,

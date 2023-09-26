@@ -96,8 +96,8 @@ function Events(){
             method:'patch',
             url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,
             data:{
-                key:'status',
-                value: '1', 
+                // key:'status',
+                status: '1', 
                 id: record.id  
             },
             headers:{
@@ -431,8 +431,8 @@ const deleteDataHandler = async(record:Event)=>{
     url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,
     data: {
         id:record.id,
-        key:'status',
-        value: "0"
+        // key:'status',
+        status: "0"
       },
     headers:{
           "Authorization": paseto 
@@ -553,8 +553,8 @@ export function EditableDescription({selectedRecord}:EditableProp){
 
   function onFinish(updatedItem:any){
     const payload = {
-      key:'description',
-      value: updatedItem.description,
+      // key:'description',
+      description: updatedItem.description,
       id: selectedRecord.id
     }
     const updatedRecord = {
@@ -662,8 +662,8 @@ export function EditablePrice({selectedRecord}:EditableProp){
 
   function onFinish(updatedItem:any){
     const payload = {
-      key:'price',
-      value: String(updatedItem.price*100),
+      // key:'price',
+      price: String(updatedItem.price*100),
       id: selectedRecord.id
     }
     recordMutation.mutate(payload)
@@ -763,8 +763,8 @@ export function EditableName({selectedRecord}:EditableProp){
 
   function onFinish(updatedItem:any){
     const payload = {
-      key:'name',
-      value: updatedItem.name,
+      // key:'name',
+      name: updatedItem.name,
       id: selectedRecord.id
     }
 
@@ -881,8 +881,8 @@ export function EditableLogoImage({selectedRecord}:EditableProp){
 
 
     const payload = {
-      key:'cover_image_hash',
-      value: logoHash,
+      // key:'cover_image_hash',
+      coverImageHash: logoHash,
       id: selectedRecord.id
     }
     mutation.mutate(payload)
@@ -992,8 +992,8 @@ export function EditableDate({selectedRecord}:EditableProp){
   
     function onFinish(updatedItem:any){
       const payload = {
-        key:'start_time',
-        value: updatedItem.startTime,
+        // key:'start_time',
+        startTime: updatedItem.startTime,
         id: selectedRecord.id
       }
   
@@ -1102,8 +1102,8 @@ export function EditableTimeZone({selectedRecord}:EditableProp){
   
     function onFinish(updatedItem:any){
       const payload = {
-        key:'timeZone',
-        value: updatedItem.timeZone,
+        // key:'timeZone',
+        timeZone: updatedItem.timeZone,
         id: selectedRecord.id
       }
   
@@ -1223,8 +1223,8 @@ export function EditableTickets({selectedRecord}:EditableProp){
   
     function onFinish(updatedItem:any){
       const payload = {
-        key:'totalTickets',
-        value: updatedItem.totalTickets,
+        // key:'totalTickets',
+        totalTickets: updatedItem.totalTickets,
         id: selectedRecord.id
       }
   
@@ -1328,8 +1328,8 @@ export function EditableDuration({selectedRecord}:EditableProp){
   
     function onFinish(updatedItem:any){
       const payload = {
-        key:'duration',
-        value: String(updatedItem.duration*60),
+        // key:'duration',
+        duration: String(updatedItem.duration*60),
         id: selectedRecord.id
       }
 

@@ -88,8 +88,8 @@ function Communities(){
             method:'patch',
             url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,
             data:{
-                key:'status',
-                value: '1', 
+                // key:'status',
+                status: '1', 
                 id: record.id  
             },
             headers:{
@@ -372,8 +372,8 @@ const deleteDataHandler = async(record:Community)=>{
     url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,
     data: {
         id:record.id,
-        key:'status',
-        value: "0"
+        // key:'status',
+        status: "0"
       },
     headers:{
           "Authorization": paseto 
@@ -469,8 +469,8 @@ export function EditableDescription({selectedRecord}:EditableProp){
 
   function onFinish(updatedItem:any){
     const payload = {
-      key:'description',
-      value: updatedItem.description,
+      // key:'description',
+      description: updatedItem.description,
       id: selectedRecord.id
     }
     const updatedRecord = {
@@ -577,8 +577,8 @@ export function EditablePrice({selectedRecord}:EditableProp){
 
   function onFinish(updatedItem:any){
     const payload = {
-      key:'price',
-      value: String(updatedItem.price*100),
+      // key:'price',
+      price: String(updatedItem.price*100),
       id: selectedRecord.id
     }
     recordMutation.mutate(payload)
@@ -680,8 +680,8 @@ export function EditableName({selectedRecord}:EditableProp){
 
   function onFinish(updatedItem:any){
     const payload = {
-      key:'name',
-      value: `Key to: ${updatedItem.name}`,
+      // key:'name',
+      name: `Key to: ${updatedItem.name}`,
       id: selectedRecord.id
     }
 

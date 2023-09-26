@@ -45,7 +45,7 @@ export default function CommunityBookings(){
     async function fetchBookings(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/bookings/communities?pageNumber=${pageNumber}&pageSize=${pageSize}&key='id'&value=${''}`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/bookings/communities?pageNumber=${pageNumber}&pageSize=${pageSize}`,
             headers:{
                 "Authorization": paseto
             }
