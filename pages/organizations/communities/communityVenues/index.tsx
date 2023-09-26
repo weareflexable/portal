@@ -50,18 +50,18 @@ function CommunityVenues(){
     
 
 
-    async function fetchAllCommunityVenues(){
-    const res = await axios({
-            method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues?communityId=${currentCommunity.id}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
-            headers:{
-                "Authorization": paseto
-            }
-        })
+    // async function fetchAllCommunityVenues(){
+    // const res = await axios({
+    //         method:'get',
+    //         url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues?communityId=${currentCommunity.id}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
+    //         headers:{
+    //             "Authorization": paseto
+    //         }
+    //     })
 
-        return res.data;
+    //     return res.data;
    
-    }
+    // }
     async function fetchCommunityVenues(){
     const res = await axios({
             method:'get',
@@ -111,8 +111,8 @@ function CommunityVenues(){
     const servicesData = res && res.data
     const totalLength = res && res.dataLength;
 
-    const allCommunityVenuesQuery = useQuery({queryKey:['all-communityVenues',{currentCommunity: currentCommunity.id}], queryFn:fetchAllCommunityVenues, enabled:paseto !== '', staleTime:Infinity})
-    const allCommunityVenuesLength = allCommunityVenuesQuery.data && allCommunityVenuesQuery.data.dataLength;
+    // const allCommunityVenuesQuery = useQuery({queryKey:['all-communityVenues',{currentCommunity: currentCommunity.id}], queryFn:fetchAllCommunityVenues, enabled:paseto !== '', staleTime:Infinity})
+    // const allCommunityVenuesLength = allCommunityVenuesQuery.data && allCommunityVenuesQuery.data.dataLength;
  
 
 
@@ -244,9 +244,10 @@ function CommunityVenues(){
 
         return (
             <div style={{background:'#f7f7f7', minHeight:'100vh'}}>
-               { servicesData && allCommunityVenuesLength === 0  
+               {/* { servicesData && allCommunityVenuesLength === 0  
                ? null 
-               : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
+               : */}
+                <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
                  <div style={{width:'100%',  marginBottom:'1rem', marginTop:'2rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                       <Title style={{margin: '0'}} level={2}>Community Venues</Title>
                       <div style={{display:'flex'}}>
@@ -266,13 +267,16 @@ function CommunityVenues(){
                   {/* <Dropdown.Button trigger={['click']} type="primary"   icon={<PlusOutlined/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button> */}
                 </div>
 
-                </div>}
-                {
+                </div>
+                {/* } */}
+
+                {/* {
                   servicesData && allCommunityVenuesLength === 0
                   ?<EmptyState>
                     <Button type="primary" onClick={()=>{router.push('/organizations/communities/communityVenues/new')}} icon={<PlusOutlined rev={undefined}/>} >Add Venue</Button>
                   </EmptyState>
-                  :<Table 
+                  : */}
+                  <Table 
                   style={{width:'100%'}} 
                   scroll={{ x: 'calc(500px + 50%)'}} 
                   rowKey={(record) => record.id}
@@ -287,7 +291,7 @@ function CommunityVenues(){
                   onChange={handleChange} 
                   dataSource={servicesData} 
                 />
-                }
+                {/* } */}
                 
                 {
                   isDrawerOpen

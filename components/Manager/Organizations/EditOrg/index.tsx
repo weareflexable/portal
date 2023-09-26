@@ -537,8 +537,8 @@ interface EditableProp{
       console.log(logoHash)
   
       const payload = {
-        key:'logo_image_hash',
-        value: logoHash,
+        // key:'logo_image_hash',
+        logoImageHash: logoHash,
         //@ts-ignore
         id: selectedOrg.orgId
       }
@@ -655,8 +655,8 @@ interface EditableProp{
       console.log(coverImageHash)
   
       const payload = {
-        key:'cover_image_hash',
-        value: coverImageHash,
+        // key:'cover_image_hash',
+        coverImageHash: coverImageHash,
         id: selectedOrg.id
       }
       setUpdatedCoverImageHash(coverImageHash)

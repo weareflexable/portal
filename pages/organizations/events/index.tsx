@@ -61,20 +61,20 @@ function Events(){
    const urlPrefix = useUrlPrefix()
 
   
-    async function fetchAllEvents(){
-    const res = await axios({
-            method:'get',
-            //@ts-ignore
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}&type=all`,
+    // async function fetchAllEvents(){
+    // const res = await axios({
+    //         method:'get',
+    //         //@ts-ignore
+    //         url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}&type=all`,
 
-            headers:{
-                "Authorization": paseto 
-            }
-        })
+    //         headers:{
+    //             "Authorization": paseto 
+    //         }
+    //     })
 
-        return res.data.data;
+    //     return res.data.data;
    
-    }
+    // }
   
     async function fetchEvents(){
       const res = await axios({
@@ -128,8 +128,8 @@ function Events(){
     const totalLength = 0;
 
     // @ts-ignore
-    const allEventsQuery = useQuery({queryKey:['all-events',{currentOrg: currentOrg.orgId}], queryFn:fetchAllEvents, enabled: paseto !== '', staleTime:Infinity})
-    const allEventsLength = allEventsQuery.data && allEventsQuery.data.dataLength;
+    // const allEventsQuery = useQuery({queryKey:['all-events',{currentOrg: currentOrg.orgId}], queryFn:fetchAllEvents, enabled: paseto !== '', staleTime:Infinity})
+    // const allEventsLength = allEventsQuery.data && allEventsQuery.data.dataLength;
 
 
 
@@ -306,9 +306,10 @@ function gotoEventPage(event:Event){
               <div style={{display:'flex', marginTop:'1rem', marginBottom:'1rem', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                  <Title style={{ margin:'0'}} level={2}>Events</Title>
                </div>
-                   {allEventsQuery.data && allEventsLength === 0 
+                   {/* {allEventsQuery.data && allEventsLength === 0 
                    ? null 
-                   : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
+                   :  */}
+                   <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
                     <div style={{width:'100%',  marginBottom:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                         {/* filters */}
                         <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
@@ -324,14 +325,15 @@ function gotoEventPage(event:Event){
                     </div>
                      
                    </div>
-                   }
+                   {/* } */}
                 
-                {
+                {/* {
                   allEventsQuery.data && allEventsLength === 0
                   ? <EmptyState>
                       <Button type="primary"  onClick={()=>router.push('/organizations/events/new')}  icon={<PlusOutlined rev={undefined}/>} >Launch Event</Button>
                   </EmptyState> 
-                  : <Table 
+                  :  */}
+                  <Table 
                       style={{width:'100%'}} 
                       scroll={{ x: 'calc(600px + 40%)'}} 
                       size='large' 
@@ -347,7 +349,7 @@ function gotoEventPage(event:Event){
                         showTotal:(total) => `Total: ${total} items`, 
                       }} 
                     />
-                }
+                {/* } */}
                 
                 { 
                   isDrawerOpen
