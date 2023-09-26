@@ -118,7 +118,7 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
     // Effect for decoding user paseto and fetching user role.
     async function fetchCurrentUser(){
         // use axios to fetch
-        const res =  await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/users`,{
+        const res =  await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/user`,{
             headers:{
                 "Authorization": paseto
             }

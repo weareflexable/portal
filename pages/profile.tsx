@@ -14,6 +14,7 @@ import { useAuthContext } from '../context/AuthContext';
 import CurrentUser from '../components/Header/CurrentUser/CurrentUser';
 import axios from 'axios';
 import { asyncStore } from '../utils/nftStorage';
+import React from 'react';
 
 
 
@@ -39,7 +40,7 @@ export default function Profile(){
     const [isLoadingProfile, setIsLoadingProfile] = useState(true)
 
     async function fetchUserDetails(){
-      const res = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/users`,{
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/user`,{
         headers:{
           "Authorization": paseto
         }
@@ -130,7 +131,8 @@ export default function Profile(){
                       <Tag color={userQuery.data&&userQuery.data[0].userRoleName === 'Manager' ? 'purple': userQuery.data&&userQuery.data[0].userRoleName==='Admin'? 'volcano': userQuery.data&&userQuery.data[0].userRoleName === 'Supervisor'?'cyan':userQuery.data&&userQuery.data[0].userRoleName === 'Superadmin'?'blue':'green'} style={{width:'max-content'}}>{userQuery.data && userQuery.data[0].userRoleName}</Tag>
                     </div>
                     <EditableEmail isReadOnly selectedRecord={userQuery.data&&userQuery.data[0]}/>
-                    <EditableName selectedRecord={userQuery.data&&userQuery.data[0]}/>
+                    <EditableFirstName selectedRecord={userQuery.data&&userQuery.data[0]}/>
+                    <EditableLastName selectedRecord={userQuery.data&&userQuery.data[0]}/>
                     <EditablePhone selectedRecord={userQuery.data&&userQuery.data[0]}/>
                     <EditableGender selectedRecord={userQuery.data&&userQuery.data[0]}/>
                     <EditableCountry selectedRecord={userQuery.data&&userQuery.data[0]}/>
@@ -184,7 +186,7 @@ function EditableEmail({selectedRecord, isReadOnly}:EditableProp){
    
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/users`,updatedItem,{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/user`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -205,8 +207,7 @@ function EditableEmail({selectedRecord, isReadOnly}:EditableProp){
   
     function onFinish(updatedItem:any){
       const payload = {
-        key:'email',
-        value:updatedItem.name,
+        email:updatedItem.name,
       }
       mutation.mutate(payload)
     }
@@ -260,10 +261,7 @@ function EditableEmail({selectedRecord, isReadOnly}:EditableProp){
       </div>
     )
   }
-function EditableName({selectedRecord}:EditableProp){
-
-
-    // const [state, setState] = useState(selectedRecord)
+function EditableFirstName({selectedRecord}:EditableProp){
   
     const [isEditMode, setIsEditMode] = useState(false)
   
@@ -276,9 +274,8 @@ function EditableName({selectedRecord}:EditableProp){
     }
   
    
-  
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/users`,updatedItem,{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/user`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -287,7 +284,7 @@ function EditableName({selectedRecord}:EditableProp){
         return data;
     }
     const mutation = useMutation({
-      mutationKey:['fullName'],
+      mutationKey:['firstName'],
       mutationFn: mutationHandler,
       onSuccess:()=>{
         toggleEdit()
@@ -300,11 +297,10 @@ function EditableName({selectedRecord}:EditableProp){
     function onFinish(updatedItem:any){
       const updatedRecord = {
         ...selectedRecord,
-        name: updatedItem.fullName
+        firstName: updatedItem.firstName
       }
       const payload = {
-        key:'name',
-        value:updatedItem.name,
+        firstName:updatedItem.firstName,
       }
       // setState(updatedRecord)
       mutation.mutate(payload)
@@ -314,7 +310,7 @@ function EditableName({selectedRecord}:EditableProp){
   
     const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{selectedRecord.name}</Text>
+        <Text>{selectedRecord.firstName}</Text>
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
   )
@@ -329,10 +325,10 @@ function EditableName({selectedRecord}:EditableProp){
         <Row>
           <Col span={16} style={{height:'100%'}}>
             <Form.Item
-                name="name"
+                name="firstName"
                 rules={[{ required: true, message: 'Please input a valid service name' }]}
             >
-                <Input allowClear disabled={isEditing} placeholder="Bill Jones" />
+                <Input allowClear disabled={isEditing} placeholder="Jones" />
             </Form.Item>
           </Col>
           <Col span={4}>
@@ -354,7 +350,105 @@ function EditableName({selectedRecord}:EditableProp){
     )
     return(
       <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
-        <Text type="secondary" style={{ marginRight: '2rem',}}>Full Name</Text>
+        <Text type="secondary" style={{ marginRight: '2rem',}}>First Name</Text>
+      {isEditMode?editable:readOnly}
+      </div>
+    )
+  }
+function EditableLastName({selectedRecord}:EditableProp){
+
+
+    // const [state, setState] = useState(selectedRecord)
+  
+    const [isEditMode, setIsEditMode] = useState(false)
+  
+    const {paseto} = useAuthContext()
+
+    const queryClient = useQueryClient()
+  
+    function toggleEdit(){
+      setIsEditMode(!isEditMode)
+    }
+  
+   
+  
+    const mutationHandler = async(updatedItem:any)=>{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/user`,updatedItem,{
+        headers:{
+            //@ts-ignore
+            "Authorization": paseto
+        }
+      })
+        return data;
+    }
+    const mutation = useMutation({
+      mutationKey:['lastName'],
+      mutationFn: mutationHandler,
+      onSuccess:()=>{
+        toggleEdit()
+      },
+      onSettled:()=>{
+        queryClient.invalidateQueries({queryKey:['user']})
+      }
+    })
+  
+    function onFinish(updatedItem:any){
+      const updatedRecord = {
+        ...selectedRecord,
+        lastName: updatedItem.lastName
+      }
+      const payload = {
+        lastName:updatedItem.lastName,
+      }
+      // setState(updatedRecord)
+      mutation.mutate(payload)
+    }
+  
+    const {isLoading:isEditing} = mutation ;
+  
+    const readOnly = (
+      <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+        <Text>{selectedRecord.lastName}</Text>
+        <Button type="link" onClick={toggleEdit}>Edit</Button>
+      </div>
+  )
+  
+    const editable = (
+      <Form
+       style={{ marginTop:'.5rem' }}
+       name="editableName"
+       initialValues={selectedRecord}
+       onFinish={onFinish}
+       >
+        <Row>
+          <Col span={16} style={{height:'100%'}}>
+            <Form.Item
+                name="lastName"
+                rules={[{ required: true, message: 'This field is required' }]}
+            >
+                <Input allowClear disabled={isEditing} placeholder="Bill" />
+            </Form.Item>
+          </Col>
+          <Col span={4}>
+            <Form.Item style={{ width:'100%'}}>
+                <Space >
+                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                        Cancel
+                    </Button>
+                    <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                        Apply changes
+                    </Button>
+                </Space>
+                          
+            </Form.Item>
+          </Col>
+        </Row>
+             
+      </Form>
+    )
+    return(
+      <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+        <Text type="secondary" style={{ marginRight: '2rem',}}>Last Name</Text>
       {isEditMode?editable:readOnly}
       </div>
     )
@@ -374,7 +468,7 @@ function EditablePhone({selectedRecord}:EditableProp){
    const queryClient = useQueryClient()
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/users`,updatedItem,{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/user`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -395,8 +489,7 @@ function EditablePhone({selectedRecord}:EditableProp){
   
     function onFinish(updatedItem:User){
       const payload = {
-        key:'contact_number',
-        value: updatedItem.contactNumber,
+        contactNumber: updatedItem.contactNumber,
       }
 
       const updatedRecord = {
@@ -473,7 +566,7 @@ function EditableGender({selectedRecord}:EditableProp){
    
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/users`,updatedItem,{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/user`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -481,6 +574,7 @@ function EditableGender({selectedRecord}:EditableProp){
       })
         return data;
     }
+
     const mutation = useMutation({
       mutationKey:['gender'],
       mutationFn: mutationHandler,
@@ -494,9 +588,9 @@ function EditableGender({selectedRecord}:EditableProp){
   
     function onFinish(updatedItem:User){
       const payload = {
-        key:'gender',
-        value: updatedItem.gender,
+        gender: updatedItem.gender,
       }
+
       const updatedRecord = {
         ...selectedRecord,
         name: updatedItem.gender
@@ -581,7 +675,7 @@ function EditableCountry({selectedRecord}:EditableProp){
    const queryClient = useQueryClient()
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/users`,updatedItem,{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/user`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -602,8 +696,7 @@ function EditableCountry({selectedRecord}:EditableProp){
   
     function onFinish(updatedItem:User){
       const payload = {
-        key:'country',
-        value: updatedItem.country,
+        country: updatedItem.country,
       }
       const updatedRecord = {
         ...selectedRecord,
@@ -689,7 +782,7 @@ function EditableImage({selectedRecord}:EditableProp){
  
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/users`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/user`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -719,8 +812,7 @@ function EditableImage({selectedRecord}:EditableProp){
 
 
     const payload = {
-      key:'profile_pic',
-      value: profilePicHash,
+      profilePic: profilePicHash,
     }
     setUpdatedProfilePicHash(profilePicHash)
     mutation.mutate(payload)
@@ -796,6 +888,8 @@ const readOnly = (
     id:string,
     name: string,
     profilePic: string,
+    firstName: string,
+    lastName: string,
     email: string,
     contactNumber: string,
     mobileNumber: string,
