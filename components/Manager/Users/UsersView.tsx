@@ -47,7 +47,7 @@ export default function UsersView(){
     async function fetchUsers(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/users-list?key=status&value=1&pageNumber=${pageNumber}&pageSize=${pageSize}`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/users-list?status=1&pageNumber=${pageNumber}&pageSize=${pageSize}`,
             headers:{
                 "Authorization": paseto
             }
@@ -427,8 +427,7 @@ function EditableRole({selectedUser}:EditableProp){
   function onFinish(updatedItem:any){
     console.log(updatedItem)
     const payload = {
-      key:'role',
-      value: String(updatedItem.role),
+      role: String(updatedItem.role),
       targetUserId: selectedUser.id
     }
     const updatedRecord = {

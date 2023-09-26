@@ -55,6 +55,7 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
         }
     },[paseto])
 
+    
     useEffect(()=>{
 
         async function decodePaseto(){
