@@ -50,17 +50,17 @@ function CommunityStaff(){
 
     const urlPrefix = useUrlPrefix()
 
-    async function fetchAllStaff(){
-      const res = await axios({
-              method:'get',
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/community?communityId=${currentCommunity.id}&pageNumber=${pageNumber}&pageSize=10`,
-              headers:{
-                  "Authorization": paseto
-              }
-          })
+    // async function fetchAllStaff(){
+    //   const res = await axios({
+    //           method:'get',
+    //           url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/community?communityId=${currentCommunity.id}&pageNumber=${pageNumber}&pageSize=10`,
+    //           headers:{
+    //               "Authorization": paseto
+    //           }
+    //       })
 
-          return res.data;
-    }
+    //       return res.data;
+    // }
     async function fetchStaff(){
       const res = await axios({
               method:'get',
@@ -80,8 +80,8 @@ function CommunityStaff(){
     const data = staffQuery.data && staffQuery.data.data
     const totalLength = staffQuery.data && staffQuery.data.dataLength;
 
-    const allStaffQuery = useQuery({queryKey:['all-community-staff'], queryFn:fetchAllStaff, enabled:paseto !== '', staleTime:Infinity})
-    const allStaffLength = allStaffQuery.data && allStaffQuery.data.dataLength
+    // const allStaffQuery = useQuery({queryKey:['all-community-staff'], queryFn:fetchAllStaff, enabled:paseto !== '', staleTime:Infinity})
+    // const allStaffLength = allStaffQuery.data && allStaffQuery.data.dataLength
 
 
 
@@ -188,7 +188,7 @@ function CommunityStaff(){
 
         return (
             <div>
-                {data && allStaffLength === 0 ? null : 
+                {/* {data && allStaffLength === 0 ? null :  */}
                 <div style={{marginBottom:'1.5em', marginTop:'2rem', display:'flex', width:'100%', flexDirection:'column'}}>
                     <Title style={{margin:'0', width:'100%'}} level={2}>Staff</Title>
                   <div style={{display:'flex', justifyContent:'space-between', width:'100%', alignItems:'center'}}>
@@ -215,12 +215,13 @@ function CommunityStaff(){
                  
                   
                 </div>
-                }
+                {/* } */}
 
-                {
+                {/* {
                   data && allStaffLength === 0
                   ? <EmptyState onOpenForm={()=>setShowForm(true)}/>
-                  : <Table 
+                  :  */}
+                  <Table 
                       style={{width:'100%'}} 
                       scroll={{ x: 'calc(500px + 50%)'}} 
                       rowKey={(record)=>record.id}
@@ -235,7 +236,7 @@ function CommunityStaff(){
                         showTotal:(total) => `Total: ${total} items`,
                       }} 
                     />
-                }
+                {/* } */}
                 
 
                 {

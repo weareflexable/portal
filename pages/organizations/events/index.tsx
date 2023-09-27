@@ -61,20 +61,20 @@ function Events(){
    const urlPrefix = useUrlPrefix()
 
   
-    async function fetchAllEvents(){
-    const res = await axios({
-            method:'get',
-            //@ts-ignore
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}&type=all`,
+    // async function fetchAllEvents(){
+    // const res = await axios({
+    //         method:'get',
+    //         //@ts-ignore
+    //         url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}&type=all`,
 
-            headers:{
-                "Authorization": paseto 
-            }
-        })
+    //         headers:{
+    //             "Authorization": paseto 
+    //         }
+    //     })
 
-        return res.data.data;
+    //     return res.data.data;
    
-    }
+    // }
   
     async function fetchEvents(){
       const res = await axios({
@@ -96,8 +96,8 @@ function Events(){
             method:'patch',
             url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,
             data:{
-                key:'status',
-                value: '1', 
+                // key:'status',
+                status: '1', 
                 id: record.id  
             },
             headers:{
@@ -128,8 +128,8 @@ function Events(){
     const totalLength = 0;
 
     // @ts-ignore
-    const allEventsQuery = useQuery({queryKey:['all-events',{currentOrg: currentOrg.orgId}], queryFn:fetchAllEvents, enabled: paseto !== '', staleTime:Infinity})
-    const allEventsLength = allEventsQuery.data && allEventsQuery.data.dataLength;
+    // const allEventsQuery = useQuery({queryKey:['all-events',{currentOrg: currentOrg.orgId}], queryFn:fetchAllEvents, enabled: paseto !== '', staleTime:Infinity})
+    // const allEventsLength = allEventsQuery.data && allEventsQuery.data.dataLength;
 
 
 
@@ -306,9 +306,10 @@ function gotoEventPage(event:Event){
               <div style={{display:'flex', marginTop:'1rem', marginBottom:'1rem', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                  <Title style={{ margin:'0'}} level={2}>Events</Title>
                </div>
-                   {allEventsQuery.data && allEventsLength === 0 
+                   {/* {allEventsQuery.data && allEventsLength === 0 
                    ? null 
-                   : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
+                   :  */}
+                   <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
                     <div style={{width:'100%',  marginBottom:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                         {/* filters */}
                         <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
@@ -324,14 +325,15 @@ function gotoEventPage(event:Event){
                     </div>
                      
                    </div>
-                   }
+                   {/* } */}
                 
-                {
+                {/* {
                   allEventsQuery.data && allEventsLength === 0
                   ? <EmptyState>
                       <Button type="primary"  onClick={()=>router.push('/organizations/events/new')}  icon={<PlusOutlined rev={undefined}/>} >Launch Event</Button>
                   </EmptyState> 
-                  : <Table 
+                  :  */}
+                  <Table 
                       style={{width:'100%'}} 
                       scroll={{ x: 'calc(600px + 40%)'}} 
                       size='large' 
@@ -347,7 +349,7 @@ function gotoEventPage(event:Event){
                         showTotal:(total) => `Total: ${total} items`, 
                       }} 
                     />
-                }
+                {/* } */}
                 
                 { 
                   isDrawerOpen
@@ -431,8 +433,8 @@ const deleteDataHandler = async(record:Event)=>{
     url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,
     data: {
         id:record.id,
-        key:'status',
-        value: "0"
+        // key:'status',
+        status: "0"
       },
     headers:{
           "Authorization": paseto 
@@ -552,8 +554,8 @@ export function EditableDescription({selectedRecord}:EditableProp){
 
   function onFinish(updatedItem:any){
     const payload = {
-      key:'description',
-      value: updatedItem.description,
+      // key:'description',
+      description: updatedItem.description,
       id: selectedRecord.id
     }
     const updatedRecord = {
@@ -661,8 +663,8 @@ export function EditablePrice({selectedRecord}:EditableProp){
 
   function onFinish(updatedItem:any){
     const payload = {
-      key:'price',
-      value: String(updatedItem.price*100),
+      // key:'price',
+      price: String(updatedItem.price*100),
       id: selectedRecord.id
     }
     recordMutation.mutate(payload)
@@ -762,8 +764,8 @@ export function EditableName({selectedRecord}:EditableProp){
 
   function onFinish(updatedItem:any){
     const payload = {
-      key:'name',
-      value: updatedItem.name,
+      // key:'name',
+      name: updatedItem.name,
       id: selectedRecord.id
     }
 
@@ -880,8 +882,8 @@ export function EditableLogoImage({selectedRecord}:EditableProp){
 
 
     const payload = {
-      key:'cover_image_hash',
-      value: logoHash,
+      // key:'cover_image_hash',
+      coverImageHash: logoHash,
       id: selectedRecord.id
     }
     mutation.mutate(payload)
@@ -991,8 +993,8 @@ export function EditableDate({selectedRecord}:EditableProp){
   
     function onFinish(updatedItem:any){
       const payload = {
-        key:'start_time',
-        value: updatedItem.startTime,
+        // key:'start_time',
+        startTime: updatedItem.startTime,
         id: selectedRecord.id
       }
   
@@ -1101,8 +1103,8 @@ export function EditableTimeZone({selectedRecord}:EditableProp){
   
     function onFinish(updatedItem:any){
       const payload = {
-        key:'timeZone',
-        value: updatedItem.timeZone,
+        // key:'timeZone',
+        timeZone: updatedItem.timeZone,
         id: selectedRecord.id
       }
   
@@ -1222,8 +1224,8 @@ export function EditableTickets({selectedRecord}:EditableProp){
   
     function onFinish(updatedItem:any){
       const payload = {
-        key:'totalTickets',
-        value: updatedItem.totalTickets,
+        // key:'totalTickets',
+        totalTickets: updatedItem.totalTickets,
         id: selectedRecord.id
       }
   
@@ -1327,8 +1329,8 @@ export function EditableDuration({selectedRecord}:EditableProp){
   
     function onFinish(updatedItem:any){
       const payload = {
-        key:'duration',
-        value: String(updatedItem.duration*60),
+        // key:'duration',
+        duration: String(updatedItem.duration*60),
         id: selectedRecord.id
       }
 

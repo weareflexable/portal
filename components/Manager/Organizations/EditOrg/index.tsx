@@ -50,8 +50,8 @@ interface EditableProp{
   
     function onFinish(updatedItem:any){
       const payload = {
-        key:'name',
-        value: updatedItem.name,
+        // key:'name',
+        name: updatedItem.name,
         //@ts-ignore
         id: selectedOrg.orgId
       }
@@ -342,8 +342,8 @@ interface EditableProp{
   
     function onFinish(field:any){
       const payload = {
-        key:'contact_number',
-        value: field.contactNumber,
+        // key:'contact_number',
+        contactNumber: field.contactNumber,
         id: selectedOrg.id
       }
       console.log(payload)
@@ -433,8 +433,8 @@ interface EditableProp{
   
     function onFinish(field:any){
       const payload = {
-        key:'zip_code',
-        value: field.zipCode,
+        // key:'zip_code',
+        zipCode: field.zipCode,
         id: selectedOrg.id
       }
       mutation.mutate(payload)
@@ -537,8 +537,8 @@ interface EditableProp{
       console.log(logoHash)
   
       const payload = {
-        key:'logo_image_hash',
-        value: logoHash,
+        // key:'logo_image_hash',
+        logoImageHash: logoHash,
         //@ts-ignore
         id: selectedOrg.orgId
       }
@@ -655,8 +655,8 @@ interface EditableProp{
       console.log(coverImageHash)
   
       const payload = {
-        key:'cover_image_hash',
-        value: coverImageHash,
+        // key:'cover_image_hash',
+        coverImageHash: coverImageHash,
         id: selectedOrg.id
       }
       setUpdatedCoverImageHash(coverImageHash)

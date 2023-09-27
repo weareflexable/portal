@@ -42,17 +42,17 @@ export default function StaffView(){
 
     const urlPrefix = useUrlPrefix()
 
-    async function fetchAllStaff(){
-      const res = await axios({
-              method:'get',
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/event?eventId=${currentEvent.id}&pageNumber=${pageNumber}&pageSize=10`,
-              headers:{
-                  "Authorization": paseto
-              }
-          })
+    // async function fetchAllStaff(){
+    //   const res = await axios({
+    //           method:'get',
+    //           url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/event?eventId=${currentEvent.id}&pageNumber=${pageNumber}&pageSize=10`,
+    //           headers:{
+    //               "Authorization": paseto
+    //           }
+    //       })
  
-          return res.data;
-    }
+    //       return res.data;
+    // }
     async function fetchStaff(){
       const res = await axios({ 
               method:'get',
@@ -103,8 +103,8 @@ export default function StaffView(){
     const data = staffQuery.data && staffQuery.data.data
     const totalLength = staffQuery.data && staffQuery.data.dataLength;
 
-    const allStaffQuery = useQuery({queryKey:['all-event-staff'], queryFn:fetchAllStaff, enabled:paseto !== '', staleTime:Infinity})
-    const allStaffLength = allStaffQuery.data && allStaffQuery.data.dataLength
+    // const allStaffQuery = useQuery({queryKey:['all-event-staff'], queryFn:fetchAllStaff, enabled:paseto !== '', staleTime:Infinity})
+    // const allStaffLength = allStaffQuery.data && allStaffQuery.data.dataLength
 
 
 
@@ -211,7 +211,7 @@ export default function StaffView(){
 
         return (
             <div>
-                {data && allStaffLength === 0 ? null : 
+                {/* {data && allStaffLength === 0 ? null :  */}
                 <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
                   <div style={{display:'flex', justifyContent:'space-between', width:'100%', alignItems:'center'}}>
                   <Radio.Group defaultValue={currentFilter.id} style={{width:'100%'}} buttonStyle="solid">
@@ -235,12 +235,13 @@ export default function StaffView(){
                   </div>
                   
                 </div>
-                }
+                {/* } */}
 
-                {
+                {/* {
                   data && allStaffLength === 0
                   ? <EmptyState onOpenForm={()=>setShowForm(true)}/>
-                  : <Table 
+                  :  */}
+                  <Table 
                       style={{width:'100%'}} 
                       scroll={{ x: 'calc(500px + 50%)'}} 
                       rowKey={(record)=>record.id}
@@ -255,7 +256,7 @@ export default function StaffView(){
                         showTotal:(total) => `Total: ${total} items`,
                       }} 
                     />
-                }
+                {/* } */}
                 
 
                 {
@@ -544,8 +545,8 @@ export function EditableRadio({id, options, selectedItem, fieldName, currentFiel
 
   function onFinish(formData:any){
     const payload = {
-      key:fieldKey,
-      value: formData[fieldName],
+      // key:fieldKey,
+      fieldKey: formData[fieldName],
       id: id
     }
     mutation.mutate(payload)

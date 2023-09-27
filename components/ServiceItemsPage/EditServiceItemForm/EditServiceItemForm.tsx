@@ -154,8 +154,8 @@ interface EditableProp{
   
     function onFinish(updatedItem:any){
       const payload = {
-        key:'price',
-        value: String(updatedItem.price*100),
+        // key:'price',
+        price: String(updatedItem.price*100),
         id: selectedRecord.id
       }
       recordMutation.mutate(payload)
@@ -245,8 +245,8 @@ interface EditableProp{
   
     function onFinish(updatedItem:any){
       const payload = {
-        key:'tickets_per_day',
-        value: updatedItem.ticketsPerDay,
+        // key:'tickets_per_day',
+        ticketsPerDay: updatedItem.ticketsPerDay,
         id: selectedRecord.id
       }
       const updatedRecord = {
@@ -343,8 +343,8 @@ interface EditableProp{
   
     function onFinish(updatedItem:any){
       const payload = {
-        key:'description',
-        value: updatedItem.description,
+        // key:'description',
+        description: updatedItem.description,
         id: selectedRecord.id
       }
       const updatedRecord = {
@@ -460,8 +460,8 @@ interface EditableProp{
     
   
       const payload = {
-        key:'logo_image_hash',
-        value: artwork,
+        // key:'logo_image_hash',
+        logoImageHash: artwork,
         id: selectedRecord.id
       }
       // setUpdatedCoverImageHash(coverImageHash)

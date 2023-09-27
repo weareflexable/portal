@@ -53,20 +53,20 @@ function Communities(){
    const urlPrefix = useUrlPrefix()
 
   
-    async function fetchAllCommunities(){
-    const res = await axios({
-            method:'get',
-            //@ts-ignore
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
+    // async function fetchAllCommunities(){
+    // const res = await axios({
+    //         method:'get',
+    //         //@ts-ignore
+    //         url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
 
-            headers:{
-                "Authorization": paseto 
-            }
-        })
+    //         headers:{
+    //             "Authorization": paseto 
+    //         }
+    //     })
 
-        return res.data.data;
+    //     return res.data.data;
    
-    }
+    // }
   
     async function fetchCommunities(){
       const res = await axios({
@@ -88,8 +88,8 @@ function Communities(){
             method:'patch',
             url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,
             data:{
-                key:'status',
-                value: '1', 
+                // key:'status',
+                status: '1', 
                 id: record.id  
             },
             headers:{
@@ -120,8 +120,8 @@ function Communities(){
     const totalLength = 0;
 
     // @ts-ignore
-    const allCommunitysQuery = useQuery({queryKey:['all-communities',{currentOrg: currentOrg.orgId}], queryFn:fetchAllCommunities, enabled: paseto !== '', staleTime:Infinity})
-    const allCommunitysLength = allCommunitysQuery.data && allCommunitysQuery.data.dataLength;
+    // const allCommunitysQuery = useQuery({queryKey:['all-communities',{currentOrg: currentOrg.orgId}], queryFn:fetchAllCommunities, enabled: paseto !== '', staleTime:Infinity})
+    // const allCommunitysLength = allCommunitysQuery.data && allCommunitysQuery.data.dataLength;
 
 
 
@@ -243,9 +243,10 @@ function gotoCommunityItemsPage(community:Community){
               <div style={{display:'flex', marginTop:'1rem', marginBottom:'1rem', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                  <Title style={{ margin:'0'}} level={2}>Communities</Title>
                </div>
-                   {allCommunitysQuery.data && allCommunitysLength === 0 
+                   {/* {allCommunitysQuery.data && allCommunitysLength === 0 
                    ? null 
-                   : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
+                   :  */}
+                   <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
                     <div style={{width:'100%',  marginBottom:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                         {/* filters */}
                         <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
@@ -265,14 +266,15 @@ function gotoCommunityItemsPage(community:Community){
                     
                      
                    </div>
-                   }
+                   {/* } */}
                 
-                {
+                {/* {
                   allCommunitysQuery.data && allCommunitysLength === 0
                   ? <EmptyState>
                       <Button type="primary"  onClick={()=>router.push('/organizations/communities/new')}  icon={<PlusOutlined rev={undefined}/>} >Launch Community</Button>
                   </EmptyState> 
-                  : <Table 
+                  : */}
+                   <Table 
                       style={{width:'100%'}} 
                       scroll={{ x: 'calc(500px + 50%)'}} 
                       size='large' 
@@ -288,7 +290,7 @@ function gotoCommunityItemsPage(community:Community){
                         showTotal:(total) => `Total: ${total} items`, 
                       }} 
                     />
-                }
+                {/* } */}
                 
                 { 
                   isDrawerOpen
@@ -372,8 +374,8 @@ const deleteDataHandler = async(record:Community)=>{
     url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,
     data: {
         id:record.id,
-        key:'status',
-        value: "0"
+        // key:'status',
+        status: "0"
       },
     headers:{
           "Authorization": paseto 
@@ -469,8 +471,8 @@ export function EditableDescription({selectedRecord}:EditableProp){
 
   function onFinish(updatedItem:any){
     const payload = {
-      key:'description',
-      value: updatedItem.description,
+      // key:'description',
+      description: updatedItem.description,
       id: selectedRecord.id
     }
     const updatedRecord = {
@@ -577,8 +579,8 @@ export function EditablePrice({selectedRecord}:EditableProp){
 
   function onFinish(updatedItem:any){
     const payload = {
-      key:'price',
-      value: String(updatedItem.price*100),
+      // key:'price',
+      price: String(updatedItem.price*100),
       id: selectedRecord.id
     }
     recordMutation.mutate(payload)
@@ -680,8 +682,8 @@ export function EditableName({selectedRecord}:EditableProp){
 
   function onFinish(updatedItem:any){
     const payload = {
-      key:'name',
-      value: `Key to: ${updatedItem.name}`,
+      // key:'name',
+      name: `Key to: ${updatedItem.name}`,
       id: selectedRecord.id
     }
 
