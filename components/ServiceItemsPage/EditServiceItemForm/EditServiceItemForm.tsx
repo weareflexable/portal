@@ -50,8 +50,8 @@ interface EditableProp{
   
     function onFinish(updatedItem:any){
       const payload = {
-        key:'name',
-        value: updatedItem.name,
+
+        name: updatedItem.name,
         id: selectedRecord.id
       }
       const updatedRecord = {

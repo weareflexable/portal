@@ -724,7 +724,7 @@ return(
 />
   <EditableAddress selectedOrg={selectedOrg}/>
   <EditableText
-    fieldKey="contact_number" // The way the field is named in DB
+    fieldKey="contactNumber" // The way the field is named in DB
     currentFieldValue={selectedOrg.contactNumber} 
     fieldName = 'contactNumber'
     title = 'Contact Number'
