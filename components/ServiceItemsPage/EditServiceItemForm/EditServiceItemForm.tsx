@@ -155,7 +155,7 @@ interface EditableProp{
     function onFinish(updatedItem:any){
       const payload = {
         // key:'price',
-        price: String(updatedItem.price*100),
+        price: Number(updatedItem.price*100),
         id: selectedRecord.id
       }
       recordMutation.mutate(payload)
@@ -246,7 +246,7 @@ interface EditableProp{
     function onFinish(updatedItem:any){
       const payload = {
         // key:'tickets_per_day',
-        ticketsPerDay: updatedItem.ticketsPerDay,
+        ticketsPerDay: Number(updatedItem.ticketsPerDay),
         id: selectedRecord.id
       }
       const updatedRecord = {

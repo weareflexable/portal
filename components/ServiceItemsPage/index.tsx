@@ -136,12 +136,12 @@ export default function ServiceItemsView(){
       router.push(`/organizations/venues/serviceItems/new?key=${targetMenu!.key}&label=${targetMenu!.label}`)
     };
 
-
     const serviceItemsQuery = useQuery({queryKey:['serviceItems', {currentSerive:currentService.id, filter:currentFilter.id,pageNumber:pageNumber}], queryFn:fetchServiceItems, enabled:paseto !== ''})
-    const res = serviceItemsQuery.data && serviceItemsQuery.data;
+    const res = serviceItemsQuery?.data
+
     const servicesData = res?.data
     const totalLength = res?.dataLength;
-
+ 
     // const allServiceItemsQuery = useQuery({queryKey:['all-serviceItems',{currentService: currentService.id}], queryFn:fetchAllServiceItems, enabled:paseto !== '', staleTime:Infinity})
     // const allServiceItemsLength = allServiceItemsQuery.data && allServiceItemsQuery.data.dataLength;
  
@@ -208,6 +208,7 @@ export default function ServiceItemsView(){
             )
         },
       },
+
       {
         title: 'Type',
         dataIndex: 'serviceItemType',
@@ -218,6 +219,7 @@ export default function ServiceItemsView(){
           return <Tag style={{textTransform:'capitalize'}}>{type?.name}</Tag>
         }
       },
+
       {
         title: 'Price',
         dataIndex: 'price',
@@ -231,6 +233,7 @@ export default function ServiceItemsView(){
           </div>
         )
       },
+
       {
         title: 'Tickets Per Day',
         dataIndex: 'ticketsPerDay',
@@ -285,7 +288,7 @@ export default function ServiceItemsView(){
 
         return (
             <div>
-               { servicesData 
+               { !servicesData 
                ? null 
                : 
                <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
@@ -449,7 +452,7 @@ return(
   <EditablePrice selectedRecord={selectedRecord}/>
 
   <EditableText
-    fieldKey="tickets_per_day" // The way the field is named in DB
+    fieldKey="ticketsPerDay" // The way the field is named in DB
     currentFieldValue={selectedRecord.ticketsPerDay}
     fieldName = 'ticketsPerDay'
     title = 'Tickets Per Day'

@@ -57,7 +57,7 @@ interface EditableProps{
       onSettled:(data)=>{
         console.log(data)
         // update state here
-        setState(data.data[fieldName])
+        setState(data.data[0][fieldName])
         queryClient.invalidateQueries([options?.queryKey])
       }
     })
