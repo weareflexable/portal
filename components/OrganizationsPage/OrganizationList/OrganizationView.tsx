@@ -806,8 +806,8 @@ function EditableLogoImage({selectedOrg}:EditableProp){
     console.log(logoHash)
 
     const payload = {
-      key:'logo_image_hash',
-      value: logoHash,
+
+      logoImageHash: logoHash,
       //@ts-ignore
       id: selectedOrg.orgId
     }

@@ -83,7 +83,7 @@ interface EditableProp{
           <Col span={16} style={{height:'100%'}}>
             <Form.Item
                 name="name"
-                rules={[{ required: true, message: 'Please input a valid service name' }]}
+                rules={[{ required: true, message: 'This field is required' }]}
             >
                 <Input  disabled={isEditing} placeholder="Flexable org" />
             </Form.Item>
