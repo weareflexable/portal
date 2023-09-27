@@ -21,6 +21,7 @@ import { Community } from "../../../types/Community";
 import useCommunity from "../../../hooks/useCommunity";
 import { EditableArtwork } from "../../../components/CommunityPage/Editables/Artwork";
 import { asyncStore } from "../../../utils/nftStorage";
+import { IMAGE_PLACEHOLDER_HASH } from "../../../constants";
 
 const {TextArea} = Input
 
@@ -169,7 +170,7 @@ function gotoCommunityItemsPage(community:Community){
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.logoImageHash}`}/>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.logoImageHash.length < 20? IMAGE_PLACEHOLDER_HASH :record.logoImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Button onClick={()=>gotoCommunityItemsPage(record)} type='link'>{record.name}</Button>  
                     </div>
