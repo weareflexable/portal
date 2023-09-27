@@ -122,7 +122,7 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
       const payload = {
         ...record,
         ticketsPerDay: Number(record.ticketsPerDay),
-        price: record.price*100,
+        price: Number(record.price*100),
         serviceItemId: selectedServiceItem.id, 
         id: availability.id, 
         //@ts-ignore
@@ -169,7 +169,7 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
                         okText="Yes, Delete"
                         cancelText="No"
                         >
-                    <Button  icon={<DeleteOutlined rev={undefined}/>}/>
+                    <Button loading={deleteMutation.isLoading}  icon={<DeleteOutlined rev={undefined}/>}/>
                     </Popconfirm>
               </Space>
             </Col>

@@ -249,9 +249,11 @@ interface EditableProp{
         ticketsPerDay: Number(updatedItem.ticketsPerDay),
         id: selectedRecord.id
       }
+      console.log(payload)
+
       const updatedRecord = {
         ...selectedRecord,
-        ticketsPerDay: updatedItem.ticketsPerDay
+        ticketsPerDay: updatedItem.ticketsPerDay 
       }
       setState(updatedRecord)
       recordMutation.mutate(payload)
@@ -416,7 +418,7 @@ interface EditableProp{
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const {paseto} = useAuthContext()
 
-    const serviceItemTypeName = selectedRecord.serviceItemType[0].name
+    const serviceItemTypeName = selectedRecord?.serviceItemType?.name
     const urlPrefix = useUrlPrefix()
 
     const queryClient = useQueryClient()

@@ -12,7 +12,7 @@ import { useServicesContext } from '../../context/ServicesContext';
 import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { Availability, AvailabilityPayload, CustomDate, ServiceItem } from "../../types/Services";
-import { EditableCoverImage, EditableDescription, EditableName, EditablePrice, EditableTicketsPerDay } from "./EditServiceItemForm/EditServiceItemForm";
+import { EditableCoverImage, EditableDescription, EditableName,  EditablePrice, EditableTicketsPerDay } from "./EditServiceItemForm/EditServiceItemForm";
 import AvailabilitySection from "./Availability/Availability";
 import useUrlPrefix from "../../hooks/useUrlPrefix";
 import useRole from "../../hooks/useRole";
@@ -213,9 +213,9 @@ export default function ServiceItemsView(){
         title: 'Type',
         dataIndex: 'serviceItemType',
         key: 'serviceItemType',
-        width:'120px',
+        width:'120px', 
         render:(_,record)=>{
-          const type = record.serviceItemType[0]
+          const type = record.serviceItemType
           return <Tag style={{textTransform:'capitalize'}}>{type?.name}</Tag>
         }
       },
@@ -451,14 +451,7 @@ return(
   <EditableDescription selectedRecord={selectedRecord}/>
   <EditablePrice selectedRecord={selectedRecord}/>
 
-  <EditableText
-    fieldKey="ticketsPerDay" // The way the field is named in DB
-    currentFieldValue={selectedRecord.ticketsPerDay}
-    fieldName = 'ticketsPerDay'
-    title = 'Tickets Per Day'
-    id = {selectedRecord.id}
-    options = {{queryKey:'serviceItems',mutationUrl:'service-items'}}
-  />
+  <EditableTicketsPerDay selectedRecord={selectedRecord}/>
   <EditableCoverImage selectedRecord={selectedRecord}/>
 
   {/* <Text>CUSTOM AVALABILITY</Text> */}
