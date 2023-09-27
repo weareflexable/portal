@@ -18,6 +18,7 @@ export default function AvailabilitySection({selectedServiceItem}:Props){
     const {paseto} = useAuthContext()
 
     const urlPrefix = useUrlPrefix()
+
   
     async function fetchItemAvailability(){
       const res = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items/availability?serviceItemId=${selectedServiceItem.id}&pageNumber=1&pageSize=50`,{
@@ -27,10 +28,14 @@ export default function AvailabilitySection({selectedServiceItem}:Props){
      })
      return res.data.data
      }
+
+     
      
      const {data, isLoading} = useQuery({queryKey:['availability',selectedServiceItem.id], queryFn:fetchItemAvailability})
 
      const availabilityData = data && data;
+
+     console.log('data',availabilityData)
 
      const isAvailabilityEmpty = data && data.length == 0
 
@@ -58,6 +63,8 @@ interface EditAvailabilityProp{
 export function EditableAvailability({availability, selectedServiceItem}:EditAvailabilityProp){
   
     // const [state, setState] = useState()
+
+    // console.log('availability23',availability)
   
     const [isEditMode, setIsEditMode] = useState(false)
   
@@ -123,7 +130,8 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
         ...record,
         ticketsPerDay: Number(record.ticketsPerDay),
         price: Number(record.price*100),
-        serviceItemId: selectedServiceItem.id, 
+        // @ts-ignore
+        serviceItemId: availability.serviceItemId, 
         id: availability.id, 
         //@ts-ignore
         date: dayjs(record.date).format(),
