@@ -183,7 +183,7 @@ export default function ManagerOrgsView(){
       })
     }
 
-    const orgQuery = useQuery({queryKey:['organizations', currentStatus], queryFn:fetchOrgs, enabled:paseto !== ''})
+    const orgQuery = useQuery({queryKey:['organizations', currentStatus,pageNumber], queryFn:fetchOrgs, enabled:paseto !== ''})
     const orgs = orgQuery.data && orgQuery.data.data
     const totalLength = orgQuery.data && orgQuery.data.dataLength;
 
