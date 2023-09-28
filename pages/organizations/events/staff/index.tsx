@@ -120,9 +120,9 @@ export default function StaffView(){
         dataIndex: 'staffRoleName',
         key: 'staffRoleName',
 
-        render:(userRoleName)=>{
-          const color = userRoleName === 'Manager' ? 'purple': userRoleName==='Admin'? 'volcano': userRoleName === 'Supervisor'?'cyan':'blue'
-          return <Tag color={color}>{userRoleName}</Tag>
+        render:(staffRoleName)=>{
+          const color = staffRoleName === 'Manager' ? 'purple': staffRoleName==='Admin'? 'volcano': staffRoleName === 'Supervisor'?'cyan':'blue'
+          return <Tag color={color}>{staffRoleName}</Tag>
         }
       },
       // {
@@ -167,6 +167,9 @@ export default function StaffView(){
             <div>
                 {/* {data && allStaffLength === 0 ? null :  */}
                 <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
+                <div style={{display:'flex', marginTop:'1rem', marginBottom:'1rem', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+                        <Title style={{ margin:'0'}} level={2}>Staff</Title>
+                    </div>
                   <div style={{display:'flex', justifyContent:'space-between', width:'100%', alignItems:'center'}}>
                   <Radio.Group defaultValue={currentFilter.id} style={{width:'100%'}} buttonStyle="solid">
                       {staffFilter.map(filter=>(
@@ -263,9 +266,9 @@ const createData = useMutation(createDataHandler,{
     let message;
 
     const user = data?.data?.userDetails
-    const status = user.status
-    message = status == 0 ? `Staff could not be added because they aren't registered. A registration link has beens sent to ${user.email} to register and will be added automatically to as ${user.staffRoleName} after registration`:`User has been added to event as a ${user.staffRoleName}`
-    notification['success']({
+    const status = user?.status
+    message = !status ? data.message : status == 0 ? `Staff could not be added because they aren't registered. A registration link has beens sent to ${user.email} to register and will be added automatically to as ${user.staffRoleName} after registration`:`User has been added to event as a ${user.staffRoleName}`
+    notification['success']({ 
         message: message,
         style:{
           width:600
@@ -291,7 +294,7 @@ function handleSubmit(formData:any){
   // console.log(formData)
   const payload = {
     ...formData,
-    role: Number(formData.role),
+    role: String(formData.role),
     eventId: currentEvent.id
   }
   // console.log(payload)
@@ -368,7 +371,6 @@ const {currentEvent} = useEvent()
 const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
 function closeDrawerHandler(){
-  queryClient.invalidateQueries(['users'])
   closeDrawer(!isDrawerOpen)
 }
 
@@ -423,7 +425,7 @@ return(
   
   <EditableRadio
     id={selectedStaff.id}
-    currentFieldValue = {selectedStaff.userRoleName}
+    currentFieldValue = {selectedStaff.staffRoleName}
     fieldKey ='role'
     selectedItem={selectedStaff.role}
     fieldName="role"
@@ -487,11 +489,11 @@ export function EditableRadio({id, options, selectedItem, fieldName, currentFiel
   }
   const mutation = useMutation({
     mutationFn: mutationHandler,
-    onSuccess:()=>{
+    onSuccess:(data:any)=>{
+      setState(data?.data?.staffRoleName)
       toggleEdit()
     },
-    onSettled:(data)=>{
-      setState(data.data[0].userRoleName)
+    onSettled:()=>{
       queryClient.invalidateQueries({queryKey:[options?.queryKey]})
     }
   })
@@ -499,7 +501,7 @@ export function EditableRadio({id, options, selectedItem, fieldName, currentFiel
   function onFinish(formData:any){
     const payload = {
       // key:fieldKey,
-      fieldKey: formData[fieldName],
+      [fieldKey]: formData[fieldName],
       id: id
     }
     mutation.mutate(payload)
@@ -517,7 +519,7 @@ export function EditableRadio({id, options, selectedItem, fieldName, currentFiel
   const editable = (
     <Form
      style={{ marginTop:'.5rem' }}
-     initialValues={{[fieldName]:currentFieldValue}}
+     initialValues={{[fieldName]:String(selectedItem)}}
      onFinish={onFinish}
      >
       <Row>
@@ -525,7 +527,6 @@ export function EditableRadio({id, options, selectedItem, fieldName, currentFiel
           <Form.Item 
               // label={title} 
               name={fieldName}
-              initialValue={{[fieldName]:selectedItem}}
               rules={[{ required: true, message: 'Please select an accountType' }]}
               >
               <Radio.Group defaultValue={selectedItem} size='large'>
@@ -649,23 +650,6 @@ const staffFilter = [
 
 
 
-
-
-// const users:Staff[] = [
-//     {
-//         id: '34343',
-//         name: 'Mujahid Bappai',
-//         email: 'mujahid.bappai@yahoo.com',
-//         mobileNumber: '08043437583',
-//         gender: 'male',
-//         createdAt: "2023-01-07T10:45:24.002929Z",
-//         city: 'Kano',
-//         country: 'Nigeria',
-//         userRoleName: 'Staff',
-//         profilePic: 'bafkreic3hz2mfy7rpyffzwbf2jfklehmuxnvvy3ardoc5vhtkq3cjd7of4'  
-//     },
-   
-// ]
 
 interface EmptyProps{
   onOpenForm: ()=>void
