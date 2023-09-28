@@ -594,7 +594,7 @@ interface EditableProp{
                 name="logoImage"
                 valuePropName="logoImage"
                 getValueFromEvent={extractLogoImage}
-                rules={[{ required: true, message: 'Please input a valid zip code' }]}
+                rules={[{ required: true, message: 'This field is required' }]}
             >
                 
                 <Upload beforeUpload={()=>false} name="logoImageHash" listType="picture" multiple={false}>

@@ -4,6 +4,7 @@ export type Event = {
     description: string,
     contactNumber: string,
     totalTickets: number,
+    type?: string,
     duration: number,
     startTime: string,
     timeZone: string,

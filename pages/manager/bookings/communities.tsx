@@ -107,7 +107,7 @@ export default function CommunityBookings(){
           
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image  style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${logoImageHash}`}/>
+                    <Image  style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${logoImageHash.length < 20? IMAGE_PLACEHOLDER_HASH : logoImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{record.communityDetails.name}</Text>  
                         {/* <Text type="secondary">{serviceName}</Text>   */}
@@ -130,7 +130,7 @@ export default function CommunityBookings(){
           const profilePicHash = user.profilePic
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${profilePicHash.length < 10? IMAGE_PLACEHOLDER_HASH : profilePicHash}`}/>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${profilePicHash.length < 20? IMAGE_PLACEHOLDER_HASH : profilePicHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{name}</Text>  
                         <Text type="secondary">{email}</Text>  

@@ -624,7 +624,7 @@ return(
 />
   <EditableAddress selectedOrg={selectedOrg}/>
   <EditableText
-    fieldKey="contact_number" // The way the field is named in DB
+    fieldKey="contactNumber" // The way the field is named in DB
     currentFieldValue={selectedOrg.contactNumber} 
     fieldName = 'contactNumber'
     title = 'Contact Number'
@@ -723,7 +723,7 @@ interface EditableProp{
 export function EditableAddress({selectedOrg}:EditableProp){
   
 
-  const [state, setState] = useState(selectedOrg.street)
+  const [state, setState] = useState(selectedOrg?.street)
 
   const [isEditMode, setIsEditMode] = useState(false)
 
@@ -806,8 +806,8 @@ function EditableLogoImage({selectedOrg}:EditableProp){
     console.log(logoHash)
 
     const payload = {
-      key:'logo_image_hash',
-      value: logoHash,
+
+      logoImageHash: logoHash,
       //@ts-ignore
       id: selectedOrg.orgId
     }
@@ -927,7 +927,7 @@ const { ref: antRef } = usePlacesWidget({
       fields: ['address_components','geometry','formatted_address','name']
   },
   onPlaceSelected: (place) => {
-      // console.log(antInputRef.current.input)
+      // console.log(antInputRef.current.input) 
       form.setFieldValue('street',place?.formatted_address)
 
       console.log(place)  
@@ -963,7 +963,8 @@ const mutation = useMutation({
     toggleEdit()
   },
   onSettled:(data)=>{
-    updateState(data.data[0].street)
+    console.log('result here',data.data)
+    updateState(data?.data?.street)
     queryClient.invalidateQueries(['organizations'])
   }
 })

@@ -50,8 +50,8 @@ interface EditableProp{
   
     function onFinish(updatedItem:any){
       const payload = {
-        key:'name',
-        value: updatedItem.name,
+
+        name: updatedItem.name,
         id: selectedRecord.id
       }
       const updatedRecord = {
@@ -155,7 +155,7 @@ interface EditableProp{
     function onFinish(updatedItem:any){
       const payload = {
         // key:'price',
-        price: String(updatedItem.price*100),
+        price: Number(updatedItem.price*100),
         id: selectedRecord.id
       }
       recordMutation.mutate(payload)
@@ -246,12 +246,14 @@ interface EditableProp{
     function onFinish(updatedItem:any){
       const payload = {
         // key:'tickets_per_day',
-        ticketsPerDay: updatedItem.ticketsPerDay,
+        ticketsPerDay: Number(updatedItem.ticketsPerDay),
         id: selectedRecord.id
       }
+      console.log(payload)
+
       const updatedRecord = {
         ...selectedRecord,
-        ticketsPerDay: updatedItem.ticketsPerDay
+        ticketsPerDay: updatedItem.ticketsPerDay 
       }
       setState(updatedRecord)
       recordMutation.mutate(payload)
@@ -416,7 +418,7 @@ interface EditableProp{
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const {paseto} = useAuthContext()
 
-    const serviceItemTypeName = selectedRecord.serviceItemType[0].name
+    const serviceItemTypeName = selectedRecord?.serviceItemType?.name
     const urlPrefix = useUrlPrefix()
 
     const queryClient = useQueryClient()

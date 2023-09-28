@@ -183,7 +183,7 @@ export default function ManagerOrgsView(){
       })
     }
 
-    const orgQuery = useQuery({queryKey:['organizations', currentStatus], queryFn:fetchOrgs, enabled:paseto !== ''})
+    const orgQuery = useQuery({queryKey:['organizations', currentStatus,pageNumber], queryFn:fetchOrgs, enabled:paseto !== ''})
     const orgs = orgQuery.data && orgQuery.data.data
     const totalLength = orgQuery.data && orgQuery.data.dataLength;
 
@@ -724,7 +724,7 @@ return(
 />
   <EditableAddress selectedOrg={selectedOrg}/>
   <EditableText
-    fieldKey="contact_number" // The way the field is named in DB
+    fieldKey="contactNumber" // The way the field is named in DB
     currentFieldValue={selectedOrg.contactNumber} 
     fieldName = 'contactNumber'
     title = 'Contact Number'

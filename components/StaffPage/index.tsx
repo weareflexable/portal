@@ -43,17 +43,6 @@ export default function StaffView(){
 
     const urlPrefix = useUrlPrefix()
 
-    // async function fetchAllStaff(){
-    //   const res = await axios({
-    //           method:'get',
-    //           url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/service?serviceId=${currentService.id}&pageNumber=${pageNumber}&pageSize=10`,
-    //           headers:{
-    //               "Authorization": paseto
-    //           }
-    //       })
- 
-    //       return res.data;
-    // }
     async function fetchStaff(){
       const res = await axios({ 
               method:'get',
@@ -62,51 +51,18 @@ export default function StaffView(){
                   "Authorization": paseto 
               } 
           })
-
           return res.data;
     }
 
-
-    // async function changeServiceItemStatus({serviceItemId, statusNumber}:{serviceItemId:string, statusNumber: string}){
-    //     const res = await axios({
-    //         method:'patch',
-    //         url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,
-    //         data:{
-    //             key:'status',
-    //             value: statusNumber, // 0 means de-activated in db
-    //             serviceItemId: serviceItemId 
-    //         },
-    //         headers:{
-    //             "Authorization": paseto
-    //         }
-    //     })
-    //     return res; 
-    // }
-
     
 
-    // const changeStatusMutation = useMutation(['data'],{
-    //     mutationFn: changeServiceItemStatus,
-    //     onSuccess:(data:any)=>{
-    //         queryClient.invalidateQueries({queryKey:['users']})
-    //     },
-    //     onError:()=>{
-    //         console.log('Error changing status')
-    //     }
-    // })
+  console.log('current',currentFilter)
 
+
+    const staffQuery = useQuery({queryKey:['staff',currentFilter.id], queryFn:fetchStaff, enabled:paseto !== ''})
     
-
-  
-
-
-    const staffQuery = useQuery({queryKey:['staff',currentService.id,currentFilter.id], queryFn:fetchStaff, enabled:paseto !== ''})
     const data = staffQuery.data && staffQuery.data.data
     const totalLength = staffQuery.data && staffQuery.data.dataLength;
-
-    // const allStaffQuery = useQuery({queryKey:['all-staff'], queryFn:fetchAllStaff, enabled:paseto !== '', staleTime:Infinity})
-    // const allStaffLength = allStaffQuery.data && allStaffQuery.data.dataLength
-
 
 
     
@@ -116,12 +72,6 @@ export default function StaffView(){
       setPageNumber(data.current); // Subtracting 1 because pageSize param in url starts counting from 0
     };
   
-    // function getTableRecordActions(){
-    //     switch(currentFilter.id){
-    //         // 1 = approved
-    //         case '1': return activeItemActions 
-    //     }
-    // }
 
     function viewStaffDetails(user:Staff){
       // set state
@@ -312,9 +262,9 @@ const createData = useMutation(createDataHandler,{
    onSuccess:(data)=>{
     let message;
 
-    const user = data.data[0]
+    const user = data?.data?.userDetails
     const status = user.status
-    message = status == 0 ? `Staff could not be added because they aren't registered. A registration link has beens sent to ${user.email} to register and will be added automatically to as ${user.staffRoleName} after registration`:`User has been added to service as a ${user.staffRoleName}`
+    message =  !status ? data.message : status == 0 ? `Staff could not be added because they aren't registered. A registration link has beens sent to ${user.email} to register and will be added automatically to as ${user.staffRoleName} after registration`:`User has been added to service as a ${user.staffRoleName}`
     notification['success']({
         message: message,
         style:{
@@ -457,7 +407,7 @@ const deleteDataHandler = async(record:Staff)=>{
     url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/service`,
     data: {
         id:record.id,
-        serviceId: currentService.id
+        // serviceId: currentService.id
       },
     headers:{
           "Authorization": paseto 
@@ -467,13 +417,15 @@ const deleteDataHandler = async(record:Staff)=>{
 
 const deleteMutation = useMutation(deleteDataHandler)
 
+console.log(selectedStaff)
+
 
 return( 
 <Drawer title={"Staff details"} width={640} placement="right" closable={true} onClose={closeDrawerHandler} open={isDrawerOpen}>
   
   <EditableRadio
     id={selectedStaff.id}
-    currentFieldValue = {selectedStaff.userRoleName}
+    currentFieldValue = {selectedStaff.staffRoleName}
     fieldKey ='role'
     selectedItem={selectedStaff.role}
     fieldName="role"
@@ -527,7 +479,7 @@ export function EditableRadio({id, options, selectedItem, fieldName, currentFiel
  const queryClient = useQueryClient()
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/service`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -549,7 +501,7 @@ export function EditableRadio({id, options, selectedItem, fieldName, currentFiel
   function onFinish(formData:any){
     const payload = {
       // key:fieldKey,
-      fieldKey: formData[fieldName],
+      [fieldKey]: formData[fieldName],
       id: id
     }
     mutation.mutate(payload)
@@ -567,18 +519,17 @@ export function EditableRadio({id, options, selectedItem, fieldName, currentFiel
   const editable = (
     <Form
      style={{ marginTop:'.5rem' }}
-     initialValues={{[fieldName]:currentFieldValue}}
-     onFinish={onFinish}
+     initialValues={{[fieldName]:selectedItem.toString()}}
+     onFinish={onFinish} 
      >
       <Row>
         <Col span={16} style={{height:'100%'}}>
           <Form.Item 
               // label={title} 
               name={fieldName}
-              initialValue={{[fieldName]:selectedItem}}
               rules={[{ required: true, message: 'Please select an accountType' }]}
               >
-              <Radio.Group defaultValue={selectedItem} size='large'>
+              <Radio.Group  size='large'>
                   <Radio.Button value="3">Supervisor</Radio.Button>
                   <Radio.Button value="4">Employee</Radio.Button>
               </Radio.Group>

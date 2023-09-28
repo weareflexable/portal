@@ -21,6 +21,7 @@ import { Community } from "../../../types/Community";
 import useCommunity from "../../../hooks/useCommunity";
 import { EditableArtwork } from "../../../components/CommunityPage/Editables/Artwork";
 import { asyncStore } from "../../../utils/nftStorage";
+import { IMAGE_PLACEHOLDER_HASH } from "../../../constants";
 
 const {TextArea} = Input
 
@@ -52,21 +53,7 @@ function Communities(){
    
    const urlPrefix = useUrlPrefix()
 
-  
-    // async function fetchAllCommunities(){
-    // const res = await axios({
-    //         method:'get',
-    //         //@ts-ignore
-    //         url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
 
-    //         headers:{
-    //             "Authorization": paseto 
-    //         }
-    //     })
-
-    //     return res.data.data;
-   
-    // }
   
     async function fetchCommunities(){
       const res = await axios({
@@ -107,22 +94,11 @@ function Communities(){
     })
 
    
-
-    // const shouldFetch = paseto !== '' && urlPrefix != undefined
-
-    // console.log('prefix',urlPrefix)
-    // console.log('shouldfetch',shouldFetch)
-
     // @ts-ignore
-    const communityQuery = useQuery({queryKey:['community',{currentOrg: currentOrg.orgId, status:currentFilter.name, pageNumber} ], queryFn:fetchCommunities, enabled: paseto !== ''})
+    const communityQuery = useQuery({queryKey:['community', currentOrg.orgId, currentFilter.name, pageNumber ], queryFn:fetchCommunities, enabled: paseto !== ''})
     const data = communityQuery.data && communityQuery.data
     // const totalLength = communityQuery.data && communityQuery.data;
     const totalLength = 0;
-
-    // @ts-ignore
-    // const allCommunitysQuery = useQuery({queryKey:['all-communities',{currentOrg: currentOrg.orgId}], queryFn:fetchAllCommunities, enabled: paseto !== '', staleTime:Infinity})
-    // const allCommunitysLength = allCommunitysQuery.data && allCommunitysQuery.data.dataLength;
-
 
 
 
@@ -169,7 +145,7 @@ function gotoCommunityItemsPage(community:Community){
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.logoImageHash}`}/>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.logoImageHash.length < 20? IMAGE_PLACEHOLDER_HASH :record.logoImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Button onClick={()=>gotoCommunityItemsPage(record)} type='link'>{record.name}</Button>  
                     </div>
@@ -328,7 +304,7 @@ const {paseto} = useAuthContext()
 const urlPrefix = useUrlPrefix()
 
 function closeDrawerHandler(){
-  queryClient.invalidateQueries(['communities']) 
+  queryClient.invalidateQueries(['community']) 
   closeDrawer(!isDrawerOpen)
 }
 
@@ -374,7 +350,6 @@ const deleteDataHandler = async(record:Community)=>{
     url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,
     data: {
         id:record.id,
-        // key:'status',
         status: "0"
       },
     headers:{
@@ -403,7 +378,6 @@ return(
   <EditableDescription selectedRecord={selectedRecord}/>
   <EditableArtwork selectedRecord={selectedRecord}/>
   <EditableLogoImage selectedRecord={selectedRecord}/>
-  {/* <EditableCoverImage selectedRecord={selectedRecord}/> */}
 
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
     <Title level={3}>Danger zone</Title>
@@ -572,7 +546,7 @@ export function EditablePrice({selectedRecord}:EditableProp){
       toggleEdit()
     },
     onSettled:(data)=>{
-      setState(data.data[0].price)
+      setState(data?.data?.price)
       queryClient.invalidateQueries(['community'])
     }
   })
@@ -580,7 +554,7 @@ export function EditablePrice({selectedRecord}:EditableProp){
   function onFinish(updatedItem:any){
     const payload = {
       // key:'price',
-      price: String(updatedItem.price*100),
+      price: Number(updatedItem.price*100),
       id: selectedRecord.id
     }
     recordMutation.mutate(payload)
@@ -640,7 +614,7 @@ export function EditableName({selectedRecord}:EditableProp){
 
   // console.log(selectedRecord.name)
   
-  const [state, setState] = useState(selectedRecord)
+  const [state, setState] = useState(selectedRecord.name)
 
   const [isEditMode, setIsEditMode] = useState(false)
 
@@ -652,7 +626,6 @@ export function EditableName({selectedRecord}:EditableProp){
 
   const communityName = splittedName[1].trim();
 
-  console.log(communityName)
 
   function toggleEdit(){
     setIsEditMode(!isEditMode)
@@ -672,9 +645,10 @@ export function EditableName({selectedRecord}:EditableProp){
   const recordMutation = useMutation({
     mutationKey:['name'],
     mutationFn: recordMutationHandler,
-    onSuccess:()=>{
+    onSuccess:(data:any)=>{
       toggleEdit()
-    },
+      setState(data?.data?.name)
+    }, 
     onSettled:()=>{
       queryClient.invalidateQueries(['community'])
     }
@@ -691,7 +665,7 @@ export function EditableName({selectedRecord}:EditableProp){
       ...selectedRecord,
       name: `Key to: ${updatedItem.name}`
     }
-    setState(updatedRecord)
+    
     recordMutation.mutate(payload)
   }
 
@@ -699,7 +673,7 @@ export function EditableName({selectedRecord}:EditableProp){
 
   const readOnly = (
     <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Text>{state.name}</Text>
+      <Text>{state}</Text>
       <Button type="link" onClick={toggleEdit}>Edit</Button>
     </div>
 )
@@ -784,7 +758,7 @@ export function EditableLogoImage({selectedRecord}:EditableProp){
       toggleEdit()
     },
     onSettled:(data)=>{
-      setUpdatedLogoImageHash(data.data[0].logoImageHash)
+      setUpdatedLogoImageHash(data?.data?.logoImageHash)
       queryClient.invalidateQueries(['community'])
     }
   })
@@ -801,8 +775,7 @@ export function EditableLogoImage({selectedRecord}:EditableProp){
     console.log(logoHash)
 
     const payload = {
-      key:'logo_image_hash',
-      value: logoHash,
+      logoImageHash: logoHash,
       id: selectedRecord.id
     }
     mutation.mutate(payload)
