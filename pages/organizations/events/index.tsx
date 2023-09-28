@@ -572,7 +572,7 @@ export function EditableDescription({selectedRecord}:EditableProp){
   const {isLoading:isEditing} = recordMutation 
 
   const readOnly = (
-    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+    <div style={{width:'100%', display:'flex', marginBottom:'2rem', justifyContent:'space-between', alignItems:'center'}}>
       <Text>{state.description}</Text>
       <Button type="link" onClick={toggleEdit}>Edit</Button>
     </div>
@@ -667,7 +667,7 @@ export function EditablePrice({selectedRecord}:EditableProp){
   function onFinish(updatedItem:any){
     const payload = {
       // key:'price',
-      price: String(updatedItem.price*100),
+      price: Number(updatedItem.price*100),
       id: selectedRecord.id
     }
     recordMutation.mutate(payload)
@@ -970,7 +970,8 @@ export function EditableLogoImage({selectedRecord}:EditableProp){
   const mutation = useMutation({
     mutationKey:['coverImage'],
     mutationFn: mutationHandler,
-    onSuccess:()=>{
+    onSuccess:(data:any)=>{
+      setUpdatedCoverImageHash(data?.data?.coverImageHash)
       toggleEdit()
     },
     onSettled:(data)=>{
@@ -990,7 +991,6 @@ export function EditableLogoImage({selectedRecord}:EditableProp){
 
 
     const payload = {
-      // key:'cover_image_hash',
       coverImageHash: logoHash,
       id: selectedRecord.id
     }
@@ -1091,7 +1091,8 @@ export function EditableDate({selectedRecord}:EditableProp){
     const recordMutation = useMutation({
       mutationKey:['startTime'],
       mutationFn: recordMutationHandler,
-      onSuccess:()=>{
+      onSuccess:(data:any)=>{
+        setState(data?.data.startTime) 
         toggleEdit()
       },
       onSettled:()=>{
@@ -1110,7 +1111,6 @@ export function EditableDate({selectedRecord}:EditableProp){
         ...selectedRecord,
         startTime: updatedItem.startTime
       }
-      setState(updatedRecord)
       recordMutation.mutate(payload)
     }
   
@@ -1292,7 +1292,7 @@ export function EditableTickets({selectedRecord}:EditableProp){
 
     // console.log(selectedRecord.name)
     
-    const [state, setState] = useState(selectedRecord)
+    const [state, setState] = useState(selectedRecord.totalTickets)
   
     const [isEditMode, setIsEditMode] = useState(false)
   
@@ -1322,7 +1322,8 @@ export function EditableTickets({selectedRecord}:EditableProp){
     const recordMutation = useMutation({
       mutationKey:['totalTickets'],
       mutationFn: recordMutationHandler,
-      onSuccess:()=>{
+      onSuccess:(data:any)=>{
+        setState(data?.data?.totalTickets)
         toggleEdit()
       },
       onSettled:()=>{
@@ -1333,7 +1334,7 @@ export function EditableTickets({selectedRecord}:EditableProp){
     function onFinish(updatedItem:any){
       const payload = {
         // key:'totalTickets',
-        totalTickets: updatedItem.totalTickets,
+        totalTickets: Number(updatedItem.totalTickets),
         id: selectedRecord.id
       }
   
@@ -1341,7 +1342,6 @@ export function EditableTickets({selectedRecord}:EditableProp){
         ...selectedRecord,
         totalTickets: updatedItem.totalTickets
       }
-      setState(updatedRecord)
       recordMutation.mutate(payload)
     }
   
@@ -1349,7 +1349,7 @@ export function EditableTickets({selectedRecord}:EditableProp){
   
     const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{state.totalTickets}</Text>
+        <Text>{state}</Text>
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
   )
@@ -1382,7 +1382,7 @@ export function EditableTickets({selectedRecord}:EditableProp){
                 </Space>           
             </Form.Item>
           </Col>
-        </Row>
+        </Row> 
              
       </Form>
     )
@@ -1702,7 +1702,8 @@ export function EditablePrivacy({selectedRecord}:EditableProp){
           ...fullAddress,
           placeId: place?.place_id,
           fullAddress: place?.formatted_address
-      }
+       }
+
         setFullAddress(addressWithStreet)
   
         //@ts-ignore
@@ -1741,8 +1742,7 @@ export function EditablePrivacy({selectedRecord}:EditableProp){
       //@ts-ignore
       id: selectedRecord.id,
       // name: selectedRecord.name,
-      key: 'address',
-      value: JSON.stringify({
+      address: {
         street:fullAddress.street,
         fullAddress: fullAddress.fullAddress,
         city: fullAddress.city,
@@ -1751,7 +1751,7 @@ export function EditablePrivacy({selectedRecord}:EditableProp){
         state: fullAddress.state,
         latitude:String(fullAddress.latitude),
         longitude:String(fullAddress.longitude),
-      })
+      }
     }
     // setState(updatedRecord)
     mutation.mutate(payload)
