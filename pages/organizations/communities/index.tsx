@@ -652,7 +652,6 @@ export function EditableName({selectedRecord}:EditableProp){
 
   function onFinish(updatedItem:any){
     const payload = {
-      // key:'name',
       name: `Key to: ${updatedItem.name}`,
       id: selectedRecord.id
     }

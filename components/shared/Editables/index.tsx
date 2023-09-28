@@ -51,13 +51,13 @@ interface EditableProps{
     }
     const mutation = useMutation({
       mutationFn: mutationHandler,
-      onSuccess:()=>{
+      onSuccess:(data:any)=>{
         toggleEdit()
       },
       onSettled:(data)=>{
         console.log(data)
         // update state here
-        setState(data.data[0][fieldName])
+        setState(data?.data?.[fieldName])
         queryClient.invalidateQueries([options?.queryKey])
       }
     })

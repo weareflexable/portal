@@ -392,7 +392,7 @@ return(
   <Title style={{marginBottom:'1.5rem'}} level={3}>Beneficiary Info</Title>
 
   <EditableText
-    fieldKey="beneficiary_name" // The way the field is named in DB
+    fieldKey="beneficiaryName" // The way the field is named in DB
     currentFieldValue={selectedRecord.beneficiaryName}
     fieldName = 'beneficiaryName'
     title = 'Beneficiary Name'
@@ -401,7 +401,7 @@ return(
    />
 
   <EditableCountry
-    fieldKey="beneficiary_country" // The way the field is named in DB
+    fieldKey="beneficiaryCountry" // The way the field is named in DB
     currentFieldValue={selectedRecord.beneficiaryCountry}
     fieldName = 'beneficiaryCountry'
     title = 'Beneficiary Country'
@@ -410,7 +410,7 @@ return(
    />
 
   <EditableText
-    fieldKey="beneficiary_state" // The way the field is named in DB
+    fieldKey="beneficiaryState" // The way the field is named in DB
     currentFieldValue={selectedRecord.beneficiaryState}
     fieldName = 'beneficiaryState'
     title = 'Beneficiary State'
@@ -419,7 +419,7 @@ return(
    />
 
   <EditableText
-    fieldKey="beneficiary_city" // The way the field is named in DB
+    fieldKey="beneficiaryCity" // The way the field is named in DB
     currentFieldValue={selectedRecord.beneficiaryCity}
     fieldName = 'beneficiaryCity'
     title = 'Beneficiary City'
@@ -428,7 +428,7 @@ return(
    />
 
   <EditableText
-    fieldKey="beneficiary_postal_code" // The way the field is named in DB
+    fieldKey="beneficiaryPostalCode" // The way the field is named in DB
     currentFieldValue={selectedRecord.beneficiaryPostalCode}
     fieldName = 'beneficiaryPostalCode'
     title = 'Beneficiary Postal Code'
@@ -439,7 +439,7 @@ return(
    <Title style={{marginTop:'1rem'}} level={3}>Account Info</Title>
 
   <EditableRadio
-    fieldKey="account_type" // The way the field is named in DB
+    fieldKey="accountType" // The way the field is named in DB
     currentFieldValue={selectedRecord.accountType}
     fieldName = 'accountType'
     title = 'Account Type'
@@ -448,7 +448,7 @@ return(
    />
 
   <EditableText
-    fieldKey="account_no" // The way the field is named in DB
+    fieldKey="accountNo" // The way the field is named in DB
     currentFieldValue={selectedRecord.accountNo}
     fieldName = 'accountNo'
     title = 'Account No'
@@ -459,7 +459,7 @@ return(
    <Title style={{marginTop:'1.5rem'}} level={3}>Bank Info</Title>
 
   <EditableText
-    fieldKey="bank_name" // The way the field is named in DB
+    fieldKey="bankName" // The way the field is named in DB
     currentFieldValue={selectedRecord.bankName}
     fieldName = 'bankName'
     title = 'Bank Name'
@@ -468,7 +468,7 @@ return(
    />
 
   <EditableText
-    fieldKey="bank_address" // The way the field is named in DB
+    fieldKey="bankAddress" // The way the field is named in DB
     currentFieldValue={selectedRecord.bankAddress}
     fieldName = 'bankAddress'
     title = 'Bank Address'
@@ -477,7 +477,7 @@ return(
    />
 
   <EditableText
-    fieldKey="routing_number" // The way the field is named in DB
+    fieldKey="routingNumber" // The way the field is named in DB
     currentFieldValue={selectedRecord.routingNumber}
     fieldName = 'routingNumber'
     title = 'Routing No'
