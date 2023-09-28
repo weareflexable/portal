@@ -479,9 +479,11 @@ return(
   <EditableName selectedRecord={selectedRecord}/>
   <EditablePrice selectedRecord={selectedRecord}/>
   <EditableDescription selectedRecord={selectedRecord}/>
+  <EditableVenue selectedRecord={selectedRecord}/>
   <EditableTickets selectedRecord={selectedRecord}/>
   <EditableTimeZone selectedRecord={selectedRecord}/>
   <EditableDuration selectedRecord={selectedRecord}/>
+  <EditablePrivacy selectedRecord={selectedRecord}/>
   <EditableDate selectedRecord={selectedRecord}/>
   <EditableAddress selectedRecord={selectedRecord}/>
   {/* <EditableArtwork selectedRecord={selectedRecord}/> */}
@@ -822,6 +824,111 @@ export function EditableName({selectedRecord}:EditableProp){
   return(
     <div style={{width:'100%', display:'flex', flexDirection:'column'}}>
       <Text type="secondary" style={{ marginRight: '2rem',}}>Title</Text>
+    {isEditMode?editable:readOnly}
+    </div>
+  )
+}
+export function EditableVenue({selectedRecord}:EditableProp){
+
+  // console.log(selectedRecord.name)
+  
+  const [state, setState] = useState(selectedRecord)
+
+  const [isEditMode, setIsEditMode] = useState(false)
+
+  const {paseto} = useAuthContext()
+
+  const queryClient = useQueryClient()
+
+
+
+
+
+  function toggleEdit(){
+    setIsEditMode(!isEditMode)
+  }
+
+ const urlPrefix = useUrlPrefix()
+
+  const recordMutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
+      headers:{
+          //@ts-ignore
+          "Authorization": paseto
+      }
+    })
+      return data;
+  }
+  const recordMutation = useMutation({
+    mutationKey:['locationName'],
+    mutationFn: recordMutationHandler,
+    onSuccess:(data:any)=>{
+      setState(data?.data?.locationName)
+      toggleEdit()
+    },
+    onSettled:()=>{
+      queryClient.invalidateQueries({queryKey:['events']})
+    }
+  })
+
+  function onFinish(updatedItem:any){
+    const payload = {
+      // key:'name',
+      locationName: updatedItem.locationName,
+      id: selectedRecord.id
+    }
+
+    const updatedRecord = {
+      ...selectedRecord,
+      locationName: updatedItem.locationName
+    }
+    recordMutation.mutate(payload)
+  }
+
+  const {isLoading:isEditing} = recordMutation ;
+
+  const readOnly = (
+    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+      <Text>{state.locationName}</Text>
+      <Button type="link" onClick={toggleEdit}>Edit</Button>
+    </div>
+)
+
+  const editable = (
+    <Form
+     style={{ marginTop:'.5rem' }}
+     name="editableName"
+     initialValues={{locationName: selectedRecord.locationName}}
+     onFinish={onFinish}
+     >
+      <Row>
+        <Col span={16} style={{height:'100%'}}>
+          <Form.Item
+              name="locationName"
+              rules={[{ required: true, message: 'This field is required' }]}
+          >
+              <Input  disabled={isEditing} placeholder=""/>
+          </Form.Item>
+        </Col>
+        <Col span={4}>
+          <Form.Item style={{ width:'100%'}}>
+              <Space >
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                      Cancel
+                  </Button>
+                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                      Apply changes
+                  </Button>
+              </Space>           
+          </Form.Item>
+        </Col>
+      </Row>
+           
+    </Form>
+  )
+  return(
+    <div style={{width:'100%', display:'flex', flexDirection:'column'}}>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>Venue</Text>
     {isEditMode?editable:readOnly}
     </div>
   )
@@ -1331,12 +1438,10 @@ export function EditableDuration({selectedRecord}:EditableProp){
     function onFinish(updatedItem:any){
       const payload = {
         // key:'duration',
-        duration: String(updatedItem.duration*60),
+        duration: Number(updatedItem.duration*60),
         id: selectedRecord.id
       }
 
-
-  
       const updatedRecord = {
         ...selectedRecord,
         duration: updatedItem.duration*60
@@ -1393,6 +1498,105 @@ export function EditableDuration({selectedRecord}:EditableProp){
       <div style={{width:'100%', display:'flex', marginTop:'2rem', flexDirection:'column'}}>
         <Text type="secondary" style={{ marginRight: '2rem',}}>Duration</Text>
       {isEditMode?editable:readOnly}
+      </div>
+    )
+  }
+
+export function EditablePrivacy({selectedRecord}:EditableProp){
+  
+    const [state, setState] = useState(selectedRecord.type)
+  
+    const [isEditMode, setIsEditMode] = useState(false)
+  
+    const {paseto} = useAuthContext()
+  
+    const urlPrefix = useUrlPrefix()
+  
+    function toggleEdit(){
+      setIsEditMode(!isEditMode)
+    }
+  
+   const queryClient = useQueryClient()
+  
+    const mutationHandler = async(updatedItem:any)=>{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
+        headers:{
+            //@ts-ignore
+            "Authorization": paseto
+        }
+      })
+        return data;
+    }
+    const mutation = useMutation({
+      mutationFn: mutationHandler,
+      onSuccess:()=>{
+        toggleEdit()
+      },
+      onSettled:(data)=>{
+        setState(data?.data?.type)
+        queryClient.invalidateQueries({queryKey:['events']})
+      }
+    })
+  
+    function onFinish(formData:any){
+      const payload = {
+        // key:fieldKey,
+        type: formData.type,
+        id: selectedRecord.id
+      }
+      mutation.mutate(payload)
+    }
+  
+    const {isLoading:isEditing} = mutation ;
+  
+    const readOnly = (
+      <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+        <Text style={{textTransform:'capitalize'}}>{state}</Text>
+        <Button type="link" onClick={toggleEdit}>Edit</Button>
+      </div>
+  )
+  
+    const editable = (
+      <Form
+       style={{ marginTop:'.5rem' }}
+       initialValues={{type:selectedRecord.type}}
+       onFinish={onFinish}
+       >
+        <Row>
+          <Col span={16} style={{height:'100%'}}>
+            <Form.Item 
+                // label={title} 
+                name={'type'}
+                rules={[{ required: true, message: 'Please select an accountType' }]}
+                >
+                <Radio.Group  size='large'>
+                    <Radio.Button value="public">Public</Radio.Button>
+                    <Radio.Button value="private">Private</Radio.Button>
+                </Radio.Group>
+            </Form.Item>
+          </Col>
+          <Col span={4}>
+            <Form.Item style={{ width:'100%'}}>
+                <Space >
+                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                        Cancel
+                    </Button>
+                    <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                        Apply changes
+                    </Button>
+                </Space>
+                          
+            </Form.Item>
+          </Col>
+        </Row>
+             
+      </Form>
+    )
+  
+    return(
+      <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+        <Text type="secondary" style={{ marginRight: '2rem',}}>Privacy</Text>
+        {isEditMode?editable:readOnly}
       </div>
     )
   }
