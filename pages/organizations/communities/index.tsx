@@ -524,10 +524,6 @@ export function EditablePrice({selectedRecord}:EditableProp){
     setIsEditMode(!isEditMode)
   }
 
- const transformedRecord = {
-  ...selectedRecord,
-  price: Number(selectedRecord.price)/100
- }
  const urlPrefix = useUrlPrefix()
 
   const recordMutationHandler = async(updatedItem:any)=>{
@@ -554,7 +550,7 @@ export function EditablePrice({selectedRecord}:EditableProp){
   function onFinish(updatedItem:any){
     const payload = {
       // key:'price',
-      price: Number(updatedItem.price*100),
+      price: String(updatedItem.price*100),
       id: selectedRecord.id
     }
     recordMutation.mutate(payload)
@@ -659,11 +655,6 @@ export function EditableName({selectedRecord}:EditableProp){
       // key:'name',
       name: `Key to: ${updatedItem.name}`,
       id: selectedRecord.id
-    }
-
-    const updatedRecord = {
-      ...selectedRecord,
-      name: `Key to: ${updatedItem.name}`
     }
     
     recordMutation.mutate(payload)

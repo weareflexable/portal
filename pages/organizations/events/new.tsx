@@ -156,10 +156,10 @@ export default function NewEvent(){
             name: formData.name,
             description: formData.description,
             type: formData.type,
-            price: Number(formData.price)*100 || 0,
+            price: String(formData.price*100) || 0,
             locationName: formData.locationName,
-            totalTickets: Number(formData.totalTickets),
-            duration: Number(formData.duration)*60,
+            totalTickets: String(formData.totalTickets),
+            duration: String(formData.duration*60),
             address: {
                 country: fullAddress.country,
                 state: fullAddress.state,

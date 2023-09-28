@@ -666,7 +666,7 @@ export function EditablePrice({selectedRecord}:EditableProp){
   function onFinish(updatedItem:any){
     const payload = {
       // key:'price',
-      price: Number(updatedItem.price*100),
+      price: String(updatedItem.price*100),
       id: selectedRecord.id
     }
     recordMutation.mutate(payload)
@@ -1334,14 +1334,10 @@ export function EditableTickets({selectedRecord}:EditableProp){
     function onFinish(updatedItem:any){
       const payload = {
         // key:'totalTickets',
-        totalTickets: Number(updatedItem.totalTickets),
+        totalTickets: String(updatedItem.totalTickets),
         id: selectedRecord.id
       }
   
-      const updatedRecord = {
-        ...selectedRecord,
-        totalTickets: updatedItem.totalTickets
-      }
       recordMutation.mutate(payload)
     }
   
@@ -1438,7 +1434,7 @@ export function EditableDuration({selectedRecord}:EditableProp){
     function onFinish(updatedItem:any){
       const payload = {
         // key:'duration',
-        duration: Number(updatedItem.duration*60),
+        duration: String(updatedItem.duration*60),
         id: selectedRecord.id
       }
 
@@ -1447,7 +1443,6 @@ export function EditableDuration({selectedRecord}:EditableProp){
         duration: updatedItem.duration*60
       }
 
-      console.log(updatedRecord)
 
       setState(updatedRecord)
       recordMutation.mutate(payload)
