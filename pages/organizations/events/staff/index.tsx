@@ -64,38 +64,6 @@ export default function StaffView(){
 
           return res.data;
     }
-
-
-    // async function changeServiceItemStatus({serviceItemId, statusNumber}:{serviceItemId:string, statusNumber: string}){
-    //     const res = await axios({
-    //         method:'patch',
-    //         url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,
-    //         data:{
-    //             key:'status',
-    //             value: statusNumber, // 0 means de-activated in db
-    //             serviceItemId: serviceItemId 
-    //         },
-    //         headers:{
-    //             "Authorization": paseto
-    //         }
-    //     })
-    //     return res; 
-    // }
-
-    
-
-    // const changeStatusMutation = useMutation(['data'],{
-    //     mutationFn: changeServiceItemStatus,
-    //     onSuccess:(data:any)=>{
-    //         queryClient.invalidateQueries({queryKey:['users']})
-    //     },
-    //     onError:()=>{
-    //         console.log('Error changing status')
-    //     }
-    // })
-
-    
-
   
 
 
@@ -115,12 +83,6 @@ export default function StaffView(){
       setPageNumber(data.current); // Subtracting 1 because pageSize param in url starts counting from 0
     };
   
-    // function getTableRecordActions(){
-    //     switch(currentFilter.id){
-    //         // 1 = approved
-    //         case '1': return activeItemActions 
-    //     }
-    // }
 
     function viewStaffDetails(user:Staff){
       // set state
@@ -131,14 +93,6 @@ export default function StaffView(){
     }
   
     
-      const onMenuClick=(e:any, record:Staff) => {
-        const event = e.key
-        switch(event){
-          // break;
-          case 'viewDetails': viewStaffDetails(record)
-        }
-      };
-      
   
     const columns: ColumnsType<Staff> = [
       {
@@ -321,6 +275,7 @@ const createData = useMutation(createDataHandler,{
       onCancel()
    },
     onError:(data:any)=>{
+      console.log('ehere',data)
         notification['error']({
             message:data.message ,
           });
@@ -328,7 +283,6 @@ const createData = useMutation(createDataHandler,{
     },
     onSettled:()=>{
       queryClient.invalidateQueries(['event-staff',currentEvent.id])
-      queryClient.invalidateQueries(['all-event-staff'])
     }
 })
 
