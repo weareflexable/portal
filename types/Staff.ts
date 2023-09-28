@@ -3,7 +3,8 @@ export type Staff = {
     email: string,
     role: string,
     name: string,
-    userRoleName: string,
+    userRoleName?: string,
+    staffRoleName: string
     createdAt:string,
 }
 

@@ -457,7 +457,7 @@ const deleteDataHandler = async(record:Staff)=>{
     url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/service`,
     data: {
         id:record.id,
-        serviceId: currentService.id
+        // serviceId: currentService.id
       },
     headers:{
           "Authorization": paseto 
@@ -467,13 +467,15 @@ const deleteDataHandler = async(record:Staff)=>{
 
 const deleteMutation = useMutation(deleteDataHandler)
 
+console.log(selectedStaff)
+
 
 return( 
 <Drawer title={"Staff details"} width={640} placement="right" closable={true} onClose={closeDrawerHandler} open={isDrawerOpen}>
   
   <EditableRadio
     id={selectedStaff.id}
-    currentFieldValue = {selectedStaff.userRoleName}
+    currentFieldValue = {selectedStaff.staffRoleName}
     fieldKey ='role'
     selectedItem={selectedStaff.role}
     fieldName="role"
@@ -527,7 +529,7 @@ export function EditableRadio({id, options, selectedItem, fieldName, currentFiel
  const queryClient = useQueryClient()
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/service`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -549,7 +551,7 @@ export function EditableRadio({id, options, selectedItem, fieldName, currentFiel
   function onFinish(formData:any){
     const payload = {
       // key:fieldKey,
-      fieldKey: formData[fieldName],
+      [fieldKey]: formData[fieldName],
       id: id
     }
     mutation.mutate(payload)
@@ -567,18 +569,17 @@ export function EditableRadio({id, options, selectedItem, fieldName, currentFiel
   const editable = (
     <Form
      style={{ marginTop:'.5rem' }}
-     initialValues={{[fieldName]:currentFieldValue}}
-     onFinish={onFinish}
+     initialValues={{[fieldName]:selectedItem.toString()}}
+     onFinish={onFinish} 
      >
       <Row>
         <Col span={16} style={{height:'100%'}}>
           <Form.Item 
               // label={title} 
               name={fieldName}
-              initialValue={{[fieldName]:selectedItem}}
               rules={[{ required: true, message: 'Please select an accountType' }]}
               >
-              <Radio.Group defaultValue={selectedItem} size='large'>
+              <Radio.Group  size='large'>
                   <Radio.Button value="3">Supervisor</Radio.Button>
                   <Radio.Button value="4">Employee</Radio.Button>
               </Radio.Group>
