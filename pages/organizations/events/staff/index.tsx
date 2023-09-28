@@ -275,7 +275,6 @@ const createData = useMutation(createDataHandler,{
       onCancel()
    },
     onError:(data:any)=>{
-      console.log('ehere',data)
         notification['error']({
             message:data.message ,
           });
