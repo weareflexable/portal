@@ -43,17 +43,6 @@ export default function StaffView(){
 
     const urlPrefix = useUrlPrefix()
 
-    // async function fetchAllStaff(){
-    //   const res = await axios({
-    //           method:'get',
-    //           url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/service?serviceId=${currentService.id}&pageNumber=${pageNumber}&pageSize=10`,
-    //           headers:{
-    //               "Authorization": paseto
-    //           }
-    //       })
- 
-    //       return res.data;
-    // }
     async function fetchStaff(){
       const res = await axios({ 
               method:'get',
@@ -62,51 +51,18 @@ export default function StaffView(){
                   "Authorization": paseto 
               } 
           })
-
           return res.data;
     }
 
-
-    // async function changeServiceItemStatus({serviceItemId, statusNumber}:{serviceItemId:string, statusNumber: string}){
-    //     const res = await axios({
-    //         method:'patch',
-    //         url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,
-    //         data:{
-    //             key:'status',
-    //             value: statusNumber, // 0 means de-activated in db
-    //             serviceItemId: serviceItemId 
-    //         },
-    //         headers:{
-    //             "Authorization": paseto
-    //         }
-    //     })
-    //     return res; 
-    // }
-
     
 
-    // const changeStatusMutation = useMutation(['data'],{
-    //     mutationFn: changeServiceItemStatus,
-    //     onSuccess:(data:any)=>{
-    //         queryClient.invalidateQueries({queryKey:['users']})
-    //     },
-    //     onError:()=>{
-    //         console.log('Error changing status')
-    //     }
-    // })
+  console.log('current',currentFilter)
 
+
+    const staffQuery = useQuery({queryKey:['staff',currentFilter.id], queryFn:fetchStaff, enabled:paseto !== ''})
     
-
-  
-
-
-    const staffQuery = useQuery({queryKey:['staff',currentService.id,currentFilter.id], queryFn:fetchStaff, enabled:paseto !== ''})
     const data = staffQuery.data && staffQuery.data.data
     const totalLength = staffQuery.data && staffQuery.data.dataLength;
-
-    // const allStaffQuery = useQuery({queryKey:['all-staff'], queryFn:fetchAllStaff, enabled:paseto !== '', staleTime:Infinity})
-    // const allStaffLength = allStaffQuery.data && allStaffQuery.data.dataLength
-
 
 
     
@@ -116,12 +72,6 @@ export default function StaffView(){
       setPageNumber(data.current); // Subtracting 1 because pageSize param in url starts counting from 0
     };
   
-    // function getTableRecordActions(){
-    //     switch(currentFilter.id){
-    //         // 1 = approved
-    //         case '1': return activeItemActions 
-    //     }
-    // }
 
     function viewStaffDetails(user:Staff){
       // set state
