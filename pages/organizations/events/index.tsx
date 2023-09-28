@@ -1692,9 +1692,7 @@ export function EditablePrivacy({selectedRecord}:EditableProp){
     },
     onPlaceSelected: (place) => {
         // console.log(antInputRef.current.input)
-        form.setFieldValue('street',place?.formatted_address)
-  
-        console.log(place)  
+        form.setFieldValue('street',place?.formatted_address)  
         
         const fullAddress = extractFullAddress(place)
         // add street address
@@ -1725,7 +1723,8 @@ export function EditablePrivacy({selectedRecord}:EditableProp){
   const mutation = useMutation({
     mutationKey:['address'],
     mutationFn: mutationHandler,
-    onSuccess:()=>{ 
+    onSuccess:(data:any)=>{ 
+      updateState(data?.data?.address.fullAddress)
       toggleEdit()
     },
     onSettled:(data)=>{
