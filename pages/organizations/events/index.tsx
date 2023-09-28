@@ -387,7 +387,7 @@ const {paseto} = useAuthContext()
 const urlPrefix = useUrlPrefix()
 
 function closeDrawerHandler(){
-  queryClient.invalidateQueries(['communities']) 
+  queryClient.invalidateQueries(['events']) 
   closeDrawer(!isDrawerOpen)
 }
 
@@ -409,12 +409,12 @@ function deleteEvent(){
       notification['success']({
         message: 'Successfully deactivated event!'
       })
-      queryClient.invalidateQueries(['event'])
+      queryClient.invalidateQueries(['events'])
       toggleDeleteModal()
       closeDrawerHandler()
     },
     onSettled:()=>{
-      queryClient.invalidateQueries(['event'])
+      queryClient.invalidateQueries(['events'])
     },
     onError:(err)=>{
         console.log(err)
@@ -1061,7 +1061,7 @@ export function EditableDate({selectedRecord}:EditableProp){
 
     // console.log(selectedRecord.name)
     
-    const [state, setState] = useState(selectedRecord)
+    const [state, setState] = useState(selectedRecord.startTime)
   
     const [isEditMode, setIsEditMode] = useState(false)
   
@@ -1092,7 +1092,8 @@ export function EditableDate({selectedRecord}:EditableProp){
       mutationKey:['startTime'],
       mutationFn: recordMutationHandler,
       onSuccess:(data:any)=>{
-        setState(data?.data.startTime) 
+        queryClient.invalidateQueries({queryKey:['events']})
+        setState(data?.data?.startTime) 
         toggleEdit()
       },
       onSettled:()=>{
@@ -1118,7 +1119,7 @@ export function EditableDate({selectedRecord}:EditableProp){
   
     const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{dayjs(state.startTime).tz("UTC").format('MMM DD, YYYY H A')}</Text>
+        <Text>{dayjs(state).tz("UTC").format('MMM DD, YYYY H A')}</Text>
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
   )
