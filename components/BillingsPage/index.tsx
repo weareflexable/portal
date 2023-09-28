@@ -45,23 +45,23 @@ export default function BillingsView(){
     const [selectedBank, setSelelectedOrg] = useState<any|Bank>({})
     const [currentFilter, setCurrentStatus] = useState({id:'1',name: 'Verified'})
 
-    async function fetchAllBanks(){
-        const res = await axios({
-            method:'get',
-            //@ts-ignore
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank?pageNumber=${pageNumber}&pageSize=${pageSize}`,
-            headers:{
-                "Authorization": paseto
-            }
-        })
+    // async function fetchAllBanks(){
+    //     const res = await axios({
+    //         method:'get',
+    //         //@ts-ignore
+    //         url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+    //         headers:{
+    //             "Authorization": paseto
+    //         }
+    //     })
 
-        return res.data;
-    }
+    //     return res.data;
+    // }
     async function fetchBanks(){
         const res = await axios({
             method:'get',
             //@ts-ignore
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank?key=org_id&value=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&key2=status&value2=${currentFilter.id}`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
             headers:{
                 "Authorization": paseto
             }
@@ -77,8 +77,8 @@ export default function BillingsView(){
             method:'patch',
             url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank`,
             data:{
-                key:'status',
-                value: statusNumber, // 0 means de-activated in db
+                // key:'status',
+                status: statusNumber, // 0 means de-activated in db
                 id: id 
             },
             headers:{
@@ -121,11 +121,11 @@ export default function BillingsView(){
     }
 
     
-      const allBanksQuery = useQuery({queryKey:['all-banks'], queryFn:fetchAllBanks, enabled:paseto !== '', staleTime:Infinity})
-      const allBanksLength = allBanksQuery.data && allBanksQuery.data.data.length
+      // const allBanksQuery = useQuery({queryKey:['all-banks'], queryFn:fetchAllBanks, enabled:paseto !== '', staleTime:Infinity})
+      // const allBanksLength = allBanksQuery.data && allBanksQuery.data.data.length
       
       
-      const banksQuery = useQuery({queryKey:['banks', currentFilter], queryFn:fetchBanks, enabled:paseto !== '' && allBanksQuery.isFetched})
+      const banksQuery = useQuery({queryKey:['banks', currentFilter], queryFn:fetchBanks, enabled:paseto !== '' })
       const data = banksQuery.data && banksQuery.data.data
       const totalLength = banksQuery.data && banksQuery.data.dataLength;
 
@@ -257,7 +257,8 @@ export default function BillingsView(){
               <div style={{display:'flex', marginTop:'1rem', marginBottom:'1rem', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                  <Title style={{ margin:'0'}} level={2}>Billings</Title>
                </div>
-               {  allBanksQuery.data && allBanksLength == 0? null : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+               {/* {  allBanksQuery.data && allBanksLength == 0? null : */}
+                <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                   <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
                       {bankFilters.map(bankFilter=>(
                           <Radio.Button key={bankFilter.id} onClick={()=>setCurrentStatus(bankFilter)} value={bankFilter.id}>{bankFilter.name}</Radio.Button>
@@ -268,13 +269,16 @@ export default function BillingsView(){
                     <Button shape="round" style={{marginRight:'1rem'}} loading={banksQuery.isRefetching} onClick={()=>banksQuery.refetch()} icon={<ReloadOutlined rev={undefined} />}>Refresh</Button>
                     <Button shape='round' type='primary' icon={<PlusOutlined rev={undefined}/>} onClick={()=>router.push('/organizations/billings/new')}>New Bank</Button>
                   </div>
-                </div>}
-                {
+                </div>
+                {/* } */}
+
+                {/* {
                   allBanksQuery.data && allBanksLength == 0
                   ?<EmptyState>
                     <Button shape='round' type='primary' icon={<PlusOutlined rev={undefined}/>} onClick={()=>router.push('/organizations/billings/new')}>New Bank</Button>
                   </EmptyState>
-                  : <Table 
+                  :  */}
+                  <Table 
                   style={{width:'100%'}} 
                   scroll={{ x: 'calc(500px + 50%)'}} 
                   rowKey={(record)=>record.id}
@@ -289,7 +293,7 @@ export default function BillingsView(){
                     showTotal:(total) => `Total: ${total} items`,
                   }} 
                   />
-                }
+                {/* } */}
                 
                 {
                   isDrawerOpen
@@ -360,8 +364,8 @@ const deleteDataHandler = async(record:Bank)=>{
     url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank`,
     data: {
         id:record.id,
-        key:'status',
-        value: "0"
+        // key:'status',
+        status: "0"
       },
     headers:{
           "Authorization": paseto 
@@ -388,7 +392,7 @@ return(
   <Title style={{marginBottom:'1.5rem'}} level={3}>Beneficiary Info</Title>
 
   <EditableText
-    fieldKey="beneficiary_name" // The way the field is named in DB
+    fieldKey="beneficiaryName" // The way the field is named in DB
     currentFieldValue={selectedRecord.beneficiaryName}
     fieldName = 'beneficiaryName'
     title = 'Beneficiary Name'
@@ -397,7 +401,7 @@ return(
    />
 
   <EditableCountry
-    fieldKey="beneficiary_country" // The way the field is named in DB
+    fieldKey="beneficiaryCountry" // The way the field is named in DB
     currentFieldValue={selectedRecord.beneficiaryCountry}
     fieldName = 'beneficiaryCountry'
     title = 'Beneficiary Country'
@@ -406,7 +410,7 @@ return(
    />
 
   <EditableText
-    fieldKey="beneficiary_state" // The way the field is named in DB
+    fieldKey="beneficiaryState" // The way the field is named in DB
     currentFieldValue={selectedRecord.beneficiaryState}
     fieldName = 'beneficiaryState'
     title = 'Beneficiary State'
@@ -415,7 +419,7 @@ return(
    />
 
   <EditableText
-    fieldKey="beneficiary_city" // The way the field is named in DB
+    fieldKey="beneficiaryCity" // The way the field is named in DB
     currentFieldValue={selectedRecord.beneficiaryCity}
     fieldName = 'beneficiaryCity'
     title = 'Beneficiary City'
@@ -424,7 +428,7 @@ return(
    />
 
   <EditableText
-    fieldKey="beneficiary_postal_code" // The way the field is named in DB
+    fieldKey="beneficiaryPostalCode" // The way the field is named in DB
     currentFieldValue={selectedRecord.beneficiaryPostalCode}
     fieldName = 'beneficiaryPostalCode'
     title = 'Beneficiary Postal Code'
@@ -435,7 +439,7 @@ return(
    <Title style={{marginTop:'1rem'}} level={3}>Account Info</Title>
 
   <EditableRadio
-    fieldKey="account_type" // The way the field is named in DB
+    fieldKey="accountType" // The way the field is named in DB
     currentFieldValue={selectedRecord.accountType}
     fieldName = 'accountType'
     title = 'Account Type'
@@ -444,7 +448,7 @@ return(
    />
 
   <EditableText
-    fieldKey="account_no" // The way the field is named in DB
+    fieldKey="accountNo" // The way the field is named in DB
     currentFieldValue={selectedRecord.accountNo}
     fieldName = 'accountNo'
     title = 'Account No'
@@ -455,7 +459,7 @@ return(
    <Title style={{marginTop:'1.5rem'}} level={3}>Bank Info</Title>
 
   <EditableText
-    fieldKey="bank_name" // The way the field is named in DB
+    fieldKey="bankName" // The way the field is named in DB
     currentFieldValue={selectedRecord.bankName}
     fieldName = 'bankName'
     title = 'Bank Name'
@@ -464,7 +468,7 @@ return(
    />
 
   <EditableText
-    fieldKey="bank_address" // The way the field is named in DB
+    fieldKey="bankAddress" // The way the field is named in DB
     currentFieldValue={selectedRecord.bankAddress}
     fieldName = 'bankAddress'
     title = 'Bank Address'
@@ -473,7 +477,7 @@ return(
    />
 
   <EditableText
-    fieldKey="routing_number" // The way the field is named in DB
+    fieldKey="routingNumber" // The way the field is named in DB
     currentFieldValue={selectedRecord.routingNumber}
     fieldName = 'routingNumber'
     title = 'Routing No'

@@ -50,8 +50,8 @@ interface EditableProp{
   
     function onFinish(updatedItem:Service){
       const payload = {
-        key:'name',
-        value: updatedItem.name,
+        // key:'name',
+        name: updatedItem.name,
         id: selectedRecord.id
       }
       const updatedRecord = {
@@ -349,8 +349,8 @@ interface EditableProp{
   
     function onFinish(field:any){
       const payload = {
-        key:'contact_number',
-        value: field.contactNumber,
+        // key:'contact_number',
+        contactNumber: field.contactNumber,
         id: selectedRecord.id
       }
       console.log(payload)
@@ -435,8 +435,8 @@ interface EditableProp{
   
     function onFinish(updatedItem:Service){
       const payload = {
-        key:'currency',
-        value: updatedItem.currency,
+        // key:'currency',
+        currency: updatedItem.currency,
         id: selectedRecord.id
       }
       const updatedRecord = {
@@ -561,8 +561,8 @@ interface EditableProp{
       console.log(logoHash)
   
       const payload = {
-        key:'logo_image_hash',
-        value: logoHash,
+        // key:'logo_image_hash',
+        logoImageHash: logoHash,
         id: selectedRecord.id
       }
       mutation.mutate(payload)
@@ -594,7 +594,7 @@ interface EditableProp{
                 name="logoImage"
                 valuePropName="logoImage"
                 getValueFromEvent={extractLogoImage}
-                rules={[{ required: true, message: 'Please input a valid zip code' }]}
+                rules={[{ required: true, message: 'This field is required' }]}
             >
                 
                 <Upload beforeUpload={()=>false} name="logoImageHash" listType="picture" multiple={false}>
@@ -679,8 +679,8 @@ interface EditableProp{
       console.log(coverImageHash)
   
       const payload = {
-        key:'cover_image_hash',
-        value: coverImageHash,
+        // key:'cover_image_hash',
+        coverImageHash: coverImageHash,
         orgId: selectedRecord.id
       }
       setUpdatedCoverImageHash(coverImageHash)

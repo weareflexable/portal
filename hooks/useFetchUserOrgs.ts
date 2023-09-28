@@ -23,7 +23,7 @@ export default function useFetchUserOrgs(){
     }, [])
 
     const orgsQuery = useQuery(['orgs'],async()=>{
-        const {data} = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/orgs?key=status&value=1&pageNumber=1&pageSize=30&key2=created_by`,{
+        const {data} = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/orgs?tatus=1&pageNumber=1&pageSize=30&key2=created_by`,{
             headers:{
                 //@ts-ignore
                 "Authorization": paseto

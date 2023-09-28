@@ -50,8 +50,8 @@ interface EditableProp{
   
     function onFinish(updatedItem:any){
       const payload = {
-        key:'name',
-        value: updatedItem.name,
+
+        name: updatedItem.name,
         id: selectedRecord.id
       }
       const updatedRecord = {
@@ -154,8 +154,8 @@ interface EditableProp{
   
     function onFinish(updatedItem:any){
       const payload = {
-        key:'price',
-        value: String(updatedItem.price*100),
+        // key:'price',
+        price: Number(updatedItem.price*100),
         id: selectedRecord.id
       }
       recordMutation.mutate(payload)
@@ -245,13 +245,15 @@ interface EditableProp{
   
     function onFinish(updatedItem:any){
       const payload = {
-        key:'tickets_per_day',
-        value: updatedItem.ticketsPerDay,
+        // key:'tickets_per_day',
+        ticketsPerDay: Number(updatedItem.ticketsPerDay),
         id: selectedRecord.id
       }
+      console.log(payload)
+
       const updatedRecord = {
         ...selectedRecord,
-        ticketsPerDay: updatedItem.ticketsPerDay
+        ticketsPerDay: updatedItem.ticketsPerDay 
       }
       setState(updatedRecord)
       recordMutation.mutate(payload)
@@ -343,8 +345,8 @@ interface EditableProp{
   
     function onFinish(updatedItem:any){
       const payload = {
-        key:'description',
-        value: updatedItem.description,
+        // key:'description',
+        description: updatedItem.description,
         id: selectedRecord.id
       }
       const updatedRecord = {
@@ -416,7 +418,7 @@ interface EditableProp{
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const {paseto} = useAuthContext()
 
-    const serviceItemTypeName = selectedRecord.serviceItemType[0].name
+    const serviceItemTypeName = selectedRecord?.serviceItemType?.name
     const urlPrefix = useUrlPrefix()
 
     const queryClient = useQueryClient()
@@ -460,8 +462,8 @@ interface EditableProp{
     
   
       const payload = {
-        key:'logo_image_hash',
-        value: artwork,
+        // key:'logo_image_hash',
+        logoImageHash: artwork,
         id: selectedRecord.id
       }
       // setUpdatedCoverImageHash(coverImageHash)

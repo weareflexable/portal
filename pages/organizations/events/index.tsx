@@ -61,20 +61,20 @@ function Events(){
    const urlPrefix = useUrlPrefix()
 
   
-    async function fetchAllEvents(){
-    const res = await axios({
-            method:'get',
-            //@ts-ignore
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}&type=all`,
+    // async function fetchAllEvents(){
+    // const res = await axios({
+    //         method:'get',
+    //         //@ts-ignore
+    //         url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}&type=all`,
 
-            headers:{
-                "Authorization": paseto 
-            }
-        })
+    //         headers:{
+    //             "Authorization": paseto 
+    //         }
+    //     })
 
-        return res.data.data;
+    //     return res.data.data;
    
-    }
+    // }
   
     async function fetchEvents(){
       const res = await axios({
@@ -96,8 +96,8 @@ function Events(){
             method:'patch',
             url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,
             data:{
-                key:'status',
-                value: '1', 
+                // key:'status',
+                status: '1', 
                 id: record.id  
             },
             headers:{
@@ -128,8 +128,8 @@ function Events(){
     const totalLength = 0;
 
     // @ts-ignore
-    const allEventsQuery = useQuery({queryKey:['all-events',{currentOrg: currentOrg.orgId}], queryFn:fetchAllEvents, enabled: paseto !== '', staleTime:Infinity})
-    const allEventsLength = allEventsQuery.data && allEventsQuery.data.dataLength;
+    // const allEventsQuery = useQuery({queryKey:['all-events',{currentOrg: currentOrg.orgId}], queryFn:fetchAllEvents, enabled: paseto !== '', staleTime:Infinity})
+    // const allEventsLength = allEventsQuery.data && allEventsQuery.data.dataLength;
 
 
 
@@ -175,7 +175,7 @@ function gotoEventPage(event:Event){
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.coverImageHash.length < 10? IMAGE_PLACEHOLDER_HASH : record.coverImageHash}`}/>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.coverImageHash.length < 20? IMAGE_PLACEHOLDER_HASH : record.coverImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Button onClick={()=>gotoEventPage(record)} type='link'>{record.name}</Button>  
                     </div>
@@ -306,9 +306,10 @@ function gotoEventPage(event:Event){
               <div style={{display:'flex', marginTop:'1rem', marginBottom:'1rem', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                  <Title style={{ margin:'0'}} level={2}>Events</Title>
                </div>
-                   {allEventsQuery.data && allEventsLength === 0 
+                   {/* {allEventsQuery.data && allEventsLength === 0 
                    ? null 
-                   : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
+                   :  */}
+                   <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
                     <div style={{width:'100%',  marginBottom:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                         {/* filters */}
                         <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
@@ -324,14 +325,15 @@ function gotoEventPage(event:Event){
                     </div>
                      
                    </div>
-                   }
+                   {/* } */}
                 
-                {
+                {/* {
                   allEventsQuery.data && allEventsLength === 0
                   ? <EmptyState>
                       <Button type="primary"  onClick={()=>router.push('/organizations/events/new')}  icon={<PlusOutlined rev={undefined}/>} >Launch Event</Button>
                   </EmptyState> 
-                  : <Table 
+                  :  */}
+                  <Table 
                       style={{width:'100%'}} 
                       scroll={{ x: 'calc(600px + 40%)'}} 
                       size='large' 
@@ -347,7 +349,7 @@ function gotoEventPage(event:Event){
                         showTotal:(total) => `Total: ${total} items`, 
                       }} 
                     />
-                }
+                {/* } */}
                 
                 { 
                   isDrawerOpen
@@ -385,7 +387,7 @@ const {paseto} = useAuthContext()
 const urlPrefix = useUrlPrefix()
 
 function closeDrawerHandler(){
-  queryClient.invalidateQueries(['communities']) 
+  queryClient.invalidateQueries(['events']) 
   closeDrawer(!isDrawerOpen)
 }
 
@@ -407,12 +409,12 @@ function deleteEvent(){
       notification['success']({
         message: 'Successfully deactivated event!'
       })
-      queryClient.invalidateQueries(['event'])
+      queryClient.invalidateQueries(['events'])
       toggleDeleteModal()
       closeDrawerHandler()
     },
     onSettled:()=>{
-      queryClient.invalidateQueries(['event'])
+      queryClient.invalidateQueries(['events'])
     },
     onError:(err)=>{
         console.log(err)
@@ -431,8 +433,8 @@ const deleteDataHandler = async(record:Event)=>{
     url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,
     data: {
         id:record.id,
-        key:'status',
-        value: "0"
+        // key:'status',
+        status: "0"
       },
     headers:{
           "Authorization": paseto 
@@ -476,9 +478,11 @@ return(
   <EditableName selectedRecord={selectedRecord}/>
   <EditablePrice selectedRecord={selectedRecord}/>
   <EditableDescription selectedRecord={selectedRecord}/>
+  <EditableVenue selectedRecord={selectedRecord}/>
   <EditableTickets selectedRecord={selectedRecord}/>
   <EditableTimeZone selectedRecord={selectedRecord}/>
   <EditableDuration selectedRecord={selectedRecord}/>
+  <EditablePrivacy selectedRecord={selectedRecord}/>
   <EditableDate selectedRecord={selectedRecord}/>
   <EditableAddress selectedRecord={selectedRecord}/>
   {/* <EditableArtwork selectedRecord={selectedRecord}/> */}
@@ -552,8 +556,8 @@ export function EditableDescription({selectedRecord}:EditableProp){
 
   function onFinish(updatedItem:any){
     const payload = {
-      key:'description',
-      value: updatedItem.description,
+      // key:'description',
+      description: updatedItem.description,
       id: selectedRecord.id
     }
     const updatedRecord = {
@@ -567,7 +571,7 @@ export function EditableDescription({selectedRecord}:EditableProp){
   const {isLoading:isEditing} = recordMutation 
 
   const readOnly = (
-    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+    <div style={{width:'100%', display:'flex', marginBottom:'2rem', justifyContent:'space-between', alignItems:'center'}}>
       <Text>{state.description}</Text>
       <Button type="link" onClick={toggleEdit}>Edit</Button>
     </div>
@@ -661,8 +665,8 @@ export function EditablePrice({selectedRecord}:EditableProp){
 
   function onFinish(updatedItem:any){
     const payload = {
-      key:'price',
-      value: String(updatedItem.price*100),
+      // key:'price',
+      price: String(updatedItem.price*100),
       id: selectedRecord.id
     }
     recordMutation.mutate(payload)
@@ -762,8 +766,8 @@ export function EditableName({selectedRecord}:EditableProp){
 
   function onFinish(updatedItem:any){
     const payload = {
-      key:'name',
-      value: updatedItem.name,
+      // key:'name',
+      name: updatedItem.name,
       id: selectedRecord.id
     }
 
@@ -823,6 +827,111 @@ export function EditableName({selectedRecord}:EditableProp){
     </div>
   )
 }
+export function EditableVenue({selectedRecord}:EditableProp){
+
+  // console.log(selectedRecord.name)
+  
+  const [state, setState] = useState(selectedRecord.locationName)
+
+  const [isEditMode, setIsEditMode] = useState(false)
+
+  const {paseto} = useAuthContext()
+
+  const queryClient = useQueryClient()
+
+
+
+
+
+  function toggleEdit(){
+    setIsEditMode(!isEditMode)
+  }
+
+ const urlPrefix = useUrlPrefix()
+
+  const recordMutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
+      headers:{
+          //@ts-ignore
+          "Authorization": paseto
+      }
+    })
+      return data;
+  }
+  const recordMutation = useMutation({
+    mutationKey:['locationName'],
+    mutationFn: recordMutationHandler,
+    onSuccess:(data:any)=>{
+      setState(data?.data?.locationName)
+      toggleEdit()
+    },
+    onSettled:()=>{
+      queryClient.invalidateQueries({queryKey:['events']})
+    }
+  })
+
+  function onFinish(updatedItem:any){
+    const payload = {
+      // key:'name',
+      locationName: updatedItem.locationName,
+      id: selectedRecord.id
+    }
+
+    const updatedRecord = {
+      ...selectedRecord,
+      locationName: updatedItem.locationName
+    }
+    recordMutation.mutate(payload)
+  }
+
+  const {isLoading:isEditing} = recordMutation ;
+
+  const readOnly = (
+    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+      <Text>{state}</Text>
+      <Button type="link" onClick={toggleEdit}>Edit</Button>
+    </div>
+)
+
+  const editable = (
+    <Form
+     style={{ marginTop:'.5rem' }}
+     name="editableName"
+     initialValues={{locationName: selectedRecord.locationName}}
+     onFinish={onFinish}
+     >
+      <Row>
+        <Col span={16} style={{height:'100%'}}>
+          <Form.Item
+              name="locationName"
+              rules={[{ required: true, message: 'This field is required' }]}
+          >
+              <Input  disabled={isEditing} placeholder=""/>
+          </Form.Item>
+        </Col>
+        <Col span={4}>
+          <Form.Item style={{ width:'100%'}}>
+              <Space >
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                      Cancel
+                  </Button>
+                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                      Apply changes
+                  </Button>
+              </Space>           
+          </Form.Item>
+        </Col>
+      </Row>
+           
+    </Form>
+  )
+  return(
+    <div style={{width:'100%', display:'flex', flexDirection:'column'}}>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>Venue</Text>
+    {isEditMode?editable:readOnly}
+    </div>
+  )
+}
 
 export function EditableLogoImage({selectedRecord}:EditableProp){
   
@@ -860,7 +969,8 @@ export function EditableLogoImage({selectedRecord}:EditableProp){
   const mutation = useMutation({
     mutationKey:['coverImage'],
     mutationFn: mutationHandler,
-    onSuccess:()=>{
+    onSuccess:(data:any)=>{
+      setUpdatedCoverImageHash(data?.data?.coverImageHash)
       toggleEdit()
     },
     onSettled:(data)=>{
@@ -880,8 +990,7 @@ export function EditableLogoImage({selectedRecord}:EditableProp){
 
 
     const payload = {
-      key:'cover_image_hash',
-      value: logoHash,
+      coverImageHash: logoHash,
       id: selectedRecord.id
     }
     mutation.mutate(payload)
@@ -951,7 +1060,7 @@ export function EditableDate({selectedRecord}:EditableProp){
 
     // console.log(selectedRecord.name)
     
-    const [state, setState] = useState(selectedRecord)
+    const [state, setState] = useState(selectedRecord.startTime)
   
     const [isEditMode, setIsEditMode] = useState(false)
   
@@ -981,7 +1090,9 @@ export function EditableDate({selectedRecord}:EditableProp){
     const recordMutation = useMutation({
       mutationKey:['startTime'],
       mutationFn: recordMutationHandler,
-      onSuccess:()=>{
+      onSuccess:(data:any)=>{
+        queryClient.invalidateQueries({queryKey:['events']})
+        setState(data?.data?.startTime) 
         toggleEdit()
       },
       onSettled:()=>{
@@ -991,8 +1102,8 @@ export function EditableDate({selectedRecord}:EditableProp){
   
     function onFinish(updatedItem:any){
       const payload = {
-        key:'start_time',
-        value: updatedItem.startTime,
+        // key:'start_time',
+        startTime: updatedItem.startTime,
         id: selectedRecord.id
       }
   
@@ -1000,7 +1111,6 @@ export function EditableDate({selectedRecord}:EditableProp){
         ...selectedRecord,
         startTime: updatedItem.startTime
       }
-      setState(updatedRecord)
       recordMutation.mutate(payload)
     }
   
@@ -1008,7 +1118,7 @@ export function EditableDate({selectedRecord}:EditableProp){
   
     const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{dayjs(state.startTime).tz("UTC").format('MMM DD, YYYY H A')}</Text>
+        <Text>{dayjs(state).tz("UTC").format('MMM DD, YYYY H A')}</Text>
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
   )
@@ -1101,8 +1211,8 @@ export function EditableTimeZone({selectedRecord}:EditableProp){
   
     function onFinish(updatedItem:any){
       const payload = {
-        key:'timeZone',
-        value: updatedItem.timeZone,
+        // key:'timeZone',
+        timeZone: updatedItem.timeZone,
         id: selectedRecord.id
       }
   
@@ -1182,7 +1292,7 @@ export function EditableTickets({selectedRecord}:EditableProp){
 
     // console.log(selectedRecord.name)
     
-    const [state, setState] = useState(selectedRecord)
+    const [state, setState] = useState(selectedRecord.totalTickets)
   
     const [isEditMode, setIsEditMode] = useState(false)
   
@@ -1212,7 +1322,8 @@ export function EditableTickets({selectedRecord}:EditableProp){
     const recordMutation = useMutation({
       mutationKey:['totalTickets'],
       mutationFn: recordMutationHandler,
-      onSuccess:()=>{
+      onSuccess:(data:any)=>{
+        setState(data?.data?.totalTickets)
         toggleEdit()
       },
       onSettled:()=>{
@@ -1222,16 +1333,11 @@ export function EditableTickets({selectedRecord}:EditableProp){
   
     function onFinish(updatedItem:any){
       const payload = {
-        key:'totalTickets',
-        value: updatedItem.totalTickets,
+        // key:'totalTickets',
+        totalTickets: String(updatedItem.totalTickets),
         id: selectedRecord.id
       }
   
-      const updatedRecord = {
-        ...selectedRecord,
-        totalTickets: updatedItem.totalTickets
-      }
-      setState(updatedRecord)
       recordMutation.mutate(payload)
     }
   
@@ -1239,7 +1345,7 @@ export function EditableTickets({selectedRecord}:EditableProp){
   
     const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{state.totalTickets}</Text>
+        <Text>{state}</Text>
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
   )
@@ -1272,7 +1378,7 @@ export function EditableTickets({selectedRecord}:EditableProp){
                 </Space>           
             </Form.Item>
           </Col>
-        </Row>
+        </Row> 
              
       </Form>
     )
@@ -1327,19 +1433,16 @@ export function EditableDuration({selectedRecord}:EditableProp){
   
     function onFinish(updatedItem:any){
       const payload = {
-        key:'duration',
-        value: String(updatedItem.duration*60),
+        // key:'duration',
+        duration: String(updatedItem.duration*60),
         id: selectedRecord.id
       }
 
-
-  
       const updatedRecord = {
         ...selectedRecord,
         duration: updatedItem.duration*60
       }
 
-      console.log(updatedRecord)
 
       setState(updatedRecord)
       recordMutation.mutate(payload)
@@ -1390,6 +1493,105 @@ export function EditableDuration({selectedRecord}:EditableProp){
       <div style={{width:'100%', display:'flex', marginTop:'2rem', flexDirection:'column'}}>
         <Text type="secondary" style={{ marginRight: '2rem',}}>Duration</Text>
       {isEditMode?editable:readOnly}
+      </div>
+    )
+  }
+
+export function EditablePrivacy({selectedRecord}:EditableProp){
+  
+    const [state, setState] = useState(selectedRecord.type)
+  
+    const [isEditMode, setIsEditMode] = useState(false)
+  
+    const {paseto} = useAuthContext()
+  
+    const urlPrefix = useUrlPrefix()
+  
+    function toggleEdit(){
+      setIsEditMode(!isEditMode)
+    }
+  
+   const queryClient = useQueryClient()
+  
+    const mutationHandler = async(updatedItem:any)=>{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
+        headers:{
+            //@ts-ignore
+            "Authorization": paseto
+        }
+      })
+        return data;
+    }
+    const mutation = useMutation({
+      mutationFn: mutationHandler,
+      onSuccess:()=>{
+        toggleEdit()
+      },
+      onSettled:(data)=>{
+        setState(data?.data?.type)
+        queryClient.invalidateQueries({queryKey:['events']})
+      }
+    })
+  
+    function onFinish(formData:any){
+      const payload = {
+        // key:fieldKey,
+        type: formData.type,
+        id: selectedRecord.id
+      }
+      mutation.mutate(payload)
+    }
+  
+    const {isLoading:isEditing} = mutation ;
+  
+    const readOnly = (
+      <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+        <Text style={{textTransform:'capitalize'}}>{state}</Text>
+        <Button type="link" onClick={toggleEdit}>Edit</Button>
+      </div>
+  )
+  
+    const editable = (
+      <Form
+       style={{ marginTop:'.5rem' }}
+       initialValues={{type:selectedRecord.type}}
+       onFinish={onFinish}
+       >
+        <Row>
+          <Col span={16} style={{height:'100%'}}>
+            <Form.Item 
+                // label={title} 
+                name={'type'}
+                rules={[{ required: true, message: 'Please select an accountType' }]}
+                >
+                <Radio.Group  size='large'>
+                    <Radio.Button value="public">Public</Radio.Button>
+                    <Radio.Button value="private">Private</Radio.Button>
+                </Radio.Group>
+            </Form.Item>
+          </Col>
+          <Col span={4}>
+            <Form.Item style={{ width:'100%'}}>
+                <Space >
+                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                        Cancel
+                    </Button>
+                    <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                        Apply changes
+                    </Button>
+                </Space>
+                          
+            </Form.Item>
+          </Col>
+        </Row>
+             
+      </Form>
+    )
+  
+    return(
+      <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+        <Text type="secondary" style={{ marginRight: '2rem',}}>Privacy</Text>
+        {isEditMode?editable:readOnly}
       </div>
     )
   }
@@ -1485,9 +1687,7 @@ export function EditableDuration({selectedRecord}:EditableProp){
     },
     onPlaceSelected: (place) => {
         // console.log(antInputRef.current.input)
-        form.setFieldValue('street',place?.formatted_address)
-  
-        console.log(place)  
+        form.setFieldValue('street',place?.formatted_address)  
         
         const fullAddress = extractFullAddress(place)
         // add street address
@@ -1495,7 +1695,8 @@ export function EditableDuration({selectedRecord}:EditableProp){
           ...fullAddress,
           placeId: place?.place_id,
           fullAddress: place?.formatted_address
-      }
+       }
+
         setFullAddress(addressWithStreet)
   
         //@ts-ignore
@@ -1517,7 +1718,8 @@ export function EditableDuration({selectedRecord}:EditableProp){
   const mutation = useMutation({
     mutationKey:['address'],
     mutationFn: mutationHandler,
-    onSuccess:()=>{ 
+    onSuccess:(data:any)=>{ 
+      updateState(data?.data?.address.fullAddress)
       toggleEdit()
     },
     onSettled:(data)=>{
@@ -1534,8 +1736,7 @@ export function EditableDuration({selectedRecord}:EditableProp){
       //@ts-ignore
       id: selectedRecord.id,
       // name: selectedRecord.name,
-      key: 'address',
-      value: JSON.stringify({
+      address: {
         street:fullAddress.street,
         fullAddress: fullAddress.fullAddress,
         city: fullAddress.city,
@@ -1544,7 +1745,7 @@ export function EditableDuration({selectedRecord}:EditableProp){
         state: fullAddress.state,
         latitude:String(fullAddress.latitude),
         longitude:String(fullAddress.longitude),
-      })
+      }
     }
     // setState(updatedRecord)
     mutation.mutate(payload)

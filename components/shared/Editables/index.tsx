@@ -51,21 +51,21 @@ interface EditableProps{
     }
     const mutation = useMutation({
       mutationFn: mutationHandler,
-      onSuccess:()=>{
+      onSuccess:(data:any)=>{
         toggleEdit()
       },
       onSettled:(data)=>{
         console.log(data)
         // update state here
-        setState(data.data[0][fieldName])
+        setState(data?.data?.[fieldName])
         queryClient.invalidateQueries([options?.queryKey])
       }
     })
   
     function onFinish(formData:any){
       const payload = {
-        key:fieldKey, // pass in key
-        value: formData[fieldName], // pass in value
+        // key:fieldKey, // pass in key
+        [fieldKey]: formData[fieldName], // pass in value
         id: id, // pass in id,
       }
   
@@ -160,15 +160,15 @@ interface EditableProps{
         toggleEdit()
       },
       onSettled:(data)=>{
-        setState(data.data[0][fieldName])
+        setState(data.data[fieldName])
         queryClient.invalidateQueries({queryKey:[options?.queryKey]})
       }
     })
   
     function onFinish(formData:any){
       const payload = {
-        key:fieldKey,
-        value: formData[fieldName],
+        // key:fieldKey,
+        [fieldKey]: formData[fieldName],
         id: id
       }
       mutation.mutate(payload)
@@ -263,15 +263,15 @@ interface EditableProps{
         toggleEdit()
       },
       onSettled:(data)=>{
-        setState(data.data[0][fieldName])
+        setState(data.data[fieldName])
         queryClient.invalidateQueries({queryKey:[options?.queryKey]})
       }
     })
   
     function onFinish(formData:any){
       const payload = {
-        key:fieldKey,
-        value: formData[fieldName],
+        // key:fieldKey,
+        [fieldKey]: formData[fieldName],
         id: id
       }
       mutation.mutate(payload)

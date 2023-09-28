@@ -197,8 +197,8 @@ export default function NewOrgForm(){
         })
           // change status
           const orgStatusPayload = {
-            key:'status',
-            value: '1', // 0 means de-activated in db
+            // key:'status',
+            status: '1', // 0 means de-activated in db
             id: orgId 
           }
           orgStatusMutation.mutate(orgStatusPayload)

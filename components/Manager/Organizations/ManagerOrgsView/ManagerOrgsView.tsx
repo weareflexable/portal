@@ -16,8 +16,6 @@ import { useAuthContext } from '../../../../context/AuthContext';
 import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { useOrgContext } from "../../../../context/OrgContext";
-import { asyncStore } from "../../../../utils/nftStorage";
-import { usePlacesWidget } from "react-google-autocomplete";
 import { EditableName, EditableAddress, EditablePhone, EditableZipCode, EditableLogoImage, EditableCoverImage } from "../EditOrg";
 import { convertToAmericanFormat } from "../../../../utils/phoneNumberFormatter";
 import { EditableText } from "../../../shared/Editables";
@@ -57,18 +55,18 @@ export default function ManagerOrgsView(){
     const [selectedOrg, setSelelectedOrg] = useState<any|NewOrg>({})
     const [currentStatus, setCurrentStatus] = useState({id:'1',name: 'Approved'})
 
-    async function fetchAllOrgs(){
-    const res = await axios({
-            method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?pageNumber=${pageNumber}&pageSize=10`,
-            headers:{
-                "Authorization": paseto
-            }
-        })
+    // async function fetchAllOrgs(){
+    // const res = await axios({
+    //         method:'get',
+    //         url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?pageNumber=${pageNumber}&pageSize=10`,
+    //         headers:{
+    //             "Authorization": paseto
+    //         }
+    //     })
 
-        return res.data;
+    //     return res.data;
    
-    }
+    // }
 
     async function fetchOrgs(){
     const res = await axios({
@@ -90,8 +88,8 @@ export default function ManagerOrgsView(){
             method:'patch',
             url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
             data:{
-                key:'status',
-                value: statusNumber, // 0 means de-activated in db
+                // key:'status',
+                status: statusNumber, // 0 means de-activated in db
                 id: orgId 
             },
             headers:{
@@ -105,8 +103,8 @@ export default function ManagerOrgsView(){
             method:'patch',
             url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/users-role`,
             data:{
-                key:'role',
-                value: '2', // 2 is for admin
+                // key:'role',
+                role: '2', // 2 is for admin
                 targetUserId: userId 
             },
             headers:{
@@ -185,12 +183,12 @@ export default function ManagerOrgsView(){
       })
     }
 
-    const orgQuery = useQuery({queryKey:['organizations', currentStatus], queryFn:fetchOrgs, enabled:paseto !== ''})
+    const orgQuery = useQuery({queryKey:['organizations', currentStatus,pageNumber], queryFn:fetchOrgs, enabled:paseto !== ''})
     const orgs = orgQuery.data && orgQuery.data.data
     const totalLength = orgQuery.data && orgQuery.data.dataLength;
 
-    const allOrgsQuery = useQuery({queryKey:['all-orgs'], queryFn:fetchAllOrgs, enabled:paseto !== '',staleTime:Infinity})
-    const allOrgsTotal = allOrgsQuery.data && allOrgsQuery.data.dataLength;
+    // const allOrgsQuery = useQuery({queryKey:['all-orgs'], queryFn:fetchAllOrgs, enabled:paseto !== '',staleTime:Infinity})
+    // const allOrgsTotal = allOrgsQuery.data && allOrgsQuery.data.dataLength;
 
 
     
@@ -431,8 +429,8 @@ export default function ManagerOrgsView(){
           method:'patch',
           url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
           data:{
-              key:'status',
-              value: '1', 
+              // key:'status',
+              status: '1', 
               //@ts-ignore
               id: record.orgId  
           },
@@ -546,9 +544,10 @@ export default function ManagerOrgsView(){
                 <link rel="icon" href="/favicon.png" />
                </Head>
               
-               { allOrgsQuery && allOrgsTotal === 0 
+               {/* { allOrgsQuery && allOrgsTotal === 0 
                ? null 
-               : <div style={{marginBottom:'2rem', marginTop:'2rem', display:'flex', width:'100%', flexDirection:'column',}}>
+               :  */}
+               <div style={{marginBottom:'2rem', marginTop:'2rem', display:'flex', width:'100%', flexDirection:'column',}}>
                   <div style={{width:'100%', marginBottom:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                           <Title style={{margin: '0'}} level={2}>Organizations</Title>
                           <div>
@@ -564,11 +563,12 @@ export default function ManagerOrgsView(){
                   </Radio.Group>
 
                 </div>
-                }
+                {/* } */}
   
-                { allOrgsQuery && allOrgsTotal === 0 
+                {/* { allOrgsQuery && allOrgsTotal === 0 
                 ?<EmptyState/>
-                :<Table 
+                : */}
+                <Table 
                   style={{width:'100%'}} 
                   size='middle'
                   scroll={{ x: 'calc(500px + 50%)'}}
@@ -583,7 +583,9 @@ export default function ManagerOrgsView(){
                     total:totalLength,  
                     showTotal:(total) => `Total: ${total} items`,
                   }} 
-                />}
+                />
+
+                {/* } */}
                 {
                   isDrawerOpen
                   ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedOrg={selectedOrg}/>
@@ -659,8 +661,8 @@ async function reActivateOrgHandler(record:NewOrg){
       method:'patch',
       url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
       data:{
-          key:'status',
-          value: '1', 
+          // key:'status',
+          status: '1', 
           //@ts-ignore
           id: record.orgId  
       },
@@ -686,8 +688,8 @@ const deleteDataHandler = async(record:NewOrg)=>{
     data: {
         //@ts-ignore
         id:record.orgId,
-        key:'status',
-        value: '0'
+        // key:'status',
+        status: '0'
       },
     headers:{
           "Authorization": paseto
@@ -722,7 +724,7 @@ return(
 />
   <EditableAddress selectedOrg={selectedOrg}/>
   <EditableText
-    fieldKey="contact_number" // The way the field is named in DB
+    fieldKey="contactNumber" // The way the field is named in DB
     currentFieldValue={selectedOrg.contactNumber} 
     fieldName = 'contactNumber'
     title = 'Contact Number'

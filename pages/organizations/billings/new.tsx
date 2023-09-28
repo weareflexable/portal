@@ -40,6 +40,7 @@ export default function CreateBankAccountForm(){
         // call function to create store
         const formObject = {
             ...formData,
+            
             //@ts-ignore
             orgId: currentOrg.orgId
         }

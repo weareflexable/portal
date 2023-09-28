@@ -109,7 +109,7 @@ export default function ManagerBookingsView(){
           const logoImageHash = record.serviceItemDetails[0]?.logoImageHash
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${logoImageHash}`}/>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${logoImageHash.length < 20? IMAGE_PLACEHOLDER_HASH : logoImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{serviceItemName}</Text>  
                         <Text type="secondary">{serviceName}</Text>  
@@ -142,7 +142,7 @@ export default function ManagerBookingsView(){
           const email = user && user.email
           const firstName = user?.firstName 
           const lastName = user?.lastName 
-          const profilePicHash = user && user.profilePic
+          const profilePicHash = user?.profilePic
             return( 
                 <div style={{display:'flex',alignItems:'center'}}>
                     <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Profile image' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${profilePicHash && profilePicHash.length < 20 ? IMAGE_PLACEHOLDER_HASH : profilePicHash}`}/>
@@ -151,7 +151,7 @@ export default function ManagerBookingsView(){
                         <Text type="secondary">{email}</Text>  
                     </div>
                 </div>
-            )
+            ) 
         },
       },
     

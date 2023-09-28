@@ -21,6 +21,7 @@ import { Community } from "../../../types/Community";
 import useCommunity from "../../../hooks/useCommunity";
 import { EditableArtwork } from "../../../components/CommunityPage/Editables/Artwork";
 import { asyncStore } from "../../../utils/nftStorage";
+import { IMAGE_PLACEHOLDER_HASH } from "../../../constants";
 
 const {TextArea} = Input
 
@@ -52,21 +53,7 @@ function Communities(){
    
    const urlPrefix = useUrlPrefix()
 
-  
-    async function fetchAllCommunities(){
-    const res = await axios({
-            method:'get',
-            //@ts-ignore
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
 
-            headers:{
-                "Authorization": paseto 
-            }
-        })
-
-        return res.data.data;
-   
-    }
   
     async function fetchCommunities(){
       const res = await axios({
@@ -88,8 +75,8 @@ function Communities(){
             method:'patch',
             url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,
             data:{
-                key:'status',
-                value: '1', 
+                // key:'status',
+                status: '1', 
                 id: record.id  
             },
             headers:{
@@ -107,22 +94,11 @@ function Communities(){
     })
 
    
-
-    // const shouldFetch = paseto !== '' && urlPrefix != undefined
-
-    // console.log('prefix',urlPrefix)
-    // console.log('shouldfetch',shouldFetch)
-
     // @ts-ignore
-    const communityQuery = useQuery({queryKey:['community',{currentOrg: currentOrg.orgId, status:currentFilter.name, pageNumber} ], queryFn:fetchCommunities, enabled: paseto !== ''})
+    const communityQuery = useQuery({queryKey:['community', currentOrg.orgId, currentFilter.name, pageNumber ], queryFn:fetchCommunities, enabled: paseto !== ''})
     const data = communityQuery.data && communityQuery.data
     // const totalLength = communityQuery.data && communityQuery.data;
     const totalLength = 0;
-
-    // @ts-ignore
-    const allCommunitysQuery = useQuery({queryKey:['all-communities',{currentOrg: currentOrg.orgId}], queryFn:fetchAllCommunities, enabled: paseto !== '', staleTime:Infinity})
-    const allCommunitysLength = allCommunitysQuery.data && allCommunitysQuery.data.dataLength;
-
 
 
 
@@ -169,7 +145,7 @@ function gotoCommunityItemsPage(community:Community){
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.logoImageHash}`}/>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.logoImageHash.length < 20? IMAGE_PLACEHOLDER_HASH :record.logoImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Button onClick={()=>gotoCommunityItemsPage(record)} type='link'>{record.name}</Button>  
                     </div>
@@ -243,9 +219,10 @@ function gotoCommunityItemsPage(community:Community){
               <div style={{display:'flex', marginTop:'1rem', marginBottom:'1rem', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                  <Title style={{ margin:'0'}} level={2}>Communities</Title>
                </div>
-                   {allCommunitysQuery.data && allCommunitysLength === 0 
+                   {/* {allCommunitysQuery.data && allCommunitysLength === 0 
                    ? null 
-                   : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
+                   :  */}
+                   <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
                     <div style={{width:'100%',  marginBottom:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                         {/* filters */}
                         <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
@@ -265,14 +242,15 @@ function gotoCommunityItemsPage(community:Community){
                     
                      
                    </div>
-                   }
+                   {/* } */}
                 
-                {
+                {/* {
                   allCommunitysQuery.data && allCommunitysLength === 0
                   ? <EmptyState>
                       <Button type="primary"  onClick={()=>router.push('/organizations/communities/new')}  icon={<PlusOutlined rev={undefined}/>} >Launch Community</Button>
                   </EmptyState> 
-                  : <Table 
+                  : */}
+                   <Table 
                       style={{width:'100%'}} 
                       scroll={{ x: 'calc(500px + 50%)'}} 
                       size='large' 
@@ -288,7 +266,7 @@ function gotoCommunityItemsPage(community:Community){
                         showTotal:(total) => `Total: ${total} items`, 
                       }} 
                     />
-                }
+                {/* } */}
                 
                 { 
                   isDrawerOpen
@@ -326,7 +304,7 @@ const {paseto} = useAuthContext()
 const urlPrefix = useUrlPrefix()
 
 function closeDrawerHandler(){
-  queryClient.invalidateQueries(['communities']) 
+  queryClient.invalidateQueries(['community']) 
   closeDrawer(!isDrawerOpen)
 }
 
@@ -372,8 +350,7 @@ const deleteDataHandler = async(record:Community)=>{
     url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,
     data: {
         id:record.id,
-        key:'status',
-        value: "0"
+        status: "0"
       },
     headers:{
           "Authorization": paseto 
@@ -401,7 +378,6 @@ return(
   <EditableDescription selectedRecord={selectedRecord}/>
   <EditableArtwork selectedRecord={selectedRecord}/>
   <EditableLogoImage selectedRecord={selectedRecord}/>
-  {/* <EditableCoverImage selectedRecord={selectedRecord}/> */}
 
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
     <Title level={3}>Danger zone</Title>
@@ -469,8 +445,8 @@ export function EditableDescription({selectedRecord}:EditableProp){
 
   function onFinish(updatedItem:any){
     const payload = {
-      key:'description',
-      value: updatedItem.description,
+      // key:'description',
+      description: updatedItem.description,
       id: selectedRecord.id
     }
     const updatedRecord = {
@@ -548,10 +524,6 @@ export function EditablePrice({selectedRecord}:EditableProp){
     setIsEditMode(!isEditMode)
   }
 
- const transformedRecord = {
-  ...selectedRecord,
-  price: Number(selectedRecord.price)/100
- }
  const urlPrefix = useUrlPrefix()
 
   const recordMutationHandler = async(updatedItem:any)=>{
@@ -570,15 +542,15 @@ export function EditablePrice({selectedRecord}:EditableProp){
       toggleEdit()
     },
     onSettled:(data)=>{
-      setState(data.data[0].price)
+      setState(data?.data?.price)
       queryClient.invalidateQueries(['community'])
     }
   })
 
   function onFinish(updatedItem:any){
     const payload = {
-      key:'price',
-      value: String(updatedItem.price*100),
+      // key:'price',
+      price: String(updatedItem.price*100),
       id: selectedRecord.id
     }
     recordMutation.mutate(payload)
@@ -638,7 +610,7 @@ export function EditableName({selectedRecord}:EditableProp){
 
   // console.log(selectedRecord.name)
   
-  const [state, setState] = useState(selectedRecord)
+  const [state, setState] = useState(selectedRecord.name)
 
   const [isEditMode, setIsEditMode] = useState(false)
 
@@ -650,7 +622,6 @@ export function EditableName({selectedRecord}:EditableProp){
 
   const communityName = splittedName[1].trim();
 
-  console.log(communityName)
 
   function toggleEdit(){
     setIsEditMode(!isEditMode)
@@ -670,9 +641,10 @@ export function EditableName({selectedRecord}:EditableProp){
   const recordMutation = useMutation({
     mutationKey:['name'],
     mutationFn: recordMutationHandler,
-    onSuccess:()=>{
+    onSuccess:(data:any)=>{
       toggleEdit()
-    },
+      setState(data?.data?.name)
+    }, 
     onSettled:()=>{
       queryClient.invalidateQueries(['community'])
     }
@@ -680,16 +652,10 @@ export function EditableName({selectedRecord}:EditableProp){
 
   function onFinish(updatedItem:any){
     const payload = {
-      key:'name',
-      value: `Key to: ${updatedItem.name}`,
+      name: `Key to: ${updatedItem.name}`,
       id: selectedRecord.id
     }
-
-    const updatedRecord = {
-      ...selectedRecord,
-      name: `Key to: ${updatedItem.name}`
-    }
-    setState(updatedRecord)
+    
     recordMutation.mutate(payload)
   }
 
@@ -697,7 +663,7 @@ export function EditableName({selectedRecord}:EditableProp){
 
   const readOnly = (
     <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Text>{state.name}</Text>
+      <Text>{state}</Text>
       <Button type="link" onClick={toggleEdit}>Edit</Button>
     </div>
 )
@@ -782,7 +748,7 @@ export function EditableLogoImage({selectedRecord}:EditableProp){
       toggleEdit()
     },
     onSettled:(data)=>{
-      setUpdatedLogoImageHash(data.data[0].logoImageHash)
+      setUpdatedLogoImageHash(data?.data?.logoImageHash)
       queryClient.invalidateQueries(['community'])
     }
   })
@@ -799,8 +765,7 @@ export function EditableLogoImage({selectedRecord}:EditableProp){
     console.log(logoHash)
 
     const payload = {
-      key:'logo_image_hash',
-      value: logoHash,
+      logoImageHash: logoHash,
       id: selectedRecord.id
     }
     mutation.mutate(payload)

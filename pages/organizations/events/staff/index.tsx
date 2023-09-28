@@ -42,17 +42,17 @@ export default function StaffView(){
 
     const urlPrefix = useUrlPrefix()
 
-    async function fetchAllStaff(){
-      const res = await axios({
-              method:'get',
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/event?eventId=${currentEvent.id}&pageNumber=${pageNumber}&pageSize=10`,
-              headers:{
-                  "Authorization": paseto
-              }
-          })
+    // async function fetchAllStaff(){
+    //   const res = await axios({
+    //           method:'get',
+    //           url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/event?eventId=${currentEvent.id}&pageNumber=${pageNumber}&pageSize=10`,
+    //           headers:{
+    //               "Authorization": paseto
+    //           }
+    //       })
  
-          return res.data;
-    }
+    //       return res.data;
+    // }
     async function fetchStaff(){
       const res = await axios({ 
               method:'get',
@@ -64,38 +64,6 @@ export default function StaffView(){
 
           return res.data;
     }
-
-
-    // async function changeServiceItemStatus({serviceItemId, statusNumber}:{serviceItemId:string, statusNumber: string}){
-    //     const res = await axios({
-    //         method:'patch',
-    //         url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/service-items`,
-    //         data:{
-    //             key:'status',
-    //             value: statusNumber, // 0 means de-activated in db
-    //             serviceItemId: serviceItemId 
-    //         },
-    //         headers:{
-    //             "Authorization": paseto
-    //         }
-    //     })
-    //     return res; 
-    // }
-
-    
-
-    // const changeStatusMutation = useMutation(['data'],{
-    //     mutationFn: changeServiceItemStatus,
-    //     onSuccess:(data:any)=>{
-    //         queryClient.invalidateQueries({queryKey:['users']})
-    //     },
-    //     onError:()=>{
-    //         console.log('Error changing status')
-    //     }
-    // })
-
-    
-
   
 
 
@@ -103,8 +71,8 @@ export default function StaffView(){
     const data = staffQuery.data && staffQuery.data.data
     const totalLength = staffQuery.data && staffQuery.data.dataLength;
 
-    const allStaffQuery = useQuery({queryKey:['all-event-staff'], queryFn:fetchAllStaff, enabled:paseto !== '', staleTime:Infinity})
-    const allStaffLength = allStaffQuery.data && allStaffQuery.data.dataLength
+    // const allStaffQuery = useQuery({queryKey:['all-event-staff'], queryFn:fetchAllStaff, enabled:paseto !== '', staleTime:Infinity})
+    // const allStaffLength = allStaffQuery.data && allStaffQuery.data.dataLength
 
 
 
@@ -115,12 +83,6 @@ export default function StaffView(){
       setPageNumber(data.current); // Subtracting 1 because pageSize param in url starts counting from 0
     };
   
-    // function getTableRecordActions(){
-    //     switch(currentFilter.id){
-    //         // 1 = approved
-    //         case '1': return activeItemActions 
-    //     }
-    // }
 
     function viewStaffDetails(user:Staff){
       // set state
@@ -131,14 +93,6 @@ export default function StaffView(){
     }
   
     
-      const onMenuClick=(e:any, record:Staff) => {
-        const event = e.key
-        switch(event){
-          // break;
-          case 'viewDetails': viewStaffDetails(record)
-        }
-      };
-      
   
     const columns: ColumnsType<Staff> = [
       {
@@ -166,9 +120,9 @@ export default function StaffView(){
         dataIndex: 'staffRoleName',
         key: 'staffRoleName',
 
-        render:(userRoleName)=>{
-          const color = userRoleName === 'Manager' ? 'purple': userRoleName==='Admin'? 'volcano': userRoleName === 'Supervisor'?'cyan':'blue'
-          return <Tag color={color}>{userRoleName}</Tag>
+        render:(staffRoleName)=>{
+          const color = staffRoleName === 'Manager' ? 'purple': staffRoleName==='Admin'? 'volcano': staffRoleName === 'Supervisor'?'cyan':'blue'
+          return <Tag color={color}>{staffRoleName}</Tag>
         }
       },
       // {
@@ -211,8 +165,11 @@ export default function StaffView(){
 
         return (
             <div>
-                {data && allStaffLength === 0 ? null : 
+                {/* {data && allStaffLength === 0 ? null :  */}
                 <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
+                <div style={{display:'flex', marginTop:'1rem', marginBottom:'1rem', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
+                        <Title style={{ margin:'0'}} level={2}>Staff</Title>
+                    </div>
                   <div style={{display:'flex', justifyContent:'space-between', width:'100%', alignItems:'center'}}>
                   <Radio.Group defaultValue={currentFilter.id} style={{width:'100%'}} buttonStyle="solid">
                       {staffFilter.map(filter=>(
@@ -235,12 +192,13 @@ export default function StaffView(){
                   </div>
                   
                 </div>
-                }
+                {/* } */}
 
-                {
+                {/* {
                   data && allStaffLength === 0
                   ? <EmptyState onOpenForm={()=>setShowForm(true)}/>
-                  : <Table 
+                  :  */}
+                  <Table 
                       style={{width:'100%'}} 
                       scroll={{ x: 'calc(500px + 50%)'}} 
                       rowKey={(record)=>record.id}
@@ -255,7 +213,7 @@ export default function StaffView(){
                         showTotal:(total) => `Total: ${total} items`,
                       }} 
                     />
-                }
+                {/* } */}
                 
 
                 {
@@ -307,10 +265,10 @@ const createData = useMutation(createDataHandler,{
    onSuccess:(data)=>{
     let message;
 
-    const user = data.data[0]
-    const status = user.status
-    message = status == 0 ? `Staff could not be added because they aren't registered. A registration link has beens sent to ${user.email} to register and will be added automatically to as ${user.staffRoleName} after registration`:`User has been added to event as a ${user.staffRoleName}`
-    notification['success']({
+    const user = data?.data?.userDetails
+    const status = user?.status
+    message = !status ? data.message : status == 0 ? `Staff could not be added because they aren't registered. A registration link has beens sent to ${user.email} to register and will be added automatically to as ${user.staffRoleName} after registration`:`User has been added to event as a ${user.staffRoleName}`
+    notification['success']({ 
         message: message,
         style:{
           width:600
@@ -327,7 +285,6 @@ const createData = useMutation(createDataHandler,{
     },
     onSettled:()=>{
       queryClient.invalidateQueries(['event-staff',currentEvent.id])
-      queryClient.invalidateQueries(['all-event-staff'])
     }
 })
 
@@ -337,7 +294,7 @@ function handleSubmit(formData:any){
   // console.log(formData)
   const payload = {
     ...formData,
-    role: Number(formData.role),
+    role: String(formData.role),
     eventId: currentEvent.id
   }
   // console.log(payload)
@@ -414,7 +371,6 @@ const {currentEvent} = useEvent()
 const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
 function closeDrawerHandler(){
-  queryClient.invalidateQueries(['users'])
   closeDrawer(!isDrawerOpen)
 }
 
@@ -469,7 +425,7 @@ return(
   
   <EditableRadio
     id={selectedStaff.id}
-    currentFieldValue = {selectedStaff.userRoleName}
+    currentFieldValue = {selectedStaff.staffRoleName}
     fieldKey ='role'
     selectedItem={selectedStaff.role}
     fieldName="role"
@@ -533,19 +489,19 @@ export function EditableRadio({id, options, selectedItem, fieldName, currentFiel
   }
   const mutation = useMutation({
     mutationFn: mutationHandler,
-    onSuccess:()=>{
+    onSuccess:(data:any)=>{
+      setState(data?.data?.staffRoleName)
       toggleEdit()
     },
-    onSettled:(data)=>{
-      setState(data.data[0].userRoleName)
+    onSettled:()=>{
       queryClient.invalidateQueries({queryKey:[options?.queryKey]})
     }
   })
 
   function onFinish(formData:any){
     const payload = {
-      key:fieldKey,
-      value: formData[fieldName],
+      // key:fieldKey,
+      [fieldKey]: formData[fieldName],
       id: id
     }
     mutation.mutate(payload)
@@ -563,7 +519,7 @@ export function EditableRadio({id, options, selectedItem, fieldName, currentFiel
   const editable = (
     <Form
      style={{ marginTop:'.5rem' }}
-     initialValues={{[fieldName]:currentFieldValue}}
+     initialValues={{[fieldName]:String(selectedItem)}}
      onFinish={onFinish}
      >
       <Row>
@@ -571,7 +527,6 @@ export function EditableRadio({id, options, selectedItem, fieldName, currentFiel
           <Form.Item 
               // label={title} 
               name={fieldName}
-              initialValue={{[fieldName]:selectedItem}}
               rules={[{ required: true, message: 'Please select an accountType' }]}
               >
               <Radio.Group defaultValue={selectedItem} size='large'>
@@ -695,23 +650,6 @@ const staffFilter = [
 
 
 
-
-
-// const users:Staff[] = [
-//     {
-//         id: '34343',
-//         name: 'Mujahid Bappai',
-//         email: 'mujahid.bappai@yahoo.com',
-//         mobileNumber: '08043437583',
-//         gender: 'male',
-//         createdAt: "2023-01-07T10:45:24.002929Z",
-//         city: 'Kano',
-//         country: 'Nigeria',
-//         userRoleName: 'Staff',
-//         profilePic: 'bafkreic3hz2mfy7rpyffzwbf2jfklehmuxnvvy3ardoc5vhtkq3cjd7of4'  
-//     },
-   
-// ]
 
 interface EmptyProps{
   onOpenForm: ()=>void

@@ -58,20 +58,20 @@ function VenuesTable(){
    const urlPrefix = useUrlPrefix()
 
   
-    async function fetchAllServices(){
-    const res = await axios({
-            method:'get',
-            //@ts-ignore
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=10`,
+    // async function fetchAllServices(){
+    // const res = await axios({
+    //         method:'get',
+    //         //@ts-ignore
+    //         url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=10`,
 
-            headers:{
-                "Authorization": paseto
-            }
-        })
+    //         headers:{
+    //             "Authorization": paseto
+    //         }
+    //     })
 
-        return res.data;
+    //     return res.data;
    
-    }
+    // }
   
     async function fetchServices(){
       const res = await axios({
@@ -93,8 +93,8 @@ function VenuesTable(){
             method:'patch',
             url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,
             data:{
-                key:'status',
-                value: '1', 
+                // key:'status',
+                status: '1', 
                 id: record.id  
             },
             headers:{
@@ -124,8 +124,8 @@ function VenuesTable(){
     const totalLength = servicesQuery.data && servicesQuery.data.dataLength;
 
     // @ts-ignore
-    const allServicesQuery = useQuery({queryKey:['all-services',{currentOrg: currentOrg.orgId}], queryFn:fetchAllServices, enabled: paseto !== '', staleTime:Infinity})
-    const allServicesLength = allServicesQuery.data && allServicesQuery.data.dataLength;
+    // const allServicesQuery = useQuery({queryKey:['all-services',{currentOrg: currentOrg.orgId}], queryFn:fetchAllServices, enabled: paseto !== '', staleTime:Infinity})
+    // const allServicesLength = allServicesQuery.data && allServicesQuery.data.dataLength;
 
 
 
@@ -282,9 +282,10 @@ function gotoServiceItemsPage(service:Service){
               <div style={{display:'flex', marginTop:'1rem', marginBottom:'1rem', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
                  <Title style={{ margin:'0'}} level={2}>Venues</Title>
                </div>
-                   {allServicesQuery.data && allServicesLength === 0 
+                   {/* {allServicesQuery.data && allServicesLength === 0 
                    ? null 
-                   : <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
+                   : */}
+                    <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
                     <div style={{width:'100%',  marginBottom:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                         {/* filters */}
                         <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
@@ -304,14 +305,15 @@ function gotoServiceItemsPage(service:Service){
                     
                      
                    </div>
-                   }
+                   {/* } */}
                 
-                {
+                {/* {
                   allServicesQuery.data && allServicesLength === 0
                   ? <EmptyState>
                       <Dropdown.Button trigger={['click']} type="primary"   icon={<PlusOutlined rev={undefined}/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
                   </EmptyState> 
-                  : <Table 
+                  :  */}
+                  <Table 
                       style={{width:'100%'}} 
                       scroll={{ x: 'calc(500px + 50%)'}} 
                       size='large' 
@@ -327,7 +329,7 @@ function gotoServiceItemsPage(service:Service){
                         showTotal:(total) => `Total: ${total} items`,
                       }} 
                     />
-                }
+                {/* } */}
                 
                 { 
                   isDrawerOpen
@@ -405,8 +407,8 @@ const deleteDataHandler = async(record:Service)=>{
     url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,
     data: {
         id:record.id,
-        key:'status',
-        value: "0"
+        // key:'status',
+        status: "0"
       },
     headers:{
           "Authorization": paseto 
@@ -439,7 +441,7 @@ return(
   />
   <EditableAddress selectedRecord={selectedRecord}/>
   <EditableText
-    fieldKey="contact_number" // The way the field is named in DB
+    fieldKey="contactNumber" // The way the field is named in DB
     currentFieldValue={selectedRecord.contactNumber}
     fieldName = 'contactNumber'
     title = 'Contact Number'

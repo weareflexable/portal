@@ -49,7 +49,7 @@ export type ServiceItem = {
     ticketsPerDay: number,
     price: number,
     logoImageHash: string,
-    serviceItemType: any[],
+    serviceItemType: any,
     serviceItemTypeId: string,
     description: string,
     startTime: string,

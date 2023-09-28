@@ -471,8 +471,8 @@ function EditableRole({selectedServiceItemType}:EditableProp){
   function onFinish(updatedItem:any){
     console.log(updatedItem)
     const payload = {
-      key:'name',
-      value: String(updatedItem.name),
+      // key:'name',
+      name: String(updatedItem.name),
       id: selectedServiceItemType.id
     }
     const updatedRecord = {

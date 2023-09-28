@@ -70,7 +70,7 @@ export function EditableArtwork({selectedRecord}:EditableProp){
         toggleEdit()
       },
       onSettled:(data)=>{
-        setUpdatedArtworkHash(data.data[0].artworkHash)
+        setUpdatedArtworkHash(data?.data?.artworkHash)
         queryClient.invalidateQueries(['community'])
       }
     })
@@ -96,8 +96,7 @@ export function EditableArtwork({selectedRecord}:EditableProp){
       setIsHashingImage(false)
   
       const payload = {
-        key:'artwork_hash',
-        value: artworkHash,
+        artworkHash: artworkHash,
         id: selectedRecord.id
       }
       // setUpdatedArtworkHash(coverImageHash)

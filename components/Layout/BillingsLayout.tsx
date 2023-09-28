@@ -80,7 +80,7 @@ export default function BillingsLayout({children}:BillingsLayoutProps){
                 }
                 </Col>
             </Header>
-            <Col offset={2} span={22}>
+            <Col offset={2} span={20}>
                 {children}
             </Col>
         </Row>
