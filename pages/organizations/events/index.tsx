@@ -832,7 +832,7 @@ export function EditableVenue({selectedRecord}:EditableProp){
 
   // console.log(selectedRecord.name)
   
-  const [state, setState] = useState(selectedRecord)
+  const [state, setState] = useState(selectedRecord.locationName)
 
   const [isEditMode, setIsEditMode] = useState(false)
 
@@ -889,7 +889,7 @@ export function EditableVenue({selectedRecord}:EditableProp){
 
   const readOnly = (
     <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Text>{state.locationName}</Text>
+      <Text>{state}</Text>
       <Button type="link" onClick={toggleEdit}>Edit</Button>
     </div>
 )
