@@ -521,7 +521,7 @@ function DeleteRecordModal({selectedUser, isOpen, isDeletingItem, onDeleteRecord
     <Modal title="Are you absolutely sure?" footer={null} open={isOpen} onOk={()=>{}} onCancel={onCloseModal}>
       <Alert style={{marginBottom:'.5rem'}} showIcon message="Bad things will happen if you don't read this!" type="warning" />
       <Text >
-        {`This action cannot be undone. This will permanently delete the ${selectedUser.name} service item, staff, bookings, and remove from listing on marketplace 
+        {`This action cannot be undone. This will permanently delete ${selectedUser.name} from having access to everything on the platform
         `}
       </Text>
 
@@ -532,10 +532,10 @@ function DeleteRecordModal({selectedUser, isOpen, isDeletingItem, onDeleteRecord
       layout='vertical'
       onFinish={onFinish}>
       <Form.Item
-        name="name"
+        name="email"
         style={{marginBottom:'.6rem'}}
-        label={`Please type "${selectedUser.name}" to confirm`}
-        rules={[{ required: true, message: 'Please type correct service item name!' }]}
+        label={`Please type "${selectedUser.email}" to confirm`}
+        rules={[{ required: true, message: 'Please type correct service item email!' }]}
       >
         <Input disabled={isDeletingItem} />
       </Form.Item>
@@ -552,7 +552,7 @@ function DeleteRecordModal({selectedUser, isOpen, isDeletingItem, onDeleteRecord
             htmlType="submit"
             disabled={
               // !form.isFieldTouched('name') &&
-              form.getFieldValue('name') !== selectedUser.name
+              form.getFieldValue('email') !== selectedUser.email
               // !!form.getFieldsError().filter(({ errors }) => errors.length).length
             }
           >

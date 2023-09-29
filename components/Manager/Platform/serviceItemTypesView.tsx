@@ -159,15 +159,15 @@ export default function ServiceItemTypesView(){
     //     },
     // },
 
-    {
-      dataIndex: 'actions', 
-      key: 'actions',
-      width:'70px',
-      render:(_,record)=>{
-        // const items = getTableRecordActions()
-        return (<Button type="text" icon={<MoreOutlined rev={undefined}/>} onClick={()=>viewServiceItemTypeDetails(record)}/>)
-      } 
-    }
+    // {
+    //   dataIndex: 'actions', 
+    //   key: 'actions',
+    //   width:'70px',
+    //   render:(_,record)=>{
+    //     // const items = getTableRecordActions()
+    //     return (<Button type="text" icon={<MoreOutlined rev={undefined}/>} onClick={()=>viewServiceItemTypeDetails(record)}/>)
+    //   } 
+    // }
     ];
 
         return (
