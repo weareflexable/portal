@@ -152,15 +152,15 @@ export default function ServiceTypesView(){
     //     },
     // },
 
-    {
-      dataIndex: 'actions', 
-      key: 'actions',
-      width:'70px',
-      render:(_,record)=>{
-        // const items = getTableRecordActions()
-        return (<Button type="text" icon={<MoreOutlined rev={undefined}/>} onClick={()=>viewServiceTypeDetails(record)}/>)
-      } 
-    }
+    // {
+    //   dataIndex: 'actions', 
+    //   key: 'actions',
+    //   width:'70px',
+    //   render:(_,record)=>{
+    //     // const items = getTableRecordActions()
+    //     return (<Button type="text" icon={<MoreOutlined rev={undefined}/>} onClick={()=>viewServiceTypeDetails(record)}/>)
+    //   } 
+    // }
     ];
 
         return (
