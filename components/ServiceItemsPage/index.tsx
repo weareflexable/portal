@@ -134,7 +134,7 @@ export default function ServiceItemsView(){
     const onLaunchButtonClick: MenuProps['onClick'] = (e) => {
       const key = e.key
       const targetMenu:any = items.find((item:ServiceMenu)=>item.key === key)
-      router.push(`/organizations/venues/serviceItems/new?key=${targetMenu!.key}&label=${targetMenu!.label}`)
+      router.push(`/organizations/venues/exclusive-access/new?key=${targetMenu!.key}&label=${targetMenu!.label}`)
     };
 
     const serviceItemsQuery = useQuery({queryKey:['serviceItems', {currentSerive:currentService.id, filter:currentFilter.id,pageNumber:pageNumber}], queryFn:fetchServiceItems, enabled:paseto !== ''})
