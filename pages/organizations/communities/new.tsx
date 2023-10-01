@@ -35,12 +35,12 @@ export default function CommunityForm(){
     const [createdItemId, setCreatedItemId] = useState('')
     
           const next = (data:any) => {
-            const communityId = data[0].id // extract id of newly created community
+            const communityId = data.id // extract id of newly created community
             setCreatedItemId(communityId)
             setCurrentStep(currentStep + 1);
           };
         
-          const prev = () => {
+          const prev = () => { 
             setCurrentStep(currentStep - 1);
           };
 
