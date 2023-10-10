@@ -427,26 +427,18 @@ const{isLoading:isDeletingItem} = deleteData
 return( 
 <Drawer title="Community Venue Details" width={640} placement="right" closable={true} onClose={closeDrawerHandler} open={isDrawerOpen}>
   
-<EditableText
+{/* <EditableText
     fieldKey="name" // The way the field is named in DB
     currentFieldValue={selectedRecord.name}
     fieldName = 'name'
     title = 'Name'
     id = {selectedRecord.id}
     options = {{queryKey:'community-venues',mutationUrl:'community-venues'}}
-  />
+  /> */}
+  <EditableName selectedRecord={selectedRecord}/>
   <EditablePromotion selectedRecord={selectedRecord}/>
   <EditableAddress selectedRecord={selectedRecord}/>
   <EditableMarketValue selectedRecord={selectedRecord}/>
-
-  {/* <EditableText
-    fieldKey="tickets_per_day" // The way the field is named in DB
-    currentFieldValue={selectedRecord.name}
-    fieldName = 'name'
-    title = 'Name'
-    id = {selectedRecord.id}
-    options = {{queryKey:'communityVenues',mutationUrl:'community-venues'}}
-  /> */}
 
 
 
@@ -608,11 +600,11 @@ const mutationHandler = async(updatedItem:any)=>{
 const mutation = useMutation({
   mutationKey:['address'],
   mutationFn: mutationHandler,
-  onSuccess:()=>{
+  onSuccess:(data:any)=>{
+    updateState(data.data[0].address.fullAddress)
     toggleEdit()
   },
-  onSettled:(data)=>{
-    updateState(data.address.fullAddress)
+  onSettled:()=>{
     queryClient.invalidateQueries(['community-venues'])
   }
 })
@@ -718,7 +710,8 @@ export function EditablePromotion({selectedRecord}:EditableProp){
   const recordMutation = useMutation({
     mutationKey:['promotion'],
     mutationFn: recordMutationHandler,
-    onSuccess:()=>{
+    onSuccess:(data:any)=>{
+      setState(data.data[0])
       toggleEdit()
     },
     onSettled:()=>{
@@ -731,11 +724,7 @@ export function EditablePromotion({selectedRecord}:EditableProp){
       promotion: updatedItem.promotion,
       id: selectedRecord.id
     }
-    const updatedRecord = {
-      ...selectedRecord,
-      promotion: updatedItem.promotion
-    }
-    setState(updatedRecord)
+    // setState(updatedRecord)
     recordMutation.mutate(payload)
   }
 
@@ -763,7 +752,7 @@ export function EditablePromotion({selectedRecord}:EditableProp){
             rules={[{ required: true, message: 'Please input a promotion for the venue!' }]}
         >
             <TextArea rows={3} placeholder='What do you have to offer?'/>
-
+ 
         </Form.Item>
 
         </Col>
@@ -787,6 +776,107 @@ export function EditablePromotion({selectedRecord}:EditableProp){
   return(
     <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
       <Text type="secondary" style={{ marginRight: '2rem',}}>Promotion</Text>
+    {isEditMode?editable:readOnly}
+    </div>
+  )
+}
+export function EditableName({selectedRecord}:EditableProp){
+  
+  const [state, setState] = useState(selectedRecord)
+
+  const [isEditMode, setIsEditMode] = useState(false)
+
+  const {paseto} = useAuthContext()
+
+  function toggleEdit(){
+    setIsEditMode(!isEditMode)
+  }
+
+  const [form]  = Form.useForm()
+
+  const queryClient = useQueryClient()
+
+  const urlPrefix = useUrlPrefix()
+
+  const recordMutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`,updatedItem,{
+      headers:{
+          //@ts-ignore
+          "Authorization": paseto
+      }
+    })
+      return data;
+  }
+
+  const recordMutation = useMutation({
+    mutationKey:['name'],
+    mutationFn: recordMutationHandler,
+    onSuccess:(data:any)=>{
+      setState(data.data[0])
+      toggleEdit()
+    },
+    onSettled:()=>{
+      queryClient.invalidateQueries(['community-venues'])
+    }
+  })
+
+  function onFinish(updatedItem:any){
+    const payload = {
+      name: updatedItem.name,
+      id: selectedRecord.id
+    }
+    // setState(updatedRecord)
+    recordMutation.mutate(payload)
+  }
+
+  const {isLoading:isEditing} = recordMutation 
+
+  const readOnly = (
+    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+      <Text>{state.name}</Text>
+      <Button type="link" onClick={toggleEdit}>Edit</Button>
+    </div>
+)
+
+  const editable = (
+    <Form
+     style={{ marginTop:'.5rem' }}
+     name="editablePromotion"
+     initialValues={selectedRecord}
+     onFinish={onFinish}
+     form={form}
+     >
+      <Row>
+        <Col span={16} style={{height:'100%'}}>
+        <Form.Item 
+            name="name"
+            rules={[{ required: true, message: 'Please input a name for the venue!' }]}
+        >
+            <TextArea rows={3} />
+ 
+        </Form.Item>
+
+        </Col>
+        <Col span={4}>
+          <Form.Item style={{ width:'100%'}}>
+              <Space >
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                      Cancel
+                  </Button>
+                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                      Apply changes
+                  </Button>
+              </Space>
+                        
+          </Form.Item>
+        </Col>
+      </Row>
+           
+    </Form>
+  )
+  return(
+    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>Name</Text>
     {isEditMode?editable:readOnly}
     </div>
   )
@@ -821,11 +911,11 @@ export function EditableMarketValue({selectedRecord}:EditableProp){
   const recordMutation = useMutation({
     mutationKey:['marketValue'],
     mutationFn: recordMutationHandler,
-    onSuccess:()=>{
+    onSuccess:(data:any)=>{
+      setState(data.data[0].marketValue)
       toggleEdit()
     },
     onSettled:(data)=>{
-      setState(data.marketValue)
       queryClient.invalidateQueries(['community-venues'])
     }
   })
