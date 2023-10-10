@@ -81,8 +81,7 @@ function CommunityVenues(){
             method:'patch',
             url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`,
             data:{
-                key:'status',
-                value: statusNumber, // 0 means de-activated in db
+                status: statusNumber, // 0 means de-activated in db
                 serviceItemId: serviceItemId 
             },
             headers:{
@@ -137,8 +136,7 @@ function CommunityVenues(){
           method:'patch',
           url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`,
           data:{
-              key:'status',
-              value: '1', 
+              status: '1', 
               id: record.id  
           },
           headers:{
@@ -368,8 +366,7 @@ const deactivateDataHandler = async(record:CommunityVenue)=>{
     url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`,
     data: {
         id:record.id,
-        key:'status',
-        value: '0'
+        status: '0'
       },
     headers:{
           "Authorization": paseto
