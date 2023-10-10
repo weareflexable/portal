@@ -324,7 +324,7 @@ function VenuesForm({communityId}:VenueFormProp){
            return{
                name: venue.name,
                promotion: venue.promotion,
-               marketValue: Number(venue.marketValue * 100),
+               marketValue: String(venue.marketValue * 100),
                address: venue.address,
                contactNumber: `+1${venue.contact.areaCode}${venue.contact.centralOfficeCode}${venue.contact.tailNumber}`
            }
