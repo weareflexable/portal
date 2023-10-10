@@ -23,7 +23,7 @@ type CommunityVenuePayload = {
     name: string,
     promotion: string,
     contactNumber: string,
-    marketValue: number,
+    marketValue: string,
     address: Address ,
     createdAt?: string,
     updatedAt?:string,

@@ -579,8 +579,6 @@ const { ref: antRef } = usePlacesWidget({
   onPlaceSelected: (place) => {
       // console.log(antInputRef.current.input)
       form.setFieldValue('street',place?.formatted_address)
-
-      console.log(place)  
       
       const fullAddress = extractFullAddress(place)
       // add street address
@@ -614,7 +612,7 @@ const mutation = useMutation({
     toggleEdit()
   },
   onSettled:(data)=>{
-    updateState(data.data[0].address.fullAddress)
+    updateState(data.address.fullAddress)
     queryClient.invalidateQueries(['community-venues'])
   }
 })
@@ -624,9 +622,7 @@ function onFinish(updatedItem:any){
     // communityId: currentCommunity.id,
     //@ts-ignore
     id: selectedRecord.id,
-    // name: selectedRecord.name,
-    key: 'address',
-    value: JSON.stringify({
+    address: {
       street:fullAddress.street,
       fullAddress: fullAddress.fullAddress,
       city: fullAddress.city,
@@ -635,9 +631,9 @@ function onFinish(updatedItem:any){
       state: fullAddress.state,
       latitude:String(fullAddress.latitude),
       longitude:String(fullAddress.longitude),
-    })
+    }
   }
-  console.log(payload)
+
   // setState(updatedRecord)
   mutation.mutate(payload)
 }
@@ -654,6 +650,7 @@ const {isLoading:isEditing} = mutation
      form={form}
      >
       <Row>
+
         <Col span={16} style={{height:'100%'}}>
         <Form.Item 
             name="street"
@@ -670,6 +667,7 @@ const {isLoading:isEditing} = mutation
         </Form.Item>
 
         </Col>
+
         <Col span={4}>
           <Form.Item style={{ width:'100%'}}>
               <Space >
@@ -730,8 +728,7 @@ export function EditablePromotion({selectedRecord}:EditableProp){
 
   function onFinish(updatedItem:any){
     const payload = {
-      key:'promotion',
-      value: updatedItem.promotion,
+      promotion: updatedItem.promotion,
       id: selectedRecord.id
     }
     const updatedRecord = {
@@ -809,10 +806,7 @@ export function EditableMarketValue({selectedRecord}:EditableProp){
     setIsEditMode(!isEditMode)
   }
 
- const transformedRecord = {
-  ...selectedRecord,
-  marketValue: Number(selectedRecord.marketValue)/100
- }
+
  const urlPrefix = useUrlPrefix()
 
   const recordMutationHandler = async(updatedItem:any)=>{
@@ -831,15 +825,14 @@ export function EditableMarketValue({selectedRecord}:EditableProp){
       toggleEdit()
     },
     onSettled:(data)=>{
-      setState(data.data[0].marketValue)
+      setState(data.marketValue)
       queryClient.invalidateQueries(['community-venues'])
     }
   })
 
   function onFinish(updatedItem:any){
     const payload = {
-      key:'market_value',
-      value: String(updatedItem.marketValue*100),
+      marketValue: String(updatedItem.marketValue*100),
       id: selectedRecord.id
     }
     recordMutation.mutate(payload)

@@ -133,7 +133,7 @@ export default function NewCommunityVenue(){
                     longitude:String(fullAddress.longitude),
                 },
                 promotion: formData.promotion,
-                marketValue:Number(formData.marketValue*100),
+                marketValue:String(formData.marketValue*100),
                 name: formData.name,
                 contactNumber: formatedContact,
             }]
