@@ -246,7 +246,7 @@ export default function NewService(){
                         // extra="The name you provide here will be used as display on marketplace listing"
                         rules={[
                             { required: true, message: 'This field is required' },
-                            { pattern:/^[A-Za-z ]+$/, message: 'Please provide only string values' },
+                            // { pattern:/^[A-Za-z ]+$/, message: 'Please provide only string values' },
                             { max: 100, message: 'Sorry, your service name cant be more than 100 characters' },
                     
                             ]}
