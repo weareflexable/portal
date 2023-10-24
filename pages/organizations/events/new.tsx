@@ -38,6 +38,7 @@ export default function NewEvent(){
     const {currentOrg} = useOrgContext()
 
     const [form]=Form.useForm()
+    const eventTypeValue = Form.useWatch('eventType',form)
     const [fullAddress, setFullAddress] = useState({
         latitude:0,
         longitude:0,
@@ -72,6 +73,7 @@ export default function NewEvent(){
         }
     }
 
+    
     const extractFullAddress = (place:any)=>{
         const addressComponents = place.address_components 
             let addressObj = {
@@ -122,6 +124,8 @@ export default function NewEvent(){
 
         },
       }); 
+
+      console.log(eventTypeValue)
     
       function makeEventFree(){
         form.setFieldValue('price',0)
@@ -270,6 +274,7 @@ export default function NewEvent(){
                     <Title level={3}>{`Event info`}</Title>
                     <Text>All changes here will be reflected in the marketplace</Text>
                 </div>
+
                 <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}> 
                     <Form.Item
                         name="name"
@@ -331,58 +336,102 @@ export default function NewEvent(){
                             <Radio.Button value="private">Private</Radio.Button>
                         </Radio.Group>
                     </Form.Item>   
-                    </div>
-
-
-                    <div style={{margin:'3rem 0'}}>
+                </div>
+                    
+                
+                      <div style={{margin:'3rem 0'}}>
                         <Title level={3}>{`Location info`}</Title>
-                        {/* <Text>All changes here will be reflected in the marketplace</Text> */}
                     </div>
-                    <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}> 
+                    {/* event location */}
+                    <Form.Item
+                        label='Event Location'
+                        initialValue={'physical'}
+                        style={{width:'100%'}}
+                        hasFeedback
+                        // help='Determine whether or not your event gets displayed on marketplace or shared privately'
+                        name={'eventType'} 
+                     >
+                        <Radio.Group defaultValue={'physical'}>
+                            <Radio.Button value="physical">Physical</Radio.Button>
+                            <Radio.Button value="virtual">Virtual</Radio.Button>
+                        </Radio.Group>
+                    </Form.Item>   
 
-                        <Form.Item
-                            name="locationName"
-                            label="Venue Name" 
-                            
+                    <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}> 
+                    {
+                        eventTypeValue === 'virtual'
+                        ?<Form.Item
+                            name="eventLink" 
+                            label="Event Link" 
                             hasFeedback
                             // extra="The name you provide here will be used as display on marketplace listing"
                             rules={[
-                                { required: true, message: 'This field is required' },
                                 // { pattern:/^[A-Za-z ]+$/, message: 'Please provide only string values' },
-                                { max: 100, message: 'Sorry, your event name cant be more than 100 characters' },
+                                { max: 100, message: 'Sorry, your service name cant be more than 100 characters' },
                         
                                 ]}
                         >
                             <Input 
-                            type="string"
-                            allowClear size="large" placeholder="Eg. Benjamins On Franklin" />
+                            type="url"
+                            allowClear size="large" placeholder="Your virtual link here" />
                         </Form.Item>
+                        :
+                        <>
+                        {/* locationName */}
+                            <Form.Item
+                                name="locationName"
+                                label="Venue Name" 
+                                
+                                hasFeedback
+                                // extra="The name you provide here will be used as display on marketplace listing"
+                                rules={[
+                                    { required: true, message: 'This field is required' },
+                                    // { pattern:/^[A-Za-z ]+$/, message: 'Please provide only string values' },
+                                    { max: 100, message: 'Sorry, your event name cant be more than 100 characters' },
+                            
+                                    ]}
+                            >
+                                <Input 
+                                type="string"
+                                allowClear size="large" placeholder="Eg. Benjamins On Franklin" />
+                            </Form.Item>
+                            {/* address */}
+                            <Form.Item  
+                                name="address"
+                                label='Address'
+                                hasFeedback
+                                // @ts-ignore
+                                extra={<Text type="secondary"><InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} /> Please refresh the page if the address you selected is not being displayed in the field </Text> }
+                                rules={[{ required: true, message: 'Please input a valid address!' }]}
+                            >
+                                <Input 
+                                    // suffix={
+                                    //     <Tooltip title="Please refresh the page if the date you selected is not being displayed in the field">
+                                    //       <InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
+                                    //     </Tooltip>
+                                    //   }
+                                    size="large" 
+                                    allowClear
+                                    ref={(c) => {
+                                    // @ts-ignore
+                                    antInputRef.current = c;
+                                    // @ts-ignore
+                                    if (c) antRef.current = c.input;
+                                    }} 
+                                    placeholder="Syracuse, United states" 
+                                    />
+                            </Form.Item>
+                        </>
+                    }
 
-                        <Form.Item  
-                            name="address"
-                            label='Address'
-                            hasFeedback
-                            // @ts-ignore
-                            extra={<Text type="secondary"><InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} /> Please refresh the page if the address you selected is not being displayed in the field </Text> }
-                            rules={[{ required: true, message: 'Please input a valid address!' }]}
-                        >
-                            <Input 
-                                // suffix={
-                                //     <Tooltip title="Please refresh the page if the date you selected is not being displayed in the field">
-                                //       <InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
-                                //     </Tooltip>
-                                //   }
-                                size="large" 
-                                allowClear
-                                ref={(c) => {
-                                // @ts-ignore
-                                antInputRef.current = c;
-                                // @ts-ignore
-                                if (c) antRef.current = c.input;
-                                }} 
-                                placeholder="Syracuse, United states" 
-                                />
-                        </Form.Item>
+                    </div>
+
+                    <div style={{margin:'3rem 0'}}>
+                        <Title level={3}>{`Contact info`}</Title>
+                        {/* <Text>All changes here will be reflected in the marketplace</Text> */}
+                    </div>
+                    <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}> 
+                   
 
                         <Form.Item
                             // name="contactNumber"
@@ -475,6 +524,9 @@ export default function NewEvent(){
                         </Form.Item> 
 
                      </div>
+
+
+
                      
 
                 

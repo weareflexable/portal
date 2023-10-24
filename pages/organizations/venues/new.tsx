@@ -238,6 +238,7 @@ export default function NewService(){
                     <Text>All changes here will be reflected in the marketplace</Text>
                 </div>
                 <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}> 
+          
                     <Form.Item
                         name="name"
                         label="Name" 
@@ -255,6 +256,7 @@ export default function NewService(){
                         type="string"
                         allowClear size="large" placeholder="Eg. Bill Cage coffee" />
                     </Form.Item>
+
 
                     <Form.Item  
                         name="address"
