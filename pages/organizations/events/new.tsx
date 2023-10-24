@@ -158,13 +158,14 @@ export default function NewEvent(){
             timezone: validity.timezone,
             startTime: dayjs(validity.startTime).format(),
             name: formData.name,
+            eventLink: formData.eventLink,
             description: formData.description,
             type: formData.type,
             price: String(formData.price*100) || 0,
-            locationName: formData.locationName,
+            locationName:formData.eventType === 'virtual'?'': formData.locationName,
             totalTickets: String(formData.totalTickets),
             duration: String(formData.duration*60),
-            address: {
+            address: formData.eventType === 'virtual'? {}: {
                 country: fullAddress.country,
                 state: fullAddress.state,
                 city: fullAddress.city,
@@ -183,6 +184,10 @@ export default function NewEvent(){
         delete formObject.validityPeriod
         // @ts-ignore
         delete formObject.contact
+        // @ts-ignore
+        delete formObject.eventType
+
+    
 
         console.log(formObject)
 
