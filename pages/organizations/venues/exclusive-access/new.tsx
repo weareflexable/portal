@@ -136,7 +136,7 @@ function BasicForm({nextStep}:BasicInfoProps){
         // // only generate key if it's a new service
             const formObject: ServiceItemReqPaylod = {
                 name: formData.name,
-                price: Number(formData.price) * 100,
+                price: String(Number(formData.price) * 100),
                 ticketsPerDay: Number(formData.ticketsPerDay),
                 description:formData.description,
                 orgServiceId: currentService.id,
@@ -310,7 +310,7 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
               ...date,
               date: dayjs(date.date).format(),
               ticketsPerDay: Number(date.ticketsPerDay),
-              price: date.price*100
+              price: String(date.price*100)
           }
           return updatedDate
       })
@@ -582,7 +582,7 @@ function Artwork({onHandleArtwork}:IArtwork){
                 </Upload>
                 </div>
                 <AntImage alt='artwork'  style={{width:'400px', height:'400px', marginBottom:'.5rem', objectFit:'cover'}}  src={isDataSource? selectedArtwork: `${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${selectedArtwork}`}/>
-                <Text type='secondary'>This cover image will be used for your listing on marketplace and for the Digital access token NFT</Text>
+                <Text type='secondary'>This cover image will be used for your listing on marketplace and for the Digital Access Token NFT</Text>
             </div>
             <ArtworkPicker 
                 currentServiceItemType={currentServiceItemType}
