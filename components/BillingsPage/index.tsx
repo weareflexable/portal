@@ -18,7 +18,6 @@ import useRole from "../../hooks/useRole";
 
 
 
-
 export default function BillingsView(){
 
     const {paseto} = useAuthContext()
@@ -59,14 +58,74 @@ export default function BillingsView(){
 
 
         return (
-            <div>
-              <div style={{display:'flex', marginTop:'1rem', marginBottom:'1rem', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
-                 <Title style={{ margin:'0'}} level={2}>Billings</Title>
-             </div>
-              <EmptyState>
+            <main>
+              <header style={{display:'flex', flexDirection:'column', marginTop:'1rem', marginBottom:'3rem', width:'100%', }}>
+                 <Title style={{ margin:'0'}} level={2}>Payout</Title>
+                 <Text>Manage your organizations billing information</Text> 
+             </header>
+             { bankAccountQuery.isLoading || bankAccountQuery.isRefetching
+             ? <Text>Fetching your account...</Text>
+             : bankAccountQuery.data.account !== null
+             ? <EmptyState>
                 <Button disabled={bankAccountQuery.isLoading} type='primary'>{bankAccountQuery.isLoading?'Checking for your account...':'Create Account'}</Button>
               </EmptyState>
-            </div>
+              :
+              <>
+              <section style={{background:'#f1f1f1', maxWidth:'800px', marginBottom:'2rem', padding: '30px 24px', borderRadius:'8px'}}>
+                <div style={{display:'flex', marginBottom:'2rem', justifyContent:'space-between'}}>
+                  <div>
+                    <Title style={{marginBottom:'0'}} level={5}>Schachindra Kumar</Title>
+                    <Text >Company Account</Text>  
+                  </div>
+                  <div>
+                    <Text >United States • USD</Text>  
+                  </div>
+                </div>
+
+                <div style={{display:'flex', marginBottom:'2rem',  justifyContent:'space-between'}}>
+                  <div style={{display:'flex', flexDirection:'column'}}>
+                    <Text strong>**** **** **** 5647</Text>  
+                    <Text type="secondary">Account No</Text>  
+                  </div>
+                  <div style={{display:'flex', flexDirection:'column'}}>
+                    <Text strong>110000490</Text>  
+                    <Text type="secondary">Routing No</Text>  
+                  </div>
+                  <div style={{display:'flex', flexDirection:'column'}}>
+                    <Text strong>Checking</Text>  
+                    <Text type="secondary">Account Type</Text>  
+                  </div>
+                </div>
+
+                <div style={{display:'flex', justifyContent:'flex-end'}}>
+                  <Button type="link">Edit Card information</Button>
+                  <Button type="link" danger>Delete Account</Button>
+                </div>
+             </section>
+             {/* statistics */}
+             <article style={{display:'flex', maxWidth:'800px', border:'1px solid #d8d8d8', padding:'1.5rem 2rem', justifyContent:'space-around'}}>
+                <div style={{display:'flex', flex:'1', flexDirection:'column'}}>
+                  <Text type="secondary">Event Sales</Text>
+                  <Text strong style={{fontSize:'2rem'}}>$38</Text> 
+                </div>
+                <div style={{display:'flex', flex:'1', flexDirection:'column'}}>
+                  <Text type="secondary">Community Sales</Text>
+                  <Text strong style={{fontSize:'2rem'}}>$68</Text> 
+                </div>
+                <div style={{display:'flex', flex:'1', flexDirection:'column'}}>
+                  <Text type="secondary">Service Sales</Text>
+                  <Text strong style={{fontSize:'2rem'}}>$168</Text> 
+                </div>
+                <div style={{display:'flex', flex:'1', flexDirection:'column'}}>
+                  <Text type="secondary">Total Sales</Text>
+                  <Text strong style={{fontSize:'2rem'}}>$1,368</Text> 
+                </div>
+             </article>
+
+              </>
+             }
+              
+            </main>
     )
 
 
