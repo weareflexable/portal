@@ -2,12 +2,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 const {Text,Title} = Typography
 const {Option} = Select
-import { SearchOutlined, PlusOutlined, LikeOutlined, DislikeOutlined } from '@ant-design/icons';
 import React, { ReactNode, useRef, useState } from 'react'
 import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Modal, notification, Select} from 'antd'
 import axios from 'axios';
-import {MoreOutlined,ReloadOutlined} from '@ant-design/icons'
-import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
 
 import { useAuthContext } from '../../context/AuthContext';
 import dayjs from 'dayjs'
@@ -17,12 +14,9 @@ import { usePlacesWidget } from "react-google-autocomplete";
 import useUrlPrefix from '../../hooks/useUrlPrefix'
 import { useOrgContext } from "../../context/OrgContext";
 import { useRouter } from "next/router";
-import { useServicesContext } from "../../context/ServicesContext";
-import { EditableCountry, EditableRadio, EditableText } from "../shared/Editables";
 import useRole from "../../hooks/useRole";
-const {TextArea} = Input
 
-const countryList = require('country-list')
+
 
 
 export default function BillingsView(){
@@ -30,47 +24,38 @@ export default function BillingsView(){
     const {paseto} = useAuthContext()
     const queryClient = useQueryClient()
     const {currentOrg} = useOrgContext()
-    const {isAdmin} = useRole()
 
     const router = useRouter()
 
-    const [pageNumber, setPageNumber] = useState<number|undefined>(1)
-    const [pageSize, setPageSize] = useState<number|undefined>(10)
-
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-
-
-    type DataIndex = keyof Bank;
-
     const [selectedBank, setSelelectedOrg] = useState<any|Bank>({})
-    const [currentFilter, setCurrentStatus] = useState({id:'1',name: 'Verified'})
+    const urlPrefix = useUrlPrefix()
 
-    // async function fetchAllBanks(){
-    //     const res = await axios({
-    //         method:'get',
-    //         //@ts-ignore
-    //         url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank?pageNumber=${pageNumber}&pageSize=${pageSize}`,
-    //         headers:{
-    //             "Authorization": paseto
-    //         }
-    //     })
 
-    //     return res.data;
-    // }
-    async function fetchBanks(){
+    async function fetchBankAccount(){
         const res = await axios({
             method:'get',
             //@ts-ignore
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank/stripe?orgId=${currentOrg.orgId}`,
             headers:{
                 "Authorization": paseto
             }
         })
 
-        return res.data;
+        return res.data.data;
     }
 
-    const urlPrefix = useUrlPrefix()
+    const bankAccountQuery = useQuery({
+      queryKey: ['bank','details','admin',currentOrg.id],
+      queryFn: fetchBankAccount,
+      enabled: paseto !== undefined,
+    })
+
+
+    function connectToStripeOnboarding(){
+
+    }
+
+    console.log(bankAccountQuery.data)
 
 
         return (
@@ -79,7 +64,7 @@ export default function BillingsView(){
                  <Title style={{ margin:'0'}} level={2}>Billings</Title>
              </div>
               <EmptyState>
-                <Button type='primary'>Create Account</Button>
+                <Button disabled={bankAccountQuery.isLoading} type='primary'>{bankAccountQuery.isLoading?'Checking for your account...':'Create Account'}</Button>
               </EmptyState>
             </div>
     )
