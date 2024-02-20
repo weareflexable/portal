@@ -87,20 +87,20 @@ export default function BillingsView(){
                 <div style={{display:'flex', marginBottom:'2rem', justifyContent:'space-between'}}>
                   <div>
                     <Title style={{marginBottom:'0'}} level={5}>Schachindra Kumar</Title>
-                    <Text >Company Account</Text>  
+                    <Text >{bankAccountQuery?.data?.bank_name}</Text>  
                   </div>
                   <div>
-                    <Text >United States • USD</Text>  
+                    <Text >{`${bankAccountQuery?.data?.country} • ${bankAccountQuery?.data?.currency}`}</Text>  
                   </div>
                 </div>
 
                 <div style={{display:'flex', marginBottom:'2rem',  justifyContent:'space-between'}}>
                   <div style={{display:'flex', flexDirection:'column'}}>
-                    <Text strong>**** **** **** 5647</Text>  
+                    <Text strong>{`**** **** **** ${bankAccountQuery?.data?.last4}`}</Text>  
                     <Text type="secondary">Account No</Text>  
                   </div>
                   <div style={{display:'flex', flexDirection:'column'}}>
-                    <Text strong>110000490</Text>  
+                    <Text strong>{bankAccountQuery?.data?.routing_number}</Text>  
                     <Text type="secondary">Routing No</Text>  
                   </div>
                   <div style={{display:'flex', flexDirection:'column'}}>
