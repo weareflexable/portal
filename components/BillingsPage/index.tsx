@@ -7,14 +7,10 @@ import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, Input
 import axios from 'axios';
 
 import { useAuthContext } from '../../context/AuthContext';
-import dayjs from 'dayjs'
-import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { Bank } from "./Types/Banks.types";
-import { usePlacesWidget } from "react-google-autocomplete";
 import useUrlPrefix from '../../hooks/useUrlPrefix'
 import { useOrgContext } from "../../context/OrgContext";
 import { useRouter } from "next/router";
-import useRole from "../../hooks/useRole";
 
 
 
@@ -49,12 +45,28 @@ export default function BillingsView(){
       enabled: paseto !== undefined,
     })
 
+    const accountLinkMutation = useMutation({
+      mutationFn: async(payload:{orgId:string | undefined})=>{
+        const res = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs/account-link`,payload,{
+          headers:{
+            'Authorization': paseto
+          }
+        })
+        return res.data
+      },
+      onSuccess:(data:any)=>{
+        const stripeOnboardUrl = data.data
+        window.location.href = stripeOnboardUrl
+      },
+      onError:(error:any)=>{
+        console.log('Error generating account links')
+      }
+    })
 
     function connectToStripeOnboarding(){
-
+      accountLinkMutation.mutate({orgId: currentOrg.orgId})
     }
 
-    console.log(bankAccountQuery.data)
 
 
         return (
@@ -65,9 +77,9 @@ export default function BillingsView(){
              </header>
              { bankAccountQuery.isLoading || bankAccountQuery.isRefetching
              ? <Text>Fetching your account...</Text>
-             : bankAccountQuery.data.account !== null
+             : bankAccountQuery.data.account === null
              ? <EmptyState>
-                <Button disabled={bankAccountQuery.isLoading} type='primary'>{bankAccountQuery.isLoading?'Checking for your account...':'Create Account'}</Button>
+                <Button disabled={accountLinkMutation.isLoading} onClick={connectToStripeOnboarding} type='primary'>Create Account</Button>
               </EmptyState>
               :
               <>
