@@ -37,9 +37,9 @@ export default function NewEvent(){
     const {paseto} = useAuthContext()
     const {currentOrg} = useOrgContext()
 
-    const isBankConnected = currentOrg?.isBankConnected
+    const isBankConnected = currentOrg?.isBankConnected || true
 
-    console.log(isBankConnected) 
+
 
     const [form]=Form.useForm()
     const eventTypeValue = Form.useWatch('eventType',form)
@@ -268,14 +268,14 @@ export default function NewEvent(){
             <Row >
                 <Col offset={3} span={13}>
 
-                   { isBankConnected 
+                   { isBankConnected
                    ? null
                    : <Alert 
                     style={{marginBottom:'2rem'}} 
                     type="info" 
                     showIcon 
                     message='Connect your bank account' 
-                    closable description='Your events will not be listed on marketplace because you are still yet to add a bank account. Your events will be saved as drafts until an account is linked to your profile '
+                    closable description='Your events will not be listed on marketplace because you are still yet to add a bank account. Your events will be saved as drafts until an account is linked to your profile. However, free events can be created without an account connected '
                     action={
                         <Button onClick={()=>router.push('/organizations/billings')} size="small">
                           Add account
@@ -590,6 +590,7 @@ export default function NewEvent(){
 
                            <SubmitButton
                             form={form}
+                            isEventFree = {isEventFree}
                             isBankConnected={isBankConnected}
                             isHashingAssets={isHashingAssets} 
                             isCreatingData = {isCreatingData}
@@ -619,14 +620,15 @@ interface SubmitButtonProps{
     isHashingAssets: boolean,
     isCreatingData: boolean,
     isBankConnected: boolean,
+    isEventFree: boolean,
     form: FormInstance
 }
 
-const SubmitButton = ({ form, isCreatingData, isBankConnected, isHashingAssets }:SubmitButtonProps) => {
+const SubmitButton = ({ form, isCreatingData, isEventFree, isBankConnected, isHashingAssets }:SubmitButtonProps) => {
     const [submittable, setSubmittable] = useState(false);
   
     // Watch all values
-    const values = Form.useWatch([], form);
+    const values = Form.useWatch([], form); 
   
     useEffect(() => {
         
@@ -642,8 +644,8 @@ const SubmitButton = ({ form, isCreatingData, isBankConnected, isHashingAssets }
   
     return (
         <Button shape="round" type="primary" disabled={!submittable} size="large" loading={isHashingAssets || isCreatingData}  htmlType="submit" >
-      {isBankConnected?'Launch Event':'Save as draft'}
-     </Button>
+      {isBankConnected || isEventFree ?'Launch Event':'Save as draft'} 
+     </Button> 
     );
   };
   
