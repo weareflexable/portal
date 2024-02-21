@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import {Form, Row, Col, Image, Tooltip, Input, Upload, Button, notification, Typography, Space, Select, Radio, Divider, TimePicker, InputRef, FormInstance, DatePicker, Switch, Checkbox} from 'antd';
+import {Form, Row, Col, Image, Tooltip, Input, Upload, Button, notification, Typography, Space, Select, Radio, Divider, TimePicker, InputRef, FormInstance, DatePicker, Switch, Checkbox, Alert} from 'antd';
 import {UploadOutlined,MinusOutlined, QuestionCircleOutlined, ArrowLeftOutlined, InfoCircleOutlined,  InboxOutlined} from '@ant-design/icons'
 import dayjs from 'dayjs'
 
@@ -37,13 +37,17 @@ export default function NewEvent(){
     const {paseto} = useAuthContext()
     const {currentOrg} = useOrgContext()
 
+    const isBankConnected = currentOrg?.isBankConnected
+
+    console.log(isBankConnected) 
+
     const [form]=Form.useForm()
     const eventTypeValue = Form.useWatch('eventType',form)
     const [fullAddress, setFullAddress] = useState({
         latitude:0,
         longitude:0,
         street:'',
-        placeId: '',
+        placeId: '', 
         fullAddress:'',
         state: '',
         country:'',
@@ -263,9 +267,24 @@ export default function NewEvent(){
             </div>
             <Row >
                 <Col offset={3} span={13}>
+
+                   { isBankConnected 
+                   ? null
+                   : <Alert 
+                    style={{marginBottom:'2rem'}} 
+                    type="info" 
+                    showIcon 
+                    message='Connect your bank account' 
+                    closable description='Your events will not be listed on marketplace because you are still yet to add a bank account. Your events will be saved as drafts until an account is linked to your profile '
+                    action={
+                        <Button onClick={()=>router.push('/organizations/billings')} size="small">
+                          Add account
+                        </Button>
+                      }
+                    />}
                     
                     <Form
-                    name="eventsForm"
+                    name="eventsForm" 
                     // initialValues={{ remember: true }}
                     layout='vertical'
                     onFinish={onFinish}
@@ -571,7 +590,8 @@ export default function NewEvent(){
 
                            <SubmitButton
                             form={form}
-                            isHashingAssets={isHashingAssets}
+                            isBankConnected={isBankConnected}
+                            isHashingAssets={isHashingAssets} 
                             isCreatingData = {isCreatingData}
                            />
                         </Space>     
@@ -598,10 +618,11 @@ function LogoTip(){
 interface SubmitButtonProps{
     isHashingAssets: boolean,
     isCreatingData: boolean,
+    isBankConnected: boolean,
     form: FormInstance
 }
 
-const SubmitButton = ({ form, isCreatingData, isHashingAssets }:SubmitButtonProps) => {
+const SubmitButton = ({ form, isCreatingData, isBankConnected, isHashingAssets }:SubmitButtonProps) => {
     const [submittable, setSubmittable] = useState(false);
   
     // Watch all values
@@ -621,7 +642,7 @@ const SubmitButton = ({ form, isCreatingData, isHashingAssets }:SubmitButtonProp
   
     return (
         <Button shape="round" type="primary" disabled={!submittable} size="large" loading={isHashingAssets || isCreatingData}  htmlType="submit" >
-        Launch Event
+      {isBankConnected?'Launch Event':'Save as draft'}
      </Button>
     );
   };
