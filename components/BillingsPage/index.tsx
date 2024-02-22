@@ -131,10 +131,31 @@ export default function BillingsView(){
               </EmptyState>
               :
               <>
-              <section style={{background:'#f1f1f1', maxWidth:'800px', marginBottom:'2rem', padding: '30px 24px', borderRadius:'8px'}}>
+                {/* statistics */}
+              <article style={{display:'flex', maxWidth:'800px', border:'1px solid #d8d8d8', padding:'1rem 1.5rem', justifyContent:'space-around'}}>
+                  <div style={{display:'flex', flex:'1', flexDirection:'column'}}>
+                    <Text type="secondary">Event Sales</Text>
+                    <Text  style={{fontSize:'1.7rem'}}>$38</Text> 
+                  </div>
+                  <div style={{display:'flex', flex:'1', flexDirection:'column'}}>
+                    <Text type="secondary">Community Sales</Text>
+                    <Text  style={{fontSize:'1.7rem'}}>$68</Text> 
+                  </div>
+                  <div style={{display:'flex', flex:'1', flexDirection:'column'}}>
+                    <Text type="secondary">Service Sales</Text>
+                    <Text  style={{fontSize:'1.7rem'}}>$168</Text> 
+                  </div>
+                  <div style={{display:'flex', flex:'1', flexDirection:'column'}}>
+                    <Text type="secondary">Total Sales</Text>
+                    <Text  style={{fontSize:'1.7rem'}}>$1,368</Text> 
+                  </div>
+              </article>
+
+              {/* account details */}
+              <section style={{background:'#f1f1f1', maxWidth:'800px', marginTop:'2rem', padding: '30px 24px', borderRadius:'8px'}}>
                 <div style={{display:'flex', marginBottom:'2rem', justifyContent:'space-between'}}>
                   <div>
-                    <Title style={{marginBottom:'0'}} level={5}>Schachindra Kumar</Title>
+                    <Title style={{marginBottom:'0'}} level={5}>{bankAccountQuery?.data?.account_holder_name !==''? bankAccountQuery?.data?.account_holder_name: '-- -- --'}</Title>
                     <Text >{bankAccountQuery?.data?.bank_name}</Text>  
                   </div>
                   <div>
@@ -169,25 +190,7 @@ export default function BillingsView(){
                   />
                 </div>
              </section>
-             {/* statistics */}
-             <article style={{display:'flex', maxWidth:'800px', border:'1px solid #d8d8d8', padding:'1.5rem 2rem', justifyContent:'space-around'}}>
-                <div style={{display:'flex', flex:'1', flexDirection:'column'}}>
-                  <Text type="secondary">Event Sales</Text>
-                  <Text strong style={{fontSize:'2rem'}}>$38</Text> 
-                </div>
-                <div style={{display:'flex', flex:'1', flexDirection:'column'}}>
-                  <Text type="secondary">Community Sales</Text>
-                  <Text strong style={{fontSize:'2rem'}}>$68</Text> 
-                </div>
-                <div style={{display:'flex', flex:'1', flexDirection:'column'}}>
-                  <Text type="secondary">Service Sales</Text>
-                  <Text strong style={{fontSize:'2rem'}}>$168</Text> 
-                </div>
-                <div style={{display:'flex', flex:'1', flexDirection:'column'}}>
-                  <Text type="secondary">Total Sales</Text>
-                  <Text strong style={{fontSize:'2rem'}}>$1,368</Text> 
-                </div>
-             </article>
+           
 
               </>
              }
