@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 const {Text,Title} = Typography
 const {Option} = Select
 import React, { ReactNode, useRef, useState } from 'react'
-import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Modal, notification, Select} from 'antd'
+import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Modal, notification, Select, Popconfirm, Spin} from 'antd'
 import axios from 'axios';
 
 import { useAuthContext } from '../../context/AuthContext';
@@ -17,12 +17,14 @@ import { useRouter } from "next/router";
 export default function BillingsView(){
 
     const {paseto} = useAuthContext()
-    const queryClient = useQueryClient()
     const {currentOrg} = useOrgContext()
+
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
     const router = useRouter()
 
-    const [selectedBank, setSelelectedOrg] = useState<any|Bank>({})
+    const queryClient = useQueryClient()
+
     const urlPrefix = useUrlPrefix()
 
 
@@ -35,7 +37,6 @@ export default function BillingsView(){
                 "Authorization": paseto
             }
         })
-
         return res.data.data;
     }
 
@@ -43,6 +44,41 @@ export default function BillingsView(){
       queryKey: ['bank','details','admin',currentOrg.id],
       queryFn: fetchBankAccount,
       enabled: paseto !== undefined,
+    })
+
+    const deleteActionMutation = useMutation({
+      mutationFn: async(payload:{orgId:string | undefined})=>{
+        const res = await axios.delete(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs/bank-account`,{data:payload,
+            headers:{
+              'Authorization': paseto
+            }
+        }
+        )
+        return res.data
+      },
+      onSuccess:(data:any)=>{
+        queryClient.invalidateQueries(['bank','details','admin',currentOrg.id])
+      },
+      onError:(error:any)=>{
+        console.log('Error generating account links')
+      }
+    })
+    const editAccountMutation = useMutation({
+      mutationFn: async(payload:{orgId:string | undefined})=>{
+        const res = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs/account-link`,payload,{
+          headers:{
+            'Authorization': paseto
+          }
+        })
+        return res.data
+      },
+      onSuccess:(data:any)=>{
+        const stripeOnboardUrl = data.data
+        window.location.href = stripeOnboardUrl
+      },
+      onError:(error:any)=>{
+        console.log('Error generating account links')
+      }
     })
 
     const accountLinkMutation = useMutation({
@@ -63,6 +99,18 @@ export default function BillingsView(){
       }
     })
 
+    function editAccountInfo(){
+      editAccountMutation.mutate({orgId: currentOrg.orgId})
+    }
+
+    function toggleDeleteModal(){
+      setIsDeleteModalOpen(!isDeleteModalOpen)
+    }
+
+    function deleteUserAccount(){
+      deleteActionMutation.mutate({orgId: currentOrg.orgId})
+    }
+
     function connectToStripeOnboarding(){
       accountLinkMutation.mutate({orgId: currentOrg.orgId})
     }
@@ -76,7 +124,7 @@ export default function BillingsView(){
                  <Text>Manage your organizations billing information</Text> 
              </header>
              { bankAccountQuery.isLoading || bankAccountQuery.isRefetching
-             ? <Text>Fetching your account...</Text>
+             ? <Spin/>
              : bankAccountQuery.data.account === null
              ? <EmptyState>
                 <Button disabled={accountLinkMutation.isLoading} onClick={connectToStripeOnboarding} type='primary'>Create Account</Button>
@@ -110,8 +158,15 @@ export default function BillingsView(){
                 </div>
 
                 <div style={{display:'flex', justifyContent:'flex-end'}}>
-                  <Button type="link">Edit Card information</Button>
-                  <Button type="link" danger>Delete Account</Button>
+                  <Button loading={editAccountMutation.isLoading} onClick={editAccountInfo} type="link">Edit Card information</Button>
+                  <Button danger onClick={toggleDeleteModal} type="link">Delete Account</Button>
+                  <DeleteAccountModal
+                    onDeleteAccount={deleteUserAccount}
+                    isDeletingAccount={deleteActionMutation.isLoading}
+                    account={bankAccountQuery?.data}
+                    isOpen={isDeleteModalOpen}
+                    onCloseModal={toggleDeleteModal}
+                  />
                 </div>
              </section>
              {/* statistics */}
@@ -147,6 +202,73 @@ export default function BillingsView(){
 
 
 
+interface DeleteProp{
+  account: any
+  isOpen: boolean
+  onCloseModal: ()=>void
+  onDeleteAccount: ()=>void
+  isDeletingAccount: boolean
+}
+
+function DeleteAccountModal({account, isOpen, isDeletingAccount, onDeleteAccount, onCloseModal}:DeleteProp){
+
+  function onFinish(){
+    // call mutate function to delete record
+    onDeleteAccount()
+  }
+
+  const [form] = Form.useForm()
+
+  return(
+    <Modal title="Are you absolutely sure?" footer={null} open={isOpen} onOk={()=>{}} onCancel={onCloseModal}>
+      {/* <Alert style={{marginBottom:'.5rem'}} showIcon message="Bad things will happen if you don't read this!" type="warning" /> */}
+      <Text >
+        {`Deleting this account will not enable you to receive payments on all services, communities and events listed on the marketplace. All services, communities and events created without an account will be saved as draft by default 
+        `}
+      </Text>
+
+      <Form 
+      form={form} 
+      style={{marginTop:'1rem'}}
+      name="deleteEventForm" 
+      layout='vertical'
+      onFinish={onFinish}>
+      <Form.Item
+        name="name"
+        style={{marginBottom:'.6rem'}}
+        label={`Please type "${account.bank_name}" to confirm`}
+        rules={[{ required: true, message: 'This field is required!' }]}
+      >
+        <Input size="large" disabled={isDeletingAccount} />
+      </Form.Item>
+
+      <Form.Item
+        style={{marginBottom:'0'}}
+        shouldUpdate
+       >
+          {() => (
+          <Button
+            style={{width:'100%'}}
+            size='large'
+            danger
+            loading={isDeletingAccount}
+            htmlType="submit"
+            disabled={
+              // !form.isFieldTouched('name') &&
+              form.getFieldValue('name') !== account.bank_name
+              // !!form.getFieldsError().filter(({ errors }) => errors.length).length
+            }
+          >
+           I understand the consequences, delete permanently
+          </Button>
+        )}
+      </Form.Item>
+
+    </Form>
+
+  </Modal>
+  )
+}
 
 
 
