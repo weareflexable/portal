@@ -15,6 +15,7 @@ export type Community = {
  export type CommunityReq = {
     orgId: string
     name: string,
+    isDrafted: boolean,
     price: string
     currency: string
     description:string,

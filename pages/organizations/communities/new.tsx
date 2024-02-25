@@ -20,6 +20,7 @@ import { Community, CommunityReq } from '../../../types/Community';
 import useOrgs from '../../../hooks/useOrgs';
 import { CommunityVenue, CommunityVenueForm, CommunityVenueReq } from '../../../types/CommunityVenue';
 import { asyncStore} from "../../../utils/nftStorage";
+import { useOrgContext } from '../../../context/OrgContext';
 
 
 
@@ -28,6 +29,10 @@ import { asyncStore} from "../../../utils/nftStorage";
 export default function CommunityForm(){
 
     const router = useRouter() 
+
+    const {currentOrg} = useOrgContext()
+
+    const isBankConnected = currentOrg?.isBankConnected
     
     const [currentStep, setCurrentStep] = useState(0);
     // State to hold the id of the service item that will get created in the
@@ -47,7 +52,7 @@ export default function CommunityForm(){
         const steps = [
             {
             title: 'Basic Info',
-            content: <BasicForm nextStep={next}/>,
+            content: <BasicForm isBankConnected={isBankConnected} nextStep={next}/>,
             },
             {
             title: 'Add Venues',
@@ -61,18 +66,32 @@ export default function CommunityForm(){
 
     return (
         <div style={{background:'#ffffff', height:'100%', minHeight:'100vh'}}>
-           <div style={{marginBottom:'3rem', padding: '1rem', borderBottom:'1px solid #e5e5e5',}}>
+           <div style={{marginBottom:'3rem', padding: '1rem 0', borderBottom:'1px solid #e5e5e5',}}>
                 <Row>
-                    <Col offset={1}> 
+                    <Col offset={2}> 
                          <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
                             <Button  type='link' onClick={()=>router.back()} icon={<ArrowLeftOutlined rev={undefined}/>}/>
                             <Title style={{margin:'0', textTransform:'capitalize'}} level={3}>Create Community</Title>
                         </div>
                     </Col>
                 </Row>
-            </div>
+            </div> 
            <Row > 
-                <Col offset={5} span={11}>
+                <Col offset={2} span={11}>
+                     {isBankConnected
+                        ? null
+                        : <Alert
+                            style={{ marginBottom: '2rem' }}
+                            type="info"
+                            showIcon
+                            message='Connect your bank account'
+                            closable description='Your community will not be listed on marketplace because you are still yet to add a bank account. It will be saved as drafts until an account is linked to your profile.'
+                            action={
+                                <Button onClick={() => router.push('/organizations/billings')} size="small">
+                                    Add account
+                                </Button>
+                            }
+                        />}
                 <Steps current={currentStep} items={items} />
                     {/* <BasicForm nextStep={next}/> */}
                     {steps[currentStep].content}
@@ -84,7 +103,8 @@ export default function CommunityForm(){
 }
 
 interface BasicInfoProps{
-    nextStep: (data:any)=>void
+    nextStep: (data:any)=>void,
+    isBankConnected: boolean
 }
 
 const getBase64 = (file: any): Promise<string> => 
@@ -97,7 +117,7 @@ reader.onerror = (error) => reject(error);
 
 const PLACEHOLDER_IMAGE = '/placeholder.png'
 
-function BasicForm({nextStep}:BasicInfoProps){
+function BasicForm({nextStep, isBankConnected}:BasicInfoProps){
 
     
      // TODO: set field for editing
@@ -156,6 +176,7 @@ function BasicForm({nextStep}:BasicInfoProps){
             const formObject: CommunityReq = {
                 // @ts-ignore
                 orgId: currentOrg.orgId,
+                isDrafted: isBankConnected? false: true,
                 name: `Key to: ${formData.name}`,
                 price: String(formData.price * 100),
                 currency: 'USD',
@@ -238,7 +259,7 @@ function BasicForm({nextStep}:BasicInfoProps){
         </Form.Item>
 
         <Form.Item name='description' rules={[{max:500, message:"Description shouldn't exceed 500 characters"},{ required: true, message: 'This field is required' }]}  label="Description">
-            <TextArea allowClear maxLength={1000} size='large' showCount  placeholder='Tell us more about this community' rows={2} />
+            <TextArea allowClear maxLength={500} size='large' showCount  placeholder='Tell us more about this community' rows={2} />
         </Form.Item>
 
           {/* price */}
@@ -289,6 +310,7 @@ function BasicForm({nextStep}:BasicInfoProps){
 
                <SubmitButton
                     form={form}
+                    isBankConnected={isBankConnected}
                     isCreatingData={isCreatingData}
                     isHashingAssets={isHashingAssets}
                 />
@@ -712,7 +734,7 @@ function CommunityVenueForm({remove, name, formInstance, restField}:CommunityVen
 
                                 {/* promotion */}
                             <Form.Item  {...restField} name={[name,'promotion']} rules={[{ required: true, message: 'Please write a description for your venue' }]}  label="Promotion">
-                                <TextArea allowClear maxLength={500} size='large' showCount  placeholder='One flight of our award winning wines' rows={2} />
+                                <TextArea allowClear maxLength={300} size='large' showCount  placeholder='One flight of our award winning wines' rows={2} />
                             </Form.Item>
 
                             {/* marketValue */}
@@ -841,11 +863,12 @@ function CommunityVenueForm({remove, name, formInstance, restField}:CommunityVen
 interface SubmitButtonProps{
     isHashingAssets: boolean,
     isCreatingData: boolean,
+    isBankConnected: boolean,
     form: FormInstance
 }
 
 
-const SubmitButton = ({ form, isCreatingData, isHashingAssets }:SubmitButtonProps) => {
+const SubmitButton = ({ form, isBankConnected, isCreatingData, isHashingAssets }:SubmitButtonProps) => {
     const [submittable, setSubmittable] = useState(false);
   
     // Watch all values
@@ -866,7 +889,7 @@ const SubmitButton = ({ form, isCreatingData, isHashingAssets }:SubmitButtonProp
   
     return (
         <Button shape="round" type="primary" disabled={!submittable} size="large" loading={isHashingAssets || isCreatingData}  htmlType="submit" >
-       Add Venue
+         { isBankConnected? 'Create community': 'Save as draft'}
      </Button>
     );
   };
