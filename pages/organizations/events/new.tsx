@@ -162,7 +162,7 @@ export default function NewEvent() {
             timezone: validity.timezone,
             startTime: dayjs(validity.startTime).format(),
             name: formData.name,
-            isDrafted: false,
+            isDrafted: isBankConnected ? false: true,
             eventLink: formData.eventLink,
             description: formData.description,
             type: formData.type,
@@ -192,9 +192,6 @@ export default function NewEvent() {
         // @ts-ignore
         delete formObject.eventType
 
-
-
-        console.log(formObject)
 
         createData.mutate(formObject)
     }
