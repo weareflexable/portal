@@ -82,7 +82,17 @@ export default function ServiceItemForm(){
            <div style={{marginBottom:'3rem', padding: '1rem', borderBottom:'1px solid #e5e5e5',}}>
                 <Row>
                     <Col offset={1}> 
-                     {isBankConnected
+                   
+                         <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
+                            <Button  type='link' onClick={()=>router.back()} icon={<ArrowLeftOutlined rev={undefined}/>}/>
+                            <Title style={{margin:'0', textTransform:'capitalize'}} level={3}>{router.isReady?`New ${router.query.label}`:'...'}</Title>
+                        </div>
+                    </Col>
+                </Row>
+            </div>
+           <Row > 
+                <Col offset={5} span={11}>
+                      {isBankConnected
                         ? null
                         : <Alert
                             style={{ marginBottom: '2rem' }}
@@ -96,15 +106,6 @@ export default function ServiceItemForm(){
                                 </Button>
                             }
                         />}
-                         <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
-                            <Button  type='link' onClick={()=>router.back()} icon={<ArrowLeftOutlined rev={undefined}/>}/>
-                            <Title style={{margin:'0', textTransform:'capitalize'}} level={3}>{router.isReady?`New ${router.query.label}`:'...'}</Title>
-                        </div>
-                    </Col>
-                </Row>
-            </div>
-           <Row > 
-                <Col offset={5} span={11}>
                 <Steps current={currentStep} items={items} />
                     {/* <BasicForm nextStep={next}/> */}
                     {steps[currentStep].content}
