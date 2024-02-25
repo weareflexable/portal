@@ -275,10 +275,10 @@ export default function ServiceItemsView(){
       dataIndex: 'actions', 
       key: 'actions',
       fixed:'right',
-      width:currentFilter.name === 'In-active'?'150px':'70px',
+      width:currentFilter.name === 'Inactive'?'150px':'70px',
       //@ts-ignore
       render:(_,record:Service)=>{
-        if(currentFilter.name === 'In-active'){
+        if(currentFilter.name === 'Inactive'){
           return (<Button   onClick={()=>reactivateService.mutate(record)}>Reactivate</Button>)
         }else{
           return <Button type="text" onClick={()=>viewDetails(record)} icon={<MoreOutlined rev={undefined}/>}/> 
@@ -483,7 +483,11 @@ const serviceItemsFilters = [
   },
   {
       id: '0',
-      name: 'In-active'
+      name: 'Inactive'
+  },
+   {
+      id: '2',
+      name: 'Drafts'
   },
 ]
 

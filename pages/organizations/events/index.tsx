@@ -287,10 +287,10 @@ function gotoEventPage(event:Event){
       dataIndex: 'actions', 
       key: 'actions',
       fixed: 'right',
-      width:currentFilter.name === 'In-active'?'150px':'70px',
+      width:currentFilter.name === 'Inactive'?'150px':'70px',
       //@ts-ignore
       render:(_,record:Event)=>{
-        if(currentFilter.name === 'In-active'){
+        if(currentFilter.name === 'Inactive'){
           return (<Button  onClick={()=>reactivateEvent.mutate(record)}>Reactivate</Button>)
         }else{
           return <Button onClick= {()=>onMenuClick(record)} type="text" icon={<MoreOutlined rev={undefined}/>}/> 
@@ -1880,9 +1880,14 @@ const filters = [
   },
   {
       id: '0',
-      name: 'In-active'
+      name: 'Inactive'
+  },
+  {
+      id: '2',
+      name: 'Drafts'
   },
 ]
+
 
 
 interface EmptyStateProps{
