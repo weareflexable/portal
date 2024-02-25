@@ -20,6 +20,7 @@ import axios from 'axios';
 import { useAuthContext } from '../../../../context/AuthContext';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import useUrlPrefix from '../../../../hooks/useUrlPrefix'; 
+import { useOrgContext } from '../../../../context/OrgContext';
 
 
 
@@ -46,6 +47,10 @@ export default function ServiceItemForm(){
     // State to hold the id of the service item that will get created in the
     // first form.
     const [createdItemId, setCreatedItemId] = useState('')
+
+    const {currentOrg} = useOrgContext()
+
+     const isBankConnected = currentOrg?.isBankConnected
     
           const next = (data:any) => {
             const serviceItemId = data[0].id // extract id of newly created service item
@@ -60,7 +65,7 @@ export default function ServiceItemForm(){
         const steps = [
             {
             title: 'Basic Info',
-            content: <BasicForm nextStep={next}/>,
+            content: <BasicForm isBankConnected={isBankConnected} nextStep={next}/>,
             },
             {
             title: 'Customize',
@@ -77,6 +82,20 @@ export default function ServiceItemForm(){
            <div style={{marginBottom:'3rem', padding: '1rem', borderBottom:'1px solid #e5e5e5',}}>
                 <Row>
                     <Col offset={1}> 
+                     {isBankConnected
+                        ? null
+                        : <Alert
+                            style={{ marginBottom: '2rem' }}
+                            type="info"
+                            showIcon
+                            message='Connect your bank account'
+                            closable description='Your services will not be listed on marketplace because you are still yet to add a bank account. It will be saved as drafts until an account is linked to your profile.'
+                            action={
+                                <Button onClick={() => router.push('/organizations/billings')} size="small">
+                                    Add account
+                                </Button>
+                            }
+                        />}
                          <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
                             <Button  type='link' onClick={()=>router.back()} icon={<ArrowLeftOutlined rev={undefined}/>}/>
                             <Title style={{margin:'0', textTransform:'capitalize'}} level={3}>{router.isReady?`New ${router.query.label}`:'...'}</Title>
@@ -97,10 +116,11 @@ export default function ServiceItemForm(){
 }
 
 interface BasicInfoProps{
-    nextStep: (data:any)=>void
+    nextStep: (data:any)=>void,
+    isBankConnected: boolean
 }
 
-function BasicForm({nextStep}:BasicInfoProps){
+function BasicForm({nextStep, isBankConnected}:BasicInfoProps){
 
     
      // TODO: set field for editing
@@ -139,6 +159,7 @@ function BasicForm({nextStep}:BasicInfoProps){
                 price: String(Number(formData.price) * 100),
                 ticketsPerDay: Number(formData.ticketsPerDay),
                 description:formData.description,
+                isDrafted: isBankConnected? false: true,
                 orgServiceId: currentService.id,
                 serviceItemTypeId: router.query.key, // TODO: Get this value from context,
                 logoImageHash: artworkHash,
@@ -274,6 +295,7 @@ function BasicForm({nextStep}:BasicInfoProps){
                     Cancel
                 </Button>
                 <SubmitButton
+                    isBankConnected={isBankConnected}
                     isCreatingData={isCreatingData}
                     isHashingAssets={isHashingImage} 
                     form={form}
@@ -689,10 +711,11 @@ function LogoTip({src}:ILogoTip){
 interface SubmitButtonProps{
     isHashingAssets: boolean,
     isCreatingData: boolean,
+    isBankConnected: boolean,
     form: FormInstance
 }
 
-const SubmitButton = ({ form, isCreatingData, isHashingAssets }:SubmitButtonProps) => {
+const SubmitButton = ({ form, isBankConnected, isCreatingData, isHashingAssets }:SubmitButtonProps) => {
     const [submittable, setSubmittable] = useState(false);
   
     // Watch all values
@@ -711,11 +734,20 @@ const SubmitButton = ({ form, isCreatingData, isHashingAssets }:SubmitButtonProp
         },
       );
     }, [values]);
-  
-    return (
-        <Button shape="round" type="primary" disabled={!submittable} size="large" loading={isHashingAssets || isCreatingData}  htmlType="submit" >
+
+
+    const displayButton = isBankConnected? (
+         <Button shape="round" type="primary" disabled={!submittable} size="large" loading={isHashingAssets || isCreatingData}  htmlType="submit" >
          {router.isReady?`Create ${router.query.label}`:'...'}
      </Button>
+    ):(
+         <Button shape="round" type="primary" disabled={!submittable} size="large" loading={isHashingAssets || isCreatingData}  htmlType="submit" >
+         Save as draft
+     </Button>
+    )
+  
+    return (
+       displayButton
     );
   };
   
