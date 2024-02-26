@@ -160,7 +160,7 @@ function BasicForm({nextStep, isBankConnected}:BasicInfoProps){
                 price: String(Number(formData.price) * 100),
                 ticketsPerDay: Number(formData.ticketsPerDay),
                 description:formData.description,
-                isDrafted: isBankConnected? false: true,
+                status: isBankConnected? '1': '4',
                 orgServiceId: currentService.id,
                 serviceItemTypeId: router.query.key, // TODO: Get this value from context,
                 logoImageHash: artworkHash,

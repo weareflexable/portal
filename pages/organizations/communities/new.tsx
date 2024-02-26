@@ -174,9 +174,9 @@ function BasicForm({nextStep, isBankConnected}:BasicInfoProps){
 
         // // only generate key if it's a new service
             const formObject: CommunityReq = {
-                // @ts-ignore
                 orgId: currentOrg.orgId,
-                isDrafted: isBankConnected? false: true,
+                // @ts-ignore
+                status: isBankConnected? '1': '4',
                 name: `Key to: ${formData.name}`,
                 price: String(formData.price * 100),
                 currency: 'USD',

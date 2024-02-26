@@ -67,7 +67,7 @@ export type AvailabilityPayload = {
 export type ServiceItemReqPaylod = {
     name: string,
     price: string
-    isDrafted: boolean,
+    status: string,
     ticketsPerDay: Number,
     description:string,
     orgServiceId: string,

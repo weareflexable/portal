@@ -235,6 +235,18 @@ function gotoEventPage(event:Event){
         )
       },
       {
+        title: 'Charge',
+        dataIndex: 'price',
+        // hidden:true, 
+        key: 'price',
+        width:'100px',
+        render: (price)=>(
+          <div>
+            {/* {price===0?<Text>Free</Text>:<Text>${price/100}</Text>} */}
+          </div>
+        )
+      },
+      {
         title: 'Tickets',
         dataIndex: 'totalTickets',
         key: 'totalTickets',

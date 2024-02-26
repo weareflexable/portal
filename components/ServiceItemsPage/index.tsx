@@ -498,7 +498,7 @@ const serviceItemsFilters = [
       name: 'Inactive'
   },
    {
-      id: '2',
+      id: '4',
       name: 'Drafts'
   },
 ]
