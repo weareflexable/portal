@@ -86,8 +86,29 @@ function Communities(){
         return res; 
     }
 
+    async function publishCommunityHandler(record:Community){
+        const res = await axios({
+            method:'patch',
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,
+            data:{
+                status: '1', 
+                id: record.id  
+            },
+            headers:{
+                "Authorization": paseto
+            }
+        })
+        return res; 
+    }
+
 
     const reactivateCommunity = useMutation(reActivateCommunityHandler,{
+      onSettled:()=>{
+        queryClient.invalidateQueries({queryKey:['community']})
+      }
+    })
+
+    const publishCommunity = useMutation(publishCommunityHandler,{
       onSettled:()=>{
         queryClient.invalidateQueries({queryKey:['community']})
       }
@@ -204,8 +225,10 @@ function gotoCommunityItemsPage(community:Community){
       render:(_,record:Community)=>{
         if(currentFilter.name === 'Inactive'){
           return (<Button  onClick={()=>reactivateCommunity.mutate(record)}>Reactivate</Button>)
+        }else if(currentFilter.name === 'Drafts'){
+           return (<Button  onClick={()=>publishCommunity.mutate(record)}>Publish</Button>)
         }else{
-          return <Button onClick= {()=>onMenuClick(record)} type="text" icon={<MoreOutlined rev={undefined}/>}/> 
+          return <Button onClick= {()=>onMenuClick(record)} type="text" icon={<MoreOutlined rev={undefined}/>}/>
         }
       }
     }

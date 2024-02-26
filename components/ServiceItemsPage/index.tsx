@@ -187,6 +187,12 @@ export default function ServiceItemsView(){
     }
   })
 
+  const publishService = useMutation(reActivateServiceHandler,{
+    onSettled:()=>{
+      queryClient.invalidateQueries({queryKey:['serviceItems']})
+    }
+  })
+
     
     
   
@@ -280,6 +286,8 @@ export default function ServiceItemsView(){
       render:(_,record:Service)=>{
         if(currentFilter.name === 'Inactive'){
           return (<Button   onClick={()=>reactivateService.mutate(record)}>Reactivate</Button>)
+        }else if(currentFilter.name === 'Drafts'){
+          return (<Button onClick={()=>publishService.mutate(record)}>Publish</Button>)
         }else{
           return <Button type="text" onClick={()=>viewDetails(record)} icon={<MoreOutlined rev={undefined}/>}/> 
         }
