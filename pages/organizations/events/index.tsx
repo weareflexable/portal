@@ -46,6 +46,8 @@ function Events(){
     const {switchEvent} = useEvent()
     // const [items, setItems] = useState([])
 
+    const isBankConnected = currentOrg?.isBankConnected
+
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const [pageNumber, setPageNumber] = useState<number|undefined>(1)
@@ -315,7 +317,7 @@ function gotoEventPage(event:Event){
         if(currentFilter.name === 'Inactive'){
           return (<Button  onClick={()=>reactivateEvent.mutate(record)}>Reactivate</Button>)
         }else if(currentFilter.name === 'Drafts'){
-          return (<Button  onClick={()=>publishEvent.mutate(record)}>Publish</Button>)
+          return (<Button disabled={!isBankConnected} onClick={()=>publishEvent.mutate(record)}>Publish</Button>)
         }else{
           return <Button onClick= {()=>onMenuClick(record)} type="text" icon={<MoreOutlined rev={undefined}/>}/> 
         }

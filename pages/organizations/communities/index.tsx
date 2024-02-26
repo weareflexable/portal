@@ -39,6 +39,8 @@ function Communities(){
     const {switchCommunity} = useCommunity()
     // const [items, setItems] = useState([])
 
+    const isBankConnected = currentOrg?.isBankConnected
+
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const [pageNumber, setPageNumber] = useState<number|undefined>(1)
@@ -226,7 +228,7 @@ function gotoCommunityItemsPage(community:Community){
         if(currentFilter.name === 'Inactive'){
           return (<Button  onClick={()=>reactivateCommunity.mutate(record)}>Reactivate</Button>)
         }else if(currentFilter.name === 'Drafts'){
-           return (<Button  onClick={()=>publishCommunity.mutate(record)}>Publish</Button>)
+           return (<Button disabled={!isBankConnected}  onClick={()=>publishCommunity.mutate(record)}>Publish</Button>)
         }else{
           return <Button onClick= {()=>onMenuClick(record)} type="text" icon={<MoreOutlined rev={undefined}/>}/>
         }

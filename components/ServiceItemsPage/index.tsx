@@ -20,6 +20,7 @@ import useServiceItemTypes from "../../hooks/useServiceItemTypes";
 import { EditableText } from "../shared/Editables";
 import { numberFormatter } from "../../utils/numberFormatter";
 import { IMAGE_PLACEHOLDER_HASH } from "../../constants";
+import { useOrgContext } from "../../context/OrgContext";
 
 
 // const mockServiceItems:ServiceItem[]=[
@@ -58,9 +59,12 @@ export default function ServiceItemsView(){
     const queryClient = useQueryClient()
     const router = useRouter()
     const {switchOrg} = useOrgs()
+    const {currentOrg} = useOrgContext()
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   
-    // const isFilterEmpty = Object.keys(filteredInfo).length === 0;
+    // const isFilterEmpty = Object.keys(filteredInfo).length === 0
+    
+    const isBankConnected = currentOrg?.isBankConnected
 
     type DataIndex = keyof ServiceItem;
 
@@ -287,7 +291,7 @@ export default function ServiceItemsView(){
         if(currentFilter.name === 'Inactive'){
           return (<Button   onClick={()=>reactivateService.mutate(record)}>Reactivate</Button>)
         }else if(currentFilter.name === 'Drafts'){
-          return (<Button onClick={()=>publishService.mutate(record)}>Publish</Button>)
+          return (<Button disabled={!isBankConnected} onClick={()=>publishService.mutate(record)}>Publish</Button>)
         }else{
           return <Button type="text" onClick={()=>viewDetails(record)} icon={<MoreOutlined rev={undefined}/>}/> 
         }
