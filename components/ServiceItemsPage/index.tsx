@@ -12,7 +12,7 @@ import { useServicesContext } from '../../context/ServicesContext';
 import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { Availability, AvailabilityPayload, CustomDate, ServiceItem } from "../../types/Services";
-import { EditableCoverImage, EditableDescription, EditableName,  EditablePrice, EditableTicketsPerDay } from "./EditServiceItemForm/EditServiceItemForm";
+import { EditableCharge, EditableCoverImage, EditableDescription, EditableName,  EditablePrice, EditableTicketsPerDay } from "./EditServiceItemForm/EditServiceItemForm";
 import AvailabilitySection from "./Availability/Availability";
 import useUrlPrefix from "../../hooks/useUrlPrefix";
 import useRole from "../../hooks/useRole";
@@ -246,6 +246,18 @@ export default function ServiceItemsView(){
       },
 
       {
+        title: 'Platform Charge',
+        dataIndex: 'platformFee',
+        // hidden:true, 
+        key: 'platformFee',
+        width:'100px',
+        render: (platformFee)=>(
+          <div>
+             {<Text>${platformFee}</Text>}
+          </div>
+        )
+      },
+      {
         title: 'Tickets Per Day',
         dataIndex: 'ticketsPerDay',
         key: 'ticketsPerDay',
@@ -377,7 +389,7 @@ const {paseto} = useAuthContext()
 
 const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
- const [isEditAvailability, setIsEditAvailability] = useState(false)
+const {isManager, isSuperAdmin} = useRole()
 
  const urlPrefix = useUrlPrefix()
 
@@ -472,6 +484,8 @@ return(
 
   <AvailabilitySection selectedServiceItem={selectedRecord} />
   {/* <AvailabilitySection selectedServiceItem={selectedRecord}/> */}
+
+  {isManager || isSuperAdmin ?<EditableCharge selectedRecord={selectedRecord}/>:null}
   
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
     <Title level={3}>Danger zone</Title>
@@ -581,41 +595,3 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
 }
 
 
-
-// const mockAvailabilty: Availability = [
-//   {
-//     date: 'Jan 22, 2022',
-//     ticketsPerDay: '455',
-//     price: '23'
-//   },
-//   {
-//     date: 'Feb 21, 2023',
-//     ticketsPerDay: '455',
-//     price: '637'
-//   },
-//   {
-//     date: 'Mar 15, 2023',
-//     ticketsPerDay: '1445',
-//     price: '123'
-//   },
-// ]
-
-interface Empty{
-  children: ReactNode
-} 
-
-function EmptyState({children}:Empty){
-  const router = useRouter()
-  return(
-    <div style={{border: '1px solid #d6d6d6', marginTop:'2rem', borderRadius:'4px', height:'50vh', display:'flex', justifyContent:'center', alignItems:'center', padding: '2rem'}}>
-      <div style={{maxWidth:'300px', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
-        <Title level={3}>Get Started</Title> 
-        <Text style={{textAlign:'center'}}>Ready to get started listing your services on the Flexable Marketplace?</Text>
-
-          <div style={{marginTop:'1rem', display:'flex',justifyContent:'center'}}>
-            {children}
-          </div>
-      </div>
-    </div>
-  )
-}

@@ -235,14 +235,14 @@ function gotoEventPage(event:Event){
         )
       },
       {
-        title: 'Charge',
-        dataIndex: 'price',
+        title: 'Platform Fee',
+        dataIndex: 'platformFee',
         // hidden:true, 
-        key: 'price',
+        key: 'platformFee',
         width:'100px',
-        render: (price)=>(
+        render: (platformFee)=>(
           <div>
-            {/* {price===0?<Text>Free</Text>:<Text>${price/100}</Text>} */}
+             {<Text>${platformFee}</Text>}
           </div>
         )
       },
@@ -422,7 +422,7 @@ const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
 const {switchEvent} = useEvent()
 const {paseto} = useAuthContext()
-const {isManager} = useRole()
+const {isManager, isSuperAdmin} = useRole()
 const urlPrefix = useUrlPrefix()
 
 function closeDrawerHandler(){
@@ -530,7 +530,7 @@ return(
 
   <div style={{marginTop:'5rem'}}>
 
-  {isManager?<EditableCharge selectedRecord={selectedRecord}/>:null}
+  {isManager || isSuperAdmin ?<EditableCharge selectedRecord={selectedRecord}/>:null}
 
   </div>
 

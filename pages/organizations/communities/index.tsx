@@ -22,6 +22,7 @@ import useCommunity from "../../../hooks/useCommunity";
 import { EditableArtwork } from "../../../components/CommunityPage/Editables/Artwork";
 import { asyncStore } from "../../../utils/nftStorage";
 import { IMAGE_PLACEHOLDER_HASH } from "../../../constants";
+import useRole from "../../../hooks/useRole";
 
 const {TextArea} = Input
 
@@ -182,6 +183,18 @@ function gotoCommunityItemsPage(community:Community){
         key: 'communityVenuesCount',
         width:'100px',
       },
+       {
+        title: 'Platform Fee',
+        dataIndex: 'platformFee',
+        // hidden:true, 
+        key: 'platformFee',
+        width:'100px',
+        render: (platformFee)=>(
+          <div>
+            {<Text>${platformFee}</Text>}
+          </div>
+        )
+      },
       {
         title: 'Price',
         dataIndex: 'price',
@@ -261,10 +274,6 @@ function gotoCommunityItemsPage(community:Community){
                         <Button  type="primary" onClick={()=>router.push('/organizations/communities/new')}  icon={<PlusOutlined rev={undefined}/>} >Launch Community</Button>
                       </div>
                     </div>
-
-                      
-
-                    
                      
                    </div>
                    {/* } */}
@@ -322,6 +331,8 @@ function DetailDrawer({selectedRecord,isDrawerOpen,closeDrawer}:DrawerProps){
 const queryClient = useQueryClient()
 const router = useRouter()
 const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+
+const {isManager, isSuperAdmin} = useRole()
 
 const {switchCommunity} = useCommunity()
 const {paseto} = useAuthContext()
@@ -408,6 +419,8 @@ return(
     <Title level={3}>Danger zone</Title>
     <Button danger onClick={toggleDeleteModal} style={{width:'30%'}} type="link">Deactivate Community</Button>
   </div>
+
+  {isManager || isSuperAdmin ?<EditableCharge selectedRecord={selectedRecord}/>:null}
 
   <DeleteRecordModal 
   isDeletingItem={isDeletingItem} 
@@ -531,6 +544,106 @@ export function EditableDescription({selectedRecord}:EditableProp){
     <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
       <Text type="secondary" style={{ marginRight: '2rem',}}>Description</Text>
     {isEditMode?editable:readOnly}
+    </div>
+  )
+}
+
+export function EditableCharge({selectedRecord}:EditableProp){
+  
+  const [state, setState] = useState(selectedRecord.price)
+
+  const [isEditMode, setIsEditMode] = useState(false)
+
+  const {paseto} = useAuthContext()
+
+  const queryClient = useQueryClient()
+
+  function toggleEdit(){
+    setIsEditMode(!isEditMode)
+  }
+
+ const urlPrefix = useUrlPrefix()
+
+  const recordMutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
+      headers:{
+          //@ts-ignore
+          "Authorization": paseto
+      }
+    })
+      return data;
+  }
+  const recordMutation = useMutation({
+    mutationKey:['platformFee'],
+    mutationFn: recordMutationHandler,
+    onSuccess:()=>{
+      toggleEdit()
+    },
+    onSettled:(data)=>{
+        console.log(data)
+      setState(data.data.price)
+      queryClient.invalidateQueries(['events'])
+    }
+  })
+
+  function onFinish(updatedItem:any){
+    const payload = {
+      // key:'price',
+      platformFee: String(updatedItem.platformFee),
+      id: selectedRecord.id
+    }
+    recordMutation.mutate(payload)
+  }
+
+  const {isLoading:isEditing} = recordMutation ;
+
+  const readOnly = (
+    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+      <Text>{}100%</Text> 
+      <Button type="link" onClick={toggleEdit}>Edit</Button>
+    </div>
+)
+
+  const editable = (
+    <Form
+     style={{ marginTop:'.5rem' }}
+     name="editableCharge"
+     initialValues={{editableCharge: ''}}
+     onFinish={onFinish}
+     >
+      <Row>
+        <Col span={10} style={{height:'100%'}}>
+          <Form.Item
+              name="price"
+              rules={[{ required: true, message: 'Please input a valid platform fee' }]}
+          >
+              <Input suffix='%'  disabled={isEditing} />
+          </Form.Item>
+        </Col>
+        <Col span={4}>
+          <Form.Item style={{ width:'100%'}}>
+              <Space >
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                      Cancel
+                  </Button>
+                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                      Apply changes
+                  </Button>
+              </Space>
+                        
+          </Form.Item>
+        </Col>
+      </Row>
+           
+    </Form>
+  )
+  return(
+    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+      <Title level={2} style={{ marginBottom:'.2rem', marginRight: '2rem',}}>Platform fee</Title>
+      <Text style={{width:'75%', marginBottom:'2rem'}} type="secondary">This is the amount to charge for any ticket purchase on the marketplace</Text>  
+        <div style={{ background:'#f5f5f5', padding:'1rem', width:'70%', borderRadius:'1rem'}}>
+          {isEditMode?editable:readOnly} 
+        </div>
     </div>
   )
 }
@@ -944,24 +1057,6 @@ const filters = [
 ]
 
 
-interface EmptyStateProps{
-  children: ReactNode
-}
-
-function EmptyState({children}:EmptyStateProps){
-
-  return(
-    <div style={{border: '1px solid #d6d6d6', marginTop:'2rem', borderRadius:'4px', height:'40vh', display:'flex', justifyContent:'center', alignItems:'center', padding: '2rem'}}>
-      <div style={{maxWidth:'350px', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
-        <Title level={3}>Get Started</Title> 
-        <Text style={{textAlign:'center'}}>Oops! We have found no active communities in your organization</Text>
-        <div style={{marginTop:'1rem', display:'flex',justifyContent:'center'}}>
-            {children}
-        </div>
-      </div>
-    </div>
-  )
-}
 
 
 
