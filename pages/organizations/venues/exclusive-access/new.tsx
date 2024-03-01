@@ -188,8 +188,10 @@ function BasicForm({nextStep, isBankConnected}:BasicInfoProps){
     const createData = useMutation(createDataHandler,{
        onSuccess:(data)=>{
         // form.resetFields()
+        const customMessage = isBankConnected? 'Successfully created new exclusive-access!': 'Successfully created exclusive-access as draft!'
         notification['success']({
-            message: 'Successfully created new service item!'
+
+            message: customMessage
         })
             console.log(data)
             nextStep(data.data)

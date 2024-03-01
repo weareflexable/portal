@@ -162,7 +162,7 @@ export default function NewEvent() {
             timezone: validity.timezone,
             startTime: dayjs(validity.startTime).format(),
             name: formData.name,
-            status: isBankConnected || isEventFree ? '1': '4',
+            // status: isBankConnected || isEventFree ? '1': '4',
             eventLink: formData.eventLink,
             description: formData.description,
             type: formData.type,
@@ -230,8 +230,9 @@ export default function NewEvent() {
                 });
                 // leave modal open
             } else {
+                const customMessage = isBankConnected? 'Successfully created new event!': 'Successfully created event as draft!'
                 notification['success']({
-                    message: 'Success creating record',
+                    message: customMessage,
                 });
                 router.back()
             }

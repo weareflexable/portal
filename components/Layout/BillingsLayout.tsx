@@ -66,7 +66,7 @@ export default function BillingsLayout({children}:BillingsLayoutProps){
         <Header style={{background:'#f7f7f7',borderBottom:'1px solid', borderBottomColor:'#e3e3e3', justifyContent:'space-between', width:'100%', display:'flex', alignItems:'center'}}>
                 <Col style={{display:'flex', justifyContent:'space-between'}} offset={1} span={22}>
                     <div style={{display:'flex', flex:'7',alignItems:'center'}}> 
-                        <Button style={{display:'flex', padding: '0', margin:'0', alignItems:'center', textAlign:'left'}} onClick={()=>router.replace('/')} icon={<ArrowLeftOutlined rev={undefined} />} type='link'/>
+                        <Button style={{display:'flex', padding: '0', margin:'0', alignItems:'center', textAlign:'left'}} onClick={()=>router.back()} icon={<ArrowLeftOutlined rev={undefined} />} type='link'/>
                         {isHydrated ? <Title style={{margin:'0'}} level={4}>{currentOrg.name}</Title>:<Skeleton.Input active size='default'/> } 
                     </div>
 

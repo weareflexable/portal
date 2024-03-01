@@ -208,8 +208,9 @@ function BasicForm({nextStep, isBankConnected}:BasicInfoProps){
         console.log(data)
         const status = data.status
         if(status <= 200){
+            const customMessage = isBankConnected? 'Successfully created new community!': 'Successfully created community as draft!'
             notification['success']({
-                message: 'Successfully created new community!'
+                message: customMessage
             })
                 console.log(data)
                 nextStep(data.data)

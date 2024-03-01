@@ -125,7 +125,7 @@ export default function BillingsView(){
              </header>
              { bankAccountQuery.isLoading || bankAccountQuery.isRefetching
              ? <Spin/>
-             : bankAccountQuery.data.account === null
+             : bankAccountQuery.data.fingerprint === ''
              ? <EmptyState>
                 <Button disabled={accountLinkMutation.isLoading} onClick={connectToStripeOnboarding} type='primary'>Create Account</Button>
               </EmptyState>

@@ -235,7 +235,7 @@ function gotoEventPage(event:Event){
         )
       },
       {
-        title: 'Platform Fee',
+        title: 'Charge',
         dataIndex: 'platformFee',
         // hidden:true, 
         key: 'platformFee',
