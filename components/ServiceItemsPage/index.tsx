@@ -297,7 +297,7 @@ export default function ServiceItemsView(){
       dataIndex: 'actions', 
       key: 'actions',
       fixed:'right',
-      width:currentFilter.name === 'Inactive'?'150px':'70px',
+      width:currentFilter.name === 'Inactive' || 'Drafts'?'150px':'70px',
       //@ts-ignore
       render:(_,record:Service)=>{
         if(currentFilter.name === 'Inactive'){

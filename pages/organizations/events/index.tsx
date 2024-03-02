@@ -58,7 +58,6 @@ function Events(){
 
     const [selectedRecord, setSelectedRecord] = useState<any|Event>({})
     const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Active'})
-    const [isHydrated, setIsHydrated] = useState(false)
 
    
    const urlPrefix = useUrlPrefix()
@@ -242,7 +241,7 @@ function gotoEventPage(event:Event){
         width:'100px',
         render: (platformFee)=>(
           <div>
-             {<Text>${platformFee}</Text>}
+             {<Text>{platformFee}</Text>}
           </div>
         )
       },
@@ -324,7 +323,7 @@ function gotoEventPage(event:Event){
       dataIndex: 'actions', 
       key: 'actions',
       fixed: 'right',
-      width:currentFilter.name === 'Inactive'?'150px':'70px',
+      width:currentFilter.name === 'Inactive' || 'Drafted' ?'150px':'70px',
       //@ts-ignore
       render:(_,record:Event)=>{
         if(currentFilter.name === 'Inactive'){
@@ -422,8 +421,12 @@ const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
 const {switchEvent} = useEvent()
 const {paseto} = useAuthContext()
+const {currentOrg} = useOrgContext()
 const {isManager, isSuperAdmin} = useRole()
 const urlPrefix = useUrlPrefix()
+
+// const isBankConnected = currentOrg?.isBankConnected
+// const isVisitable = isBankConnected && selectedRecord?.status === 1
 
 function closeDrawerHandler(){
   queryClient.invalidateQueries(['events']) 
@@ -2027,7 +2030,7 @@ const filters = [
       name: 'Inactive'
   },
   {
-      id: '2',
+      id: '4',
       name: 'Drafts'
   },
 ]

@@ -162,7 +162,7 @@ export default function NewEvent() {
             timezone: validity.timezone,
             startTime: dayjs(validity.startTime).format(),
             name: formData.name,
-            // status: isBankConnected || isEventFree ? '1': '4',
+            status: isBankConnected || isEventFree ? '1': '4',
             eventLink: formData.eventLink,
             description: formData.description,
             type: formData.type,
