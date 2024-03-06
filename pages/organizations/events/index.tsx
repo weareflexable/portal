@@ -241,7 +241,7 @@ function gotoEventPage(event:Event){
         width:'100px',
         render: (platformFee)=>(
           <div>
-             {<Text>{platformFee}</Text>}
+             {<Text>{platformFee}%</Text>}
           </div>
         )
       },

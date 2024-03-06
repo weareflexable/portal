@@ -246,14 +246,15 @@ export default function ServiceItemsView(){
       },
 
       {
-        title: 'Platform Charge',
+        title: 'Charge',
         dataIndex: 'platformFee',
         // hidden:true, 
         key: 'platformFee',
         width:'100px',
+        align:'right',
         render: (platformFee)=>(
           <div>
-             {<Text>${platformFee}</Text>}
+             {<Text>{platformFee}%</Text>}
           </div>
         )
       },
