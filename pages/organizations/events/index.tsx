@@ -771,7 +771,7 @@ export function EditablePrice({selectedRecord}:EditableProp){
 }
 export function EditableCharge({selectedRecord}:EditableProp){
   
-  const [state, setState] = useState(selectedRecord.price)
+  const [state, setState] = useState(selectedRecord.platformFee)
 
   const [isEditMode, setIsEditMode] = useState(false)
 
@@ -802,7 +802,7 @@ export function EditableCharge({selectedRecord}:EditableProp){
     },
     onSettled:(data)=>{
         console.log(data)
-      setState(data.data.price)
+      setState(data.data.platformFee)
       queryClient.invalidateQueries(['events'])
     }
   })
@@ -820,7 +820,7 @@ export function EditableCharge({selectedRecord}:EditableProp){
 
   const readOnly = (
     <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Text>{}100%</Text> 
+      <Text>{state}%</Text> 
       <Button type="link" onClick={toggleEdit}>Edit</Button>
     </div>
 )
@@ -829,13 +829,13 @@ export function EditableCharge({selectedRecord}:EditableProp){
     <Form
      style={{ marginTop:'.5rem' }}
      name="editableCharge"
-     initialValues={{editableCharge: ''}}
+     initialValues={{platformFee: selectedRecord.platformFee}}
      onFinish={onFinish}
      >
       <Row>
         <Col span={10} style={{height:'100%'}}>
           <Form.Item
-              name="price"
+              name="platformFee"
               rules={[{ required: true, message: 'Please input a valid platform fee' }]}
           >
               <Input suffix='%'  disabled={isEditing} />

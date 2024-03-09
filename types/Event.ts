@@ -1,6 +1,7 @@
 export type Event = {
     id: string
     name: string,
+    platformFee: string,
     description: string,
     contactNumber: string,
     totalTickets: number,
