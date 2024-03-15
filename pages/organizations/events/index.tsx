@@ -305,7 +305,7 @@ function gotoEventPage(event:Event){
       dataIndex: 'actions', 
       key: 'actions',
       fixed: 'right',
-      width:currentFilter.name === 'Inactive' || 'Drafted' ?'150px':'70px',
+      width:currentFilter.name === 'Inactive' ?'150px':'70px',
       //@ts-ignore
       render:(_,record:Event)=>{
         if(currentFilter.name === 'Inactive'){
@@ -407,7 +407,9 @@ const {isManager, isSuperAdmin} = useRole()
 const urlPrefix = useUrlPrefix()
 
 const isBankConnected = currentOrg?.isBankConnected
-const isDraft = !isBankConnected && selectedRecord?.status === 4
+// const isDraft = !isBankConnected && selectedRecord?.status === 4
+
+console.log(selectedRecord?.status)
 
 function closeDrawerHandler(){
   queryClient.invalidateQueries(['events']) 
@@ -513,15 +515,31 @@ return(
   <Popover placement="bottom" content={'Copied!'} trigger="click">
     <Button size='large' icon={<CopyOutlined rev={undefined} />} onClick={()=>copyLink(selectedRecord)}>Copy Link</Button>
     </Popover>
-    { isDraft
-    ? <Button size='large' loading={publishEvent.isLoading} onClick={()=>publishEvent.mutate(selectedRecord)}>Publish Event</Button>
-    : <Button size='large' onClick={()=>gotoEvents(selectedRecord)}>Visit Event</Button>
+    { !isBankConnected
+    ? <Button size='large' disabled={!isBankConnected} type="primary" loading={publishEvent.isLoading} onClick={()=>publishEvent.mutate(selectedRecord)}>Publish Event</Button>
+    : <Button size='large' disabled={!isBankConnected} onClick={()=>gotoEvents(selectedRecord)}>Visit Event</Button>
     }
      </Space>}
   closable={true} 
   onClose={closeDrawerHandler} 
   open={isDrawerOpen}
 >
+
+   {!isBankConnected && selectedRecord?.status == 4
+      ? <Alert
+          style={{ marginBottom: '2rem' }}
+          type="info"
+          showIcon
+          message='Connect account to publish'
+          closable description='Your event will not be listed on marketplace because you are still yet to add a bank account. It will be saved as drafts until an account is linked to your profile.'
+          action={
+              <Button onClick={() => router.push('/organizations/billings')} size="small">
+                  Add account
+              </Button>
+          }
+      />
+      : null
+    }
   
   <EditableName selectedRecord={selectedRecord}/>
   <EditablePrice selectedRecord={selectedRecord}/>

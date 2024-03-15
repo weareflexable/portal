@@ -47,6 +47,7 @@ export type ServiceItem = {
     id:string,
     name: string,
     ticketsPerDay: number,
+    status: string,
     price: number,
     logoImageHash: string,
     serviceItemType: any,

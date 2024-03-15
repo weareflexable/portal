@@ -2,10 +2,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useOrgs from "../../hooks/useOrgs";
 const {Text,Title} = Typography
 import React, { ReactNode, useRef, useState } from 'react'
-import {Typography,Button,Avatar, Upload, Tag, Alert, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Skeleton, InputNumber, notification, Modal} from 'antd'
+import {Typography,Button,Avatar, Upload, Tag, Alert, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Skeleton, InputNumber, notification, Modal, Popover} from 'antd'
 import { useRouter } from 'next/router'
 import axios from 'axios';
-import {MoreOutlined,ReloadOutlined,MinusCircleOutlined,PlusOutlined} from '@ant-design/icons'
+import {MoreOutlined,ReloadOutlined,MinusCircleOutlined,CopyOutlined,PlusOutlined} from '@ant-design/icons'
 
 import { useAuthContext } from '../../context/AuthContext';
 import { useServicesContext } from '../../context/ServicesContext';
@@ -21,28 +21,6 @@ import { EditableText } from "../shared/Editables";
 import { numberFormatter } from "../../utils/numberFormatter";
 import { IMAGE_PLACEHOLDER_HASH } from "../../constants";
 import { useOrgContext } from "../../context/OrgContext";
-
-
-// const mockServiceItems:ServiceItem[]=[
-//   {
-//      id:"dfadfafd",
-//     name: "Classic Line skip",
-//     imageHash: '',
-//     serviceItemType: "line-skip",
-//     description: "Best bar in the middle of new york",
-//     updatedAt: "Jan 22, 2022",
-//     createdAt: "Jan 24, 2022",
-// },
-//   {
-//      id:"dfadfafd",
-//     name: "Bottle service rosto",
-//     imageHash: '',
-//     serviceItemType: "line-skip",
-//     description: "Best bar in the middle of new york",
-//     updatedAt: "Jan 22, 2022",
-//     createdAt: "Jan 24, 2022",
-// },
-// ]
 
 
 type ServiceMenu={
@@ -72,8 +50,7 @@ export default function ServiceItemsView(){
     const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Active'})
     const [pageNumber, setPageNumber] = useState<number|undefined>(1)
     const [pageSize, setPageSize] = useState<number|undefined>(10)
-    
-    const {isManager} = useRole()
+  
 
     const serviceItemTypes = useServiceItemTypes()
 
@@ -167,8 +144,14 @@ export default function ServiceItemsView(){
       setIsDrawerOpen(true)
 
     }
-  
-    async function reActivateServiceHandler(record:ServiceItem){
+
+  const reactivateService = useMutation(reActivateServiceHandler,{
+    onSettled:()=>{
+      queryClient.invalidateQueries({queryKey:['serviceItems']})
+    }
+  })
+
+  async function reActivateServiceHandler(record:ServiceItem){
       const res = await axios({
           method:'patch',
           url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,
@@ -183,20 +166,6 @@ export default function ServiceItemsView(){
       })
       return res; 
   }
-
-
-  const reactivateService = useMutation(reActivateServiceHandler,{
-    onSettled:()=>{
-      queryClient.invalidateQueries({queryKey:['serviceItems']})
-    }
-  })
-
-  const publishService = useMutation(reActivateServiceHandler,{
-    onSettled:()=>{
-      queryClient.invalidateQueries({queryKey:['serviceItems']})
-    }
-  })
-
     
     
   
@@ -275,6 +244,7 @@ export default function ServiceItemsView(){
         title: 'Custom Dates',
         // dataIndex: 'status',
         key: 'customDates',
+        align:'right',
         width:'150px',
         render: (_,record)=>{
           const customDatesLength = record?.availability?.length
@@ -303,8 +273,6 @@ export default function ServiceItemsView(){
       render:(_,record:Service)=>{
         if(currentFilter.name === 'Inactive'){
           return (<Button   onClick={()=>reactivateService.mutate(record)}>Reactivate</Button>)
-        }else if(currentFilter.name === 'Drafts'){
-          return (<Button disabled={!isBankConnected} onClick={()=>publishService.mutate(record)}>Publish</Button>)
         }else{
           return <Button type="text" onClick={()=>viewDetails(record)} icon={<MoreOutlined rev={undefined}/>}/> 
         }
@@ -314,11 +282,7 @@ export default function ServiceItemsView(){
 
         return (
             <div>
-               { !servicesData 
-               ? null 
-               : 
-               <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
-                 <div style={{width:'100%',  marginBottom:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+               <div style={{width:'100%',  marginBottom:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                      
                  <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
                         {serviceItemsFilters.map(filter=>(
@@ -326,11 +290,17 @@ export default function ServiceItemsView(){
                         )
                         )}
                   </Radio.Group>
+                  
                       <div style={{display:'flex'}}>
                         <Button shape='round' style={{marginRight:'1rem'}} loading={serviceItemsQuery.isRefetching} onClick={()=>serviceItemsQuery.refetch()} icon={<ReloadOutlined rev={undefined} />}>Refresh</Button>
                         <Dropdown.Button  trigger={['click']} type="primary"   icon={<PlusOutlined rev={undefined}/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
                       </div>
                     </div>
+               { !servicesData 
+               ? null 
+               : 
+               <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
+                
                  
 
                 <div style={{width: "20%",display:'flex', justifyContent:'space-between', alignItems:'center'}}>
@@ -385,6 +355,10 @@ interface DrawerProps{
 function DetailDrawer({selectedRecord,isDrawerOpen,closeDrawer}:DrawerProps){
 
 const queryClient = useQueryClient()
+const router = useRouter()
+
+const {currentOrg} = useOrgContext()
+const isBankConnected = currentOrg?.isBankConnected
 
 const {paseto} = useAuthContext()
 
@@ -407,7 +381,6 @@ const {data, isLoading} = useQuery({queryKey:['availability',selectedRecord.id],
 
 const availabilityData = data && data
 
-console.log(availabilityData)
 
 
 function closeDrawerHandler(){
@@ -463,8 +436,62 @@ const deleteData = useMutation(deleteDataHandler,{
 
 const{isLoading:isDeletingItem} = deleteData
 
+ async function reActivateServiceHandler(record:ServiceItem){
+      const res = await axios({
+          method:'patch',
+          url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,
+          data:{
+              // key:'status',
+              status: '1', 
+              id: record.id  
+          },
+          headers:{
+              "Authorization": paseto
+          }
+      })
+      return res; 
+  }
+
+  const publishService = useMutation(reActivateServiceHandler,{
+    onSettled:()=>{
+      queryClient.invalidateQueries({queryKey:['serviceItems']})
+    }
+  })
+
 return( 
-<Drawer title="Service Details" width={640} placement="right" closable={true} onClose={closeDrawerHandler} open={isDrawerOpen}>
+<Drawer 
+  title="Service Details" 
+  width={640} placement="right" 
+  closable={true} 
+  onClose={closeDrawerHandler} 
+  open={isDrawerOpen}
+    extra={
+  <Space>
+  <Popover placement="bottom" content={'Copied!'} trigger="click">
+    {/* <Button size='large' icon={<CopyOutlined rev={undefined} />} onClick={()=>copyLink(selectedRecord)}>Copy Link</Button> */}
+    </Popover>
+    { !isBankConnected
+    ? <Button size='large' disabled={!isBankConnected} type="primary" loading={publishService.isLoading} onClick={()=>publishService.mutate(selectedRecord)}>Publish Service</Button>
+    : null
+    }
+     </Space>}
+>
+
+   {!isBankConnected && selectedRecord?.status == '4'
+      ? <Alert
+          style={{ marginBottom: '2rem' }}
+          type="info"
+          showIcon
+          message='Connect account to publish'
+          closable description='Your exclusive access will not be listed on marketplace because you are still yet to add a bank account. It will be saved as drafts until an account is linked to your profile.'
+          action={
+              <Button onClick={() => router.push('/organizations/billings')} size="small">
+                  Add account
+              </Button>
+          }
+      />
+      : null
+    }
   
 <EditableText
     fieldKey="name" // The way the field is named in DB
