@@ -499,7 +499,7 @@ return(
     fieldName = 'name'
     title = 'Name'
     id = {selectedRecord.id}
-    options = {{queryKey:'serviceItems',mutationUrl:'service-items'}}
+    options = {{queryKey:'service-items',mutationUrl:'service-items'}}
   />
   <EditableDescription selectedRecord={selectedRecord}/>
   <EditablePrice selectedRecord={selectedRecord}/>
