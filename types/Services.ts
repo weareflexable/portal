@@ -45,6 +45,7 @@ export type Availability = CustomDate[]
 
 export type ServiceItem = {
     id:string,
+    platformFee?:string
     name: string,
     ticketsPerDay: number,
     status: string,
