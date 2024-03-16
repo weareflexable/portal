@@ -135,19 +135,19 @@ export default function BillingsView(){
               <article style={{display:'flex', maxWidth:'800px', border:'1px solid #d8d8d8', padding:'1rem 1.5rem', justifyContent:'space-around'}}>
                   <div style={{display:'flex', flex:'1', flexDirection:'column'}}>
                     <Text type="secondary">Event Sales</Text>
-                    <Text  style={{fontSize:'1.7rem'}}>${bankAccountQuery?.data?.eventSales.toLocaleString()}</Text> 
+                    <Text  style={{fontSize:'1.7rem'}}>${(bankAccountQuery?.data?.eventSales/100).toLocaleString()}</Text> 
                   </div>
                   <div style={{display:'flex', flex:'1', flexDirection:'column'}}>
                     <Text type="secondary">Community Sales</Text>
-                    <Text  style={{fontSize:'1.7rem'}}>${bankAccountQuery?.data?.communitySales.toLocaleString()}</Text> 
+                    <Text  style={{fontSize:'1.7rem'}}>${(bankAccountQuery?.data?.communitySales/100).toLocaleString()}</Text> 
                   </div>
                   <div style={{display:'flex', flex:'1', flexDirection:'column'}}>
                     <Text type="secondary">Service Sales</Text>
-                    <Text  style={{fontSize:'1.7rem'}}>${bankAccountQuery?.data?.serviceSales.toLocaleString()}</Text> 
+                    <Text  style={{fontSize:'1.7rem'}}>${(bankAccountQuery?.data?.serviceSales/100).toLocaleString()}</Text> 
                   </div>
                   <div style={{display:'flex', flex:'1', flexDirection:'column'}}>
                     <Text type="secondary">Total Sales</Text>
-                    <Text  style={{fontSize:'1.7rem'}}>${bankAccountQuery?.data?.totalSales.toLocaleString()}</Text> 
+                    <Text  style={{fontSize:'1.7rem'}}>${(bankAccountQuery?.data?.totalSales/100).toLocaleString()}</Text> 
                   </div>
               </article>
 
