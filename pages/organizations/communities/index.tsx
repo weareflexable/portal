@@ -3,10 +3,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useOrgs from "../../../hooks/useOrgs";
 const {Text, Title} = Typography;
 import React, { ReactNode, useEffect, useRef, useState } from 'react'
-import {Typography,Button, Skeleton, Badge, Image, Table, Input, Radio,  Drawer, Row, Col, Form, Modal, Alert, notification, Dropdown, MenuProps, Tag, Space, Upload} from 'antd'
+import {Typography,Button, Skeleton, Badge, Image, Table, Input, Radio,  Drawer, Row, Col, Form, Modal, Alert, notification, Dropdown, MenuProps, Tag, Space, Upload, Popover} from 'antd'
 import { useRouter } from 'next/router'
 import axios from 'axios';
-import { MoreOutlined, ReloadOutlined, ArrowLeftOutlined, PlusOutlined} from '@ant-design/icons'
+import { MoreOutlined, ReloadOutlined, ArrowLeftOutlined,CopyOutlined, PlusOutlined} from '@ant-design/icons'
 
 import { useAuthContext } from '../../../context/AuthContext';
 import { useServicesContext } from '../../../context/ServicesContext';
@@ -89,21 +89,7 @@ function Communities(){
         return res; 
     }
 
-    async function publishCommunityHandler(record:Community){
-        const res = await axios({
-            method:'patch',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,
-            data:{
-                status: '1', 
-                id: record.id  
-            },
-            headers:{
-                "Authorization": paseto
-            }
-        })
-        return res; 
-    }
-
+    
 
     const reactivateCommunity = useMutation(reActivateCommunityHandler,{
       onSettled:()=>{
@@ -111,11 +97,7 @@ function Communities(){
       }
     })
 
-    const publishCommunity = useMutation(publishCommunityHandler,{
-      onSettled:()=>{
-        queryClient.invalidateQueries({queryKey:['community']})
-      }
-    })
+  
 
    
     // @ts-ignore
@@ -235,13 +217,11 @@ function gotoCommunityItemsPage(community:Community){
       dataIndex: 'actions', 
       key: 'actions',
       fixed: 'right',
-      width:currentFilter.name === 'Inactive' || 'Drafts' ?'150px':'70px',
+      width:currentFilter.name === 'Inactive'?'150px':'50px',
       //@ts-ignore
       render:(_,record:Community)=>{
         if(currentFilter.name === 'Inactive'){
           return (<Button  onClick={()=>reactivateCommunity.mutate(record)}>Reactivate</Button>)
-        }else if(currentFilter.name === 'Drafts'){
-           return (<Button disabled={!isBankConnected}  onClick={()=>publishCommunity.mutate(record)}>Publish</Button>)
         }else{
           return <Button onClick= {()=>onMenuClick(record)} type="text" icon={<MoreOutlined rev={undefined}/>}/>
         }
@@ -331,6 +311,9 @@ function DetailDrawer({selectedRecord,isDrawerOpen,closeDrawer}:DrawerProps){
 const queryClient = useQueryClient()
 const router = useRouter()
 const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+const {currentOrg} = useOrgContext()
+
+const isBankConnected = currentOrg?.isBankConnected
 
 const {isManager, isSuperAdmin} = useRole()
 
@@ -398,16 +381,71 @@ const deleteData = useMutation(deleteDataHandler)
 
 const{isLoading:isDeletingItem} = deleteData
 
+  async function publishCommunityHandler(record:Community){
+        const res = await axios({
+            method:'patch',
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,
+            data:{
+                status: '1', 
+                id: record.id  
+            },
+            headers:{
+                "Authorization": paseto
+            }
+        })
+        return res; 
+    }
+
+
+    const publishCommunity = useMutation(publishCommunityHandler,{
+      onSettled:()=>{
+        queryClient.invalidateQueries({queryKey:['community']})
+      }
+    })
+
+function copyLink(selectedRecord:any){
+  navigator.clipboard.writeText('')
+  const eventId = selectedRecord.id
+  const marketplaceLink = `https://marketplace.dev.flexabledats.com/communities/${eventId}`
+   // Copy the text inside the text field
+   navigator.clipboard.writeText(marketplaceLink);
+}
+
 
 return( 
 <Drawer 
   title="Community Details" 
   width={640} placement="right" 
-  extra={<Button size='large' onClick={()=>gotoCommunity(selectedRecord)}>Visit Community</Button>}
+  extra={
+  <Space>
+  <Popover placement="bottom" content={'Copied!'} trigger="click">
+    <Button size='large' disabled={!isBankConnected} icon={<CopyOutlined rev={undefined} />} onClick={()=>copyLink(selectedRecord)}>Copy Link</Button>
+    </Popover>
+    { !isBankConnected
+    ? <Button size='large' disabled={!isBankConnected} type="primary" loading={publishCommunity.isLoading} onClick={()=>publishCommunity.mutate(selectedRecord)}>Publish Community</Button>
+    : <Button size='large' onClick={()=>gotoCommunity(selectedRecord)}>Visit Community</Button>
+    }
+    </Space>}
   closable={true} 
   onClose={closeDrawerHandler} 
   open={isDrawerOpen}
 >
+ {!isBankConnected && selectedRecord?.status == 4
+      ? <Alert
+          style={{ marginBottom: '2rem' }}
+          type="info"
+          showIcon
+          message='Connect account to publish'
+          closable description='Your community will not be listed on marketplace because you are still yet to add a bank account. It will be saved as drafts until an account is linked to your profile.'
+          action={
+              <Button onClick={() => router.push('/organizations/billings')} size="small">
+                  Add account
+              </Button>
+          }
+      />
+      : null
+    }
+  
   
   <EditableName selectedRecord={selectedRecord}/>
   <EditablePrice selectedRecord={selectedRecord}/>
@@ -415,12 +453,13 @@ return(
   <EditableArtwork selectedRecord={selectedRecord}/>
   <EditableLogoImage selectedRecord={selectedRecord}/>
 
+  {isManager || isSuperAdmin ?<EditableCharge selectedRecord={selectedRecord}/>:null}
+
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
     <Title level={3}>Danger zone</Title>
     <Button danger onClick={toggleDeleteModal} style={{width:'30%'}} type="link">Deactivate Community</Button>
   </div>
 
-  {isManager || isSuperAdmin ?<EditableCharge selectedRecord={selectedRecord}/>:null}
 
   <DeleteRecordModal 
   isDeletingItem={isDeletingItem} 
@@ -550,7 +589,7 @@ export function EditableDescription({selectedRecord}:EditableProp){
 
 export function EditableCharge({selectedRecord}:EditableProp){
   
-  const [state, setState] = useState(selectedRecord.price)
+  const [state, setState] = useState(selectedRecord.platformFee)
 
   const [isEditMode, setIsEditMode] = useState(false)
 
@@ -565,7 +604,7 @@ export function EditableCharge({selectedRecord}:EditableProp){
  const urlPrefix = useUrlPrefix()
 
   const recordMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -581,8 +620,8 @@ export function EditableCharge({selectedRecord}:EditableProp){
     },
     onSettled:(data)=>{
         console.log(data)
-      setState(data.data.price)
-      queryClient.invalidateQueries(['events'])
+      setState(data.data.platformFee)
+      queryClient.invalidateQueries(['community'])
     }
   })
 
@@ -599,7 +638,7 @@ export function EditableCharge({selectedRecord}:EditableProp){
 
   const readOnly = (
     <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Text>{}100%</Text> 
+      <Text>{state}%</Text> 
       <Button type="link" onClick={toggleEdit}>Edit</Button>
     </div>
 )
@@ -608,13 +647,13 @@ export function EditableCharge({selectedRecord}:EditableProp){
     <Form
      style={{ marginTop:'.5rem' }}
      name="editableCharge"
-     initialValues={{editableCharge: ''}}
+     initialValues={{platformFee: selectedRecord.platformFee}}
      onFinish={onFinish}
      >
       <Row>
         <Col span={10} style={{height:'100%'}}>
           <Form.Item
-              name="price"
+              name="platformFee"
               rules={[{ required: true, message: 'Please input a valid platform fee' }]}
           >
               <Input suffix='%'  disabled={isEditing} />

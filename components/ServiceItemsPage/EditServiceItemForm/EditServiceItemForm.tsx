@@ -51,8 +51,8 @@ interface EditableProp{
     })
   
     function onFinish(updatedItem:any){
+      console.log(updatedItem)
       const payload = {
-
         name: updatedItem.name,
         id: selectedRecord.id
       }
@@ -525,7 +525,7 @@ interface EditableProp{
 
   export function EditableCharge({selectedRecord}:EditableProp){
   
-  const [state, setState] = useState(selectedRecord.price)
+  const [state, setState] = useState(selectedRecord.platformFee)
 
   const [isEditMode, setIsEditMode] = useState(false)
 
@@ -540,7 +540,7 @@ interface EditableProp{
  const urlPrefix = useUrlPrefix()
 
   const recordMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -555,15 +555,13 @@ interface EditableProp{
       toggleEdit()
     },
     onSettled:(data)=>{
-        console.log(data)
-      setState(data.data.price)
-      queryClient.invalidateQueries(['events'])
+      setState(data.data.platformFee)
+      queryClient.invalidateQueries(['service-items'])
     }
   })
 
   function onFinish(updatedItem:any){
     const payload = {
-      // key:'price',
       platformFee: String(updatedItem.platformFee),
       id: selectedRecord.id
     }
@@ -574,7 +572,7 @@ interface EditableProp{
 
   const readOnly = (
     <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Text>{}100%</Text> 
+      <Text>{state}%</Text> 
       <Button type="link" onClick={toggleEdit}>Edit</Button>
     </div>
 )
@@ -583,13 +581,13 @@ interface EditableProp{
     <Form
      style={{ marginTop:'.5rem' }}
      name="editableCharge"
-     initialValues={{editableCharge: ''}}
+     initialValues={{platformFee: selectedRecord?.platformFee}}
      onFinish={onFinish}
      >
       <Row>
         <Col span={10} style={{height:'100%'}}>
           <Form.Item
-              name="price"
+              name="platformFee"
               rules={[{ required: true, message: 'Please input a valid platform fee' }]}
           >
               <Input suffix='%'  disabled={isEditing} />
