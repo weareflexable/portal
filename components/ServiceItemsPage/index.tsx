@@ -458,6 +458,15 @@ const{isLoading:isDeletingItem} = deleteData
     }
   })
 
+  function copyLink(selectedRecord:any){
+  navigator.clipboard.writeText('')
+  const serviceItemId = selectedRecord.id
+  const marketplaceLink = `https://marketplace.staging.flexabledats.com/services/${serviceItemId}`
+   // Copy the text inside the text field
+   navigator.clipboard.writeText(marketplaceLink);
+}
+
+
 return( 
 <Drawer 
   title="Service Details" 
@@ -468,7 +477,7 @@ return(
     extra={
   <Space>
   <Popover placement="bottom" content={'Copied!'} trigger="click">
-    {/* <Button size='large' icon={<CopyOutlined rev={undefined} />} onClick={()=>copyLink(selectedRecord)}>Copy Link</Button> */}
+    <Button size='large' disabled={!isBankConnected} icon={<CopyOutlined rev={undefined} />} onClick={()=>copyLink(selectedRecord)}>Copy Link</Button>
     </Popover>
     { !isBankConnected
     ? <Button size='large' disabled={!isBankConnected} type="primary" loading={publishService.isLoading} onClick={()=>publishService.mutate(selectedRecord)}>Publish Service</Button>
