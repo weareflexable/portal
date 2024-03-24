@@ -421,7 +421,7 @@ return(
   <Popover placement="bottom" content={'Copied!'} trigger="click">
     <Button size='large' disabled={!isBankConnected} icon={<CopyOutlined rev={undefined} />} onClick={()=>copyLink(selectedRecord)}>Copy Link</Button>
     </Popover>
-    { !isBankConnected
+    { !isBankConnected && selectedRecord?.status == 4
     ? <Button size='large' disabled={!isBankConnected} type="primary" loading={publishCommunity.isLoading} onClick={()=>publishCommunity.mutate(selectedRecord)}>Publish Community</Button>
     : <Button size='large' onClick={()=>gotoCommunity(selectedRecord)}>Visit Community</Button>
     }

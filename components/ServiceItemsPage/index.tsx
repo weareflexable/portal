@@ -479,14 +479,14 @@ return(
   <Popover placement="bottom" content={'Copied!'} trigger="click">
     <Button size='large' disabled={!isBankConnected} icon={<CopyOutlined rev={undefined} />} onClick={()=>copyLink(selectedRecord)}>Copy Link</Button>
     </Popover>
-    { !isBankConnected
+    { !isBankConnected && selectedRecord?.status == 4
     ? <Button size='large' disabled={!isBankConnected} type="primary" loading={publishService.isLoading} onClick={()=>publishService.mutate(selectedRecord)}>Publish Service</Button>
     : null
     }
      </Space>}
 >
 
-   {!isBankConnected && selectedRecord?.status == '4'
+   {!isBankConnected && selectedRecord?.status === 4
       ? <Alert
           style={{ marginBottom: '2rem' }}
           type="info"

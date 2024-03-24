@@ -513,9 +513,9 @@ return(
   extra={
   <Space>
   <Popover placement="bottom" content={'Copied!'} trigger="click">
-    <Button size='large' icon={<CopyOutlined rev={undefined} />} onClick={()=>copyLink(selectedRecord)}>Copy Link</Button>
+    <Button size='large' disabled={!isBankConnected} icon={<CopyOutlined rev={undefined} />} onClick={()=>copyLink(selectedRecord)}>Copy Link</Button>
     </Popover>
-    { !isBankConnected
+    { !isBankConnected && selectedRecord?.status == 4
     ? <Button size='large' disabled={!isBankConnected} type="primary" loading={publishEvent.isLoading} onClick={()=>publishEvent.mutate(selectedRecord)}>Publish Event</Button>
     : <Button size='large' disabled={!isBankConnected} onClick={()=>gotoEvents(selectedRecord)}>Visit Event</Button>
     }

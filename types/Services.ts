@@ -48,7 +48,7 @@ export type ServiceItem = {
     platformFee?:string
     name: string,
     ticketsPerDay: number,
-    status: string,
+    status: number,
     price: number,
     logoImageHash: string,
     serviceItemType: any,
