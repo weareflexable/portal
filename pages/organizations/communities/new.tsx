@@ -177,7 +177,7 @@ function BasicForm({nextStep, isBankConnected}:BasicInfoProps){
                 orgId: currentOrg.orgId,
                 // @ts-ignore
                 status: isBankConnected? '1': '4',
-                name: `Key to: ${formData.name}`,
+                name:  formData.name,
                 price: String(formData.price * 100),
                 currency: 'USD',
                 description:formData.description,
@@ -256,7 +256,7 @@ function BasicForm({nextStep, isBankConnected}:BasicInfoProps){
                 { max: 150, message: 'Sorry, your service name cant be more than 150 characters' },
                 ]}
          >
-            <Input allowClear size='large' addonBefore='Key to:' maxLength={150} showCount placeholder="Napoli" />
+            <Input allowClear size='large'  maxLength={150} showCount placeholder="Napoli" />
         </Form.Item>
 
         <Form.Item name='description' rules={[{max:500, message:"Description shouldn't exceed 500 characters"},{ required: true, message: 'This field is required' }]}  label="Description">
