@@ -18,7 +18,7 @@ import useUrlPrefix from '../../../hooks/useUrlPrefix';
 import { usePlacesWidget } from 'react-google-autocomplete';
 import { Community, CommunityReq } from '../../../types/Community';
 import useOrgs from '../../../hooks/useOrgs';
-import { CommunityVenue, CommunityVenueForm, CommunityVenueReq } from '../../../types/CommunityVenue';
+import { CommunityVenue, CommunityVenueForm as CommunityVenueFormType, CommunityVenueReq } from '../../../types/CommunityVenue';
 import { asyncStore} from "../../../utils/nftStorage";
 import { useOrgContext } from '../../../context/OrgContext';
 
@@ -340,12 +340,13 @@ function VenuesForm({communityId}:VenueFormProp){
 
     const {paseto} = useAuthContext()
 
-    function transformContactNumbersInVenues(venues:CommunityVenueForm[]){
+    function transformContactNumbersInVenues(venues:CommunityVenueFormType[]){
 
         const venuesCopy = [...venues];
-        const transformedVenues  = venuesCopy.map((venue:CommunityVenueForm)=>{ 
+        const transformedVenues  = venuesCopy.map((venue:CommunityVenueFormType)=>{ 
            return{
                name: venue.name,
+               email: venue.email,
                promotion: venue.promotion,
                marketValue: String(venue.marketValue * 100),
                address: venue.address,
@@ -360,7 +361,6 @@ function VenuesForm({communityId}:VenueFormProp){
 
     async function onFinish(formData:any){
         const transformedVenues = transformContactNumbersInVenues(formData.venues)
-        console.log(transformedVenues)
         // console.log('form data',transformedVenues)
         // const transformedDates = convertDates(formData.venues)
         const reqPayload = {
@@ -731,6 +731,18 @@ function CommunityVenueForm({remove, name, formInstance, restField}:CommunityVen
                                     style={{width:'100%'}}
                                 >
                                 <Input size='large'required placeholder='Benjamins On Franklin' />
+                            </Form.Item>
+
+                            {/* email */}
+                            <Form.Item
+                                    {...restField}
+                                    required
+                                    // label='Label'
+                                    // rules={[{ required: true, message: 'Please provide a valid label for the date' }]}
+                                    name={[name, 'email']}
+                                    style={{width:'100%'}}
+                                >
+                                <Input size='large' type='email' required placeholder='billcage@yahoo.com' />
                             </Form.Item>
 
                                 {/* promotion */}

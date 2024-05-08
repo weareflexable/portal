@@ -133,6 +133,7 @@ export default function NewCommunityVenue(){
                     longitude:String(fullAddress.longitude),
                 },
                 promotion: formData.promotion,
+                email: formData.email,
                 marketValue:String(formData.marketValue*100),
                 name: formData.name,
                 contactNumber: formatedContact,
@@ -218,6 +219,16 @@ export default function NewCommunityVenue(){
                         rules={[{ required: true, message: 'Please input a valid service name'}]}
                     >
                         <Input allowClear size="large" placeholder="Bill Cage coffee" />
+                    </Form.Item>
+
+                    <Form.Item
+                        name="email"
+                        label="Email" 
+                        hasFeedback
+                        // extra="The name you provide here will be used as display on marketplace listing"
+                        rules={[{ required: true, message: 'Please input a valid email'}]}
+                    >
+                        <Input allowClear type="email" size="large" placeholder="billcage@yahoo.com" />
                     </Form.Item>
 
 
