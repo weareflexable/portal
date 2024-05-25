@@ -439,6 +439,7 @@ return(
   <EditablePromotion selectedRecord={selectedRecord}/>
   <EditableAddress selectedRecord={selectedRecord}/>
   <EditableMarketValue selectedRecord={selectedRecord}/>
+  <EditablePhone selectedRecord={selectedRecord}/>
 
 
 
@@ -978,6 +979,101 @@ export function EditableMarketValue({selectedRecord}:EditableProp){
   )
 }
 
+export function EditablePhone({selectedRecord}:EditableProp){
+  
+
+    const [state, setState] = useState(selectedRecord.contactNumber)
+
+    const [isEditMode, setIsEditMode] = useState(false)
+  
+    const {paseto} = useAuthContext()
+  
+    const queryClient = useQueryClient()
+
+    const urlPrefix = useUrlPrefix()
+   
+    function toggleEdit(){
+      setIsEditMode(!isEditMode)
+    }
+  
+    const readOnly = (
+        <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+          <Text>{state}</Text>
+          <Button type="link" onClick={toggleEdit}>Edit</Button>
+        </div>
+    )
+  
+    const nameMutationHandler = async(updatedItem:any)=>{
+      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`,updatedItem,{
+        headers:{
+            //@ts-ignore
+            "Authorization": paseto
+        }
+      })
+        return data;
+    }
+    const nameMutation = useMutation({
+      mutationKey:['contactNumber'],
+      mutationFn: nameMutationHandler,
+      onSuccess:(data)=>{
+         setState(data.data[0].contactNumber)
+        toggleEdit()
+        queryClient.invalidateQueries(['community-venues'])
+      }
+    })
+  
+    function onFinish(field:any){
+      const payload = {
+        // key:'contact_number',
+        contactNumber: field.contactNumber,
+        id: selectedRecord.id
+      }
+      console.log(payload)
+      nameMutation.mutate(payload)
+    }
+  
+    const {isLoading:isEditing} = nameMutation 
+  
+    const editable = (
+      <Form
+       style={{ marginTop:'.5rem' }}
+       name="editableContactNumber"
+       initialValues={selectedRecord}
+       onFinish={onFinish}
+       >
+        <Row>
+          <Col span={16}>
+            <Form.Item
+                name="contactNumber"
+                rules={[{ required: true, message: 'Please input a valid phone number' }]}
+            >
+                <Input disabled={isEditing} placeholder="09023234857" />
+            </Form.Item>
+          </Col>
+          <Col span={4}>
+            <Form.Item style={{ width:'100%'}}>
+                <Space >
+                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                        Cancel
+                    </Button>
+                    <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                        Apply changes
+                    </Button>
+                </Space>
+                          
+            </Form.Item>
+          </Col>
+        </Row>
+             
+      </Form>
+    )
+    return(
+      <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+        <Text type="secondary" style={{ marginRight: '2rem',}}>Contact number</Text>
+        {isEditMode?editable:readOnly}
+      </div>
+    )
+  }
 
 
 
