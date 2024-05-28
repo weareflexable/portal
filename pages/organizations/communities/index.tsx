@@ -829,7 +829,7 @@ export function EditableName({selectedRecord}:EditableProp){
 
   function onFinish(updatedItem:any){
     const payload = {
-      name: `Key to: ${updatedItem.name}`,
+      name: updatedItem.name,
       id: selectedRecord.id
     }
     
@@ -858,7 +858,7 @@ export function EditableName({selectedRecord}:EditableProp){
               name="name"
               rules={[{ required: true, message: 'Please input a valid  name' }]}
           >
-              <Input addonBefore="Key to:"  disabled={isEditing} placeholder="Flexable serviceItem"/>
+              <Input disabled={isEditing} placeholder="Flexable serviceItem"/>
           </Form.Item>
         </Col>
         <Col span={4}>
