@@ -257,6 +257,7 @@ function BasicForm({nextStep, isBankConnected}:BasicInfoProps){
                 ]}
          >
             <Input allowClear size='large'  maxLength={150} showCount placeholder="Napoli" />
+            <Input allowClear size='large'  maxLength={150} showCount placeholder="Napoli" />
         </Form.Item>
 
         <Form.Item name='description' rules={[{max:500, message:"Description shouldn't exceed 500 characters"},{ required: true, message: 'This field is required' }]}  label="Description">
@@ -346,6 +347,7 @@ function VenuesForm({communityId}:VenueFormProp){
         const transformedVenues  = venuesCopy.map((venue:CommunityVenueFormType)=>{ 
            return{
                name: venue.name,
+               email: venue.email,
                promotion: venue.promotion,
                marketValue: String(venue.marketValue * 100),
                address: venue.address,
@@ -360,7 +362,6 @@ function VenuesForm({communityId}:VenueFormProp){
 
     async function onFinish(formData:any){
         const transformedVenues = transformContactNumbersInVenues(formData.venues)
-        console.log(transformedVenues)
         // console.log('form data',transformedVenues)
         // const transformedDates = convertDates(formData.venues)
         const reqPayload = {
@@ -731,6 +732,18 @@ function CommunityVenueForm({remove, name, formInstance, restField}:CommunityVen
                                     style={{width:'100%'}}
                                 >
                                 <Input size='large'required placeholder='Benjamins On Franklin' />
+                            </Form.Item>
+
+                            {/* email */}
+                            <Form.Item
+                                    {...restField}
+                                    required
+                                    // label='Label'
+                                    // rules={[{ required: true, message: 'Please provide a valid label for the date' }]}
+                                    name={[name, 'email']}
+                                    style={{width:'100%'}}
+                                >
+                                <Input size='large' type='email' required placeholder='billcage@yahoo.com' />
                             </Form.Item>
 
                                 {/* promotion */}

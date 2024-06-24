@@ -406,7 +406,7 @@ const{isLoading:isDeletingItem} = deleteData
 function copyLink(selectedRecord:any){
   navigator.clipboard.writeText('')
   const eventId = selectedRecord.id
-  const marketplaceLink = `https://marketplace.staging.flexabledats.com/communities/${eventId}`
+  const marketplaceLink = `https://marketplace.dev.flexabledats.com/communities/${eventId}`
    // Copy the text inside the text field
    navigator.clipboard.writeText(marketplaceLink);
 }
@@ -787,7 +787,7 @@ export function EditableName({selectedRecord}:EditableProp){
 
   // console.log(selectedRecord.name)
   
-  const [state, setState] = useState(selectedRecord.name)
+  const [state, setState] = useState(selectedRecord?.name)
 
   const [isEditMode, setIsEditMode] = useState(false)
 
@@ -795,9 +795,8 @@ export function EditableName({selectedRecord}:EditableProp){
 
   const queryClient = useQueryClient()
 
-  const splittedName = selectedRecord && selectedRecord.name.split(':')
 
-  const communityName = splittedName[1].trim();
+  const communityName = selectedRecord?.name;
 
 
   function toggleEdit(){
@@ -815,6 +814,7 @@ export function EditableName({selectedRecord}:EditableProp){
     })
       return data;
   }
+  
   const recordMutation = useMutation({
     mutationKey:['name'],
     mutationFn: recordMutationHandler,

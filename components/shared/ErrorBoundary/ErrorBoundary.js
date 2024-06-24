@@ -24,7 +24,7 @@ class ErrorBoundary extends React.Component {
         // You can render any custom fallback UI
         return (
           <Card>
-            <Typography.Title level={3}>Oops, there is an error in {this.props.name}!</Typography.Title>
+            <Typography.Title level={3}>- We seem to have encountered a technical error in {this.props.name}!</Typography.Title>
             <Button
               shape="round"
               onClick={() => this.setState({ hasError: false })}

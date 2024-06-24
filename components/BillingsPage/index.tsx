@@ -179,7 +179,7 @@ export default function BillingsView(){
                 </div>
 
                 <div style={{display:'flex', justifyContent:'flex-end'}}>
-                  <Button loading={editAccountMutation.isLoading} onClick={editAccountInfo} type="link">Edit Card information</Button>
+                  <Button loading={editAccountMutation.isLoading} onClick={editAccountInfo} type="link">Edit Bank Information</Button>
                   {/* <Button danger onClick={toggleDeleteModal} type="link">Delete Account</Button> */}
                   <DeleteAccountModal
                     onDeleteAccount={deleteUserAccount}

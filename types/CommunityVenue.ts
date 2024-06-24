@@ -12,6 +12,7 @@ type Address = {
 type CommunityVenue = {
     id: string
     name: string,
+    accessCode: string,
     promotion: string,
     contactNumber: string,
     marketValue: number,
@@ -22,6 +23,7 @@ type CommunityVenue = {
 type CommunityVenuePayload = {
     name: string,
     promotion: string,
+    email:string,
     contactNumber: string,
     marketValue: string,
     address: Address ,
@@ -32,6 +34,7 @@ type CommunityVenuePayload = {
 export type CommunityVenueForm = {
     promotion: string
     marketValue: number
+    email:string,
     name: string
     contact: any 
     address: {
