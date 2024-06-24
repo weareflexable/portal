@@ -787,7 +787,7 @@ export function EditableName({selectedRecord}:EditableProp){
 
   // console.log(selectedRecord.name)
   
-  const [state, setState] = useState(selectedRecord.name)
+  const [state, setState] = useState(selectedRecord?.name)
 
   const [isEditMode, setIsEditMode] = useState(false)
 
@@ -795,9 +795,8 @@ export function EditableName({selectedRecord}:EditableProp){
 
   const queryClient = useQueryClient()
 
-  const splittedName = selectedRecord && selectedRecord.name.split(':')
 
-  const communityName = splittedName[1].trim();
+  const communityName = selectedRecord?.name;
 
 
   function toggleEdit(){
