@@ -12,6 +12,7 @@ type Address = {
 type CommunityVenue = {
     id: string
     name: string,
+    accessCode: string,
     promotion: string,
     contactNumber: string,
     marketValue: number,

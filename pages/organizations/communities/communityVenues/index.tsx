@@ -2,7 +2,7 @@
 import CommunitiesLayout from '../../../../components/Layout/CommunitiesLayout'
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useOrgs from "../../../../hooks/useOrgs";
-const {Text,Title} = Typography
+const {Text,Title, Paragraph} = Typography
 import React, { ReactNode, useRef, useState } from 'react'
 import {Typography,Button,Table, InputRef, Input, Space, DatePicker, Radio, Drawer, Row, Col, Divider, Form, notification, Modal, Popconfirm} from 'antd'
 import { useRouter } from 'next/router'
@@ -21,6 +21,8 @@ import { EditableText } from "../../../../components/shared/Editables";
 import { CommunityVenue, Address } from '../../../../types/CommunityVenue';
 import useCommunity from '../../../../hooks/useCommunity';
 import { usePlacesWidget } from 'react-google-autocomplete';
+import { access } from 'fs';
+
 
 const {TextArea} = Input
 
@@ -38,6 +40,7 @@ function CommunityVenues(){
     const queryClient = useQueryClient()
     const router = useRouter()
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+    const [ellipsis, setEllipsis] = useState(true);
   
     // const isFilterEmpty = Object.keys(filteredInfo).length === 0;
 
@@ -182,15 +185,27 @@ function CommunityVenues(){
         width:'270px',
         render: (_,record)=>{
             return(
-          <Text >{record.promotion}</Text>
+          <Paragraph ellipsis={ellipsis ? { rows: 2, expandable: true, } : false} >{record.promotion}</Paragraph>
           )
       },
+  },
+  {
+    title: 'Access Code',
+    dataIndex: 'accessCode',
+    key: 'accessCode',
+    width:'100px',
+    render: (accessCode)=>(
+      <div>
+        <Text>{accessCode}</Text>
+      </div>
+    )
   },
   {
     title: 'Market Value',
     dataIndex: 'marketValue',
     key: 'marketValue',
     width:'100px',
+    align:'right',
     render: (marketValue)=>(
       <div>
         <Text>$</Text>
@@ -440,6 +455,10 @@ return(
   <EditableAddress selectedRecord={selectedRecord}/>
   <EditableMarketValue selectedRecord={selectedRecord}/>
   <EditablePhone selectedRecord={selectedRecord}/>
+    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+      <Text type="secondary" style={{ marginRight: '2rem',}}>Access Code</Text>
+    <Text>{selectedRecord?.accessCode}</Text>
+    </div>
 
 
 
