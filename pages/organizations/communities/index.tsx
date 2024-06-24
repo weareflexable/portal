@@ -814,6 +814,7 @@ export function EditableName({selectedRecord}:EditableProp){
     })
       return data;
   }
+  
   const recordMutation = useMutation({
     mutationKey:['name'],
     mutationFn: recordMutationHandler,
