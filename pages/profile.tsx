@@ -16,6 +16,8 @@ import axios from 'axios';
 import { asyncStore } from '../utils/nftStorage';
 import React from 'react';
 
+import { Connector, useAccount } from 'wagmi'
+import { Chain } from 'viem'
 
 
 const getBase64 = (file: any): Promise<string> => 
@@ -29,7 +31,7 @@ reader.onerror = (error) => reject(error);
 
 
 export default function Profile(){
-
+  const account = useAccount()
     // placeholder hash on nft.storage
     const placeholder = 'bafkreic3hz2mfy7rpyffzwbf2jfklehmuxnvvy3ardoc5vhtkq3cjd7of4'
 
@@ -45,6 +47,9 @@ export default function Profile(){
           "Authorization": paseto
         }
       })
+      console.log(res.data.data[0].walletaddress,"walletaddress")
+      localStorage.setItem("walletaddress" ,res.data.data[0].walletaddress )
+      console.log(res.data.data,"data")
       return res.data.data
     }
     
@@ -53,7 +58,32 @@ export default function Profile(){
       queryFn: fetchUserDetails, 
       enabled:paseto!==''})
 
-    
+      if(account.address){
+        registerAccount(account)
+      }
+    async function registerAccount(account: { address: `0x${string}`; addresses: readonly [`0x${string}`, ...`0x${string}`[]]; chain: Chain | undefined; chainId: number; connector: Connector; isConnected: true; isConnecting: false; isDisconnected: false; isReconnecting: false; status: "connected" } | { address: `0x${string}` | undefined; addresses: readonly `0x${string}`[] | undefined; chain: Chain | undefined; chainId: number | undefined; connector: Connector | undefined; isConnected: boolean; isConnecting: false; isDisconnected: false; isReconnecting: true; status: "reconnecting" } | { address: `0x${string}` | undefined; addresses: readonly `0x${string}`[] | undefined; chain: Chain | undefined; chainId: number | undefined; connector: Connector | undefined; isConnected: false; isReconnecting: false; isConnecting: true; isDisconnected: false; status: "connecting" }) {
+    if(account.address){
+    const walletaddress =  localStorage.getItem("walletaddress")
+      if(account.address !== walletaddress){
+        const data = {
+          address: account.address ,
+          chainId: account.chainId,
+          status: account.status,
+      };
+      try {
+        const res = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/register`, data, {
+          headers: {
+            "Authorization": paseto
+        }
+        });
+        console.log(res.data, "response data");
+        return res.data;
+    } catch (error) {
+        console.error(error);
+    }
+      }
+    }
+  }
 
     const [form] = Form.useForm();
 
@@ -125,6 +155,7 @@ export default function Profile(){
                     <div style={{ display:'flex', marginTop:'1rem', flexDirection:'column'}}>
                       <Text type="secondary" style={{ marginRight: '2rem',}}>Wallet Address</Text>
                         <Paragraph style={{margin:'0'}} copyable={{ text: userQuery.data && userQuery.data[0].walletaddress }}>{`${userQuery.data && userQuery.data[0].walletaddress.substring(0,6)}....${userQuery.data && userQuery.data[0].walletaddress.slice(-4)}`}</Paragraph>
+                        <w3m-button />
                     </div>
                     <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
                       <Text type="secondary" style={{ marginRight: '2rem',}}>Role</Text>

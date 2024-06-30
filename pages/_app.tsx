@@ -9,19 +9,26 @@ import ErrorBoundary from '../components/shared/ErrorBoundary/ErrorBoundary';
 import {ConfigProvider} from 'antd'
 import Head from 'next/head'
 import { ComponentType, ReactNode } from 'react';
+import { createWeb3Modal } from '@web3modal/wagmi/react'
+import { State, WagmiProvider } from 'wagmi'
+import { config, projectId } from '../config'
+const queryClient = new QueryClient()
 
+if (!projectId) throw new Error('Project ID is not defined')
+  createWeb3Modal({
+    wagmiConfig: config,
+    projectId,
+    enableAnalytics: true, // Optional - defaults to your Cloud configuration
+    enableOnramp: true // Optional - false as default
+  })
 type ComponentWithPageLayout = AppProps & {
   Component: AppProps['Component'] & {
     PageLayout?: ComponentType
   }
 }
 
-function MyApp({ Component, pageProps }: ComponentWithPageLayout) {
+function Web3ModalProvider({ Component, pageProps }: ComponentWithPageLayout) {
 
-
-  const queryClient = new QueryClient({
- 
-  })
 
 
   
@@ -39,6 +46,7 @@ function MyApp({ Component, pageProps }: ComponentWithPageLayout) {
         <meta name="msapplication-TileColor" content="#9f00a7"/>
         <meta name="theme-color" content="#ffffff"/>
     </Head>
+    <WagmiProvider config={config}>
     <QueryClientProvider client={queryClient}>
       <AuthContextProvider>
         <OrgContextProvider>
@@ -68,8 +76,9 @@ function MyApp({ Component, pageProps }: ComponentWithPageLayout) {
       </AuthContextProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
+    </WagmiProvider>
     </>
   )
 }
 
-export default MyApp
+export default Web3ModalProvider
