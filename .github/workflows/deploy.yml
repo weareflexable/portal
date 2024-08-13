@@ -39,6 +39,10 @@ jobs:
           STAGING_ENV_FILE: ${{secrets.STAGING_ENV_FILE}}
           PROD_ENV_FILE: ${{secrets.PROD_ENV_FILE}}
 
+      - name: Print Dev Env
+        if: ${{ github.ref_name == 'main' }}
+        run: cat .env
+
       - name: Upload Next build # Upload the artifact
         uses: actions/upload-artifact@v2
         with:
