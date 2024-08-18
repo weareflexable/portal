@@ -18,6 +18,7 @@ import axios from "axios";
 import { useAuthContext } from "../../../context/AuthContext";
 import loadConfig from "next/dist/server/config";
 import useUrlPrefix from "../../../hooks/useUrlPrefix";
+import { uploadToPinata } from "../../../utils/nftStorage";
 
 const getBase64 = (file: any): Promise<string> => 
 new Promise((resolve, reject) => {
