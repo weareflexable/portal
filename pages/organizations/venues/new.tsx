@@ -10,7 +10,7 @@ var utc = require('dayjs/plugin/utc')
 
 import { useRouter } from 'next/router';
 import {usePlacesWidget} from 'react-google-autocomplete'
-import { asyncStore} from "../../../utils/nftStorage";
+import { asyncStore, uploadToPinata} from "../../../utils/nftStorage";
 import { Service, ServicePayload } from "../../../types/Services";
 import { useOrgContext } from "../../../context/OrgContext";
 import useServiceTypes from "../../../hooks/useServiceTypes";
@@ -118,7 +118,9 @@ export default function NewService(){
         const logoRes = await formData.logoImageHash
         setIsHashingAssets(true)
         //@ts-ignore
-        const imageHash = await asyncStore(logoRes[0].originFileObj)
+        const imageHash = await uploadToPinata(logoRes[0].originFileObj)
+
+        console.log('from pinata',imageHash)
         //@ts-ignore
         // const coverImageHash = await asyncStore(formData.coverImageHash[0].originFileObj)
         setIsHashingAssets(false)
@@ -161,7 +163,6 @@ export default function NewService(){
 
     const extractLogoImage = async(e: any) => {
         // e.preventDefault()
-        console.log('Upload event:', e);
         if (Array.isArray(e)) {
         return e;
         }
@@ -371,30 +372,13 @@ export default function NewService(){
                             </Upload>
                         </Form.Item>
 
-                        {/* <Form.Item
-                            name="coverImageHash"
-                            label="Cover image"
-                            valuePropName="coverImageHash"
-                            getValueFromEvent={normFile}
-                            extra={'Please upload PNG or JPEG file with file size of 2400px x 1200px'}
-                            // hidden
-                            style={{marginBottom:'0'}}
-                            rules={[{ required: true, message: 'Please upload an image' }]}
-                        >
-                            <Upload.Dragger  name="coverImageHash" action="">
-                                <p className="ant-upload-drag-icon">
-                                    <InboxOutlined />
-                                </p>
-                                <p style={{marginBottom:'0'}} className="ant-upload-text">Click or drag file to this area to upload</p>
-                                <p style={{marginTop:'0'}} className="ant-upload-hint">Support for a single or bulk upload.</p>
-                            </Upload.Dragger>
-                        </Form.Item> */}
-
+                      
                     {/* </div> */}
 
                     {/* onCancelFormCreation */}
                     <Form.Item style={{marginTop:'4rem'}}>
                         <Space>
+
                             <Button shape="round" onClick={()=>router.back()} type='ghost'>
                                 Cancel
                             </Button>
@@ -443,7 +427,6 @@ const SubmitButton = ({ form, isCreatingData, isHashingAssets }:SubmitButtonProp
         
       form.validateFields({validateOnly:true}).then(
         (res) => {
-            console.log('issubmittable',res)
           setSubmittable(true);
         },
         () => {
