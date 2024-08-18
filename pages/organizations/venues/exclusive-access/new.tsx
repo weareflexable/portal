@@ -15,7 +15,7 @@ import { Availability, AvailabilityPayload, ServiceItem, ServiceItemReqPaylod } 
 import dayjs from 'dayjs'
 import { useServicesContext } from '../../../../context/ServicesContext';
 import useServiceItemTypes from '../../../../hooks/useServiceItemTypes';
-import { asyncStore } from '../../../../utils/nftStorage';
+import { uploadToPinata } from '../../../../utils/nftStorage';
 import axios from 'axios';
 import { useAuthContext } from '../../../../context/AuthContext';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -151,7 +151,7 @@ function BasicForm({nextStep, isBankConnected}:BasicInfoProps){
         // availability should return empty array whenever user decides not to add custom dates
         // const transformedAvailability = formData.availability?convertDates(formData.availability):[]
         setIsHashingImage(true)
-        const artworkHash = typeof artworkRef.current === 'object'? await asyncStore(artworkRef.current): artworkRef.current
+        const artworkHash = typeof artworkRef.current === 'object'? await uploadToPinata(artworkRef.current): artworkRef.current
         setIsHashingImage(false)
 
         // // only generate key if it's a new service
@@ -163,7 +163,7 @@ function BasicForm({nextStep, isBankConnected}:BasicInfoProps){
                 status: isBankConnected? '1': '4',
                 orgServiceId: currentService.id,
                 serviceItemTypeId: router.query.key, // TODO: Get this value from context,
-                logoImageHash: artworkHash,
+                logoImageHash: artworkHash as string,
                 validityStartDate: dayjs(formData.validity.start).format(),
                 validityEndDate: dayjs(formData.validity.end).format()
             }

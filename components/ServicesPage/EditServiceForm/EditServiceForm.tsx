@@ -7,7 +7,7 @@ import { useState, useRef } from "react"
 import { usePlacesWidget } from "react-google-autocomplete"
 import { useAuthContext } from "../../../context/AuthContext"
 import useUrlPrefix from "../../../hooks/useUrlPrefix"
-import { asyncStore } from "../../../utils/nftStorage"
+import { uploadToPinata } from "../../../utils/nftStorage"
 import { Service } from "../Services.types"
 
 interface EditableProp{
@@ -555,7 +555,7 @@ interface EditableProp{
       const logoRes = await field.logoImage
   
       setIsHashingImage(true)
-      const logoHash = await asyncStore(logoRes[0].originFileObj)
+      const logoHash = await uploadToPinata(logoRes[0].originFileObj)
       setIsHashingImage(false)
   
       console.log(logoHash)
@@ -673,7 +673,7 @@ interface EditableProp{
       const coverImageRes = await field.coverImage
   
       setIsHashingImage(true)
-      const coverImageHash = await asyncStore(coverImageRes[0].originFileObj)
+      const coverImageHash = await uploadToPinata(coverImageRes[0].originFileObj)
       setIsHashingImage(false)
   
       console.log(coverImageHash)
@@ -683,7 +683,7 @@ interface EditableProp{
         coverImageHash: coverImageHash,
         orgId: selectedRecord.id
       }
-      setUpdatedCoverImageHash(coverImageHash)
+      setUpdatedCoverImageHash(coverImageHash as string)
       mutation.mutate(payload)
     }
   

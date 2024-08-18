@@ -13,7 +13,7 @@ import { useRouter } from 'next/router';
 import { useAuthContext } from '../context/AuthContext';
 import CurrentUser from '../components/Header/CurrentUser/CurrentUser';
 import axios from 'axios';
-import { asyncStore } from '../utils/nftStorage';
+import { uploadToPinata } from '../utils/nftStorage';
 import React from 'react';
 
 
@@ -807,14 +807,14 @@ function EditableImage({selectedRecord}:EditableProp){
     const res = await field.profilePic
 
     setIsHashingImage(true)
-    const profilePicHash = await asyncStore(res[0].originFileObj)
+    const profilePicHash = await uploadToPinata(res[0].originFileObj)
     setIsHashingImage(false)
 
 
     const payload = {
       profilePic: profilePicHash,
     }
-    setUpdatedProfilePicHash(profilePicHash)
+    setUpdatedProfilePicHash(profilePicHash as string)
     mutation.mutate(payload)
   }
 
