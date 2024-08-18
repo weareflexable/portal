@@ -10,7 +10,6 @@ var utc = require('dayjs/plugin/utc')
 
 import { useRouter } from 'next/router';
 import {usePlacesWidget} from 'react-google-autocomplete'
-import { asyncStore, uploadToPinata} from "../../../utils/nftStorage";
 import { Service, ServicePayload } from "../../../types/Services";
 import { useOrgContext } from "../../../context/OrgContext";
 import useServiceTypes from "../../../hooks/useServiceTypes";

@@ -7,7 +7,7 @@ import { usePlacesWidget } from "react-google-autocomplete"
 import { useAuthContext } from "../../../../context/AuthContext"
 import useUrlPrefix from "../../../../hooks/useUrlPrefix";
 import { NewOrg } from "../../../../types/OrganisationTypes"
-import { asyncStore } from "../../../../utils/nftStorage"
+import { uploadToPinata } from "../../../../utils/nftStorage"
 
 interface EditableProp{
     selectedOrg: NewOrg
@@ -531,7 +531,7 @@ interface EditableProp{
       const logoRes = await field.logoImage
   
       setIsHashingImage(true)
-      const logoHash = await asyncStore(logoRes[0].originFileObj)
+      const logoHash = await uploadToPinata(logoRes[0].originFileObj)
       setIsHashingImage(false)
   
       console.log(logoHash)
@@ -542,7 +542,7 @@ interface EditableProp{
         //@ts-ignore
         id: selectedOrg.orgId
       }
-      setUpdatedLogoImageHash(logoHash)
+      setUpdatedLogoImageHash(logoHash as string)
       mutation.mutate(payload)
     }
   
@@ -649,7 +649,7 @@ interface EditableProp{
       const coverImageRes = await field.coverImage
   
       setIsHashingImage(true)
-      const coverImageHash = await asyncStore(coverImageRes[0].originFileObj)
+      const coverImageHash = await uploadToPinata(coverImageRes[0].originFileObj)
       setIsHashingImage(false)
   
       console.log(coverImageHash)
@@ -659,7 +659,7 @@ interface EditableProp{
         coverImageHash: coverImageHash,
         id: selectedOrg.id
       }
-      setUpdatedCoverImageHash(coverImageHash)
+      setUpdatedCoverImageHash(coverImageHash as string)
       mutation.mutate(payload)
     }
   
