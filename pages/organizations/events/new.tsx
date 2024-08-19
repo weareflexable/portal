@@ -11,7 +11,7 @@ var utc = require('dayjs/plugin/utc')
 
 import { useRouter } from 'next/router';
 import { usePlacesWidget } from 'react-google-autocomplete'
-import { asyncStore } from "../../../utils/nftStorage";
+import { uploadToPinata } from "../../../utils/nftStorage";
 // import { Event } from "../../../types/Events";
 import { useOrgContext } from "../../../context/OrgContext";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -141,7 +141,7 @@ export default function NewEvent() {
         const logoRes = await formData.coverImageHash
         setIsHashingAssets(true)
         //@ts-ignore
-        const imageHash = await asyncStore(logoRes[0].originFileObj)
+        const imageHash = await uploadToPinata(logoRes[0].originFileObj)
         //@ts-ignore
         // const coverImageHash = await asyncStore(formData.coverImageHash[0].originFileObj)
         setIsHashingAssets(false)

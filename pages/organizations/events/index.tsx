@@ -17,7 +17,7 @@ import useUrlPrefix from "../../../hooks/useUrlPrefix";
 import ServiceLayout from "../../../components/Layout/ServiceLayout";
 import { Event } from "../../../types/Event";
 // import { EditableArtwork } from "../../../components/EventPage/Editables/Artwork";
-import { asyncStore } from "../../../utils/nftStorage";
+import { uploadToPinata } from "../../../utils/nftStorage";
 import useEvent from "../../../hooks/useEvents";
 import { IMAGE_PLACEHOLDER_HASH } from "../../../constants";
 import { usePlacesWidget } from "react-google-autocomplete";
@@ -1156,7 +1156,7 @@ export function EditableLogoImage({selectedRecord}:EditableProp){
     const logoRes = await field.coverImage
 
     setIsHashingImage(true)
-    const logoHash = await asyncStore(logoRes[0].originFileObj)
+    const logoHash = await uploadToPinata(logoRes[0].originFileObj)
     setIsHashingImage(false)
 
 

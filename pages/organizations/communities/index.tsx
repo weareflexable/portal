@@ -20,7 +20,7 @@ import ServiceLayout from "../../../components/Layout/ServiceLayout";
 import { Community } from "../../../types/Community";
 import useCommunity from "../../../hooks/useCommunity";
 import { EditableArtwork } from "../../../components/CommunityPage/Editables/Artwork";
-import { asyncStore } from "../../../utils/nftStorage";
+import { uploadToPinata } from "../../../utils/nftStorage";
 import { IMAGE_PLACEHOLDER_HASH } from "../../../constants";
 import useRole from "../../../hooks/useRole";
 
@@ -936,7 +936,7 @@ export function EditableLogoImage({selectedRecord}:EditableProp){
     const logoRes = await field.logoImage
 
     setIsHashingImage(true)
-    const logoHash = await asyncStore(logoRes[0].originFileObj)
+    const logoHash = await uploadToPinata(logoRes[0].originFileObj)
     setIsHashingImage(false)
 
     console.log(logoHash)

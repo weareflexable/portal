@@ -13,7 +13,7 @@ jobs:
 
       - uses: actions/setup-node@v2 # Install Node.js in the Runner, and allow us to run npm commands
         with:
-          node-version: "16"
+          node-version: "19"
 
       - uses: actions/cache@v2 # Caches the node_modules folder across builds, and makes the Runner use the cache as long as package-lock.json doesn’t change.
         with:

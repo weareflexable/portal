@@ -19,7 +19,7 @@ import { usePlacesWidget } from 'react-google-autocomplete';
 import { Community, CommunityReq } from '../../../types/Community';
 import useOrgs from '../../../hooks/useOrgs';
 import { CommunityVenue, CommunityVenueForm as CommunityVenueFormType, CommunityVenueReq } from '../../../types/CommunityVenue';
-import { asyncStore} from "../../../utils/nftStorage";
+import { uploadToPinata} from "../../../utils/nftStorage";
 import { useOrgContext } from '../../../context/OrgContext';
 
 
@@ -165,9 +165,9 @@ function BasicForm({nextStep, isBankConnected}:BasicInfoProps){
             const logoRes = await formData.logoImageHash
             setIsHashingAssets(true)
             //@ts-ignore
-            const imageHash = await asyncStore(logoRes[0].originFileObj)
+            const imageHash = await uploadToPinata(logoRes[0].originFileObj)
             //@ts-ignore
-            const artworkHash = typeof artworkRef.current === 'object'? await asyncStore(artworkRef.current): artworkRef.current
+            const artworkHash = typeof artworkRef.current === 'object'? await uploadToPinata(artworkRef.current): artworkRef.current
             setIsHashingAssets(false)
 
 

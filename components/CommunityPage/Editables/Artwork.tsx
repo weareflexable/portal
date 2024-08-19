@@ -9,7 +9,7 @@ import {SelectOutlined,UploadOutlined} from "@ant-design/icons"
 import Image  from 'next/image'
 import { getBase64 } from "../../../utils/convertToBase64"
 import { useRouter } from "next/router"
-import { asyncStore } from "../../../utils/nftStorage"
+import { uploadToPinata } from "../../../utils/nftStorage"
  
 const {Text} = Typography
 
@@ -92,7 +92,7 @@ export function EditableArtwork({selectedRecord}:EditableProp){
 
       //hash image here\
       setIsHashingImage(true)
-      const artworkHash = isUploadedImage? await asyncStore(imageBlob): artwork
+      const artworkHash = isUploadedImage? await uploadToPinata(imageBlob): artwork
       setIsHashingImage(false)
   
       const payload = {
