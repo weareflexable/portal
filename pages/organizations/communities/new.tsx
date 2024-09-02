@@ -18,8 +18,9 @@ import useUrlPrefix from '../../../hooks/useUrlPrefix';
 import { usePlacesWidget } from 'react-google-autocomplete';
 import { Community, CommunityReq } from '../../../types/Community';
 import useOrgs from '../../../hooks/useOrgs';
-import { CommunityVenue, CommunityVenueForm, CommunityVenueReq } from '../../../types/CommunityVenue';
-import { asyncStore} from "../../../utils/nftStorage";
+import { CommunityVenue, CommunityVenueForm as CommunityVenueFormType, CommunityVenueReq } from '../../../types/CommunityVenue';
+import { uploadToPinata} from "../../../utils/nftStorage";
+import { useOrgContext } from '../../../context/OrgContext';
 
 
 
@@ -28,6 +29,10 @@ import { asyncStore} from "../../../utils/nftStorage";
 export default function CommunityForm(){
 
     const router = useRouter() 
+
+    const {currentOrg} = useOrgContext()
+
+    const isBankConnected = currentOrg?.isBankConnected
     
     const [currentStep, setCurrentStep] = useState(0);
     // State to hold the id of the service item that will get created in the
@@ -47,7 +52,7 @@ export default function CommunityForm(){
         const steps = [
             {
             title: 'Basic Info',
-            content: <BasicForm nextStep={next}/>,
+            content: <BasicForm isBankConnected={isBankConnected} nextStep={next}/>,
             },
             {
             title: 'Add Venues',
@@ -61,18 +66,32 @@ export default function CommunityForm(){
 
     return (
         <div style={{background:'#ffffff', height:'100%', minHeight:'100vh'}}>
-           <div style={{marginBottom:'3rem', padding: '1rem', borderBottom:'1px solid #e5e5e5',}}>
+           <div style={{marginBottom:'3rem', padding: '1rem 0', borderBottom:'1px solid #e5e5e5',}}>
                 <Row>
-                    <Col offset={1}> 
+                    <Col offset={2}> 
                          <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
                             <Button  type='link' onClick={()=>router.back()} icon={<ArrowLeftOutlined rev={undefined}/>}/>
                             <Title style={{margin:'0', textTransform:'capitalize'}} level={3}>Create Community</Title>
                         </div>
                     </Col>
                 </Row>
-            </div>
+            </div> 
            <Row > 
-                <Col offset={5} span={11}>
+                <Col offset={2} span={11}>
+                     {isBankConnected
+                        ? null
+                        : <Alert
+                            style={{ marginBottom: '2rem' }}
+                            type="info"
+                            showIcon
+                            message='Connect your bank account'
+                            closable description='Your community will not be listed on marketplace because you are still yet to add a bank account. It will be saved as drafts until an account is linked to your profile.'
+                            action={
+                                <Button onClick={() => router.push('/organizations/billings')} size="small">
+                                    Add account
+                                </Button>
+                            }
+                        />}
                 <Steps current={currentStep} items={items} />
                     {/* <BasicForm nextStep={next}/> */}
                     {steps[currentStep].content}
@@ -84,7 +103,8 @@ export default function CommunityForm(){
 }
 
 interface BasicInfoProps{
-    nextStep: (data:any)=>void
+    nextStep: (data:any)=>void,
+    isBankConnected: boolean
 }
 
 const getBase64 = (file: any): Promise<string> => 
@@ -97,7 +117,7 @@ reader.onerror = (error) => reject(error);
 
 const PLACEHOLDER_IMAGE = '/placeholder.png'
 
-function BasicForm({nextStep}:BasicInfoProps){
+function BasicForm({nextStep, isBankConnected}:BasicInfoProps){
 
     
      // TODO: set field for editing
@@ -145,18 +165,19 @@ function BasicForm({nextStep}:BasicInfoProps){
             const logoRes = await formData.logoImageHash
             setIsHashingAssets(true)
             //@ts-ignore
-            const imageHash = await asyncStore(logoRes[0].originFileObj)
+            const imageHash = await uploadToPinata(logoRes[0].originFileObj)
             //@ts-ignore
-            const artworkHash = typeof artworkRef.current === 'object'? await asyncStore(artworkRef.current): artworkRef.current
+            const artworkHash = typeof artworkRef.current === 'object'? await uploadToPinata(artworkRef.current): artworkRef.current
             setIsHashingAssets(false)
 
 
 
         // // only generate key if it's a new service
             const formObject: CommunityReq = {
-                // @ts-ignore
                 orgId: currentOrg.orgId,
-                name: `Key to: ${formData.name}`,
+                // @ts-ignore
+                status: isBankConnected? '1': '4',
+                name: formData.name,
                 price: String(formData.price * 100),
                 currency: 'USD',
                 description:formData.description,
@@ -187,8 +208,9 @@ function BasicForm({nextStep}:BasicInfoProps){
         console.log(data)
         const status = data.status
         if(status <= 200){
+            const customMessage = isBankConnected? 'Successfully created new community!': 'Successfully created community as draft!'
             notification['success']({
-                message: 'Successfully created new community!'
+                message: customMessage
             })
                 console.log(data)
                 nextStep(data.data)
@@ -234,11 +256,12 @@ function BasicForm({nextStep}:BasicInfoProps){
                 { max: 150, message: 'Sorry, your service name cant be more than 150 characters' },
                 ]}
          >
-            <Input allowClear size='large' addonBefore='Key to:' maxLength={150} showCount placeholder="Napoli" />
+            <Input allowClear size='large'  maxLength={150} showCount placeholder="Napoli" />
+            <Input allowClear size='large'  maxLength={150} showCount placeholder="Napoli" />
         </Form.Item>
 
         <Form.Item name='description' rules={[{max:500, message:"Description shouldn't exceed 500 characters"},{ required: true, message: 'This field is required' }]}  label="Description">
-            <TextArea allowClear maxLength={1000} size='large' showCount  placeholder='Tell us more about this community' rows={2} />
+            <TextArea allowClear maxLength={500} size='large' showCount  placeholder='Tell us more about this community' rows={2} />
         </Form.Item>
 
           {/* price */}
@@ -289,6 +312,7 @@ function BasicForm({nextStep}:BasicInfoProps){
 
                <SubmitButton
                     form={form}
+                    isBankConnected={isBankConnected}
                     isCreatingData={isCreatingData}
                     isHashingAssets={isHashingAssets}
                 />
@@ -317,12 +341,13 @@ function VenuesForm({communityId}:VenueFormProp){
 
     const {paseto} = useAuthContext()
 
-    function transformContactNumbersInVenues(venues:CommunityVenueForm[]){
+    function transformContactNumbersInVenues(venues:CommunityVenueFormType[]){
 
         const venuesCopy = [...venues];
-        const transformedVenues  = venuesCopy.map((venue:CommunityVenueForm)=>{ 
+        const transformedVenues  = venuesCopy.map((venue:CommunityVenueFormType)=>{ 
            return{
                name: venue.name,
+               email: venue.email,
                promotion: venue.promotion,
                marketValue: String(venue.marketValue * 100),
                address: venue.address,
@@ -337,7 +362,6 @@ function VenuesForm({communityId}:VenueFormProp){
 
     async function onFinish(formData:any){
         const transformedVenues = transformContactNumbersInVenues(formData.venues)
-        console.log(transformedVenues)
         // console.log('form data',transformedVenues)
         // const transformedDates = convertDates(formData.venues)
         const reqPayload = {
@@ -710,9 +734,21 @@ function CommunityVenueForm({remove, name, formInstance, restField}:CommunityVen
                                 <Input size='large'required placeholder='Benjamins On Franklin' />
                             </Form.Item>
 
+                            {/* email */}
+                            <Form.Item
+                                    {...restField}
+                                    required
+                                    // label='Label'
+                                    // rules={[{ required: true, message: 'Please provide a valid label for the date' }]}
+                                    name={[name, 'email']}
+                                    style={{width:'100%'}}
+                                >
+                                <Input size='large' type='email' required placeholder='billcage@yahoo.com' />
+                            </Form.Item>
+
                                 {/* promotion */}
                             <Form.Item  {...restField} name={[name,'promotion']} rules={[{ required: true, message: 'Please write a description for your venue' }]}  label="Promotion">
-                                <TextArea allowClear maxLength={500} size='large' showCount  placeholder='One flight of our award winning wines' rows={2} />
+                                <TextArea allowClear maxLength={300} size='large' showCount  placeholder='One flight of our award winning wines' rows={2} />
                             </Form.Item>
 
                             {/* marketValue */}
@@ -841,11 +877,12 @@ function CommunityVenueForm({remove, name, formInstance, restField}:CommunityVen
 interface SubmitButtonProps{
     isHashingAssets: boolean,
     isCreatingData: boolean,
+    isBankConnected: boolean,
     form: FormInstance
 }
 
 
-const SubmitButton = ({ form, isCreatingData, isHashingAssets }:SubmitButtonProps) => {
+const SubmitButton = ({ form, isBankConnected, isCreatingData, isHashingAssets }:SubmitButtonProps) => {
     const [submittable, setSubmittable] = useState(false);
   
     // Watch all values
@@ -866,7 +903,7 @@ const SubmitButton = ({ form, isCreatingData, isHashingAssets }:SubmitButtonProp
   
     return (
         <Button shape="round" type="primary" disabled={!submittable} size="large" loading={isHashingAssets || isCreatingData}  htmlType="submit" >
-       Add Venue
+         { isBankConnected? 'Create community': 'Save as draft'}
      </Button>
     );
   };

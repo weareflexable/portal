@@ -2,17 +2,17 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useOrgs from "../../hooks/useOrgs";
 const {Text,Title} = Typography
 import React, { ReactNode, useRef, useState } from 'react'
-import {Typography,Button,Avatar, Upload, Tag, Alert, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Skeleton, InputNumber, notification, Modal} from 'antd'
+import {Typography,Button,Avatar, Upload, Tag, Alert, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Skeleton, InputNumber, notification, Modal, Popover} from 'antd'
 import { useRouter } from 'next/router'
 import axios from 'axios';
-import {MoreOutlined,ReloadOutlined,MinusCircleOutlined,PlusOutlined} from '@ant-design/icons'
+import {MoreOutlined,ReloadOutlined,MinusCircleOutlined,CopyOutlined,PlusOutlined} from '@ant-design/icons'
 
 import { useAuthContext } from '../../context/AuthContext';
 import { useServicesContext } from '../../context/ServicesContext';
 import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { Availability, AvailabilityPayload, CustomDate, ServiceItem } from "../../types/Services";
-import { EditableCoverImage, EditableDescription, EditableName,  EditablePrice, EditableTicketsPerDay } from "./EditServiceItemForm/EditServiceItemForm";
+import { EditableCharge, EditableCoverImage, EditableDescription, EditableName,  EditablePrice, EditableTicketsPerDay } from "./EditServiceItemForm/EditServiceItemForm";
 import AvailabilitySection from "./Availability/Availability";
 import useUrlPrefix from "../../hooks/useUrlPrefix";
 import useRole from "../../hooks/useRole";
@@ -20,28 +20,7 @@ import useServiceItemTypes from "../../hooks/useServiceItemTypes";
 import { EditableText } from "../shared/Editables";
 import { numberFormatter } from "../../utils/numberFormatter";
 import { IMAGE_PLACEHOLDER_HASH } from "../../constants";
-
-
-// const mockServiceItems:ServiceItem[]=[
-//   {
-//      id:"dfadfafd",
-//     name: "Classic Line skip",
-//     imageHash: '',
-//     serviceItemType: "line-skip",
-//     description: "Best bar in the middle of new york",
-//     updatedAt: "Jan 22, 2022",
-//     createdAt: "Jan 24, 2022",
-// },
-//   {
-//      id:"dfadfafd",
-//     name: "Bottle service rosto",
-//     imageHash: '',
-//     serviceItemType: "line-skip",
-//     description: "Best bar in the middle of new york",
-//     updatedAt: "Jan 22, 2022",
-//     createdAt: "Jan 24, 2022",
-// },
-// ]
+import { useOrgContext } from "../../context/OrgContext";
 
 
 type ServiceMenu={
@@ -58,9 +37,12 @@ export default function ServiceItemsView(){
     const queryClient = useQueryClient()
     const router = useRouter()
     const {switchOrg} = useOrgs()
+    const {currentOrg} = useOrgContext()
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   
-    // const isFilterEmpty = Object.keys(filteredInfo).length === 0;
+    // const isFilterEmpty = Object.keys(filteredInfo).length === 0
+    
+    const isBankConnected = currentOrg?.isBankConnected
 
     type DataIndex = keyof ServiceItem;
 
@@ -68,8 +50,7 @@ export default function ServiceItemsView(){
     const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Active'})
     const [pageNumber, setPageNumber] = useState<number|undefined>(1)
     const [pageSize, setPageSize] = useState<number|undefined>(10)
-    
-    const {isManager} = useRole()
+  
 
     const serviceItemTypes = useServiceItemTypes()
 
@@ -163,8 +144,14 @@ export default function ServiceItemsView(){
       setIsDrawerOpen(true)
 
     }
-  
-    async function reActivateServiceHandler(record:ServiceItem){
+
+  const reactivateService = useMutation(reActivateServiceHandler,{
+    onSettled:()=>{
+      queryClient.invalidateQueries({queryKey:['serviceItems']})
+    }
+  })
+
+  async function reActivateServiceHandler(record:ServiceItem){
       const res = await axios({
           method:'patch',
           url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,
@@ -179,14 +166,6 @@ export default function ServiceItemsView(){
       })
       return res; 
   }
-
-
-  const reactivateService = useMutation(reActivateServiceHandler,{
-    onSettled:()=>{
-      queryClient.invalidateQueries({queryKey:['serviceItems']})
-    }
-  })
-
     
     
   
@@ -236,6 +215,19 @@ export default function ServiceItemsView(){
       },
 
       {
+        title: 'Charge',
+        dataIndex: 'platformFee',
+        // hidden:true, 
+        key: 'platformFee',
+        width:'100px',
+        align:'right',
+        render: (platformFee)=>(
+          <div>
+             {<Text>{platformFee}%</Text>}
+          </div>
+        )
+      },
+      {
         title: 'Tickets Per Day',
         dataIndex: 'ticketsPerDay',
         key: 'ticketsPerDay',
@@ -252,6 +244,7 @@ export default function ServiceItemsView(){
         title: 'Custom Dates',
         // dataIndex: 'status',
         key: 'customDates',
+        align:'right',
         width:'150px',
         render: (_,record)=>{
           const customDatesLength = record?.availability?.length
@@ -275,10 +268,10 @@ export default function ServiceItemsView(){
       dataIndex: 'actions', 
       key: 'actions',
       fixed:'right',
-      width:currentFilter.name === 'In-active'?'150px':'70px',
+      width:currentFilter.name === 'Inactive' || 'Drafts'?'150px':'70px',
       //@ts-ignore
       render:(_,record:Service)=>{
-        if(currentFilter.name === 'In-active'){
+        if(currentFilter.name === 'Inactive'){
           return (<Button   onClick={()=>reactivateService.mutate(record)}>Reactivate</Button>)
         }else{
           return <Button type="text" onClick={()=>viewDetails(record)} icon={<MoreOutlined rev={undefined}/>}/> 
@@ -289,11 +282,7 @@ export default function ServiceItemsView(){
 
         return (
             <div>
-               { !servicesData 
-               ? null 
-               : 
-               <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
-                 <div style={{width:'100%',  marginBottom:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+               <div style={{width:'100%',  marginBottom:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                      
                  <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
                         {serviceItemsFilters.map(filter=>(
@@ -301,11 +290,17 @@ export default function ServiceItemsView(){
                         )
                         )}
                   </Radio.Group>
+                  
                       <div style={{display:'flex'}}>
                         <Button shape='round' style={{marginRight:'1rem'}} loading={serviceItemsQuery.isRefetching} onClick={()=>serviceItemsQuery.refetch()} icon={<ReloadOutlined rev={undefined} />}>Refresh</Button>
                         <Dropdown.Button  trigger={['click']} type="primary"   icon={<PlusOutlined rev={undefined}/>} menu={{ items, onClick: (item)=>onLaunchButtonClick(item) }}>Launch New ...</Dropdown.Button>
                       </div>
                     </div>
+               { !servicesData 
+               ? null 
+               : 
+               <div style={{marginBottom:'1.5em', display:'flex', width:'100%', flexDirection:'column'}}>
+                
                  
 
                 <div style={{width: "20%",display:'flex', justifyContent:'space-between', alignItems:'center'}}>
@@ -360,12 +355,16 @@ interface DrawerProps{
 function DetailDrawer({selectedRecord,isDrawerOpen,closeDrawer}:DrawerProps){
 
 const queryClient = useQueryClient()
+const router = useRouter()
+
+const {currentOrg} = useOrgContext()
+const isBankConnected = currentOrg?.isBankConnected
 
 const {paseto} = useAuthContext()
 
 const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
- const [isEditAvailability, setIsEditAvailability] = useState(false)
+const {isManager, isSuperAdmin} = useRole()
 
  const urlPrefix = useUrlPrefix()
 
@@ -382,7 +381,6 @@ const {data, isLoading} = useQuery({queryKey:['availability',selectedRecord.id],
 
 const availabilityData = data && data
 
-console.log(availabilityData)
 
 
 function closeDrawerHandler(){
@@ -438,8 +436,71 @@ const deleteData = useMutation(deleteDataHandler,{
 
 const{isLoading:isDeletingItem} = deleteData
 
+ async function reActivateServiceHandler(record:ServiceItem){
+      const res = await axios({
+          method:'patch',
+          url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,
+          data:{
+              // key:'status',
+              status: '1', 
+              id: record.id  
+          },
+          headers:{
+              "Authorization": paseto
+          }
+      })
+      return res; 
+  }
+
+  const publishService = useMutation(reActivateServiceHandler,{
+    onSettled:()=>{
+      queryClient.invalidateQueries({queryKey:['serviceItems']})
+    }
+  })
+
+  function copyLink(selectedRecord:any){
+  navigator.clipboard.writeText('')
+  const serviceItemId = selectedRecord.id
+  const marketplaceLink = `https://marketplace.staging.flexabledats.com/services/${serviceItemId}`
+   // Copy the text inside the text field
+   navigator.clipboard.writeText(marketplaceLink);
+}
+
+
 return( 
-<Drawer title="Service Details" width={640} placement="right" closable={true} onClose={closeDrawerHandler} open={isDrawerOpen}>
+<Drawer 
+  title="Service Details" 
+  width={640} placement="right" 
+  closable={true} 
+  onClose={closeDrawerHandler} 
+  open={isDrawerOpen}
+    extra={
+  <Space>
+  <Popover placement="bottom" content={'Copied!'} trigger="click">
+    <Button size='large' disabled={!isBankConnected} icon={<CopyOutlined rev={undefined} />} onClick={()=>copyLink(selectedRecord)}>Copy Link</Button>
+    </Popover>
+    { !isBankConnected && selectedRecord?.status == 4
+    ? <Button size='large' disabled={!isBankConnected} type="primary" loading={publishService.isLoading} onClick={()=>publishService.mutate(selectedRecord)}>Publish Service</Button>
+    : null
+    }
+     </Space>}
+>
+
+   {!isBankConnected && selectedRecord?.status === 4
+      ? <Alert
+          style={{ marginBottom: '2rem' }}
+          type="info"
+          showIcon
+          message='Connect account to publish'
+          closable description='Your exclusive access will not be listed on marketplace because you are still yet to add a bank account. It will be saved as drafts until an account is linked to your profile.'
+          action={
+              <Button onClick={() => router.push('/organizations/billings')} size="small">
+                  Add account
+              </Button>
+          }
+      />
+      : null
+    }
   
 <EditableText
     fieldKey="name" // The way the field is named in DB
@@ -447,7 +508,7 @@ return(
     fieldName = 'name'
     title = 'Name'
     id = {selectedRecord.id}
-    options = {{queryKey:'serviceItems',mutationUrl:'service-items'}}
+    options = {{queryKey:'service-items',mutationUrl:'service-items'}}
   />
   <EditableDescription selectedRecord={selectedRecord}/>
   <EditablePrice selectedRecord={selectedRecord}/>
@@ -460,6 +521,8 @@ return(
 
   <AvailabilitySection selectedServiceItem={selectedRecord} />
   {/* <AvailabilitySection selectedServiceItem={selectedRecord}/> */}
+
+  {isManager || isSuperAdmin ?<EditableCharge selectedRecord={selectedRecord}/>:null}
   
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
     <Title level={3}>Danger zone</Title>
@@ -483,7 +546,11 @@ const serviceItemsFilters = [
   },
   {
       id: '0',
-      name: 'In-active'
+      name: 'Inactive'
+  },
+   {
+      id: '4',
+      name: 'Drafts'
   },
 ]
 
@@ -565,41 +632,3 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
 }
 
 
-
-// const mockAvailabilty: Availability = [
-//   {
-//     date: 'Jan 22, 2022',
-//     ticketsPerDay: '455',
-//     price: '23'
-//   },
-//   {
-//     date: 'Feb 21, 2023',
-//     ticketsPerDay: '455',
-//     price: '637'
-//   },
-//   {
-//     date: 'Mar 15, 2023',
-//     ticketsPerDay: '1445',
-//     price: '123'
-//   },
-// ]
-
-interface Empty{
-  children: ReactNode
-} 
-
-function EmptyState({children}:Empty){
-  const router = useRouter()
-  return(
-    <div style={{border: '1px solid #d6d6d6', marginTop:'2rem', borderRadius:'4px', height:'50vh', display:'flex', justifyContent:'center', alignItems:'center', padding: '2rem'}}>
-      <div style={{maxWidth:'300px', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
-        <Title level={3}>Get Started</Title> 
-        <Text style={{textAlign:'center'}}>Ready to get started listing your services on the Flexable Marketplace?</Text>
-
-          <div style={{marginTop:'1rem', display:'flex',justifyContent:'center'}}>
-            {children}
-          </div>
-      </div>
-    </div>
-  )
-}

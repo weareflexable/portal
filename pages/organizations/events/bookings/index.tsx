@@ -432,7 +432,7 @@ return(
         })}
     {selectedRecord.redeemStatus === 'redeemed'
     ?<Text type="secondary" >It appears that your ticket has already been redeemed </Text>
-    :selectedRecord.paymentIntentStatus!== 'successful'
+    :selectedRecord.paymentIntentStatus !== 'successful'
     ?<Text>Payment status for this ticket has to be successful before it can be redeemed</Text>
     :null
     }
@@ -465,6 +465,7 @@ function RedeemTicketForm({ticket, isTicketExpired}:IRedeemTicketForm){
 
   const urlPrefix =  useUrlPrefix()
 
+  console.log(ticket)
 
   const nftMutation = useMutation({
     mutationFn: async(payload:any)=>{

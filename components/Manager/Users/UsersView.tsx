@@ -13,8 +13,6 @@ import { useServicesContext } from '../../../context/ServicesContext';
 import {PlusOutlined} from '@ant-design/icons'
 import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
-import { useOrgContext } from "../../../context/OrgContext";
-import { asyncStore } from "../../../utils/nftStorage";
 import { ServiceItem } from "../../../types/Services";
 import { User } from "./Users.types";
 import { IMAGE_PLACEHOLDER_HASH } from "../../../constants";
