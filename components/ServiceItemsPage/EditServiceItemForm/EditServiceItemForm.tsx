@@ -555,7 +555,7 @@ interface EditableProp{
       toggleEdit()
     },
     onSettled:(data)=>{
-      setState(data.data.platformFee)
+      setState(data.data[0].platformFee)
       queryClient.invalidateQueries(['service-items'])
     }
   })
