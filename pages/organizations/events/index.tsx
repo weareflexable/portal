@@ -825,7 +825,6 @@ export function EditableCharge({selectedRecord}:EditableProp){
       toggleEdit()
     },
     onSettled:(data)=>{
-        console.log(data)
       setState(data.data.platformFee)
       queryClient.invalidateQueries(['events'])
     }
