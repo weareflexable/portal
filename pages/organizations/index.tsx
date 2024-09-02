@@ -7,7 +7,6 @@ import { Button,Typography,Modal, Row, Layout, Col, Skeleton} from 'antd';
 const {Title} = Typography; 
 import { useAuthContext } from '../../context/AuthContext';
 import {OrgFormData } from '../../types/OrganisationTypes';
-import { nftStorageClient } from '../../utils/nftStorage';
 import RegisterOrgForm from '../../components/LoungePage/RegisterOrgForm/RegisterOrgForm';
 import {PlusCircleOutlined,PlusOutlined} from '@ant-design/icons'
 import dynamic from 'next/dynamic';

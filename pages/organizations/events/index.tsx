@@ -17,10 +17,11 @@ import useUrlPrefix from "../../../hooks/useUrlPrefix";
 import ServiceLayout from "../../../components/Layout/ServiceLayout";
 import { Event } from "../../../types/Event";
 // import { EditableArtwork } from "../../../components/EventPage/Editables/Artwork";
-import { asyncStore } from "../../../utils/nftStorage";
+import { uploadToPinata } from "../../../utils/nftStorage";
 import useEvent from "../../../hooks/useEvents";
 import { IMAGE_PLACEHOLDER_HASH } from "../../../constants";
 import { usePlacesWidget } from "react-google-autocomplete";
+import useRole from "../../../hooks/useRole";
 
 const {TextArea} = Input
 
@@ -46,6 +47,8 @@ function Events(){
     const {switchEvent} = useEvent()
     // const [items, setItems] = useState([])
 
+    const isBankConnected = currentOrg?.isBankConnected
+
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const [pageNumber, setPageNumber] = useState<number|undefined>(1)
@@ -55,7 +58,6 @@ function Events(){
 
     const [selectedRecord, setSelectedRecord] = useState<any|Event>({})
     const [currentFilter, setCurrentFilter] = useState({id:'1',name: 'Active'})
-    const [isHydrated, setIsHydrated] = useState(false)
 
    
    const urlPrefix = useUrlPrefix()
@@ -107,12 +109,16 @@ function Events(){
         return res; 
     }
 
+  
+
 
     const reactivateEvent = useMutation(reActivateEventHandler,{
       onSettled:()=>{
         queryClient.invalidateQueries({queryKey:['events']})
       }
     })
+
+    
 
    
 
@@ -210,6 +216,18 @@ function gotoEventPage(event:Event){
         )
       },
       {
+        title: 'Charge',
+        dataIndex: 'platformFee',
+        // hidden:true, 
+        key: 'platformFee',
+        width:'100px',
+        render: (platformFee)=>(
+          <div>
+             {<Text>{platformFee}%</Text>}
+          </div>
+        )
+      },
+      {
         title: 'Tickets',
         dataIndex: 'totalTickets',
         key: 'totalTickets',
@@ -287,12 +305,13 @@ function gotoEventPage(event:Event){
       dataIndex: 'actions', 
       key: 'actions',
       fixed: 'right',
-      width:currentFilter.name === 'In-active'?'150px':'70px',
+      width:currentFilter.name === 'Inactive' ?'150px':'70px',
       //@ts-ignore
       render:(_,record:Event)=>{
-        if(currentFilter.name === 'In-active'){
+        if(currentFilter.name === 'Inactive'){
           return (<Button  onClick={()=>reactivateEvent.mutate(record)}>Reactivate</Button>)
-        }else{
+        }
+       else{
           return <Button onClick= {()=>onMenuClick(record)} type="text" icon={<MoreOutlined rev={undefined}/>}/> 
         }
       }
@@ -383,8 +402,14 @@ const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
 const {switchEvent} = useEvent()
 const {paseto} = useAuthContext()
-
+const {currentOrg} = useOrgContext()
+const {isManager, isSuperAdmin} = useRole()
 const urlPrefix = useUrlPrefix()
+
+const isBankConnected = currentOrg?.isBankConnected
+// const isDraft = !isBankConnected && selectedRecord?.status === 4
+
+console.log(selectedRecord?.status)
 
 function closeDrawerHandler(){
   queryClient.invalidateQueries(['events']) 
@@ -450,6 +475,28 @@ const deleteData = useMutation(deleteDataHandler,{
 
 const{isLoading:isDeletingItem} = deleteData
 
+  async function publishEventHandler(record:Event){
+        const res = await axios({
+            method:'patch',
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,
+            data:{
+                // key:'status',
+                status: '1', 
+                id: record.id  
+            },
+            headers:{
+                "Authorization": paseto
+            }
+        })
+        return res; 
+    }
+    
+    const publishEvent = useMutation(publishEventHandler,{
+      onSettled:()=>{
+        queryClient.invalidateQueries({queryKey:['events']})
+      }
+    })
+
 function copyLink(selectedRecord:any){
   navigator.clipboard.writeText('')
   const eventId = selectedRecord.id
@@ -466,14 +513,33 @@ return(
   extra={
   <Space>
   <Popover placement="bottom" content={'Copied!'} trigger="click">
-    <Button size='large' icon={<CopyOutlined rev={undefined} />} onClick={()=>copyLink(selectedRecord)}>Copy Link</Button>
+    <Button size='large' disabled={!isBankConnected} icon={<CopyOutlined rev={undefined} />} onClick={()=>copyLink(selectedRecord)}>Copy Link</Button>
     </Popover>
-     <Button size='large' onClick={()=>gotoEvents(selectedRecord)}>Visit Event</Button>
+    { !isBankConnected && selectedRecord?.status == 4
+    ? <Button size='large' disabled={!isBankConnected} type="primary" loading={publishEvent.isLoading} onClick={()=>publishEvent.mutate(selectedRecord)}>Publish Event</Button>
+    : <Button size='large' disabled={!isBankConnected} onClick={()=>gotoEvents(selectedRecord)}>Visit Event</Button>
+    }
      </Space>}
   closable={true} 
   onClose={closeDrawerHandler} 
   open={isDrawerOpen}
 >
+
+   {!isBankConnected && selectedRecord?.status == 4
+      ? <Alert
+          style={{ marginBottom: '2rem' }}
+          type="info"
+          showIcon
+          message='Connect account to publish'
+          closable description='Your event will not be listed on marketplace because you are still yet to add a bank account. It will be saved as drafts until an account is linked to your profile.'
+          action={
+              <Button onClick={() => router.push('/organizations/billings')} size="small">
+                  Add account
+              </Button>
+          }
+      />
+      : null
+    }
   
   <EditableName selectedRecord={selectedRecord}/>
   <EditablePrice selectedRecord={selectedRecord}/>
@@ -488,6 +554,12 @@ return(
   {/* <EditableArtwork selectedRecord={selectedRecord}/> */}
   <EditableLogoImage selectedRecord={selectedRecord}/>
   {/* <EditableCoverImage selectedRecord={selectedRecord}/> */}
+
+  <div style={{marginTop:'5rem'}}>
+
+  {isManager || isSuperAdmin ?<EditableCharge selectedRecord={selectedRecord}/>:null}
+
+  </div>
 
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
     <Title level={3}>Danger zone</Title>
@@ -718,6 +790,104 @@ export function EditablePrice({selectedRecord}:EditableProp){
     <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
       <Text type="secondary" style={{ marginRight: '2rem',}}>Price</Text>
     {isEditMode?editable:readOnly}
+    </div>
+  )
+}
+export function EditableCharge({selectedRecord}:EditableProp){
+  
+  const [state, setState] = useState(selectedRecord.platformFee)
+
+  const [isEditMode, setIsEditMode] = useState(false)
+
+  const {paseto} = useAuthContext()
+
+  const queryClient = useQueryClient()
+
+  function toggleEdit(){
+    setIsEditMode(!isEditMode)
+  }
+
+ const urlPrefix = useUrlPrefix()
+
+  const recordMutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
+      headers:{
+          //@ts-ignore
+          "Authorization": paseto
+      }
+    })
+      return data;
+  }
+  const recordMutation = useMutation({
+    mutationKey:['platformFee'],
+    mutationFn: recordMutationHandler,
+    onSuccess:()=>{
+      toggleEdit()
+    },
+    onSettled:(data)=>{
+      setState(data.data.platformFee)
+      queryClient.invalidateQueries(['events'])
+    }
+  })
+
+  function onFinish(updatedItem:any){
+    const payload = {
+      // key:'price',
+      platformFee: String(updatedItem.platformFee),
+      id: selectedRecord.id
+    }
+    recordMutation.mutate(payload)
+  }
+
+  const {isLoading:isEditing} = recordMutation ;
+
+  const readOnly = (
+    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+      <Text>{state}%</Text> 
+      <Button type="link" onClick={toggleEdit}>Edit</Button>
+    </div>
+)
+
+  const editable = (
+    <Form
+     style={{ marginTop:'.5rem' }}
+     name="editableCharge"
+     initialValues={{platformFee: selectedRecord.platformFee}}
+     onFinish={onFinish}
+     >
+      <Row>
+        <Col span={10} style={{height:'100%'}}>
+          <Form.Item
+              name="platformFee"
+              rules={[{ required: true, message: 'Please input a valid platform fee' }]}
+          >
+              <Input suffix='%'  disabled={isEditing} />
+          </Form.Item>
+        </Col>
+        <Col span={4}>
+          <Form.Item style={{ width:'100%'}}>
+              <Space >
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                      Cancel
+                  </Button>
+                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                      Apply changes
+                  </Button>
+              </Space>
+                        
+          </Form.Item>
+        </Col>
+      </Row>
+           
+    </Form>
+  )
+  return(
+    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+      <Title level={2} style={{ marginBottom:'.2rem', marginRight: '2rem',}}>Platform fee</Title>
+      <Text style={{width:'75%', marginBottom:'2rem'}} type="secondary">This is the amount to charge for any ticket purchase on the marketplace</Text>  
+        <div style={{ background:'#f5f5f5', padding:'1rem', width:'70%', borderRadius:'1rem'}}>
+          {isEditMode?editable:readOnly} 
+        </div>
     </div>
   )
 }
@@ -985,7 +1155,7 @@ export function EditableLogoImage({selectedRecord}:EditableProp){
     const logoRes = await field.coverImage
 
     setIsHashingImage(true)
-    const logoHash = await asyncStore(logoRes[0].originFileObj)
+    const logoHash = await uploadToPinata(logoRes[0].originFileObj)
     setIsHashingImage(false)
 
 
@@ -1880,9 +2050,14 @@ const filters = [
   },
   {
       id: '0',
-      name: 'In-active'
+      name: 'Inactive'
+  },
+  {
+      id: '4',
+      name: 'Drafts'
   },
 ]
+
 
 
 interface EmptyStateProps{

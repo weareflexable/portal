@@ -11,6 +11,8 @@ import {SelectOutlined} from "@ant-design/icons"
 import { ArtworkPicker } from "../Artwork"
 import Image from 'next/image'
 
+const {Title} = Typography
+
 interface EditableProp{
     selectedRecord: ServiceItem
   } 
@@ -49,8 +51,8 @@ interface EditableProp{
     })
   
     function onFinish(updatedItem:any){
+      console.log(updatedItem)
       const payload = {
-
         name: updatedItem.name,
         id: selectedRecord.id
       }
@@ -520,4 +522,102 @@ interface EditableProp{
       </div>
     )
   }
+
+  export function EditableCharge({selectedRecord}:EditableProp){
+  
+  const [state, setState] = useState(selectedRecord.platformFee)
+
+  const [isEditMode, setIsEditMode] = useState(false)
+
+  const {paseto} = useAuthContext()
+
+  const queryClient = useQueryClient()
+
+  function toggleEdit(){
+    setIsEditMode(!isEditMode)
+  }
+
+ const urlPrefix = useUrlPrefix()
+
+  const recordMutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,updatedItem,{
+      headers:{
+          //@ts-ignore
+          "Authorization": paseto
+      }
+    })
+      return data;
+  }
+  const recordMutation = useMutation({
+    mutationKey:['platformFee'],
+    mutationFn: recordMutationHandler,
+    onSuccess:()=>{
+      toggleEdit()
+    },
+    onSettled:(data)=>{
+      setState(data.data[0].platformFee)
+      queryClient.invalidateQueries(['service-items'])
+    }
+  })
+
+  function onFinish(updatedItem:any){
+    const payload = {
+      platformFee: String(updatedItem.platformFee),
+      id: selectedRecord.id
+    }
+    recordMutation.mutate(payload)
+  }
+
+  const {isLoading:isEditing} = recordMutation ;
+
+  const readOnly = (
+    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+      <Text>{state}%</Text> 
+      <Button type="link" onClick={toggleEdit}>Edit</Button>
+    </div>
+)
+
+  const editable = (
+    <Form
+     style={{ marginTop:'.5rem' }}
+     name="editableCharge"
+     initialValues={{platformFee: selectedRecord?.platformFee}}
+     onFinish={onFinish}
+     >
+      <Row>
+        <Col span={10} style={{height:'100%'}}>
+          <Form.Item
+              name="platformFee"
+              rules={[{ required: true, message: 'Please input a valid platform fee' }]}
+          >
+              <Input suffix='%'  disabled={isEditing} />
+          </Form.Item>
+        </Col>
+        <Col span={4}>
+          <Form.Item style={{ width:'100%'}}>
+              <Space >
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                      Cancel
+                  </Button>
+                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                      Apply changes
+                  </Button>
+              </Space>
+                        
+          </Form.Item>
+        </Col>
+      </Row>
+           
+    </Form>
+  )
+  return(
+    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+      <Title level={2} style={{ marginBottom:'.2rem', marginRight: '2rem',}}>Platform fee</Title>
+      <Text style={{width:'75%', marginBottom:'2rem'}} type="secondary">This is the amount to charge for any ticket purchase on the marketplace</Text>  
+        <div style={{ background:'#f5f5f5', padding:'1rem', width:'70%', borderRadius:'1rem'}}>
+          {isEditMode?editable:readOnly} 
+        </div>
+    </div>
+  )
+}
   

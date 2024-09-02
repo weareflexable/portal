@@ -3,10 +3,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useOrgs from "../../../hooks/useOrgs";
 const {Text, Title} = Typography;
 import React, { ReactNode, useEffect, useRef, useState } from 'react'
-import {Typography,Button, Skeleton, Badge, Image, Table, Input, Radio,  Drawer, Row, Col, Form, Modal, Alert, notification, Dropdown, MenuProps, Tag, Space, Upload} from 'antd'
+import {Typography,Button, Skeleton, Badge, Image, Table, Input, Radio,  Drawer, Row, Col, Form, Modal, Alert, notification, Dropdown, MenuProps, Tag, Space, Upload, Popover} from 'antd'
 import { useRouter } from 'next/router'
 import axios from 'axios';
-import { MoreOutlined, ReloadOutlined, ArrowLeftOutlined, PlusOutlined} from '@ant-design/icons'
+import { MoreOutlined, ReloadOutlined, ArrowLeftOutlined,CopyOutlined, PlusOutlined} from '@ant-design/icons'
 
 import { useAuthContext } from '../../../context/AuthContext';
 import { useServicesContext } from '../../../context/ServicesContext';
@@ -20,8 +20,9 @@ import ServiceLayout from "../../../components/Layout/ServiceLayout";
 import { Community } from "../../../types/Community";
 import useCommunity from "../../../hooks/useCommunity";
 import { EditableArtwork } from "../../../components/CommunityPage/Editables/Artwork";
-import { asyncStore } from "../../../utils/nftStorage";
+import { uploadToPinata } from "../../../utils/nftStorage";
 import { IMAGE_PLACEHOLDER_HASH } from "../../../constants";
+import useRole from "../../../hooks/useRole";
 
 const {TextArea} = Input
 
@@ -38,6 +39,8 @@ function Communities(){
     const router = useRouter()
     const {switchCommunity} = useCommunity()
     // const [items, setItems] = useState([])
+
+    const isBankConnected = currentOrg?.isBankConnected
 
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
@@ -86,12 +89,15 @@ function Communities(){
         return res; 
     }
 
+    
 
     const reactivateCommunity = useMutation(reActivateCommunityHandler,{
       onSettled:()=>{
         queryClient.invalidateQueries({queryKey:['community']})
       }
     })
+
+  
 
    
     // @ts-ignore
@@ -159,6 +165,18 @@ function gotoCommunityItemsPage(community:Community){
         key: 'communityVenuesCount',
         width:'100px',
       },
+       {
+        title: 'Platform Fee',
+        dataIndex: 'platformFee',
+        // hidden:true, 
+        key: 'platformFee',
+        width:'100px',
+        render: (platformFee)=>(
+          <div>
+            {<Text>${platformFee}</Text>}
+          </div>
+        )
+      },
       {
         title: 'Price',
         dataIndex: 'price',
@@ -199,13 +217,13 @@ function gotoCommunityItemsPage(community:Community){
       dataIndex: 'actions', 
       key: 'actions',
       fixed: 'right',
-      width:currentFilter.name === 'In-active'?'150px':'70px',
+      width:currentFilter.name === 'Inactive'?'150px':'50px',
       //@ts-ignore
       render:(_,record:Community)=>{
-        if(currentFilter.name === 'In-active'){
+        if(currentFilter.name === 'Inactive'){
           return (<Button  onClick={()=>reactivateCommunity.mutate(record)}>Reactivate</Button>)
         }else{
-          return <Button onClick= {()=>onMenuClick(record)} type="text" icon={<MoreOutlined rev={undefined}/>}/> 
+          return <Button onClick= {()=>onMenuClick(record)} type="text" icon={<MoreOutlined rev={undefined}/>}/>
         }
       }
     }
@@ -236,10 +254,6 @@ function gotoCommunityItemsPage(community:Community){
                         <Button  type="primary" onClick={()=>router.push('/organizations/communities/new')}  icon={<PlusOutlined rev={undefined}/>} >Launch Community</Button>
                       </div>
                     </div>
-
-                      
-
-                    
                      
                    </div>
                    {/* } */}
@@ -297,6 +311,11 @@ function DetailDrawer({selectedRecord,isDrawerOpen,closeDrawer}:DrawerProps){
 const queryClient = useQueryClient()
 const router = useRouter()
 const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+const {currentOrg} = useOrgContext()
+
+const isBankConnected = currentOrg?.isBankConnected
+
+const {isManager, isSuperAdmin} = useRole()
 
 const {switchCommunity} = useCommunity()
 const {paseto} = useAuthContext()
@@ -362,16 +381,71 @@ const deleteData = useMutation(deleteDataHandler)
 
 const{isLoading:isDeletingItem} = deleteData
 
+  async function publishCommunityHandler(record:Community){
+        const res = await axios({
+            method:'patch',
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,
+            data:{
+                status: '1', 
+                id: record.id  
+            },
+            headers:{
+                "Authorization": paseto
+            }
+        })
+        return res; 
+    }
+
+
+    const publishCommunity = useMutation(publishCommunityHandler,{
+      onSettled:()=>{
+        queryClient.invalidateQueries({queryKey:['community']})
+      }
+    })
+
+function copyLink(selectedRecord:any){
+  navigator.clipboard.writeText('')
+  const eventId = selectedRecord.id
+  const marketplaceLink = `https://marketplace.staging.flexabledats.com/communities/${eventId}`
+   // Copy the text inside the text field
+   navigator.clipboard.writeText(marketplaceLink);
+}
+
 
 return( 
 <Drawer 
   title="Community Details" 
   width={640} placement="right" 
-  extra={<Button size='large' onClick={()=>gotoCommunity(selectedRecord)}>Visit Community</Button>}
+  extra={
+  <Space>
+  <Popover placement="bottom" content={'Copied!'} trigger="click">
+    <Button size='large' disabled={!isBankConnected} icon={<CopyOutlined rev={undefined} />} onClick={()=>copyLink(selectedRecord)}>Copy Link</Button>
+    </Popover>
+    { !isBankConnected && selectedRecord?.status == 4
+    ? <Button size='large' disabled={!isBankConnected} type="primary" loading={publishCommunity.isLoading} onClick={()=>publishCommunity.mutate(selectedRecord)}>Publish Community</Button>
+    : <Button size='large' onClick={()=>gotoCommunity(selectedRecord)}>Visit Community</Button>
+    }
+    </Space>}
   closable={true} 
   onClose={closeDrawerHandler} 
   open={isDrawerOpen}
 >
+ {!isBankConnected && selectedRecord?.status == 4
+      ? <Alert
+          style={{ marginBottom: '2rem' }}
+          type="info"
+          showIcon
+          message='Connect account to publish'
+          closable description='Your community will not be listed on marketplace because you are still yet to add a bank account. It will be saved as drafts until an account is linked to your profile.'
+          action={
+              <Button onClick={() => router.push('/organizations/billings')} size="small">
+                  Add account
+              </Button>
+          }
+      />
+      : null
+    }
+  
   
   <EditableName selectedRecord={selectedRecord}/>
   <EditablePrice selectedRecord={selectedRecord}/>
@@ -379,10 +453,13 @@ return(
   <EditableArtwork selectedRecord={selectedRecord}/>
   <EditableLogoImage selectedRecord={selectedRecord}/>
 
+  {isManager || isSuperAdmin ?<EditableCharge selectedRecord={selectedRecord}/>:null}
+
   <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
     <Title level={3}>Danger zone</Title>
     <Button danger onClick={toggleDeleteModal} style={{width:'30%'}} type="link">Deactivate Community</Button>
   </div>
+
 
   <DeleteRecordModal 
   isDeletingItem={isDeletingItem} 
@@ -510,6 +587,105 @@ export function EditableDescription({selectedRecord}:EditableProp){
   )
 }
 
+export function EditableCharge({selectedRecord}:EditableProp){
+  
+  const [state, setState] = useState(selectedRecord.platformFee)
+
+  const [isEditMode, setIsEditMode] = useState(false)
+
+  const {paseto} = useAuthContext()
+
+  const queryClient = useQueryClient()
+
+  function toggleEdit(){
+    setIsEditMode(!isEditMode)
+  }
+
+ const urlPrefix = useUrlPrefix()
+
+  const recordMutationHandler = async(updatedItem:any)=>{
+    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,updatedItem,{
+      headers:{
+          //@ts-ignore
+          "Authorization": paseto
+      }
+    })
+      return data;
+  }
+  const recordMutation = useMutation({
+    mutationKey:['platformFee'],
+    mutationFn: recordMutationHandler,
+    onSuccess:()=>{
+      toggleEdit()
+    },
+    onSettled:(data)=>{
+      setState(data.data.platformFee)
+      queryClient.invalidateQueries(['community'])
+    }
+  })
+
+  function onFinish(updatedItem:any){
+    const payload = {
+      // key:'price',
+      platformFee: String(updatedItem.platformFee),
+      id: selectedRecord.id
+    }
+    recordMutation.mutate(payload)
+  }
+
+  const {isLoading:isEditing} = recordMutation ;
+
+  const readOnly = (
+    <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+      <Text>{state}%</Text> 
+      <Button type="link" onClick={toggleEdit}>Edit</Button>
+    </div>
+)
+
+  const editable = (
+    <Form
+     style={{ marginTop:'.5rem' }}
+     name="editableCharge"
+     initialValues={{platformFee: selectedRecord.platformFee}}
+     onFinish={onFinish}
+     >
+      <Row>
+        <Col span={10} style={{height:'100%'}}>
+          <Form.Item
+              name="platformFee"
+              rules={[{ required: true, message: 'Please input a valid platform fee' }]}
+          >
+              <Input suffix='%'  disabled={isEditing} />
+          </Form.Item>
+        </Col>
+        <Col span={4}>
+          <Form.Item style={{ width:'100%'}}>
+              <Space >
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                      Cancel
+                  </Button>
+                  <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
+                      Apply changes
+                  </Button>
+              </Space>
+                        
+          </Form.Item>
+        </Col>
+      </Row>
+           
+    </Form>
+  )
+  return(
+    <div style={{width:'100%', display:'flex', marginTop:'1rem', flexDirection:'column'}}>
+      <Title level={2} style={{ marginBottom:'.2rem', marginRight: '2rem',}}>Platform fee</Title>
+      <Text style={{width:'75%', marginBottom:'2rem'}} type="secondary">This is the amount to charge for any ticket purchase on the marketplace</Text>  
+        <div style={{ background:'#f5f5f5', padding:'1rem', width:'70%', borderRadius:'1rem'}}>
+          {isEditMode?editable:readOnly} 
+        </div>
+    </div>
+  )
+}
+
 export function EditablePrice({selectedRecord}:EditableProp){
   
   const [state, setState] = useState(selectedRecord.price)
@@ -610,7 +786,7 @@ export function EditableName({selectedRecord}:EditableProp){
 
   // console.log(selectedRecord.name)
   
-  const [state, setState] = useState(selectedRecord.name)
+  const [state, setState] = useState(selectedRecord?.name)
 
   const [isEditMode, setIsEditMode] = useState(false)
 
@@ -618,9 +794,8 @@ export function EditableName({selectedRecord}:EditableProp){
 
   const queryClient = useQueryClient()
 
-  const splittedName = selectedRecord && selectedRecord.name.split(':')
 
-  const communityName = splittedName[1].trim();
+  const communityName = selectedRecord?.name;
 
 
   function toggleEdit(){
@@ -638,6 +813,7 @@ export function EditableName({selectedRecord}:EditableProp){
     })
       return data;
   }
+  
   const recordMutation = useMutation({
     mutationKey:['name'],
     mutationFn: recordMutationHandler,
@@ -652,7 +828,7 @@ export function EditableName({selectedRecord}:EditableProp){
 
   function onFinish(updatedItem:any){
     const payload = {
-      name: `Key to: ${updatedItem.name}`,
+      name: updatedItem.name,
       id: selectedRecord.id
     }
     
@@ -681,7 +857,7 @@ export function EditableName({selectedRecord}:EditableProp){
               name="name"
               rules={[{ required: true, message: 'Please input a valid  name' }]}
           >
-              <Input addonBefore="Key to:"  disabled={isEditing} placeholder="Flexable serviceItem"/>
+              <Input disabled={isEditing} placeholder="Flexable serviceItem"/>
           </Form.Item>
         </Col>
         <Col span={4}>
@@ -759,7 +935,7 @@ export function EditableLogoImage({selectedRecord}:EditableProp){
     const logoRes = await field.logoImage
 
     setIsHashingImage(true)
-    const logoHash = await asyncStore(logoRes[0].originFileObj)
+    const logoHash = await uploadToPinata(logoRes[0].originFileObj)
     setIsHashingImage(false)
 
     console.log(logoHash)
@@ -910,29 +1086,15 @@ const filters = [
   },
   {
       id: '0',
-      name: 'In-active'
+      name: 'Inactive'
+  },
+  {
+      id: '4',
+      name: 'Drafts'
   },
 ]
 
 
-interface EmptyStateProps{
-  children: ReactNode
-}
-
-function EmptyState({children}:EmptyStateProps){
-
-  return(
-    <div style={{border: '1px solid #d6d6d6', marginTop:'2rem', borderRadius:'4px', height:'40vh', display:'flex', justifyContent:'center', alignItems:'center', padding: '2rem'}}>
-      <div style={{maxWidth:'350px', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
-        <Title level={3}>Get Started</Title> 
-        <Text style={{textAlign:'center'}}>Oops! We have found no active communities in your organization</Text>
-        <div style={{marginTop:'1rem', display:'flex',justifyContent:'center'}}>
-            {children}
-        </div>
-      </div>
-    </div>
-  )
-}
 
 
 

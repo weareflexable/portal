@@ -15,11 +15,12 @@ import { Availability, AvailabilityPayload, ServiceItem, ServiceItemReqPaylod } 
 import dayjs from 'dayjs'
 import { useServicesContext } from '../../../../context/ServicesContext';
 import useServiceItemTypes from '../../../../hooks/useServiceItemTypes';
-import { asyncStore } from '../../../../utils/nftStorage';
+import { uploadToPinata } from '../../../../utils/nftStorage';
 import axios from 'axios';
 import { useAuthContext } from '../../../../context/AuthContext';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import useUrlPrefix from '../../../../hooks/useUrlPrefix'; 
+import { useOrgContext } from '../../../../context/OrgContext';
 
 
 
@@ -46,6 +47,10 @@ export default function ServiceItemForm(){
     // State to hold the id of the service item that will get created in the
     // first form.
     const [createdItemId, setCreatedItemId] = useState('')
+
+    const {currentOrg} = useOrgContext()
+
+     const isBankConnected = currentOrg?.isBankConnected
     
           const next = (data:any) => {
             const serviceItemId = data[0].id // extract id of newly created service item
@@ -60,7 +65,7 @@ export default function ServiceItemForm(){
         const steps = [
             {
             title: 'Basic Info',
-            content: <BasicForm nextStep={next}/>,
+            content: <BasicForm isBankConnected={isBankConnected} nextStep={next}/>,
             },
             {
             title: 'Customize',
@@ -77,6 +82,7 @@ export default function ServiceItemForm(){
            <div style={{marginBottom:'3rem', padding: '1rem', borderBottom:'1px solid #e5e5e5',}}>
                 <Row>
                     <Col offset={1}> 
+                   
                          <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
                             <Button  type='link' onClick={()=>router.back()} icon={<ArrowLeftOutlined rev={undefined}/>}/>
                             <Title style={{margin:'0', textTransform:'capitalize'}} level={3}>{router.isReady?`New ${router.query.label}`:'...'}</Title>
@@ -86,6 +92,20 @@ export default function ServiceItemForm(){
             </div>
            <Row > 
                 <Col offset={5} span={11}>
+                      {isBankConnected
+                        ? null
+                        : <Alert
+                            style={{ marginBottom: '2rem' }}
+                            type="info"
+                            showIcon
+                            message='Connect your bank account'
+                            closable description='Your services will not be listed on marketplace because you are still yet to add a bank account. It will be saved as drafts until an account is linked to your profile.'
+                            action={
+                                <Button onClick={() => router.push('/organizations/billings')} size="small">
+                                    Add account
+                                </Button>
+                            }
+                        />}
                 <Steps current={currentStep} items={items} />
                     {/* <BasicForm nextStep={next}/> */}
                     {steps[currentStep].content}
@@ -97,10 +117,11 @@ export default function ServiceItemForm(){
 }
 
 interface BasicInfoProps{
-    nextStep: (data:any)=>void
+    nextStep: (data:any)=>void,
+    isBankConnected: boolean
 }
 
-function BasicForm({nextStep}:BasicInfoProps){
+function BasicForm({nextStep, isBankConnected}:BasicInfoProps){
 
     
      // TODO: set field for editing
@@ -130,18 +151,19 @@ function BasicForm({nextStep}:BasicInfoProps){
         // availability should return empty array whenever user decides not to add custom dates
         // const transformedAvailability = formData.availability?convertDates(formData.availability):[]
         setIsHashingImage(true)
-        const artworkHash = typeof artworkRef.current === 'object'? await asyncStore(artworkRef.current): artworkRef.current
+        const artworkHash = typeof artworkRef.current === 'object'? await uploadToPinata(artworkRef.current): artworkRef.current
         setIsHashingImage(false)
 
         // // only generate key if it's a new service
             const formObject: ServiceItemReqPaylod = {
                 name: formData.name,
-                price: Number(formData.price) * 100,
+                price: String(Number(formData.price) * 100),
                 ticketsPerDay: Number(formData.ticketsPerDay),
                 description:formData.description,
+                status: isBankConnected? '1': '4',
                 orgServiceId: currentService.id,
                 serviceItemTypeId: router.query.key, // TODO: Get this value from context,
-                logoImageHash: artworkHash,
+                logoImageHash: artworkHash as string,
                 validityStartDate: dayjs(formData.validity.start).format(),
                 validityEndDate: dayjs(formData.validity.end).format()
             }
@@ -166,8 +188,10 @@ function BasicForm({nextStep}:BasicInfoProps){
     const createData = useMutation(createDataHandler,{
        onSuccess:(data)=>{
         // form.resetFields()
+        const customMessage = isBankConnected? 'Successfully created new exclusive-access!': 'Successfully created exclusive-access as draft!'
         notification['success']({
-            message: 'Successfully created new service item!'
+
+            message: customMessage
         })
             console.log(data)
             nextStep(data.data)
@@ -214,9 +238,9 @@ function BasicForm({nextStep}:BasicInfoProps){
 
         <Form.Item name='description' rules={[
             { required: true, message: 'Please write a description for your service' },
-            { min: 50, message: 'Please provide a minimum of 50 characters' },
+            { min: 25, message: 'Please provide a minimum of 25 characters' },
             ]}  label="Description">
-            <TextArea allowClear maxLength={1000} minLength={100} size='large' showCount  placeholder='Tell us more about this service' rows={2} />
+            <TextArea allowClear maxLength={1000} minLength={25} size='large' showCount  placeholder='Tell us more about this service' rows={2} />
         </Form.Item>
 
           {/* price and tickets per day */}
@@ -274,6 +298,7 @@ function BasicForm({nextStep}:BasicInfoProps){
                     Cancel
                 </Button>
                 <SubmitButton
+                    isBankConnected={isBankConnected}
                     isCreatingData={isCreatingData}
                     isHashingAssets={isHashingImage} 
                     form={form}
@@ -310,7 +335,7 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
               ...date,
               date: dayjs(date.date).format(),
               ticketsPerDay: Number(date.ticketsPerDay),
-              price: date.price*100
+              price: String(date.price*100)
           }
           return updatedDate
       })
@@ -582,7 +607,7 @@ function Artwork({onHandleArtwork}:IArtwork){
                 </Upload>
                 </div>
                 <AntImage alt='artwork'  style={{width:'400px', height:'400px', marginBottom:'.5rem', objectFit:'cover'}}  src={isDataSource? selectedArtwork: `${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${selectedArtwork}`}/>
-                <Text type='secondary'>This cover image will be used for your listing on marketplace and for the Digital access token NFT</Text>
+                <Text type='secondary'>This cover image will be used for your listing on marketplace and for the Digital Access Token NFT</Text>
             </div>
             <ArtworkPicker 
                 currentServiceItemType={currentServiceItemType}
@@ -689,10 +714,11 @@ function LogoTip({src}:ILogoTip){
 interface SubmitButtonProps{
     isHashingAssets: boolean,
     isCreatingData: boolean,
+    isBankConnected: boolean,
     form: FormInstance
 }
 
-const SubmitButton = ({ form, isCreatingData, isHashingAssets }:SubmitButtonProps) => {
+const SubmitButton = ({ form, isBankConnected, isCreatingData, isHashingAssets }:SubmitButtonProps) => {
     const [submittable, setSubmittable] = useState(false);
   
     // Watch all values
@@ -711,11 +737,20 @@ const SubmitButton = ({ form, isCreatingData, isHashingAssets }:SubmitButtonProp
         },
       );
     }, [values]);
-  
-    return (
-        <Button shape="round" type="primary" disabled={!submittable} size="large" loading={isHashingAssets || isCreatingData}  htmlType="submit" >
+
+
+    const displayButton = isBankConnected? (
+         <Button shape="round" type="primary" disabled={!submittable} size="large" loading={isHashingAssets || isCreatingData}  htmlType="submit" >
          {router.isReady?`Create ${router.query.label}`:'...'}
      </Button>
+    ):(
+         <Button shape="round" type="primary" disabled={!submittable} size="large" loading={isHashingAssets || isCreatingData}  htmlType="submit" >
+         Save as draft
+     </Button>
+    )
+  
+    return (
+       displayButton
     );
   };
   

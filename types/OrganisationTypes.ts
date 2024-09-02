@@ -40,6 +40,7 @@ export interface NewOrg{
     createdBy: string,
     createdAt: string,
     statusName: string,
+    isBankConnected: boolean,
     updatedBy: string,
     updatedAt: string
 }

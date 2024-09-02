@@ -1,6 +1,7 @@
 export type Community = {
     id: string
     name: string
+    platformFee?:string
     liteVenuesCount: number
     description: string
     price: number
@@ -13,7 +14,8 @@ export type Community = {
 
 
  export type CommunityReq = {
-    orgId: string
+    orgId: string,
+    status: string,
     name: string,
     price: string
     currency: string

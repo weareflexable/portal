@@ -6,7 +6,7 @@ const {TextArea} = Input
 
 import { useRouter } from 'next/router';
 import {usePlacesWidget} from 'react-google-autocomplete'
-import { asyncStore} from "../../../utils/nftStorage";
+import { uploadToPinata} from "../../../utils/nftStorage";
 import { useOrgContext } from "../../../context/OrgContext";
 import useServiceTypes from "../../../hooks/useServiceTypes";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -113,7 +113,7 @@ export default function NewOrgForm(){
 
         setIsHashingAssets(true)
         // @ts-ignore
-        const logoHash = await asyncStore(logoRes[0].originFileObj)
+        const logoHash = await uploadToPinata(logoRes[0].originFileObj)
         setIsHashingAssets(false)
 
          // format phoneNumber
@@ -124,7 +124,7 @@ export default function NewOrgForm(){
         const formObject: OrgPayload = {
             ...formData,
             ...fullAddress,
-            logoImageHash: logoHash,
+            logoImageHash: logoHash as string,
             coverImageHash: '',
             contactNumber: formatedContact,
             // orgId:currentOrg.orgId,

@@ -33,7 +33,7 @@ export type ServicePayload ={
 }
 
 export type CustomDate = {
-    price: number,
+    price: any,
     ticketsPerDay: number,
     date: string,
     name: string,
@@ -45,8 +45,10 @@ export type Availability = CustomDate[]
 
 export type ServiceItem = {
     id:string,
+    platformFee?:string
     name: string,
     ticketsPerDay: number,
+    status: number,
     price: number,
     logoImageHash: string,
     serviceItemType: any,
@@ -66,8 +68,9 @@ export type AvailabilityPayload = {
 
 export type ServiceItemReqPaylod = {
     name: string,
-    price: number
-    ticketsPerDay: number,
+    price: string
+    status: string,
+    ticketsPerDay: Number,
     description:string,
     orgServiceId: string,
     logoImageHash?: string | null | any,

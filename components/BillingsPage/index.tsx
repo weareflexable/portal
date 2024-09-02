@@ -2,522 +2,222 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 const {Text,Title} = Typography
 const {Option} = Select
-import { SearchOutlined, PlusOutlined, LikeOutlined, DislikeOutlined } from '@ant-design/icons';
 import React, { ReactNode, useRef, useState } from 'react'
-import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Modal, notification, Select} from 'antd'
+import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Modal, notification, Select, Popconfirm, Spin} from 'antd'
 import axios from 'axios';
-import {MoreOutlined,ReloadOutlined} from '@ant-design/icons'
-import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
 
 import { useAuthContext } from '../../context/AuthContext';
-import dayjs from 'dayjs'
-import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { Bank } from "./Types/Banks.types";
-import { usePlacesWidget } from "react-google-autocomplete";
 import useUrlPrefix from '../../hooks/useUrlPrefix'
 import { useOrgContext } from "../../context/OrgContext";
 import { useRouter } from "next/router";
-import { useServicesContext } from "../../context/ServicesContext";
-import { EditableCountry, EditableRadio, EditableText } from "../shared/Editables";
-import useRole from "../../hooks/useRole";
-const {TextArea} = Input
 
-const countryList = require('country-list')
 
 
 export default function BillingsView(){
 
     const {paseto} = useAuthContext()
-    const queryClient = useQueryClient()
     const {currentOrg} = useOrgContext()
-    const {isAdmin} = useRole()
+
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
     const router = useRouter()
 
-    const [pageNumber, setPageNumber] = useState<number|undefined>(1)
-    const [pageSize, setPageSize] = useState<number|undefined>(10)
-
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-
-
-    type DataIndex = keyof Bank;
-
-    const [selectedBank, setSelelectedOrg] = useState<any|Bank>({})
-    const [currentFilter, setCurrentStatus] = useState({id:'1',name: 'Verified'})
-
-    // async function fetchAllBanks(){
-    //     const res = await axios({
-    //         method:'get',
-    //         //@ts-ignore
-    //         url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank?pageNumber=${pageNumber}&pageSize=${pageSize}`,
-    //         headers:{
-    //             "Authorization": paseto
-    //         }
-    //     })
-
-    //     return res.data;
-    // }
-    async function fetchBanks(){
-        const res = await axios({
-            method:'get',
-            //@ts-ignore
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
-            headers:{
-                "Authorization": paseto
-            }
-        })
-
-        return res.data;
-    }
+    const queryClient = useQueryClient()
 
     const urlPrefix = useUrlPrefix()
 
-    async function changeStatus({id, statusNumber}:{id:string, statusNumber: string}){
+
+    async function fetchBankAccount(){
         const res = await axios({
-            method:'patch',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank`,
-            data:{
-                // key:'status',
-                status: statusNumber, // 0 means de-activated in db
-                id: id 
-            },
+            method:'get',
+            //@ts-ignore
+            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank/stripe?orgId=${currentOrg.orgId}`,
             headers:{
                 "Authorization": paseto
             }
         })
-        return res; 
+        return res.data.data;
     }
 
-    const changeStatusMutation = useMutation(['data'],{
-        mutationFn: changeStatus,
-        onSuccess:(data:any)=>{
-            queryClient.invalidateQueries({queryKey:['banks',currentFilter]})
-        },
-        onError:()=>{
-            console.log('Error changing status')
-        }
+    const bankAccountQuery = useQuery({
+      queryKey: ['bank','details','admin',currentOrg.id],
+      queryFn: fetchBankAccount,
+      enabled: paseto !== undefined,
     })
 
-    function deActivateBankHandler(bank:Bank){
-        // setSelelectedOrg(org.orgId)
-        changeStatusMutation.mutate({id: bank.id, statusNumber:'0'})
-    }
-
-    function verifyBankHandler(bank:Bank){
-        // setSelelectedOrg(org.orgId)
-        changeStatusMutation.mutate({id:bank.id, statusNumber:'1'})
-    }
-    function rejectBankHandler(bank:Bank){
-        // setSelelectedOrg(org.orgId)
-        changeStatusMutation.mutate({id:bank.id, statusNumber:'3'})
-    }
-    function reviewBankHandler(bank:Bank){
-        // setSelelectedOrg(org.orgId)
-        changeStatusMutation.mutate({id:bank.id, statusNumber:'2'})
-    }
-
-    function reActivateBankHandler(bank:Bank){
-        changeStatusMutation.mutate({id:bank.id, statusNumber:'1'})
-    }
-
-    
-      // const allBanksQuery = useQuery({queryKey:['all-banks'], queryFn:fetchAllBanks, enabled:paseto !== '', staleTime:Infinity})
-      // const allBanksLength = allBanksQuery.data && allBanksQuery.data.data.length
-      
-      
-      const banksQuery = useQuery({queryKey:['banks', currentFilter], queryFn:fetchBanks, enabled:paseto !== '' })
-      const data = banksQuery.data && banksQuery.data.data
-      const totalLength = banksQuery.data && banksQuery.data.dataLength;
-
-  
-  
-
-    function getCurrentFilterActions(){
-        switch(currentFilter.id){
-            // 1 = verified
-            case '1': return verifiedBankActions 
-            break;
-            // 2 = unVerified
-            case '2': return isAdmin? adminUnVerifiedBankActions: unVerifiedBankActions  
-            break;
-            // 0 = deActivated
-            case '0': return deActivatedBankActions 
-            break;
-            case '3': return rejectedBankActions 
-            default: return verifiedBankActions
+    const deleteActionMutation = useMutation({
+      mutationFn: async(payload:{orgId:string | undefined})=>{
+        const res = await axios.delete(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs/bank-account`,{data:payload,
+            headers:{
+              'Authorization': paseto
+            }
         }
+        )
+        return res.data
+      },
+      onSuccess:(data:any)=>{
+        queryClient.invalidateQueries(['bank','details','admin',currentOrg.id])
+      },
+      onError:(error:any)=>{
+        console.log('Error generating account links')
+      }
+    })
+    const editAccountMutation = useMutation({
+      mutationFn: async(payload:{orgId:string | undefined})=>{
+        const res = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs/account-link`,payload,{
+          headers:{
+            'Authorization': paseto
+          }
+        })
+        return res.data
+      },
+      onSuccess:(data:any)=>{
+        const stripeOnboardUrl = data.data
+        window.location.href = stripeOnboardUrl
+      },
+      onError:(error:any)=>{
+        console.log('Error generating account links')
+      }
+    })
+
+    const accountLinkMutation = useMutation({
+      mutationFn: async(payload:{orgId:string | undefined})=>{
+        const res = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs/account-link`,payload,{
+          headers:{
+            'Authorization': paseto
+          }
+        })
+        return res.data
+      },
+      onSuccess:(data:any)=>{
+        const stripeOnboardUrl = data.data
+        window.location.href = stripeOnboardUrl
+      },
+      onError:(error:any)=>{
+        console.log('Error generating account links')
+      }
+    })
+
+    function editAccountInfo(){
+      editAccountMutation.mutate({orgId: currentOrg.orgId})
     }
 
-    function viewOrgDetails(org:Bank){
-      // set state
-      setSelelectedOrg(org)
-      // opne drawer
-      setIsDrawerOpen(true)
+    function toggleDeleteModal(){
+      setIsDeleteModalOpen(!isDeleteModalOpen)
+    }
 
+    function deleteUserAccount(){
+      deleteActionMutation.mutate({orgId: currentOrg.orgId})
+    }
+
+    function connectToStripeOnboarding(){
+      accountLinkMutation.mutate({orgId: currentOrg.orgId})
     }
 
 
-    const handleChange: TableProps<Bank>['onChange'] = (data) => {
-      setPageSize(data.pageSize)
-      //@ts-ignore
-      setPageNumber(data.current); // Subtracting 1 because pageSize param in url starts counting from 0
-    };
-  
-  
-    
-      const onMenuClick=(e:any, record:Bank) => {
-        const event = e.key
-        switch(event){
-          case 'deActivate': deActivateBankHandler(record);
-          break;
-          case 'accept': verifyBankHandler(record)
-          break;
-          case 'reject': rejectBankHandler(record)
-          break;
-          case 'review': reviewBankHandler(record)
-          break;
-          case 'reActivate': reActivateBankHandler(record)
-          break;
-          case 'viewDetails': viewOrgDetails(record)
-        }
-      };
-      
-  
-    const columns: ColumnsType<Bank> = [
-      {
-        title: 'Name',
-        dataIndex: 'name',
-        key: 'name',
-        fixed:'left',
-        width:'270px',
-        ellipsis:true,
-        render:(_,record)=>{
-            return(
-                <div style={{display:'flex',alignItems:'center'}}>
-                    {/* <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={'/favicon.ico'}/> */}
-                    <div style={{display:'flex',flexDirection:'column'}}>
-                        <Text style={{textTransform:'capitalize'}}>{record.bankName}</Text>  
-                        <Text style={{textTransform:'capitalize'}} type="secondary">{record.accountType}</Text>
-                    </div>
-                </div>
-            )
-        },
-      },
-      {
-        title: 'Account Name',
-        dataIndex: 'beneficiaryName',
-        key: 'beneficiaryName',
-        width:'200px',
-      },
-
-      {
-        title: 'Account No',
-        dataIndex: 'accountNo',
-        key: 'accountNo',
-        width:'150px'
-      },
-     
-      // {
-      //   title: 'Currency',
-      //   dataIndex: 'currency',
-      //   key: 'currency'
-      // },
-      {
-          title: 'Created On',
-          dataIndex: 'createdAt',
-          key: 'createdAt',
-          width:'120px',
-          render: (_,record)=>{
-              const date = dayjs(record.createdAt).format('MMM DD, YYYY')
-              return(
-            <Text type="secondary">{date}</Text>
-            )
-        },
-    },
-    {
-      dataIndex: 'actions', 
-      key: 'actions',
-      fixed:'right',
-      width: currentFilter.id == '0' ? '120px' : '70px',
-      render:(_,record)=>{
-        const items = getCurrentFilterActions()
-        if(currentFilter.id == '0'){
-          return (<Button   onClick={()=>reActivateBankHandler(record)}>Reactivate</Button>)
-        }
-        return (
-        <Dropdown trigger={['click']} menu={{ items , onClick: (e)=>onMenuClick(e,record) }}>
-            <Button type='text' icon={<MoreOutlined rev={undefined} />}/>
-          </Dropdown>)
-      } 
-    }
-    ];
 
         return (
-            <div>
-              <div style={{display:'flex', marginTop:'1rem', marginBottom:'1rem', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
-                 <Title style={{ margin:'0'}} level={2}>Billings</Title>
-               </div>
-               {/* {  allBanksQuery.data && allBanksLength == 0? null : */}
-                <div style={{marginBottom:'1.5em', display:'flex', width:'100%', justifyContent:'space-between', alignItems:'center'}}>
-                  <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
-                      {bankFilters.map(bankFilter=>(
-                          <Radio.Button key={bankFilter.id} onClick={()=>setCurrentStatus(bankFilter)} value={bankFilter.id}>{bankFilter.name}</Radio.Button>
-                      )
-                      )}
-                  </Radio.Group>
-                  <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-                    <Button shape="round" style={{marginRight:'1rem'}} loading={banksQuery.isRefetching} onClick={()=>banksQuery.refetch()} icon={<ReloadOutlined rev={undefined} />}>Refresh</Button>
-                    <Button shape='round' type='primary' icon={<PlusOutlined rev={undefined}/>} onClick={()=>router.push('/organizations/billings/new')}>New Bank</Button>
+            <main>
+              <header style={{display:'flex', flexDirection:'column', marginTop:'1rem', marginBottom:'3rem', width:'100%', }}>
+                 <Title style={{ margin:'0'}} level={2}>Payout</Title>
+                 <Text>Manage your organizations billing information</Text> 
+             </header>
+             { bankAccountQuery.isLoading || bankAccountQuery.isRefetching
+             ? <Spin/>
+             : bankAccountQuery.data.fingerprint === ''
+             ? <EmptyState>
+                <Button disabled={accountLinkMutation.isLoading} onClick={connectToStripeOnboarding} type='primary'>Create Account</Button>
+              </EmptyState>
+              :
+              <>
+                {/* statistics */}
+              <article style={{display:'flex', maxWidth:'800px', border:'1px solid #d8d8d8', padding:'1rem 1.5rem', justifyContent:'space-around'}}>
+                  <div style={{display:'flex', flex:'1', flexDirection:'column'}}>
+                    <Text type="secondary">Event Sales</Text>
+                    <Text  style={{fontSize:'1.7rem'}}>${(bankAccountQuery?.data?.eventSales/100).toLocaleString()}</Text> 
+                  </div>
+                  <div style={{display:'flex', flex:'1', flexDirection:'column'}}>
+                    <Text type="secondary">Community Sales</Text>
+                    <Text  style={{fontSize:'1.7rem'}}>${(bankAccountQuery?.data?.communitySales/100).toLocaleString()}</Text> 
+                  </div>
+                  <div style={{display:'flex', flex:'1', flexDirection:'column'}}>
+                    <Text type="secondary">Service Sales</Text>
+                    <Text  style={{fontSize:'1.7rem'}}>${(bankAccountQuery?.data?.serviceSales/100).toLocaleString()}</Text> 
+                  </div>
+                  <div style={{display:'flex', flex:'1', flexDirection:'column'}}>
+                    <Text type="secondary">Total Sales</Text>
+                    <Text  style={{fontSize:'1.7rem'}}>${(bankAccountQuery?.data?.totalSales/100).toLocaleString()}</Text> 
+                  </div>
+              </article>
+
+              {/* account details */}
+              <section style={{background:'#f1f1f1', maxWidth:'800px', marginTop:'2rem', padding: '30px 24px', borderRadius:'8px'}}>
+                <div style={{display:'flex', marginBottom:'2rem', justifyContent:'space-between'}}>
+                  <div>
+                    <Title style={{marginBottom:'0'}} level={5}>{bankAccountQuery?.data?.account_holder_name !==''? bankAccountQuery?.data?.account_holder_name: '-- -- --'}</Title>
+                    <Text >{bankAccountQuery?.data?.bank_name}</Text>  
+                  </div>
+                  <div>
+                    <Text >{`${bankAccountQuery?.data?.country} • ${bankAccountQuery?.data?.currency}`}</Text>  
                   </div>
                 </div>
-                {/* } */}
 
-                {/* {
-                  allBanksQuery.data && allBanksLength == 0
-                  ?<EmptyState>
-                    <Button shape='round' type='primary' icon={<PlusOutlined rev={undefined}/>} onClick={()=>router.push('/organizations/billings/new')}>New Bank</Button>
-                  </EmptyState>
-                  :  */}
-                  <Table 
-                  style={{width:'100%'}} 
-                  scroll={{ x: 'calc(500px + 50%)'}} 
-                  rowKey={(record)=>record.id}
-                  // @ts-ignore
-                  onChange={handleChange} 
-                  loading={banksQuery.isLoading||banksQuery.isRefetching} 
-                  // @ts-ignore
-                  columns={columns} 
-                  dataSource={data} 
-                  pagination={{
-                    total:totalLength,  
-                    showTotal:(total) => `Total: ${total} items`,
-                  }} 
+                <div style={{display:'flex', marginBottom:'2rem',  justifyContent:'space-between'}}>
+                  <div style={{display:'flex', flexDirection:'column'}}>
+                    <Text strong>{`**** **** **** ${bankAccountQuery?.data?.last4}`}</Text>  
+                    <Text type="secondary">Account No</Text>  
+                  </div>
+                  <div style={{display:'flex', flexDirection:'column'}}>
+                    <Text strong>{bankAccountQuery?.data?.routing_number}</Text>  
+                    <Text type="secondary">Routing No</Text>  
+                  </div>
+                  <div style={{display:'flex', flexDirection:'column'}}>
+                    <Text strong>Checking</Text>  
+                    <Text type="secondary">Account Type</Text>  
+                  </div>
+                </div>
+
+                <div style={{display:'flex', justifyContent:'flex-end'}}>
+                  <Button loading={editAccountMutation.isLoading} onClick={editAccountInfo} type="link">Edit Bank Information</Button>
+                  {/* <Button danger onClick={toggleDeleteModal} type="link">Delete Account</Button> */}
+                  <DeleteAccountModal
+                    onDeleteAccount={deleteUserAccount}
+                    isDeletingAccount={deleteActionMutation.isLoading}
+                    account={bankAccountQuery?.data}
+                    isOpen={isDeleteModalOpen}
+                    onCloseModal={toggleDeleteModal}
                   />
-                {/* } */}
-                
-                {
-                  isDrawerOpen
-                  ?<DetailDrawer isDrawerOpen={isDrawerOpen} closeDrawer={setIsDrawerOpen} selectedRecord={selectedBank}/>
-                  :null
-                }
-            </div>
+                </div>
+             </section>
+           
+
+              </>
+             }
+              
+            </main>
     )
 
 
 
 }
 
-interface DrawerProps{
-  selectedRecord: Bank,
-  isDrawerOpen: boolean,
-  closeDrawer: (value:boolean)=>void
-}
 
-function DetailDrawer({selectedRecord,isDrawerOpen,closeDrawer}:DrawerProps){
-
-const queryClient = useQueryClient()
-
-const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
-const {paseto} = useAuthContext()
-
-function closeDrawerHandler(){
-  queryClient.invalidateQueries(['banks']) 
-  closeDrawer(!isDrawerOpen)
-}
-
-
-
-function toggleDeleteModal(){
-  setIsDeleteModalOpen(!isDeleteModalOpen)
-}
-
-function deleteService(){ 
-  console.log(selectedRecord.id)
-  // mutate record
-  deleteData.mutate(selectedRecord,{
-    onSuccess:()=>{
-      notification['success']({
-        message: 'Successfully deleted record!'
-      })
-      toggleDeleteModal()
-      closeDrawerHandler()
-
-    },
-    onSettled:()=>{
-      queryClient.invalidateQueries(['banks'])
-    },
-    onError:(err)=>{
-        console.log(err)
-        notification['error']({
-            message: 'Encountered an error while deleting record custom custom dates',
-          });
-        // leave modal open
-    }
-  })
-}
-
-const urlPrefix = useUrlPrefix()
-
-const deleteDataHandler = async(record:Bank)=>{      
-  const {data} = await axios({
-    method:'patch',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank`,
-    data: {
-        id:record.id,
-        // key:'status',
-        status: "0"
-      },
-    headers:{
-          "Authorization": paseto 
-  }})
-  return data
-}
-
-const deleteData = useMutation(deleteDataHandler)
-
-const{isLoading:isDeletingItem} = deleteData
-
-
-
-
-return( 
-<Drawer 
-  title="Bank Details" 
-  width={640} placement="right" 
-  closable={true} 
-  onClose={closeDrawerHandler} 
-  open={isDrawerOpen}
->
-  
-  <Title style={{marginBottom:'1.5rem'}} level={3}>Beneficiary Info</Title>
-
-  <EditableText
-    fieldKey="beneficiaryName" // The way the field is named in DB
-    currentFieldValue={selectedRecord.beneficiaryName}
-    fieldName = 'beneficiaryName'
-    title = 'Beneficiary Name'
-    id = {selectedRecord.id}
-    options = {{queryKey:'banks',mutationUrl:'org-bank'}}
-   />
-
-  <EditableCountry
-    fieldKey="beneficiaryCountry" // The way the field is named in DB
-    currentFieldValue={selectedRecord.beneficiaryCountry}
-    fieldName = 'beneficiaryCountry'
-    title = 'Beneficiary Country'
-    id = {selectedRecord.id}
-    options = {{queryKey:'banks',mutationUrl:'org-bank'}}
-   />
-
-  <EditableText
-    fieldKey="beneficiaryState" // The way the field is named in DB
-    currentFieldValue={selectedRecord.beneficiaryState}
-    fieldName = 'beneficiaryState'
-    title = 'Beneficiary State'
-    id = {selectedRecord.id}
-    options = {{queryKey:'banks',mutationUrl:'org-bank'}}
-   />
-
-  <EditableText
-    fieldKey="beneficiaryCity" // The way the field is named in DB
-    currentFieldValue={selectedRecord.beneficiaryCity}
-    fieldName = 'beneficiaryCity'
-    title = 'Beneficiary City'
-    id = {selectedRecord.id}
-    options = {{queryKey:'banks',mutationUrl:'org-bank'}}
-   />
-
-  <EditableText
-    fieldKey="beneficiaryPostalCode" // The way the field is named in DB
-    currentFieldValue={selectedRecord.beneficiaryPostalCode}
-    fieldName = 'beneficiaryPostalCode'
-    title = 'Beneficiary Postal Code'
-    id = {selectedRecord.id}
-    options = {{queryKey:'banks',mutationUrl:'org-bank'}}
-   />
-
-   <Title style={{marginTop:'1rem'}} level={3}>Account Info</Title>
-
-  <EditableRadio
-    fieldKey="accountType" // The way the field is named in DB
-    currentFieldValue={selectedRecord.accountType}
-    fieldName = 'accountType'
-    title = 'Account Type'
-    id = {selectedRecord.id}
-    options = {{queryKey:'banks',mutationUrl:'org-bank'}}
-   />
-
-  <EditableText
-    fieldKey="accountNo" // The way the field is named in DB
-    currentFieldValue={selectedRecord.accountNo}
-    fieldName = 'accountNo'
-    title = 'Account No'
-    id = {selectedRecord.id}
-    options = {{queryKey:'banks',mutationUrl:'org-bank'}}
-   />
-
-   <Title style={{marginTop:'1.5rem'}} level={3}>Bank Info</Title>
-
-  <EditableText
-    fieldKey="bankName" // The way the field is named in DB
-    currentFieldValue={selectedRecord.bankName}
-    fieldName = 'bankName'
-    title = 'Bank Name'
-    id = {selectedRecord.id}
-    options = {{queryKey:'banks',mutationUrl:'org-bank'}}
-   />
-
-  <EditableText
-    fieldKey="bankAddress" // The way the field is named in DB
-    currentFieldValue={selectedRecord.bankAddress}
-    fieldName = 'bankAddress'
-    title = 'Bank Address'
-    id = {selectedRecord.id}
-    options = {{queryKey:'banks',mutationUrl:'org-bank'}}
-   />
-
-  <EditableText
-    fieldKey="routingNumber" // The way the field is named in DB
-    currentFieldValue={selectedRecord.routingNumber}
-    fieldName = 'routingNumber'
-    title = 'Routing No'
-    id = {selectedRecord.id}
-    options = {{queryKey:'banks',mutationUrl:'org-bank'}}
-   />
-
-
-
-  <div style={{display:'flex', marginTop:'5rem', flexDirection:'column', justifyContent:'center'}}>
-    <Title level={3}>Danger zone</Title>
-    <Button danger onClick={toggleDeleteModal} style={{width:'30%'}} type="link">Deactivate Bank</Button>
-  </div>
-
-  <DeleteRecordModal  
-  isDeletingItem={isDeletingItem} 
-  onCloseModal={toggleDeleteModal} 
-  onDeleteRecord={deleteService} 
-  isOpen={isDeleteModalOpen} 
-  selectedRecord={selectedRecord}
-  />
-
-</Drawer>
-)
-}
 
 
 interface DeleteProp{
-  selectedRecord: Bank
+  account: any
   isOpen: boolean
   onCloseModal: ()=>void
-  onDeleteRecord: ()=>void
-  isDeletingItem: boolean
+  onDeleteAccount: ()=>void
+  isDeletingAccount: boolean
 }
 
-function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteRecord, onCloseModal}:DeleteProp){
+function DeleteAccountModal({account, isOpen, isDeletingAccount, onDeleteAccount, onCloseModal}:DeleteProp){
 
   function onFinish(){
     // call mutate function to delete record
-    onDeleteRecord()
+    onDeleteAccount()
   }
 
   const [form] = Form.useForm()
@@ -526,23 +226,23 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
     <Modal title="Are you absolutely sure?" footer={null} open={isOpen} onOk={()=>{}} onCancel={onCloseModal}>
       {/* <Alert style={{marginBottom:'.5rem'}} showIcon message="Bad things will happen if you don't read this!" type="warning" /> */}
       <Text >
-        {`This action will remove this venue’s listing from the marketplace and will deactivate any DATs that are attached to it. Venue can be reactivated in the future 
+        {`Deleting this account will not enable you to receive payments on all services, communities and events listed on the marketplace. All services, communities and events created without an account will be saved as draft by default 
         `}
       </Text>
 
       <Form 
       form={form} 
       style={{marginTop:'1rem'}}
-      name="deleteServiceForm" 
+      name="deleteEventForm" 
       layout='vertical'
       onFinish={onFinish}>
       <Form.Item
         name="name"
         style={{marginBottom:'.6rem'}}
-        label={`Please type "${selectedRecord.bankName}" to confirm`}
-        rules={[{ required: true, message: 'Please type correct service item name!' }]}
+        label={`Please type "${account.bank_name}" to confirm`}
+        rules={[{ required: true, message: 'This field is required!' }]}
       >
-        <Input size="large" disabled={isDeletingItem} />
+        <Input size="large" disabled={isDeletingAccount} />
       </Form.Item>
 
       <Form.Item
@@ -554,11 +254,11 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
             style={{width:'100%'}}
             size='large'
             danger
-            loading={isDeletingItem}
+            loading={isDeletingAccount}
             htmlType="submit"
             disabled={
               // !form.isFieldTouched('name') &&
-              form.getFieldValue('name') !== selectedRecord.bankName
+              form.getFieldValue('name') !== account.bank_name
               // !!form.getFieldsError().filter(({ errors }) => errors.length).length
             }
           >
@@ -576,80 +276,6 @@ function DeleteRecordModal({selectedRecord, isOpen, isDeletingItem, onDeleteReco
 
 
 
-const bankFilters = [
-  {
-      id: '1',
-      name: 'Verified'
-  },
-  {
-      id: '2',
-      name: 'In Review'
-  },
-  {
-      id: '0',
-      name: 'Deactivated'
-  },
-  {
-      id: '3',
-      name: 'Rejected'
-  },
-]
-
-const verifiedBankActions = [
-    {
-        key: 'viewDetails',
-        label: 'View details'
-    },
-
-]
-const adminUnVerifiedBankActions = [
-  {
-    key: 'viewDetails',
-    label: 'View details'
-},
-]
-
-const unVerifiedBankActions = [
-    {
-        key: 'accept',
-        label: 'Accept',
-        icon: <LikeOutlined rev={undefined}/>
-    },
-    {
-        key: 'reject',
-        label: 'Reject',
-        icon: <DislikeOutlined rev={undefined}/>
-    },
-    {
-        key: 'viewDetails',
-        label: 'View details'
-    },
-
-]
-
-const deActivatedBankActions = [
-    {
-        key: 'reActivate',
-        label: 'Reactivate'
-    },
-    {
-        key: 'viewDetails',
-        label: 'View details'
-    },
-
-]
-const rejectedBankActions = [
-    {
-        key: 'review',
-        label: 'Review'
-    },
-    {
-        key: 'viewDetails',
-        label: 'View details'
-    },
-
-]
-
 
 interface EmptyStateProps{
   children: ReactNode
@@ -660,8 +286,8 @@ function EmptyState({children}:EmptyStateProps){
   return(
     <div style={{border: '1px solid #d6d6d6', marginTop:'2rem', borderRadius:'4px', height:'50vh', display:'flex', justifyContent:'center', alignItems:'center', padding: '2rem'}}>
       <div style={{maxWidth:'350px', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
-        <Title level={3}>Get Started</Title> 
-        <Text style={{textAlign:'center'}}>Seems like you are yet to add a bank</Text>
+        <Title level={4}>Create New Account</Title> 
+        <Text style={{textAlign:'center'}}>Add an account to get started receiving payouts from your tickets purchases on the marketplace</Text>
         <div style={{marginTop:'1rem', display:'flex',justifyContent:'center'}}>
             {children}
         </div>

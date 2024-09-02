@@ -55,9 +55,9 @@ interface EditableProps{
         toggleEdit()
       },
       onSettled:(data)=>{
-        console.log(data)
+        console.log(data.data[0][fieldName])
         // update state here
-        setState(data?.data?.[fieldName])
+        setState(data?.data[0]?.[fieldName])
         queryClient.invalidateQueries([options?.queryKey])
       }
     })

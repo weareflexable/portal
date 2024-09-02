@@ -547,7 +547,7 @@ const servicesFilter = [
   },
   {
       id: '0',
-      name: 'In-active'
+      name: 'Inactive'
   },
 ]
 

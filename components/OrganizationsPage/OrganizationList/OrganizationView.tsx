@@ -17,7 +17,7 @@ import { useAuthContext } from '../../../context/AuthContext';
 import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { useOrgContext } from "../../../context/OrgContext";
-import { asyncStore } from "../../../utils/nftStorage";
+import { uploadToPinata } from "../../../utils/nftStorage";
 import { usePlacesWidget } from "react-google-autocomplete";
 import useUrlPrefix from "../../../hooks/useUrlPrefix";
 import { numberFormatter } from "../../../utils/numberFormatter";
@@ -801,7 +801,7 @@ function EditableLogoImage({selectedOrg}:EditableProp){
     const logoRes = await field.logoImage
 
     setIsHashingImage(true)
-    const logoHash = await asyncStore(logoRes[0].originFileObj)
+    const logoHash = await uploadToPinata(logoRes[0].originFileObj)
     setIsHashingImage(false)
 
     console.log(logoHash)
@@ -812,7 +812,7 @@ function EditableLogoImage({selectedOrg}:EditableProp){
       //@ts-ignore
       id: selectedOrg.orgId
     }
-    setUpdatedLogoImageHash(logoHash)
+    setUpdatedLogoImageHash(logoHash as string)
     mutation.mutate(payload)
   }
 
