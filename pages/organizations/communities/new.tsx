@@ -257,7 +257,6 @@ function BasicForm({nextStep, isBankConnected}:BasicInfoProps){
                 ]}
          >
             <Input allowClear size='large'  maxLength={150} showCount placeholder="Napoli" />
-            <Input allowClear size='large'  maxLength={150} showCount placeholder="Napoli" />
         </Form.Item>
 
         <Form.Item name='description' rules={[{max:500, message:"Description shouldn't exceed 500 characters"},{ required: true, message: 'This field is required' }]}  label="Description">
