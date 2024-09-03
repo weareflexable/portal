@@ -406,7 +406,7 @@ const{isLoading:isDeletingItem} = deleteData
 function copyLink(selectedRecord:any){
   navigator.clipboard.writeText('')
   const eventId = selectedRecord.id
-  const marketplaceLink = `https://marketplace.staging.flexabledats.com/communities/${eventId}`
+  const marketplaceLink = `https://marketplace.flexabledats.com/communities/${eventId}`
    // Copy the text inside the text field
    navigator.clipboard.writeText(marketplaceLink);
 }
