@@ -162,7 +162,8 @@ export default function NewEvent() {
             timezone: validity.timezone,
             startTime: dayjs(validity.startTime).format(),
             name: formData.name,
-            status: isBankConnected || isEventFree ? '1': '4',
+            // status: isBankConnected || isEventFree ? '1': '4',
+            status: '1',
             eventLink: formData.eventLink,
             description: formData.description,
             type: formData.type,
@@ -230,7 +231,8 @@ export default function NewEvent() {
                 });
                 // leave modal open
             } else {
-                const customMessage = isBankConnected? 'Successfully created new event!': 'Successfully created event as draft!'
+                // const customMessage = isBankConnected? 'Successfully created new event!': 'Successfully created event as draft!'
+                const customMessage = 'Successfully created new event!'
                 notification['success']({
                     message: customMessage,
                 });
@@ -643,7 +645,8 @@ const SubmitButton = ({ form, isCreatingData, isEventFree, isBankConnected, isHa
 
     return (
         <Button shape="round" type="primary" disabled={!submittable} size="large" loading={isHashingAssets || isCreatingData} htmlType="submit" >
-            {isBankConnected || isEventFree ? 'Launch Event' : 'Save as draft'}
+            {/* {isBankConnected || isEventFree ? 'Launch Event' : 'Save as draft'} */}
+            {isEventFree ? 'Launch Event': 'Launch Event'}
         </Button>
     );
 };

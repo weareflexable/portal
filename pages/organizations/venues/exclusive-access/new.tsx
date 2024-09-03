@@ -160,7 +160,8 @@ function BasicForm({nextStep, isBankConnected}:BasicInfoProps){
                 price: String(Number(formData.price) * 100),
                 ticketsPerDay: Number(formData.ticketsPerDay),
                 description:formData.description,
-                status: isBankConnected? '1': '4',
+                // status: isBankConnected? '1': '4',
+                status: '1',
                 orgServiceId: currentService.id,
                 serviceItemTypeId: router.query.key, // TODO: Get this value from context,
                 logoImageHash: artworkHash as string,
@@ -739,15 +740,20 @@ const SubmitButton = ({ form, isBankConnected, isCreatingData, isHashingAssets }
     }, [values]);
 
 
-    const displayButton = isBankConnected? (
-         <Button shape="round" type="primary" disabled={!submittable} size="large" loading={isHashingAssets || isCreatingData}  htmlType="submit" >
+    // const displayButton = isBankConnected? (
+    //      <Button shape="round" type="primary" disabled={!submittable} size="large" loading={isHashingAssets || isCreatingData}  htmlType="submit" >
+    //      {router.isReady?`Create ${router.query.label}`:'...'}
+    //  </Button>
+    // ):(
+    //      <Button shape="round" type="primary" disabled={!submittable} size="large" loading={isHashingAssets || isCreatingData}  htmlType="submit" >
+    //      Save as draft
+    //  </Button>
+    // )
+    const displayButton = (
+    <Button shape="round" type="primary" disabled={!submittable} size="large" loading={isHashingAssets || isCreatingData}  htmlType="submit" >
          {router.isReady?`Create ${router.query.label}`:'...'}
-     </Button>
-    ):(
-         <Button shape="round" type="primary" disabled={!submittable} size="large" loading={isHashingAssets || isCreatingData}  htmlType="submit" >
-         Save as draft
-     </Button>
-    )
+     </Button>)
+   
   
     return (
        displayButton
