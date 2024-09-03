@@ -525,7 +525,7 @@ return(
   open={isDrawerOpen}
 >
 
-   {!isBankConnected && selectedRecord?.status == 4
+   {/* {!isBankConnected && selectedRecord?.status == 4
       ? <Alert
           style={{ marginBottom: '2rem' }}
           type="info"
@@ -539,7 +539,7 @@ return(
           }
       />
       : null
-    }
+    } */}
   
   <EditableName selectedRecord={selectedRecord}/>
   <EditablePrice selectedRecord={selectedRecord}/>

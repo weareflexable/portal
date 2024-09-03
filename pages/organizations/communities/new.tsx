@@ -176,7 +176,8 @@ function BasicForm({nextStep, isBankConnected}:BasicInfoProps){
             const formObject: CommunityReq = {
                 orgId: currentOrg.orgId,
                 // @ts-ignore
-                status: isBankConnected? '1': '4',
+                // status: isBankConnected? '1': '4',
+                status: '1',
                 name:  formData.name,
                 price: String(formData.price * 100),
                 currency: 'USD',
@@ -208,7 +209,8 @@ function BasicForm({nextStep, isBankConnected}:BasicInfoProps){
         console.log(data)
         const status = data.status
         if(status <= 200){
-            const customMessage = isBankConnected? 'Successfully created new community!': 'Successfully created community as draft!'
+            // const customMessage = isBankConnected? 'Successfully created new community!': 'Successfully created community as draft!'
+            const customMessage =  'Successfully created new community!'
             notification['success']({
                 message: customMessage
             })
@@ -902,7 +904,8 @@ const SubmitButton = ({ form, isBankConnected, isCreatingData, isHashingAssets }
   
     return (
         <Button shape="round" type="primary" disabled={!submittable} size="large" loading={isHashingAssets || isCreatingData}  htmlType="submit" >
-         { isBankConnected? 'Create community': 'Save as draft'}
+         {/* { isBankConnected? 'Create community': 'Save as draft'} */}
+         {'Create community'}
      </Button>
     );
   };
