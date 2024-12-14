@@ -26,6 +26,7 @@ import { EditableText } from "../../shared/Editables";
 import useRole from "../../../hooks/useRole";
 import EmptyState from "../EmptyState";
 import { IMAGE_PLACEHOLDER_HASH } from "../../../constants";
+import utils from "../../../utils/env";
 
 
 var relativeTime = require('dayjs/plugin/relativeTime')
@@ -62,7 +63,7 @@ export default function AdminOrgsView(){
     // async function fetchAllOrgs(){
     //   const res = await axios({
     //           method:'get',
-    //           url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?pageNumber=${pageNumber}&pageSize=10&status=1`,
+    //           url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?pageNumber=${pageNumber}&pageSize=10&status=1`,
     //           headers:{
     //               "Authorization": paseto
     //           }
@@ -75,7 +76,7 @@ export default function AdminOrgsView(){
     async function fetchOrgs(){
         const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentStatus.id}`,
+            url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentStatus.id}`,
             headers:{
                 "Authorization": paseto
             }
@@ -88,7 +89,7 @@ export default function AdminOrgsView(){
     async function changeOrgStatus({orgId, statusNumber}:{orgId:string, statusNumber: string}){
         const res = await axios({
             method:'patch',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
+            url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
             data:{
                 // key:'status',
                 status: statusNumber, // 0 means de-activated in db
@@ -354,7 +355,7 @@ export default function AdminOrgsView(){
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.logoImageHash.length < 20? IMAGE_PLACEHOLDER_HASH :record.logoImageHash}`}/>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.logoImageHash.length < 20? IMAGE_PLACEHOLDER_HASH :record.logoImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                        { record.status !==1?<Text>{record.name}</Text>:<Text style={{color:`${isUser?'black':'#1677ff'}`, cursor:'pointer'}} onClick={isUser?()=>{}:()=>gotoServices(record)}>{record.name}</Text> }   
                         <Text type="secondary">{record.email}</Text>
@@ -433,7 +434,7 @@ export default function AdminOrgsView(){
       console.log(record)
       const res = await axios({
           method:'patch',
-          url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
+          url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
           data:{
               // key:'status',
               status: '1', 
@@ -586,7 +587,7 @@ function deleteOrg(){
 const deleteDataHandler = async(record:NewOrg)=>{  
   const {data} = await axios({
     method:'patch',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
+    url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
     data: {
         //@ts-ignore
         id:record.orgId,
@@ -773,13 +774,13 @@ function EditableLogoImage({selectedOrg}:EditableProp){
 
   const readOnly = (
       <div style={{width:'100%', marginTop:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Image style={{width:'170px', height:'170px', border:'1px solid #f2f2f2', borderRadius:'50%'}} alt='Logo image for organization' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedLogoImageHash}`}/>
+        <Image style={{width:'170px', height:'170px', border:'1px solid #f2f2f2', borderRadius:'50%'}} alt='Logo image for organization' src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedLogoImageHash}`}/>
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
   )
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
+    const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -921,7 +922,7 @@ const urlPrefix = useUrlPrefix()
 }
 
 const { ref: antRef } = usePlacesWidget({
-  apiKey: process.env.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API,  // move this key to env
+  apiKey: utils.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API,  // move this key to env
   options:{
       componentRestrictions:{country:'us'},
       types: ['address'],
@@ -949,7 +950,7 @@ const { ref: antRef } = usePlacesWidget({
 
 const mutationHandler = async(updatedItem:any)=>{
   // call a put api here instead
-  const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
+  const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
     headers:{
         //@ts-ignore
         "Authorization": paseto

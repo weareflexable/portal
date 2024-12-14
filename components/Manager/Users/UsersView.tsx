@@ -18,6 +18,7 @@ import { User } from "./Users.types";
 import { IMAGE_PLACEHOLDER_HASH } from "../../../constants";
 import { convertToAmericanFormat } from "../../../utils/phoneNumberFormatter";
 import useUrlPrefix from "../../../hooks/useUrlPrefix";
+import utils from "../../../utils/env";
 const {TextArea} = Input
 
 
@@ -45,7 +46,7 @@ export default function UsersView(){
     async function fetchUsers(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/users-list?status=1&pageNumber=${pageNumber}&pageSize=${pageSize}`,
+            url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/users-list?status=1&pageNumber=${pageNumber}&pageSize=${pageSize}`,
             headers:{
                 "Authorization": paseto
             }
@@ -105,9 +106,9 @@ export default function UsersView(){
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    {/* <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.profilePic}`}/> */}
-                    {/* <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.profilePic}`}/>     */}
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.profilePic.length < 10? IMAGE_PLACEHOLDER_HASH : record.profilePic}`}/>
+                    {/* <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.profilePic}`}/> */}
+                    {/* <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.profilePic}`}/>     */}
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.profilePic.length < 10? IMAGE_PLACEHOLDER_HASH : record.profilePic}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{record.name}</Text>  
                         <Text type="secondary">{record.email}</Text>  
@@ -332,7 +333,7 @@ function deleteService(){
 const deleteDataHandler = async(record:User)=>{      
   const {data} = await axios({
     method:'patch',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/users-role`,
+    url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/users-role`,
     data: {
         targetUserId:record.id,
         // key:'status',
@@ -401,7 +402,7 @@ function EditableRole({selectedUser}:EditableProp){
 
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/users-role`,updatedItem,{
+    const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/users-role`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto

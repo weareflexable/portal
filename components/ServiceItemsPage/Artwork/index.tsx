@@ -2,6 +2,7 @@ import { Button, Drawer, Typography } from "antd"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import Image from 'next/image'
+import utils from "../../../utils/env";
 const {Title,Text} = Typography;
 
 interface ArtworkProps{
@@ -35,7 +36,7 @@ export default function Artwork({onHandleArtwork}:ArtworkProps){
             <Title style={{marginTop:'4rem'}} level={3}>Artwork</Title>
             <div style={{display:'flex', flexDirection:'column'}}>
                 <Button type='link' style={{alignSelf:'flex-end'}} onClick={toggleDrawer}>Select a different artwork</Button>
-                <Image alt='artwork' objectFit='cover' height='400px' width='300px'  src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${selectedArtwork}`}/>
+                <Image alt='artwork' objectFit='cover' height='400px' width='300px'  src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${selectedArtwork}`}/>
                 <Text type='secondary'>This cover image will be used for listing on marketplace and Digital access token NFT</Text>
             </div>
             <ArtworkPicker 
@@ -73,11 +74,11 @@ export function ArtworkPicker({isOpen, currentSelectedArtwork, currentServiceIte
         open={isOpen}
       >
         <div style={{width:'100%', height:'100%', position:'relative',   overflowY: 'hidden', whiteSpace:'nowrap', overflowX:'scroll'}}>
-            {/* <Image alt='artwork for lineskip' style={{objectFit: 'cover', height:'300px', width:'400px'}} src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${lineSkipHash}`}/> */}
+            {/* <Image alt='artwork for lineskip' style={{objectFit: 'cover', height:'300px', width:'400px'}} src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${lineSkipHash}`}/> */}
             {
                 currentHashes.map((image:string)=>(
                     <div key={image} onClick={()=>onSelectImage(image)} style={{border:`4px solid ${currentSelectedArtwork === image? '#1677ff':'#eeeeee'}`,borderRadius:'4px',  display:'inline-block', marginRight:'1rem', padding:'.5rem'}}>
-                        <Image  alt='artwork for lineskip' height='300px' width='300px'  src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${image}`}/> 
+                        <Image  alt='artwork for lineskip' height='300px' width='300px'  src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${image}`}/> 
                     </div>
                 ))
             }

@@ -14,6 +14,7 @@ import axios from "axios";
 import { useAuthContext } from "../../context/AuthContext";
 import {NewOrg, OrgPayload } from "../../types/OrganisationTypes";
 import useUrlPrefix from "../../hooks/useUrlPrefix";
+import utils from "../../utils/env";
 
 
 const getBase64 = (file: any): Promise<string> => 
@@ -83,7 +84,7 @@ export default function NewOrgForm(){
     }
 
       const { ref: antRef } = usePlacesWidget({
-        apiKey: `${process.env.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API}`,
+        apiKey: `${utils.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API}`,
         options:{
             componentRestrictions:{country:'us'},
             types: ['address'],
@@ -180,7 +181,7 @@ export default function NewOrgForm(){
 
 
       const createDataHandler = async(newItem:any)=>{
-        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`, newItem,{
+        const {data} = await axios.post(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`, newItem,{
             headers:{
                 "Authorization": paseto
             },

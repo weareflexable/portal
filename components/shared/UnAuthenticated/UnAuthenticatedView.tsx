@@ -1,10 +1,11 @@
 import * as React from 'react';
 import {Button, Result} from 'antd'
+import utils from '../../../utils/env';
 
 export default function UnAuthenticatedView(){
 
     const handleLogin=()=>{
-        location.href=`${process.env.NEXT_PUBLIC_AUTH}/login?redirect_to=portal`
+        location.href=`${utils.NEXT_PUBLIC_AUTH}/login?redirect_to=portal`
     }
 
     return(

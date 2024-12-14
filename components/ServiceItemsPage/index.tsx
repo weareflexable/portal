@@ -21,6 +21,7 @@ import { EditableText } from "../shared/Editables";
 import { numberFormatter } from "../../utils/numberFormatter";
 import { IMAGE_PLACEHOLDER_HASH } from "../../constants";
 import { useOrgContext } from "../../context/OrgContext";
+import utils from "../../utils/env";
 
 
 type ServiceMenu={
@@ -59,7 +60,7 @@ export default function ServiceItemsView(){
     // async function fetchAllServiceItems(){
     // const res = await axios({
     //         method:'get',
-    //         url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items?serviceId=${currentService.id}&pageNumber=${pageNumber}&pageSize=10`,
+    //         url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items?serviceId=${currentService.id}&pageNumber=${pageNumber}&pageSize=10`,
     //         headers:{
     //             "Authorization": paseto
     //         }
@@ -72,7 +73,7 @@ export default function ServiceItemsView(){
     async function fetchServiceItems(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items?serviceId=${currentService.id}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
+            url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items?serviceId=${currentService.id}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
             headers:{
                 "Authorization": paseto
             }
@@ -86,7 +87,7 @@ export default function ServiceItemsView(){
     async function changeServiceItemStatus({serviceItemId, statusNumber}:{serviceItemId:string, statusNumber: string}){
         const res = await axios({
             method:'patch',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,
+            url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,
             data:{
                 // key:'status',
                 status: statusNumber, // 0 means de-activated in db
@@ -154,7 +155,7 @@ export default function ServiceItemsView(){
   async function reActivateServiceHandler(record:ServiceItem){
       const res = await axios({
           method:'patch',
-          url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,
+          url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,
           data:{
               // key:'status',
               status: '1', 
@@ -180,7 +181,7 @@ export default function ServiceItemsView(){
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.logoImageHash.length < 20? IMAGE_PLACEHOLDER_HASH :record.logoImageHash}`}/>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.logoImageHash.length < 20? IMAGE_PLACEHOLDER_HASH :record.logoImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text style={{textTransform:'capitalize'}}>{record?.name}</Text>  
                     </div>
@@ -369,7 +370,7 @@ const {isManager, isSuperAdmin} = useRole()
  const urlPrefix = useUrlPrefix()
 
 async function fetchItemAvailability(){
- const res = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items/availability?serviceItemId=${selectedRecord.id}&pageNumber=1&pageSize=50`,{
+ const res = await axios.get(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items/availability?serviceItemId=${selectedRecord.id}&pageNumber=1&pageSize=50`,{
   headers:{
     "Authorization":paseto
   }
@@ -406,7 +407,7 @@ function deleteServiceItem(){
 const deleteDataHandler = async(record:ServiceItem)=>{      
   const {data} = await axios({
     method:'patch',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,
+    url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,
     data: {
         id:record.id,
         // key:'status',
@@ -439,7 +440,7 @@ const{isLoading:isDeletingItem} = deleteData
  async function reActivateServiceHandler(record:ServiceItem){
       const res = await axios({
           method:'patch',
-          url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,
+          url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,
           data:{
               // key:'status',
               status: '1', 

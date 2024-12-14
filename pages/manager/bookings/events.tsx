@@ -33,6 +33,7 @@ import EventsLayout from "../../../components/Layout/EventsLayout";
 import ManagerBookingsLayout from "../../../components/Layout/ManagerBookingsLayout";
 import useEvent from "../../../hooks/useEvents";
 import React from "react";
+import utils from "../../../utils/env";
 
 
 
@@ -55,7 +56,7 @@ export default function EventBookings(){
     async function fetchBookings(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/event/bookings?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+            url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/event/bookings?pageNumber=${pageNumber}&pageSize=${pageSize}`,
             headers:{
                 "Authorization": paseto
             }
@@ -78,7 +79,7 @@ export default function EventBookings(){
         try{
           const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/user-event-ticket/all`,
+            url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/user-event-ticket/all`,
             headers:{
                 "Authorization": paseto
             }
@@ -163,7 +164,7 @@ export default function EventBookings(){
           const coverImageHash = record.eventDetails.coverImageHash
             return( 
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Event cover image' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${coverImageHash.length < 10? IMAGE_PLACEHOLDER_HASH : coverImageHash}`}/>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Event cover image' src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${coverImageHash.length < 10? IMAGE_PLACEHOLDER_HASH : coverImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{record.eventDetails.name}</Text>   
                         {/* <Text type="secondary">{serviceName}</Text>   */}
@@ -186,7 +187,7 @@ export default function EventBookings(){
           const profilePicHash = user.profilePic
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${profilePicHash.length < 10? IMAGE_PLACEHOLDER_HASH : profilePicHash}`}/>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${profilePicHash.length < 10? IMAGE_PLACEHOLDER_HASH : profilePicHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{name}</Text>  
                         <Text type="secondary">{email}</Text>  
@@ -428,7 +429,7 @@ function DetailDrawer({selectedRecord,isDrawerOpen,closeDrawer}:DrawerProps){
     
       const nftMutation = useMutation({
         mutationFn: async(payload:any)=>{
-          const res = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/nft/event`,payload,{
+          const res = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/nft/event`,payload,{
             headers:{
                 "Authorization": paseto
             },
@@ -452,7 +453,7 @@ function DetailDrawer({selectedRecord,isDrawerOpen,closeDrawer}:DrawerProps){
       }
     
       const redeemTicketHandler = async(ticketPayload:any)=>{
-        const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/employee/redeem-ticket`, ticketPayload,{
+        const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/employee/redeem-ticket`, ticketPayload,{
             headers:{
                 "Authorization": paseto
             },

@@ -3,6 +3,7 @@ import { notification } from 'antd'
 import axios from 'axios'
 import {useState} from 'react'
 import { useAuthContext } from '../context/AuthContext'
+import utils from '../utils/env'
 
 
 export default function useMutateData<T>(url:string){
@@ -18,7 +19,7 @@ export default function useMutateData<T>(url:string){
     
 
     const createDataHandler = async(newItem:any)=>{
-        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1.0/${url}`, newItem,{
+        const {data} = await axios.post(`${utils.NEXT_PUBLIC_NEW_API_URL}/api/v1.0/${url}`, newItem,{
             headers:{
                 "Authorization": paseto
             },

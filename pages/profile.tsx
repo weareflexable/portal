@@ -15,6 +15,7 @@ import CurrentUser from '../components/Header/CurrentUser/CurrentUser';
 import axios from 'axios';
 import { uploadToPinata } from '../utils/nftStorage';
 import React from 'react';
+import utils from '../utils/env';
 
 
 
@@ -40,7 +41,7 @@ export default function Profile(){
     const [isLoadingProfile, setIsLoadingProfile] = useState(true)
 
     async function fetchUserDetails(){
-      const res = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/user`,{
+      const res = await axios.get(`${utils.NEXT_PUBLIC_NEW_API_URL}/user`,{
         headers:{
           "Authorization": paseto
         }
@@ -186,7 +187,7 @@ function EditableEmail({selectedRecord, isReadOnly}:EditableProp){
    
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/user`,updatedItem,{
+      const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/user`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -275,7 +276,7 @@ function EditableFirstName({selectedRecord}:EditableProp){
   
    
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/user`,updatedItem,{
+      const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/user`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -373,7 +374,7 @@ function EditableLastName({selectedRecord}:EditableProp){
    
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/user`,updatedItem,{
+      const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/user`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -468,7 +469,7 @@ function EditablePhone({selectedRecord}:EditableProp){
    const queryClient = useQueryClient()
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/user`,updatedItem,{
+      const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/user`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -566,7 +567,7 @@ function EditableGender({selectedRecord}:EditableProp){
    
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/user`,updatedItem,{
+      const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/user`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -675,7 +676,7 @@ function EditableCountry({selectedRecord}:EditableProp){
    const queryClient = useQueryClient()
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/user`,updatedItem,{
+      const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/user`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -782,7 +783,7 @@ function EditableImage({selectedRecord}:EditableProp){
  
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/user`,updatedItem,{
+    const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/user`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -831,7 +832,7 @@ function EditableImage({selectedRecord}:EditableProp){
 
 const readOnly = (
     <div style={{width:'100%', marginTop:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-      <Image style={{width:'150px', height:'150px', objectFit:'cover', borderRadius:'50%', border:'1px solid #f2f2f2'}} alt={`Profile pic for ${selectedRecord.name}`}  src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedCoverImageHash}`}/>
+      <Image style={{width:'150px', height:'150px', objectFit:'cover', borderRadius:'50%', border:'1px solid #f2f2f2'}} alt={`Profile pic for ${selectedRecord.name}`}  src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedCoverImageHash}`}/>
       <Button type="link" onClick={toggleEdit}>Edit</Button>
     </div>
 )

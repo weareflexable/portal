@@ -5,6 +5,7 @@ import { useEffect,useState } from 'react'
 import { useAuthContext } from '../context/AuthContext';
 import Logo from './logo.svg'
 import Image from 'next/image'
+import utils from '../utils/env';
 
 const {Title,Text} = Typography;
 
@@ -16,7 +17,7 @@ export default function Login(){
 
     const handleLogin = ()=>{ 
         if(window !== undefined){
-            location.href = `${process.env.NEXT_PUBLIC_AUTH}/login?redirect_to=portal`
+            location.href = `${utils.NEXT_PUBLIC_AUTH}/login?redirect_to=portal`
         }
     }
 

@@ -22,6 +22,7 @@ import timezone from 'dayjs/plugin/timezone'
 import advanced from "dayjs/plugin/advancedFormat"
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { EventOrder } from "../../../types/Booking";
+import utils from "../../../utils/env";
 
 dayjs.extend(relativeTime)
 dayjs.extend(utc)
@@ -48,7 +49,7 @@ export default function ManagerBookingsView(){
     async function fetchBookings(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/bookings?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+            url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/bookings?pageNumber=${pageNumber}&pageSize=${pageSize}`,
             headers:{
                 "Authorization": paseto
             }
@@ -109,7 +110,7 @@ export default function ManagerBookingsView(){
           const logoImageHash = record.serviceItemDetails[0]?.logoImageHash
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${logoImageHash.length < 20? IMAGE_PLACEHOLDER_HASH : logoImageHash}`}/>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${logoImageHash.length < 20? IMAGE_PLACEHOLDER_HASH : logoImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{serviceItemName}</Text>  
                         <Text type="secondary">{serviceName}</Text>  
@@ -145,7 +146,7 @@ export default function ManagerBookingsView(){
           const profilePicHash = user?.profilePic
             return( 
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Profile image' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${profilePicHash && profilePicHash.length < 20 ? IMAGE_PLACEHOLDER_HASH : profilePicHash}`}/>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Profile image' src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${profilePicHash && profilePicHash.length < 20 ? IMAGE_PLACEHOLDER_HASH : profilePicHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{firstName} {lastName}</Text>  
                         <Text type="secondary">{email}</Text>  
@@ -383,7 +384,7 @@ export default function ManagerBookingsView(){
     
 //       const nftMutation = useMutation({
 //         mutationFn: async(payload:any)=>{
-//           const res = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/nft/event`,payload,{
+//           const res = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/nft/event`,payload,{
 //             headers:{
 //                 "Authorization": paseto
 //             },
@@ -407,7 +408,7 @@ export default function ManagerBookingsView(){
 //       }
     
 //       const redeemTicketHandler = async(ticketPayload:any)=>{
-//         const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/employee/redeem-ticket`, ticketPayload,{
+//         const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/employee/redeem-ticket`, ticketPayload,{
 //             headers:{
 //                 "Authorization": paseto
 //             },

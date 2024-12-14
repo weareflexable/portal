@@ -9,6 +9,7 @@ import { useAuthContext } from "../../../context/AuthContext"
 import useUrlPrefix from "../../../hooks/useUrlPrefix"
 import { uploadToPinata } from "../../../utils/nftStorage"
 import { Service } from "../Services.types"
+import utils from "../../../utils/env"
 
 interface EditableProp{
     selectedRecord: Service
@@ -32,7 +33,7 @@ interface EditableProp{
    
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,updatedItem,{
+      const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -191,7 +192,7 @@ interface EditableProp{
   }
 
   const { ref: antRef } = usePlacesWidget({
-    apiKey: process.env.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API,  // move this key to env
+    apiKey: utils.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API,  // move this key to env
     options:{
         componentRestrictions:{country:'us'},
         types: ['address'],
@@ -218,7 +219,7 @@ interface EditableProp{
   });
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,updatedItem,{
+    const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -328,7 +329,7 @@ interface EditableProp{
     )
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,updatedItem,{
+      const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -417,7 +418,7 @@ interface EditableProp{
    
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,updatedItem,{
+      const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -523,13 +524,13 @@ interface EditableProp{
   
     const readOnly = (
         <div style={{width:'100%', marginTop:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-          <Image style={{width:'170px', height:'170px', border:'1px solid #f2f2f2', borderRadius:'50%'}} alt='Logo image for organization' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedLogoImageHash}`}/>
+          <Image style={{width:'170px', height:'170px', border:'1px solid #f2f2f2', borderRadius:'50%'}} alt='Logo image for organization' src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedLogoImageHash}`}/>
           <Button type="link" onClick={toggleEdit}>Edit</Button>
         </div>
     )
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,updatedItem,{
+      const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -645,13 +646,13 @@ interface EditableProp{
   
     const readOnly = (
         <div style={{width:'100%', marginTop:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-          <Image style={{width:'500px', height:'200px', objectFit:'cover', border:'1px solid #f2f2f2'}} alt='cover image for organization' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedCoverImageHash}`}/>
+          <Image style={{width:'500px', height:'200px', objectFit:'cover', border:'1px solid #f2f2f2'}} alt='cover image for organization' src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedCoverImageHash}`}/>
           <Button type="link" onClick={toggleEdit}>Edit</Button>
         </div>
     )
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,updatedItem,{
+      const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto

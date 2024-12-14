@@ -8,6 +8,7 @@ import { useRef, useState } from "react"
 import { usePlacesWidget } from "react-google-autocomplete"
 import { useAuthContext } from "../../../context/AuthContext"
 import useUrlPrefix from "../../../hooks/useUrlPrefix"
+import utils from "../../../utils/env"
 const countryList = require('country-list')
 
 
@@ -41,7 +42,7 @@ interface EditableProps{
    
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/${options?.mutationUrl}`,updatedItem,{
+      const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/${options?.mutationUrl}`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -146,7 +147,7 @@ interface EditableProps{
    const queryClient = useQueryClient()
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank`,updatedItem,{
+      const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -249,7 +250,7 @@ interface EditableProps{
    const queryClient = useQueryClient()
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank`,updatedItem,{
+      const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto

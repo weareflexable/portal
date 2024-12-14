@@ -5,6 +5,7 @@ import { getStorage, setStorage } from '../utils/storage';
 import  {useQuery} from '@tanstack/react-query'
 import axios from 'axios';
 import dayjs from 'dayjs'
+import utils from '../utils/env';
 
 
 const AuthContext = createContext<Values|undefined>(undefined);
@@ -76,7 +77,7 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
     
           try{
     
-            const res =  await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/decodePaseto`, {token: paseto },
+            const res =  await axios.post(`${utils.NEXT_PUBLIC_NEW_API_URL}/decodePaseto`, {token: paseto },
             {
               headers:{
               'Authorization': paseto
@@ -119,7 +120,7 @@ const AuthContextProvider = ({children}:AuthContextProviderProps)=>{
     // Effect for decoding user paseto and fetching user role.
     async function fetchCurrentUser(){
         // use axios to fetch
-        const res =  await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/user`,{
+        const res =  await axios.get(`${utils.NEXT_PUBLIC_NEW_API_URL}/user`,{
             headers:{
                 "Authorization": paseto
             }

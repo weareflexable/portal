@@ -8,6 +8,7 @@ import {PlusCircleOutlined, DeleteOutlined,EditOutlined} from "@ant-design/icons
 import { Availability, CustomDate, ServiceItem } from "../../../types/Services"
 import dayjs from 'dayjs'
 import useUrlPrefix from "../../../hooks/useUrlPrefix"
+import utils from "../../../utils/env"
 var utc = require('dayjs/plugin/utc')
 dayjs.extend(utc)
 
@@ -21,7 +22,7 @@ export default function AvailabilitySection({selectedServiceItem}:Props){
 
   
     async function fetchItemAvailability(){
-      const res = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items/availability?serviceItemId=${selectedServiceItem.id}&pageNumber=1&pageSize=50`,{
+      const res = await axios.get(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items/availability?serviceItemId=${selectedServiceItem.id}&pageNumber=1&pageSize=50`,{
        headers:{
          "Authorization":paseto
        }
@@ -81,7 +82,7 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
    
   
     const editMutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.put(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items/availability`,updatedItem,{
+      const {data} = await axios.put(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items/availability`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -103,7 +104,7 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
     const deleteMutationHandler = async(item:any)=>{
       const {data} = await axios({
         method:'delete',
-        url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items/availability`,
+        url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items/availability`,
         data:{id:item.id},
         headers:{
             //@ts-ignore
@@ -297,7 +298,7 @@ export function NewAvailability({selectedServiceItem}:NewAvailabilityProps){
     const urlPrefix = useUrlPrefix()
 
     const createMutaionHandler = async(updatedItem:any)=>{
-      const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items/availability`,updatedItem,{
+      const {data} = await axios.post(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items/availability`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto

@@ -21,6 +21,7 @@ import { convertToAmericanFormat } from "../../../../utils/phoneNumberFormatter"
 import { EditableText } from "../../../shared/Editables";
 import useUrlPrefix from "../../../../hooks/useUrlPrefix";
 import useRole from "../../../../hooks/useRole";
+import utils from "../../../../utils/env";
 
 
 var relativeTime = require('dayjs/plugin/relativeTime')
@@ -58,7 +59,7 @@ export default function ManagerOrgsView(){
     // async function fetchAllOrgs(){
     // const res = await axios({
     //         method:'get',
-    //         url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?pageNumber=${pageNumber}&pageSize=10`,
+    //         url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?pageNumber=${pageNumber}&pageSize=10`,
     //         headers:{
     //             "Authorization": paseto
     //         }
@@ -71,7 +72,7 @@ export default function ManagerOrgsView(){
     async function fetchOrgs(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?status=${currentStatus.id}&pageNumber=${pageNumber}&pageSize=${pageSize}`,
+            url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs?status=${currentStatus.id}&pageNumber=${pageNumber}&pageSize=${pageSize}`,
             headers:{
                 "Authorization": paseto
             }
@@ -86,7 +87,7 @@ export default function ManagerOrgsView(){
     async function changeOrgStatus({orgId, statusNumber}:{orgId:string, statusNumber: string}){
         const res = await axios({
             method:'patch',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
+            url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
             data:{
                 // key:'status',
                 status: statusNumber, // 0 means de-activated in db
@@ -101,7 +102,7 @@ export default function ManagerOrgsView(){
     async function changeOrgOwnerToAdmin({userId}:{userId:string}){
         const res = await axios({
             method:'patch',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/users-role`,
+            url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/users-role`,
             data:{
                 // key:'role',
                 role: '2', // 2 is for admin
@@ -427,7 +428,7 @@ export default function ManagerOrgsView(){
       console.log(record)
       const res = await axios({
           method:'patch',
-          url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
+          url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
           data:{
               // key:'status',
               status: '1', 
@@ -458,7 +459,7 @@ export default function ManagerOrgsView(){
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record?.logoImageHash?.length < 20? IMAGE_PLACEHOLDER_HASH :record?.logoImageHash}`}/>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record?.logoImageHash?.length < 20? IMAGE_PLACEHOLDER_HASH :record?.logoImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                        { record.status !==1?<Text>{record.name}</Text>:<Text style={{color:'#1677ff', cursor:'pointer'}} onClick={()=>gotoOrg(record)}>{record.name}</Text> }   
                         {/* <Text>{record.name}</Text> */}
@@ -659,7 +660,7 @@ async function reActivateOrgHandler(record:NewOrg){
   console.log(record)
   const res = await axios({
       method:'patch',
-      url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
+      url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
       data:{
           // key:'status',
           status: '1', 
@@ -684,7 +685,7 @@ onSettled:()=>{
 const deleteDataHandler = async(record:NewOrg)=>{      
   const {data} = await axios({
     method:'patch',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
+    url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,
     data: {
         //@ts-ignore
         id:record.orgId,

@@ -18,6 +18,7 @@ import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import advanced from "dayjs/plugin/advancedFormat"
 import relativeTime from 'dayjs/plugin/relativeTime'
+import utils from "../../../utils/env";
 
 dayjs.extend(relativeTime)
 dayjs.extend(utc)
@@ -45,7 +46,7 @@ export default function CommunityBookings(){
     async function fetchBookings(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/bookings/communities?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+            url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/bookings/communities?pageNumber=${pageNumber}&pageSize=${pageSize}`,
             headers:{
                 "Authorization": paseto
             }
@@ -107,7 +108,7 @@ export default function CommunityBookings(){
           
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image  style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${logoImageHash.length < 20? IMAGE_PLACEHOLDER_HASH : logoImageHash}`}/>
+                    <Image  style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${logoImageHash.length < 20? IMAGE_PLACEHOLDER_HASH : logoImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{record.communityDetails.name}</Text>  
                         {/* <Text type="secondary">{serviceName}</Text>   */}
@@ -130,7 +131,7 @@ export default function CommunityBookings(){
           const profilePicHash = user.profilePic
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${profilePicHash.length < 20? IMAGE_PLACEHOLDER_HASH : profilePicHash}`}/>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${profilePicHash.length < 20? IMAGE_PLACEHOLDER_HASH : profilePicHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{name}</Text>  
                         <Text type="secondary">{email}</Text>  
@@ -343,7 +344,7 @@ CommunityBookings.PageLayout = ManagerBookingsLayout
     
 //       const nftMutation = useMutation({
 //         mutationFn: async(payload:any)=>{
-//           const res = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/nft/community`,payload,{
+//           const res = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/nft/community`,payload,{
 //             headers:{
 //                 "Authorization": paseto
 //             },

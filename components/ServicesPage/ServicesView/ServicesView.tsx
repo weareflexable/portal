@@ -19,6 +19,7 @@ import useServiceTypes from "../../../hooks/useServiceTypes";
 import { convertToAmericanFormat } from "../../../utils/phoneNumberFormatter";
 import { EditableText} from "../../shared/Editables";
 import useUrlPrefix from "../../../hooks/useUrlPrefix";
+import utils from "../../../utils/env";
 
 
 var relativeTime = require('dayjs/plugin/relativeTime')
@@ -62,7 +63,7 @@ function VenuesTable(){
     // const res = await axios({
     //         method:'get',
     //         //@ts-ignore
-    //         url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=10`,
+    //         url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=10`,
 
     //         headers:{
     //             "Authorization": paseto
@@ -77,7 +78,7 @@ function VenuesTable(){
       const res = await axios({
               method:'get',
               //@ts-ignore
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
+              url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
 
               headers:{
                   "Authorization": paseto
@@ -91,7 +92,7 @@ function VenuesTable(){
     async function reActivateServiceHandler(record:Service){
         const res = await axios({
             method:'patch',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,
+            url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,
             data:{
                 // key:'status',
                 status: '1', 
@@ -177,7 +178,7 @@ function gotoServiceItemsPage(service:Service){
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.logoImageHash}`}/>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.logoImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Button onClick={()=>gotoServiceItemsPage(record)} type='link'>{record.name}</Button>  
                     </div>
@@ -404,7 +405,7 @@ function deleteService(){
 const deleteDataHandler = async(record:Service)=>{      
   const {data} = await axios({
     method:'patch',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,
+    url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`,
     data: {
         id:record.id,
         // key:'status',

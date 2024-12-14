@@ -15,6 +15,7 @@ import ErrorBoundary from '../shared/ErrorBoundary/ErrorBoundary';
 import OrgSwitcherModal from '../shared/OrgSwitcherModal/OrgSwitcherModal';
 import ServicesSwitcherModal from '../shared/ServicesSwitcherModal/ServicesSwitcherModal';
 import UnAuthenticatedView from '../shared/UnAuthenticated/UnAuthenticatedView';
+import utils from '../../utils/env';
 
 
 
@@ -93,7 +94,7 @@ const {Text} = Typography
 
                 <div style={{display:'flex', justifyContent:'flex-end'}}>
                   {
-                      !isAuthenticated ? <Button type='primary' onClick={()=>{location.href=`${process.env.NEXT_PUBLIC_AUTH}/login?redirect_to=portal`}}>Login</Button>
+                      !isAuthenticated ? <Button type='primary' onClick={()=>{location.href=`${utils.NEXT_PUBLIC_AUTH}/login?redirect_to=portal`}}>Login</Button>
                       :(
                         <div style={{display:'flex'}}>
                           <ServiceSwitcherButton onOpenSwitcher={()=>setSwitcherModal(!showSwitcherModal)}/>

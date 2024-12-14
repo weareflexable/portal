@@ -1,9 +1,10 @@
 
 import { PinataSDK } from "pinata";
+import utils from "./env";
 
 
 const pinata = new PinataSDK({
-  pinataJwt: process.env.NEXT_PUBLIC_PINATA_JWT!,
+  pinataJwt: utils.NEXT_PUBLIC_PINATA_JWT!,
   pinataGateway: "aqua-magic-hippopotamus-802.mypinata.cloud",
 });
 

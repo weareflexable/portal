@@ -10,6 +10,7 @@ import { useServicesContext } from '../../../context/ServicesContext';
 import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import useUrlPrefix from "../../../hooks/useUrlPrefix";
+import utils from "../../../utils/env";
 const {TextArea} = Input 
 
 
@@ -39,7 +40,7 @@ export default function ServiceItemTypesView(){
     async function fetchServiceType(){
       const res = await axios({
               method:'get',
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-types?pageNumber=1&pageSize=10  `,
+              url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-types?pageNumber=1&pageSize=10  `,
               headers:{
                   "Authorization": paseto
               }
@@ -52,7 +53,7 @@ export default function ServiceItemTypesView(){
     async function fetchServiceItemType(){
       const res = await axios({
               method:'get',
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-item-types?pageNumber=1&pageSize=10&serviceTypeId=${selectedFilter.id}`,
+              url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-item-types?pageNumber=1&pageSize=10&serviceTypeId=${selectedFilter.id}`,
               headers:{
                   "Authorization": paseto
               }
@@ -102,7 +103,7 @@ export default function ServiceItemTypesView(){
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    {/* <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.profilePic}`}/> */}
+                    {/* <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.profilePic}`}/> */}
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{record.name}</Text>  
                         {/* <Text type="secondary">{record.email}</Text>   */}
@@ -237,7 +238,7 @@ const AddServiceItemTypeForm: React.FC<ServiceItemTypeFormProps> = ({
 
 
   const createDataHandler = async(newItem:any)=>{
-    const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-item-types`, newItem,{
+    const {data} = await axios.post(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-item-types`, newItem,{
         headers:{
             "Authorization": paseto
         },
@@ -389,7 +390,7 @@ function deleteService(){
 const deleteDataHandler = async(record:ServiceItemType)=>{      
   const {data} = await axios({
     method:'delete',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-item-types`,
+    url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-item-types`,
     data: {
         id:record.id,
         serviceId: currentService.id
@@ -452,7 +453,7 @@ function EditableRole({selectedServiceItemType}:EditableProp){
 
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-item-types`,updatedItem,{
+    const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-item-types`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
