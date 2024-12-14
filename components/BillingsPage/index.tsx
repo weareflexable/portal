@@ -94,7 +94,7 @@ export default function BillingsView(){
       onSuccess:(data:any)=>{
         const stripeOnboardUrl = data.data
         console.log(stripeOnboardUrl)
-        // window.location.href = stripeOnboardUrl
+        window.location.href = stripeOnboardUrl
       },
       onError:(error:any)=>{
         console.log('Error generating account links')
