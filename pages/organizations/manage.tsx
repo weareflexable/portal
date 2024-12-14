@@ -14,6 +14,7 @@ import useUrlPrefix from '../../hooks/useUrlPrefix'
 import { useOrgContext } from '../../context/OrgContext'
 import { useAuthContext } from '../../context/AuthContext'
 import useEvent from '../../hooks/useEvents'
+import utils from '../../utils/env'
 
 
 const data = [
@@ -56,7 +57,7 @@ export default function Manage(){
     const coAdminQuery = useQuery({
         queryKey: ['co-Admins',currentOrg.orgId],
         queryFn: async()=>{
-            const res = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${prefix}/co-admin?pageSize=20&pageNumber=1&orgId=${currentOrg.orgId}`,{
+            const res = await axios.get(`${utils.NEXT_PUBLIC_NEW_API_URL}/${prefix}/co-admin?pageSize=20&pageNumber=1&orgId=${currentOrg.orgId}`,{
                 headers:{
                     'Authorization': paseto
                 }
@@ -68,7 +69,7 @@ export default function Manage(){
 
     const coAdminMutation = useMutation({
         mutationFn:async(payload:any)=>{
-            const res = await axios.delete(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${prefix}/co-admin`,{
+            const res = await axios.delete(`${utils.NEXT_PUBLIC_NEW_API_URL}/${prefix}/co-admin`,{
                 
                 headers:{
                     'Authorization': paseto
@@ -168,7 +169,7 @@ const CoAdminForm: React.FC<ICoAdmin> = ({
     const urlPrefix = useUrlPrefix()
   
     const createDataHandler = async(newItem:any)=>{
-      const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/co-admin`, newItem,{
+      const {data} = await axios.post(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/co-admin`, newItem,{
           headers:{
               "Authorization": paseto
           },

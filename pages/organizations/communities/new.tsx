@@ -21,6 +21,7 @@ import useOrgs from '../../../hooks/useOrgs';
 import { CommunityVenue, CommunityVenueForm as CommunityVenueFormType, CommunityVenueReq } from '../../../types/CommunityVenue';
 import { uploadToPinata} from "../../../utils/nftStorage";
 import { useOrgContext } from '../../../context/OrgContext';
+import utils from '../../../utils/env';
 
 
 
@@ -196,7 +197,7 @@ function BasicForm({nextStep, isBankConnected}:BasicInfoProps){
 
     const createDataHandler = async(newItem:CommunityReq)=>{
 
-        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`, newItem,{
+        const {data} = await axios.post(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`, newItem,{
             headers:{
                 "Authorization": paseto
             },
@@ -376,7 +377,7 @@ function VenuesForm({communityId}:VenueFormProp){
 
 
     const createDataHandler = async(newItem:CommunityVenueReq)=>{ 
-        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`, newItem,{
+        const {data} = await axios.post(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`, newItem,{
             headers:{
                 "Authorization": paseto
             },
@@ -547,7 +548,7 @@ function Artwork({onHandleArtwork}:IArtwork){
                     <Button icon={<UploadOutlined rev={''} style={{ marginBottom:'.5rem'}}  />} size='small' type='link'>Upload image</Button>
                 </Upload>
                 </div>
-                <AntImage alt='artwork'  style={{width:'400px', height:'400px', marginBottom:'.5rem', objectFit:'cover'}}  src={isDataSource? selectedArtwork: `${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${selectedArtwork}`}/>
+                <AntImage alt='artwork'  style={{width:'400px', height:'400px', marginBottom:'.5rem', objectFit:'cover'}}  src={isDataSource? selectedArtwork: `${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${selectedArtwork}`}/>
                 <Text type='secondary'>This cover image will be used for your listing on marketplace and for the Digital access token NFT</Text>
             </div>
             <ArtworkPicker 
@@ -585,11 +586,11 @@ function ArtworkPicker({isOpen, selected, currentServiceItemType, onSelectImage,
             open={isOpen}
        >
         <div style={{width:'100%', height:'100%', position:'relative',   overflowY: 'hidden', whiteSpace:'nowrap', overflowX:'scroll'}}>
-            {/* <Image alt='artwork for lineskip' style={{objectFit: 'cover', height:'300px', width:'400px'}} src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${lineSkipHash}`}/> */}
+            {/* <Image alt='artwork for lineskip' style={{objectFit: 'cover', height:'300px', width:'400px'}} src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${lineSkipHash}`}/> */}
             {
                 currentHashes.map((image:string)=>(
                     <div key={image} onClick={()=>onSelectImage(image)} style={{border:`4px solid ${selected === image? '#1677ff':'#eeeeee'}`,borderRadius:'4px',  display:'inline-block', marginRight:'1rem', padding:'.5rem'}}>
-                        <Image  alt='artwork for lineskip' height='300px' width='300px'  src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${image}`}/> 
+                        <Image  alt='artwork for lineskip' height='300px' width='300px'  src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${image}`}/> 
                     </div>
                 ))
             }
@@ -689,7 +690,7 @@ function CommunityVenueForm({remove, name, formInstance, restField}:CommunityVen
     }
 
       const { ref: antRef } = usePlacesWidget({
-        apiKey: `${process.env.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API}`, // move this key to env
+        apiKey: `${utils.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API}`, // move this key to env
         options:{
             componentRestrictions:{country:'us'},
             types: ['address'],

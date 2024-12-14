@@ -22,6 +22,7 @@ import useEvent from "../../../hooks/useEvents";
 import { IMAGE_PLACEHOLDER_HASH } from "../../../constants";
 import { usePlacesWidget } from "react-google-autocomplete";
 import useRole from "../../../hooks/useRole";
+import utils from "../../../utils/env";
 
 const {TextArea} = Input
 
@@ -67,7 +68,7 @@ function Events(){
     // const res = await axios({
     //         method:'get',
     //         //@ts-ignore
-    //         url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}&type=all`,
+    //         url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}&type=all`,
 
     //         headers:{
     //             "Authorization": paseto 
@@ -82,7 +83,7 @@ function Events(){
       const res = await axios({
               method:'get',
               //@ts-ignore
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}&type=all`,
+              url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}&type=all`,
 
               headers:{
                   "Authorization": paseto
@@ -96,7 +97,7 @@ function Events(){
     async function reActivateEventHandler(record:Event){
         const res = await axios({
             method:'patch',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,
+            url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,
             data:{
                 // key:'status',
                 status: '1', 
@@ -181,7 +182,7 @@ function gotoEventPage(event:Event){
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.coverImageHash.length < 20? IMAGE_PLACEHOLDER_HASH : record.coverImageHash}`}/>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.coverImageHash.length < 20? IMAGE_PLACEHOLDER_HASH : record.coverImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Button onClick={()=>gotoEventPage(record)} type='link'>{record.name}</Button>  
                     </div>
@@ -455,7 +456,7 @@ function deleteEvent(){
 const deleteDataHandler = async(record:Event)=>{      
   const {data} = await axios({
     method:'patch',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,
+    url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,
     data: {
         id:record.id,
         // key:'status',
@@ -478,7 +479,7 @@ const{isLoading:isDeletingItem} = deleteData
   async function publishEventHandler(record:Event){
         const res = await axios({
             method:'patch',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,
+            url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,
             data:{
                 // key:'status',
                 status: '1', 
@@ -604,7 +605,7 @@ export function EditableDescription({selectedRecord}:EditableProp){
   const urlPrefix = useUrlPrefix()
 
   const recordMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
+    const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -714,7 +715,7 @@ export function EditablePrice({selectedRecord}:EditableProp){
  const urlPrefix = useUrlPrefix()
 
   const recordMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
+    const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -810,7 +811,7 @@ export function EditableCharge({selectedRecord}:EditableProp){
  const urlPrefix = useUrlPrefix()
 
   const recordMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
+    const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -915,7 +916,7 @@ export function EditableName({selectedRecord}:EditableProp){
  const urlPrefix = useUrlPrefix()
 
   const recordMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
+    const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -1020,7 +1021,7 @@ export function EditableVenue({selectedRecord}:EditableProp){
  const urlPrefix = useUrlPrefix()
 
   const recordMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
+    const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -1122,13 +1123,13 @@ export function EditableLogoImage({selectedRecord}:EditableProp){
 
   const readOnly = (
       <div style={{width:'100%', marginTop:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Image style={{width:'170px', height:'170px', border:'1px solid #f2f2f2', borderRadius:'50%'}} alt='Cover image for event' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedCoverImageHash}`}/>
+        <Image style={{width:'170px', height:'170px', border:'1px solid #f2f2f2', borderRadius:'50%'}} alt='Cover image for event' src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedCoverImageHash}`}/>
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
   )
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
+    const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -1249,7 +1250,7 @@ export function EditableDate({selectedRecord}:EditableProp){
    const urlPrefix = useUrlPrefix()
   
     const recordMutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
+      const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -1360,7 +1361,7 @@ export function EditableTimeZone({selectedRecord}:EditableProp){
    const urlPrefix = useUrlPrefix()
   
     const recordMutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
+      const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -1481,7 +1482,7 @@ export function EditableTickets({selectedRecord}:EditableProp){
    const urlPrefix = useUrlPrefix()
   
     const recordMutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
+      const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -1582,7 +1583,7 @@ export function EditableDuration({selectedRecord}:EditableProp){
    const urlPrefix = useUrlPrefix()
   
     const recordMutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
+      const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -1684,7 +1685,7 @@ export function EditablePrivacy({selectedRecord}:EditableProp){
    const queryClient = useQueryClient()
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
+      const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -1849,7 +1850,7 @@ export function EditablePrivacy({selectedRecord}:EditableProp){
   }
   
   const { ref: antRef } = usePlacesWidget({
-    apiKey: process.env.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API,  // move this key to env
+    apiKey: utils.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API,  // move this key to env
     options:{
         componentRestrictions:{country:'us'},
         types: ['address'],
@@ -1876,7 +1877,7 @@ export function EditablePrivacy({selectedRecord}:EditableProp){
   });
   
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
+    const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/events`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto

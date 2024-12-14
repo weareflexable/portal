@@ -11,6 +11,7 @@ import { Bank } from "./Types/Banks.types";
 import useUrlPrefix from '../../hooks/useUrlPrefix'
 import { useOrgContext } from "../../context/OrgContext";
 import { useRouter } from "next/router";
+import utils from "../../utils/env";
 
 
 
@@ -32,7 +33,7 @@ export default function BillingsView(){
         const res = await axios({
             method:'get',
             //@ts-ignore
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank/stripe?orgId=${currentOrg.orgId}`,
+            url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank/stripe?orgId=${currentOrg.orgId}`,
             headers:{
                 "Authorization": paseto
             }
@@ -48,7 +49,7 @@ export default function BillingsView(){
 
     const deleteActionMutation = useMutation({
       mutationFn: async(payload:{orgId:string | undefined})=>{
-        const res = await axios.delete(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs/bank-account`,{data:payload,
+        const res = await axios.delete(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs/bank-account`,{data:payload,
             headers:{
               'Authorization': paseto
             }
@@ -65,7 +66,7 @@ export default function BillingsView(){
     })
     const editAccountMutation = useMutation({
       mutationFn: async(payload:{orgId:string | undefined})=>{
-        const res = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs/account-link`,payload,{
+        const res = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs/account-link`,payload,{
           headers:{
             'Authorization': paseto
           }
@@ -83,7 +84,7 @@ export default function BillingsView(){
 
     const accountLinkMutation = useMutation({
       mutationFn: async(payload:{orgId:string | undefined})=>{
-        const res = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs/account-link`,payload,{
+        const res = await axios.post(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/orgs/account-link`,payload,{
           headers:{
             'Authorization': paseto
           }

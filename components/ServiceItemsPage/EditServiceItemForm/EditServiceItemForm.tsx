@@ -10,6 +10,7 @@ import { ServiceItem } from "../../../types/Services"
 import {SelectOutlined} from "@ant-design/icons"
 import { ArtworkPicker } from "../Artwork"
 import Image from 'next/image'
+import utils from "../../../utils/env"
 
 const {Title} = Typography
 
@@ -34,7 +35,7 @@ interface EditableProp{
    const urlPrefix = useUrlPrefix()
   
     const recordMutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,updatedItem,{
+      const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -134,7 +135,7 @@ interface EditableProp{
    const urlPrefix = useUrlPrefix()
   
     const recordMutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,updatedItem,{
+      const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -229,7 +230,7 @@ interface EditableProp{
    
   
     const recordMutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,updatedItem,{
+      const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -328,7 +329,7 @@ interface EditableProp{
     const urlPrefix = useUrlPrefix()
   
     const recordMutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,updatedItem,{
+      const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -439,7 +440,7 @@ interface EditableProp{
    
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,updatedItem,{
+      const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -481,7 +482,7 @@ interface EditableProp{
        >
         <Row>
           <Col span={10}>
-           <Image alt='Artwork preview' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${artwork}`} height='300px' width='300px'/>
+           <Image alt='Artwork preview' src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${artwork}`} height='300px' width='300px'/>
            <Button shape='round' icon={<SelectOutlined rev={undefined} />} style={{ marginTop:'.5rem'}} onClick={toggleDrawer}>Select a different artwork</Button>
             <ArtworkPicker
               currentServiceItemType={serviceItemTypeName}
@@ -510,7 +511,7 @@ interface EditableProp{
 
     const readOnly = (
       <div style={{width:'100%', marginTop:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <AntImage style={{width:'300px', height:'300px', objectFit:'cover', border:'1px solid #f2f2f2'}} alt='cover image for serviceItem' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedCoverImageHash}`}/>
+        <AntImage style={{width:'300px', height:'300px', objectFit:'cover', border:'1px solid #f2f2f2'}} alt='cover image for serviceItem' src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedCoverImageHash}`}/>
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
     )
@@ -540,7 +541,7 @@ interface EditableProp{
  const urlPrefix = useUrlPrefix()
 
   const recordMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,updatedItem,{
+    const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/service-items`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto

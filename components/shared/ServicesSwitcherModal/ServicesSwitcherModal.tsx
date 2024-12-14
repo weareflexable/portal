@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useServicesContext } from '../../../context/ServicesContext'
 import useFetchUserServices from '../../../hooks/useFetchServices'
 import { Service } from '../../../types/Services'
+import utils from '../../../utils/env'
 
 interface ServiceSwitcherModalProps{
     isModalOpen: boolean
@@ -39,7 +40,7 @@ export default function ServiceSwitcherModal({isModalOpen, onCloseModal}:Service
                     <List.Item style={{border: 'none', marginBottom:'0'}}>
                         <div style={{width:'100%', borderRadius:'4px', background:'#f8f8f8', display:'flex', justifyContent: 'space-between', alignItems:'center', padding: '1.3em'}}>
                             <div style={{display:'flex',alignItems:'center'}}>
-                                <Avatar style={{marginRight:'.7rem'}} src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${item.logoImageHash}`}/>
+                                <Avatar style={{marginRight:'.7rem'}} src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${item.logoImageHash}`}/>
                                 <div style={{display:'flex', flexDirection:'column'}}>
                                 <Typography.Text>{item.name}</Typography.Text>
                                 <Typography.Text type='secondary'>{item.serviceType[0].name}</Typography.Text>

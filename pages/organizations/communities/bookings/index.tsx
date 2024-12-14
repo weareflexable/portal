@@ -28,6 +28,7 @@ dayjs.extend(advanced)
 
 
 import CommunitiesLayout from "../../../../components/Layout/CommunitiesLayout";
+import utils from "../../../../utils/env";
 
 const {Text} = Typography
 
@@ -48,7 +49,7 @@ export default function CommunityBookings(){
     async function fetchBookings(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/bookings/communities?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+            url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/bookings/communities?pageNumber=${pageNumber}&pageSize=${pageSize}`,
             headers:{
                 "Authorization": paseto
             }
@@ -110,7 +111,7 @@ export default function CommunityBookings(){
           const logoImageHash = record.communityDetails.artworkHash
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='community artwork hash' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${logoImageHash}`}/>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='community artwork hash' src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${logoImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{record.communityDetails.name}</Text>  
                         {/* <Text type="secondary">{serviceName}</Text>   */}
@@ -133,7 +134,7 @@ export default function CommunityBookings(){
           const profilePicHash = user.profilePic
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${profilePicHash.length < 10? IMAGE_PLACEHOLDER_HASH : profilePicHash}`}/>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${profilePicHash.length < 10? IMAGE_PLACEHOLDER_HASH : profilePicHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{name}</Text>  
                         <Text type="secondary">{email}</Text>  
@@ -363,7 +364,7 @@ function RedeemTicketForm({ticket, communityId, userId, isTicketExpired}:IRedeem
 
   const nftMutation = useMutation({
     mutationFn: async(payload:any)=>{
-      const res = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/nft/community`,payload,{
+      const res = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/nft/community`,payload,{
         headers:{
             "Authorization": paseto
         },
@@ -387,7 +388,7 @@ function RedeemTicketForm({ticket, communityId, userId, isTicketExpired}:IRedeem
   }
 
   const redeemTicketHandler = async(ticketPayload:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/employee/redeem-ticket`, ticketPayload,{
+    const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/employee/redeem-ticket`, ticketPayload,{
         headers:{
             "Authorization": paseto
         },

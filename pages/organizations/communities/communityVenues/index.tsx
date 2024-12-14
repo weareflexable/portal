@@ -22,6 +22,7 @@ import { CommunityVenue, Address } from '../../../../types/CommunityVenue';
 import useCommunity from '../../../../hooks/useCommunity';
 import { usePlacesWidget } from 'react-google-autocomplete';
 import { access } from 'fs';
+import utils from '../../../../utils/env';
 
 
 const {TextArea} = Input
@@ -56,7 +57,7 @@ function CommunityVenues(){
     // async function fetchAllCommunityVenues(){
     // const res = await axios({
     //         method:'get',
-    //         url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues?communityId=${currentCommunity.id}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
+    //         url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues?communityId=${currentCommunity.id}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
     //         headers:{
     //             "Authorization": paseto
     //         }
@@ -68,7 +69,7 @@ function CommunityVenues(){
     async function fetchCommunityVenues(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues?communityId=${currentCommunity.id}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
+            url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues?communityId=${currentCommunity.id}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
             headers:{
                 "Authorization": paseto
             }
@@ -82,7 +83,7 @@ function CommunityVenues(){
     async function changeCommunityVenueStatus({serviceItemId, statusNumber}:{serviceItemId:string, statusNumber: string}){
         const res = await axios({
             method:'patch',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`,
+            url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`,
             data:{
                 status: statusNumber, // 0 means de-activated in db
                 serviceItemId: serviceItemId 
@@ -137,7 +138,7 @@ function CommunityVenues(){
     async function reActivateCommunityVenueHandler(record:CommunityVenue){
       const res = await axios({
           method:'patch',
-          url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`,
+          url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`,
           data:{
               status: '1', 
               id: record.id  
@@ -378,7 +379,7 @@ function deleteCommunityVenue(){
 const deactivateDataHandler = async(record:CommunityVenue)=>{      
   const {data} = await axios({
     method:'patch',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`,
+    url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`,
     data: {
         id:record.id,
         status: '0'
@@ -391,7 +392,7 @@ const deactivateDataHandler = async(record:CommunityVenue)=>{
 const deleteDataHandler = async(record:CommunityVenue)=>{      
   const {data} = await axios({
     method:'delete',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`,
+    url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`,
     data: {
         id:record.id,
       },
@@ -582,7 +583,7 @@ const {currentCommunity} = useCommunity()
 }
 
 const { ref: antRef } = usePlacesWidget({
-  apiKey: process.env.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API,  // move this key to env
+  apiKey: utils.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API,  // move this key to env
   options:{
       componentRestrictions:{country:'us'},
       types: ['address'],
@@ -608,7 +609,7 @@ const { ref: antRef } = usePlacesWidget({
 });
 
 const mutationHandler = async(updatedItem:any)=>{
-  const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`,updatedItem,{
+  const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`,updatedItem,{
     headers:{
         //@ts-ignore
         "Authorization": paseto
@@ -718,7 +719,7 @@ export function EditablePromotion({selectedRecord}:EditableProp){
   const urlPrefix = useUrlPrefix()
 
   const recordMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`,updatedItem,{
+    const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -819,7 +820,7 @@ export function EditableName({selectedRecord}:EditableProp){
   const urlPrefix = useUrlPrefix()
 
   const recordMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`,updatedItem,{
+    const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -920,7 +921,7 @@ export function EditableMarketValue({selectedRecord}:EditableProp){
  const urlPrefix = useUrlPrefix()
 
   const recordMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`,updatedItem,{
+    const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -1023,7 +1024,7 @@ export function EditablePhone({selectedRecord}:EditableProp){
     )
   
     const nameMutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`,updatedItem,{
+      const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto

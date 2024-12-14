@@ -4,6 +4,7 @@ import {useState} from 'react'
 import { useAuthContext } from '../context/AuthContext'
 import { ServiceItem, ServicePayload } from '../types/Services'
 import {notification} from 'antd'
+import utils from '../utils/env'
 
  
 // type Item<T> 
@@ -43,7 +44,7 @@ export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
     
 
     const fetchData = async(url:string)=>{
-        const {data} = await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}${url}`,{
+        const {data} = await axios.get(`${utils.NEXT_PUBLIC_NEW_API_URL}${url}`,{
             headers:{
                 //@ts-ignore
                 "Authorization": paseto
@@ -54,7 +55,7 @@ export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
 
     const createDataHandler = async(newItem:any)=>{
         console.log('paseto',paseto)
-        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}${mutateUrl}`, newItem,{
+        const {data} = await axios.post(`${utils.NEXT_PUBLIC_NEW_API_URL}${mutateUrl}`, newItem,{
             headers:{
                 //@ts-ignore
                 "Authorization": paseto
@@ -64,7 +65,7 @@ export default function useCrudDB<T>(config:Config,queryKeys:string[]):{
     }
 
     const patchDataHandler = async(updatedItem:any)=>{
-        const {data} = await axios.put(`${process.env.NEXT_PUBLIC_NEW_API_URL}${patchUrl}`,updatedItem,{
+        const {data} = await axios.put(`${utils.NEXT_PUBLIC_NEW_API_URL}${patchUrl}`,updatedItem,{
             headers:{
                 //@ts-ignore
                 "Authorization": paseto

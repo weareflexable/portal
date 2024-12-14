@@ -15,6 +15,7 @@ import { Staff } from "../../types/Staff";
 import useUrlPrefix from "../../hooks/useUrlPrefix";
 import { useRouter } from "next/router";
 import EventsLayout from "../Layout/EventsLayout";
+import utils from "../../utils/env";
 const {TextArea} = Input
 
 
@@ -46,7 +47,7 @@ export default function StaffView(){
     async function fetchStaff(){
       const res = await axios({ 
               method:'get',
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/service?serviceId=${currentService.id}&pageNumber=${pageNumber}&pageSize=10&status=${currentFilter.id}`,
+              url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/service?serviceId=${currentService.id}&pageNumber=${pageNumber}&pageSize=10&status=${currentFilter.id}`,
               headers:{
                   "Authorization": paseto 
               } 
@@ -102,7 +103,7 @@ export default function StaffView(){
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    {/* <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.profilePic}`}/> */}
+                    {/* <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.profilePic}`}/> */}
                     <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`/favicon.ico`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Text>{record.name}</Text>  
@@ -245,7 +246,7 @@ const AddStaffForm: React.FC<StaffFormProps> = ({
   const urlPrefix = useUrlPrefix()
 
   const createDataHandler = async(newItem:any)=>{
-    const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/service`, newItem,{
+    const {data} = await axios.post(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/service`, newItem,{
         headers:{
             "Authorization": paseto
         },
@@ -404,7 +405,7 @@ const urlPrefix = useUrlPrefix()
 const deleteDataHandler = async(record:Staff)=>{      
   const {data} = await axios({
     method:'delete',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/service`,
+    url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/service`,
     data: {
         id:record.id,
         // serviceId: currentService.id
@@ -479,7 +480,7 @@ export function EditableRadio({id, options, selectedItem, fieldName, currentFiel
  const queryClient = useQueryClient()
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/service`,updatedItem,{
+    const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/staff/service`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto

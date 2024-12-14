@@ -7,6 +7,7 @@ const {Text,Title} = Typography
 import type { MenuProps } from 'antd';
 import { useServicesContext } from '../../../context/ServicesContext'
 import { useRouter } from 'next/router'
+import utils from '../../../utils/env'
 
 interface CurrentUserProps{
     user?: {email:string, role:string}
@@ -170,7 +171,7 @@ export default function CurrentUser({openOrgSwitcher}:CurrentUserProps){
             alignItems:'center',
           }}>
             
-             <Avatar size={'large'} style={{border:`2px solid ${borderColor}`}} src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${currentUser && currentUser.profilePic}`}/>
+             <Avatar size={'large'} style={{border:`2px solid ${borderColor}`}} src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${currentUser && currentUser.profilePic}`}/>
             
           {/* <Badge count={currentUser && currentUser.userRoleName} offset={[10, 10]}>  */}
           {/* <div style={{display:'flex', marginLeft:'.4rem', flexDirection:'column'}}> */}

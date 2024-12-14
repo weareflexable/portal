@@ -23,6 +23,7 @@ import { EditableArtwork } from "../../../components/CommunityPage/Editables/Art
 import { uploadToPinata } from "../../../utils/nftStorage";
 import { IMAGE_PLACEHOLDER_HASH } from "../../../constants";
 import useRole from "../../../hooks/useRole";
+import utils from "../../../utils/env";
 
 const {TextArea} = Input
 
@@ -62,7 +63,7 @@ function Communities(){
       const res = await axios({
               method:'get',
               //@ts-ignore
-              url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
+              url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community?orgId=${currentOrg.orgId}&pageNumber=${pageNumber}&pageSize=${pageSize}&status=${currentFilter.id}`,
 
               headers:{
                   "Authorization": paseto
@@ -76,7 +77,7 @@ function Communities(){
     async function reActivateCommunityHandler(record:Community){
         const res = await axios({
             method:'patch',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,
+            url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,
             data:{
                 // key:'status',
                 status: '1', 
@@ -151,7 +152,7 @@ function gotoCommunityItemsPage(community:Community){
         render:(_,record)=>{
             return(
                 <div style={{display:'flex',alignItems:'center'}}>
-                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.logoImageHash.length < 20? IMAGE_PLACEHOLDER_HASH :record.logoImageHash}`}/>
+                    <Image style={{width:'30px', height: '30px', marginRight:'.8rem', borderRadius:'50px'}} alt='Organization logo' src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${record.logoImageHash.length < 20? IMAGE_PLACEHOLDER_HASH :record.logoImageHash}`}/>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         <Button onClick={()=>gotoCommunityItemsPage(record)} type='link'>{record.name}</Button>  
                     </div>
@@ -366,7 +367,7 @@ function deleteCommunity(){
 const deleteDataHandler = async(record:Community)=>{      
   const {data} = await axios({
     method:'patch',
-    url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,
+    url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,
     data: {
         id:record.id,
         status: "0"
@@ -384,7 +385,7 @@ const{isLoading:isDeletingItem} = deleteData
   async function publishCommunityHandler(record:Community){
         const res = await axios({
             method:'patch',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,
+            url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,
             data:{
                 status: '1', 
                 id: record.id  
@@ -499,7 +500,7 @@ export function EditableDescription({selectedRecord}:EditableProp){
   const urlPrefix = useUrlPrefix()
 
   const recordMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,updatedItem,{
+    const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -604,7 +605,7 @@ export function EditableCharge({selectedRecord}:EditableProp){
  const urlPrefix = useUrlPrefix()
 
   const recordMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,updatedItem,{
+    const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -703,7 +704,7 @@ export function EditablePrice({selectedRecord}:EditableProp){
  const urlPrefix = useUrlPrefix()
 
   const recordMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,updatedItem,{
+    const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -805,7 +806,7 @@ export function EditableName({selectedRecord}:EditableProp){
  const urlPrefix = useUrlPrefix()
 
   const recordMutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,updatedItem,{
+    const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -903,13 +904,13 @@ export function EditableLogoImage({selectedRecord}:EditableProp){
 
   const readOnly = (
       <div style={{width:'100%', marginTop:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Image style={{width:'170px', height:'170px', border:'1px solid #f2f2f2', borderRadius:'50%'}} alt='Logo image for organization' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedLogoImageHash}`}/>
+        <Image style={{width:'170px', height:'170px', border:'1px solid #f2f2f2', borderRadius:'50%'}} alt='Logo image for organization' src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedLogoImageHash}`}/>
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
   )
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,updatedItem,{
+    const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto

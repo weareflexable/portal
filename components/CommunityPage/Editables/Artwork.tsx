@@ -10,6 +10,7 @@ import Image  from 'next/image'
 import { getBase64 } from "../../../utils/convertToBase64"
 import { useRouter } from "next/router"
 import { uploadToPinata } from "../../../utils/nftStorage"
+import utils from "../../../utils/env"
  
 const {Text} = Typography
 
@@ -55,7 +56,7 @@ export function EditableArtwork({selectedRecord}:EditableProp){
    
   
     const mutationHandler = async(updatedItem:any)=>{
-      const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,updatedItem,{
+      const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community`,updatedItem,{
         headers:{
             //@ts-ignore
             "Authorization": paseto
@@ -112,7 +113,7 @@ export function EditableArtwork({selectedRecord}:EditableProp){
        >
         <Row>
           <Col span={10}>
-           <Image alt='Artwork preview' src={isUploadedImage? artwork: `${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${artwork}`} height='300px' width='300px'/>
+           <Image alt='Artwork preview' src={isUploadedImage? artwork: `${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${artwork}`} height='300px' width='300px'/>
             <div style={{display:'flex',width:'400px', marginTop:'2rem',  flexDirection:'column'}}>
                 <div style={{alignSelf:'flex-end',  alignItems:'center', display:'flex'}}>
                 <Button shape='round' icon={<SelectOutlined rev={undefined} />} onClick={toggleDrawer}>Select a different artwork</Button> 
@@ -121,7 +122,7 @@ export function EditableArtwork({selectedRecord}:EditableProp){
                     <Button   size='small' type='link'>Upload</Button>
                 </Upload>
                 </div>
-                {/* <AntImage alt='artwork'  style={{width:'400px', height:'400px', marginBottom:'.5rem', objectFit:'cover'}}  src={isDataSource? selectedArtwork: `${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${selectedArtwork}`}/> */}
+                {/* <AntImage alt='artwork'  style={{width:'400px', height:'400px', marginBottom:'.5rem', objectFit:'cover'}}  src={isDataSource? selectedArtwork: `${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${selectedArtwork}`}/> */}
             </div>
             <ArtworkPicker
               isOpen ={isDrawerOpen}
@@ -149,7 +150,7 @@ export function EditableArtwork({selectedRecord}:EditableProp){
 
     const readOnly = (
       <div style={{width:'100%', marginTop:'1rem', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <AntImage style={{width:'300px', height:'300px', objectFit:'cover', border:'1px solid #f2f2f2'}} alt='cover image for community artwork' src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedArtworkHash}`}/>
+        <AntImage style={{width:'300px', height:'300px', objectFit:'cover', border:'1px solid #f2f2f2'}} alt='cover image for community artwork' src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${updatedArtworkHash}`}/>
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
     )
@@ -189,11 +190,11 @@ export function EditableArtwork({selectedRecord}:EditableProp){
         open={isOpen}
       >
         <div style={{width:'100%', height:'100%', position:'relative',   overflowY: 'hidden', whiteSpace:'nowrap', overflowX:'scroll'}}>
-            {/* <Image alt='artwork for lineskip' style={{objectFit: 'cover', height:'300px', width:'400px'}} src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${lineSkipHash}`}/> */}
+            {/* <Image alt='artwork for lineskip' style={{objectFit: 'cover', height:'300px', width:'400px'}} src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${lineSkipHash}`}/> */}
             {
                 currentHashes.map((image:string)=>(
                     <div key={image} onClick={()=>onSelectImage(image)} style={{border:`4px solid ${currentSelectedArtwork === image? '#1677ff':'#eeeeee'}`,borderRadius:'4px',  display:'inline-block', marginRight:'1rem', padding:'.5rem'}}>
-                        <Image  alt='artwork for community' height='300px' width='300px'  src={`${process.env.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${image}`}/> 
+                        <Image  alt='artwork for community' height='300px' width='300px'  src={`${utils.NEXT_PUBLIC_NFT_STORAGE_PREFIX_URL}/${image}`}/> 
                     </div>
                 ))
             }

@@ -13,6 +13,7 @@ import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { Bank } from "./Banks.types";
 import { usePlacesWidget } from "react-google-autocomplete";
 import useUrlPrefix from "../../../hooks/useUrlPrefix";
+import utils from "../../../utils/env";
 const {TextArea} = Input
 
 
@@ -37,7 +38,7 @@ export default function BankView(){
     async function fetchBanks(){
     const res = await axios({
             method:'get',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank?status=${currentFilter.id}&pageNumber=${pageNumber}&pageSize=${pageSize}`,
+            url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank?status=${currentFilter.id}&pageNumber=${pageNumber}&pageSize=${pageSize}`,
             headers:{
                 "Authorization": paseto
             }
@@ -50,7 +51,7 @@ export default function BankView(){
     async function changeOrgStatus({bankId, statusNumber}:{bankId:string, statusNumber: string}){
         const res = await axios({
             method:'patch',
-            url:`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank`,
+            url:`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank`,
             data:{
                 // key:'status',
                 status: statusNumber, // 0 means de-activated in db
@@ -298,7 +299,7 @@ function EditableName({selectedBank}:EditableProp){
  
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank`,updatedItem,{
+    const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -395,7 +396,7 @@ function EditableAccountNo({selectedBank}:EditableProp){
  
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank`,updatedItem,{
+    const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -490,7 +491,7 @@ function EditableCurrency({selectedBank}:EditableProp){
  
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/manager/org-bank`,updatedItem,{
+    const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/manager/org-bank`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -612,7 +613,7 @@ function EditableAddress({selectedBank}:EditableProp){
 }
 
   const { ref: antRef } = usePlacesWidget({
-    apiKey: `${process.env.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API}`, // move this key to env
+    apiKey: `${utils.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API}`, // move this key to env
     // apiKey: `AIzaSyB7ZUkMcIXpOKYU4r4iBMM9BFjCL5OpeeE`, // move this key to env
     onPlaceSelected: (place) => {
         // console.log(antInputRef.current.input)
@@ -630,7 +631,7 @@ function EditableAddress({selectedBank}:EditableProp){
   const urlPrefix = useUrlPrefix()
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
+    const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto
@@ -741,7 +742,7 @@ function EditableAccountType({selectedBank}:EditableProp){
   const urlPrefix = useUrlPrefix()
 
   const mutationHandler = async(updatedItem:any)=>{
-    const {data} = await axios.patch(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank`,updatedItem,{
+    const {data} = await axios.patch(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank`,updatedItem,{
       headers:{
           //@ts-ignore
           "Authorization": paseto

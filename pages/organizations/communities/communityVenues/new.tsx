@@ -16,6 +16,7 @@ import { useAuthContext } from "../../../../context/AuthContext";
 import useUrlPrefix from "../../../../hooks/useUrlPrefix";
 import { CommunityVenueReq } from "../../../../types/CommunityVenue";
 import useCommunity from "../../../../hooks/useCommunity";
+import utils from "../../../../utils/env";
 
 const getBase64 = (file: any): Promise<string> => 
 new Promise((resolve, reject) => {
@@ -89,7 +90,7 @@ export default function NewCommunityVenue(){
     }
 
       const { ref: antRef } = usePlacesWidget({
-        apiKey: `${process.env.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API}`, // move this key to env
+        apiKey: `${utils.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API}`, // move this key to env
         options:{
             componentRestrictions:{country:'us'},
             types: ['address'],
@@ -152,7 +153,7 @@ export default function NewCommunityVenue(){
 
   
       const createDataHandler = async(newItem:any)=>{
-        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`, newItem,{
+        const {data} = await axios.post(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/community-venues`, newItem,{
             headers:{
                 "Authorization": paseto
             },

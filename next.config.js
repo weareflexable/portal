@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
-const withBundleAnalyzer = require('@next/bundle-analyzer')
-const bundleAnalyzer = withBundleAnalyzer({enabled: process.env.ANALYZE === 'true'})
+// const withBundleAnalyzer = require('@next/bundle-analyzer')
+// const bundleAnalyzer = withBundleAnalyzer({enabled: utils.ANALYZE === 'true'})
 const nextConfig = {
   reactStrictMode: true,
   // swcMinify: true,

@@ -14,7 +14,7 @@ export default function useFetchUserServices(){
 
     const fetchServices = async()=>{
         //@ts-ignore
-        const {data} =  await axios.get(`${process.env.NEXT_PUBLIC_NEW_API_URL}/admin/services?key=org_id&value=${currentOrg.orgId}&pageNumber=1&pageSize=20`,{
+        const {data} =  await axios.get(`${utils.NEXT_PUBLIC_NEW_API_URL}/admin/services?key=org_id&value=${currentOrg.orgId}&pageNumber=1&pageSize=20`,{
             headers:{
                 //@ts-ignore
                 "Authorization": paseto

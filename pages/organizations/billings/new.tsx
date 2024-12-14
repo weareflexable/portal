@@ -10,6 +10,7 @@ import router, { useRouter } from 'next/router'
 import axios from 'axios'
 import { useAuthContext } from '../../../context/AuthContext'
 import useUrlPrefix from '../../../hooks/useUrlPrefix'
+import utils from '../../../utils/env'
 const countryList = require('country-list')
 
 const {Title} = Typography;
@@ -53,7 +54,7 @@ export default function CreateBankAccountForm(){
 
 
     const createDataHandler = async(newItem:any)=>{
-        const {data} = await axios.post(`${process.env.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank`, newItem,{
+        const {data} = await axios.post(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/org-bank`, newItem,{
             headers:{
                 "Authorization": paseto
             },
