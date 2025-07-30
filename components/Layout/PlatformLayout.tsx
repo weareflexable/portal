@@ -9,7 +9,7 @@ const {Title} = Typography
 
 
 interface PlatformLayoutProps{
-    children: ReactNode
+    children: ReactNode 
   }
   
   export default function PlatformLayout({children}:PlatformLayoutProps){

@@ -13,7 +13,7 @@ export default function ManagerOrganizations(){
 
     
     return(
-        <ManagerLayout>
+        <ManagerLayout> 
             <Row>
                 <Col offset={1} span={21}>
                     {/* <div style={{width:'100%', display:'flex', marginTop:'2rem', justifyContent:'space-between', alignItems:'center'}}>

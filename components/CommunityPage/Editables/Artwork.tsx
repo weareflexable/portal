@@ -134,7 +134,7 @@ export function EditableArtwork({selectedRecord}:EditableProp){
           <Col span={4}>
 
                 <Space >
-                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                         Cancel
                     </Button>
                     <Button shape="round" loading={isEditing || isHashingImage} disabled={artwork === ''} onClick={onFinish}  type="link" size="small"  htmlType="submit" >

@@ -342,7 +342,7 @@ export default function NewOrgForm(){
                     {/* onCancelFormCreation */}
                     <Form.Item style={{ marginTop:'4rem', width:'100%'}}>
                         <Space >
-                            <Button shape="round" onClick={()=>{}} type='ghost'>
+                            <Button shape="round" onClick={()=>{}} type="default" ghost>
                                 Cancel
                             </Button>
 

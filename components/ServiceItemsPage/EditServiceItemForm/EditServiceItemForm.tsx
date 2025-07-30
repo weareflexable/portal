@@ -93,7 +93,7 @@ interface EditableProp{
           <Col span={4}>
             <Form.Item style={{ width:'100%'}}>
                 <Space >
-                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                         Cancel
                     </Button>
                     <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
@@ -192,7 +192,7 @@ interface EditableProp{
           <Col span={4}>
             <Form.Item style={{ width:'100%'}}>
                 <Space >
-                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                         Cancel
                     </Button>
                     <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
@@ -290,7 +290,7 @@ interface EditableProp{
           <Col span={4}>
             <Form.Item style={{ width:'100%'}}>
                 <Space >
-                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                         Cancel
                     </Button>
                     <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
@@ -391,7 +391,7 @@ interface EditableProp{
           <Col span={4}>
             <Form.Item style={{ width:'100%'}}>
                 <Space >
-                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                         Cancel
                     </Button>
                     <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
@@ -495,7 +495,7 @@ interface EditableProp{
           <Col span={4}>
 
                 <Space >
-                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                         Cancel
                     </Button>
                     <Button shape="round" loading={isEditing} disabled={artwork === ''} onClick={onFinish}  type="link" size="small"  htmlType="submit" >
@@ -597,7 +597,7 @@ interface EditableProp{
         <Col span={4}>
           <Form.Item style={{ width:'100%'}}>
               <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                       Cancel
                   </Button>
                   <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >

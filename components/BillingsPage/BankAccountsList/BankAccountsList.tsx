@@ -1,4 +1,3 @@
-import React from 'react'
 import {Card,List,Typography,Button,Avatar, Descriptions} from 'antd'
 import {PlusCircleOutlined} from '@ant-design/icons'
 import { useRouter } from 'next/router'

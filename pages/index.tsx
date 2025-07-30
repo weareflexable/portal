@@ -6,9 +6,10 @@ import { useAuthContext } from '../context/AuthContext';
 import Logo from './logo.svg'
 import Image from 'next/image'
 import utils from '../utils/env';
+import { AuthButton } from '../components/AuthButton';
 
 const {Title,Text} = Typography;
-
+ 
 export default function Login(){
 
     const {replace} = useRouter()
@@ -63,7 +64,9 @@ function LoginView({handleLogin}: LoginViewProps) {
             <Image src="/logo.svg" width="200" height="200" />
             <Title style={{textAlign:'center', color:'white'}} level={1}>Start creating and managing <br/> events • communities • services  </Title>
             <Text style={{width:'70%', color:'white', textAlign:'center', marginTop:'.5rem', marginBottom:'2rem'}}>Flexable provides the easiest and fastest way to create and manage events, communities and services</Text>
-            <Button size='large' shape='round' type='primary' onClick={handleLogin}>Login to Dashboard</Button>
+            {/* <Button size='large' shape='round' type='primary' onClick={handleLogin}>Login to Dashboard</Button> */}
+             <appkit-button />
+             <AuthButton/>
         </div> 
     </div>;
 }

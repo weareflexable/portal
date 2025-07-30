@@ -11,7 +11,7 @@ import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/i
 import { useAuthContext } from '../../../context/AuthContext';
 import { useServicesContext } from '../../../context/ServicesContext';
 import {PlusOutlined} from '@ant-design/icons'
-import dayjs from 'dayjs'
+import dayjs from 'dayjs' 
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { ServiceItem } from "../../../types/Services";
 import { User } from "./Users.types";
@@ -476,7 +476,7 @@ function EditableRole({selectedUser}:EditableProp){
         </Col>
           <Form.Item style={{ width:'100%'}}>
               <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                       Cancel
                   </Button>
                   <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >

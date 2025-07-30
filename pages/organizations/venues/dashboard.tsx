@@ -10,7 +10,7 @@ const {Title} = Typography
 export default function Dashboard(){
 
 
-    return(
+    return( 
         <AppLayout>
            <Row>
               <Col offset={1} span={21}>

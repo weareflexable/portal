@@ -75,7 +75,7 @@ export default function NewStaffForm(){
 
             <Form.Item>
                 <Space>
-                    <Button shape='round' size='small' onClick={()=>router.back()} type='ghost'>
+                    <Button shape='round' size='small' onClick={()=>router.back()} type="default" ghost>
                         Cancel
                     </Button>
 

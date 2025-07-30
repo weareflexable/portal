@@ -8,7 +8,7 @@ const {Content} = Layout
 const {Title} =  Typography
 
 interface Props{
-    children: ReactNode
+    children: ReactNode 
 }
 export default function ManagerBookingsLayout({children}:Props){
 

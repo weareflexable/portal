@@ -13,7 +13,7 @@ import axios from 'axios';
 import {MoreOutlined,ReloadOutlined,DashOutlined} from '@ant-design/icons'
 import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
 
-import { useAuthContext } from '../../../context/AuthContext';
+import { useAuthContext } from '../../../context/AuthContext'; 
 import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { useOrgContext } from "../../../context/OrgContext";
@@ -266,12 +266,12 @@ export default function AdminOrgsView(){
     const getTicketDateColumnSearchProps = (dataIndex: DataIndex): ColumnType<NewOrg> =>({
       filterDropdown:({ setSelectedKeys, selectedKeys, confirm, clearFilters})=>(
         <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
-          <DatePicker 
+          {/* <DatePicker 
             value={dayjs(selectedKeys[0])}
             onChange={e => setSelectedKeys([dayjs(e).format('MMM DD, YYYY')] )}  
             style={{ marginBottom: 8, display: 'block' }} 
             ref={ticketSearchRef}
-            />
+            /> */}
   
           <Space>
             <Button
@@ -853,7 +853,7 @@ function EditableLogoImage({selectedOrg}:EditableProp){
         <Col span={4}>
           <Form.Item style={{ width:'100%'}}>
               <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                       Cancel
                   </Button>
                   <Button shape="round" loading={isEditing||isHashingImage} type="link" size="small"  htmlType="submit" >
@@ -1020,7 +1020,7 @@ const {isLoading:isEditing} = mutation
         <Col span={4}>
           <Form.Item style={{ width:'100%'}}>
               <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                       Cancel
                   </Button>
                   <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >

@@ -586,7 +586,7 @@ export default function NewEvent() {
                         {/* onCancelFormCreation */}
                         <Form.Item style={{ marginTop: '4rem' }}>
                             <Space>
-                                <Button shape="round" onClick={() => router.back()} type='ghost'>
+                                <Button shape="round" onClick={() => router.back()} type="default" ghost>
                                     Cancel
                                 </Button>
 

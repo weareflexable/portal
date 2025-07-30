@@ -245,7 +245,7 @@ const CoAdminForm: React.FC<ICoAdmin> = ({
   
           <Form.Item style={{marginTop:'3rem',marginBottom:'0'}}>
               <Space>
-                  <Button shape="round" onClick={()=>onCancel()} type='ghost'>
+                  <Button shape="round" onClick={()=>onCancel()} type="default" ghost>
                       Cancel
                   </Button>
   

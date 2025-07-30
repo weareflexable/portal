@@ -357,7 +357,7 @@ function EditableName({selectedBank}:EditableProp){
         <Col span={4}>
           <Form.Item style={{ width:'100%'}}>
               <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                       Cancel
                   </Button>
                   <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
@@ -454,7 +454,7 @@ function EditableAccountNo({selectedBank}:EditableProp){
         <Col span={4}>
           <Form.Item style={{ width:'100%'}}>
               <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                       Cancel
                   </Button>
                   <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
@@ -549,7 +549,7 @@ function EditableCurrency({selectedBank}:EditableProp){
         <Col span={4}>
           <Form.Item style={{ width:'100%'}}>
               <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                       Cancel
                   </Button>
                   <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
@@ -699,7 +699,7 @@ function EditableAddress({selectedBank}:EditableProp){
         <Col span={4}>
           <Form.Item style={{ width:'100%'}}>
               <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                       Cancel
                   </Button>
                   <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
@@ -792,7 +792,7 @@ function EditableAccountType({selectedBank}:EditableProp){
         <Col span={4}>
           <Form.Item style={{ width:'100%'}}>
               <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                       Cancel
                   </Button>
                   <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
