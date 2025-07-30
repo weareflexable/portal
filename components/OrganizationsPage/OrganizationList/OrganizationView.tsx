@@ -27,9 +27,8 @@ import useRole from "../../../hooks/useRole";
 import EmptyState from "../EmptyState";
 import { IMAGE_PLACEHOLDER_HASH } from "../../../constants";
 import utils from "../../../utils/env";
+import relativeTime from 'dayjs/plugin/relativeTime'
 
-
-var relativeTime = require('dayjs/plugin/relativeTime')
 dayjs.extend(relativeTime) 
 
 

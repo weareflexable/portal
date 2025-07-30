@@ -11,13 +11,14 @@ import axios from 'axios'
 import { useAuthContext } from '../../../context/AuthContext'
 import useUrlPrefix from '../../../hooks/useUrlPrefix'
 import utils from '../../../utils/env'
-const countryList = require('country-list')
+import getNames from 'country-list';
  
 const {Title} = Typography;
+
 const {Option} = Select
 
-const list = countryList.getNames()
-const america = countryList.getName('US')
+const list = getNames.getNames()
+const america = getNames.getName('US')
 const sortedList = list.sort()
 const prioritizedList = [america, ...sortedList]
 

@@ -2,11 +2,10 @@ import React, { useRef, useState, useEffect } from "react";
 import { Form, Row, Col, Image, Tooltip, Input, Upload, Button, notification, Typography, Space, Select, Radio, Divider, TimePicker, InputRef, FormInstance, DatePicker, Switch, Checkbox, Alert } from 'antd';
 import { UploadOutlined, MinusOutlined, QuestionCircleOutlined, ArrowLeftOutlined, InfoCircleOutlined, InboxOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc';
 
 const { Title, Text } = Typography
 const { TextArea } = Input
-
-var utc = require('dayjs/plugin/utc')
 
 
 import { useRouter } from 'next/router';

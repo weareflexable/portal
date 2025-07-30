@@ -9,7 +9,7 @@ import { usePlacesWidget } from "react-google-autocomplete"
 import { useAuthContext } from "../../../context/AuthContext"
 import useUrlPrefix from "../../../hooks/useUrlPrefix"
 import utils from "../../../utils/env"
-const countryList = require('country-list')
+import countryList from 'country-list';
 
  
 

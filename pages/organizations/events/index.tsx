@@ -23,13 +23,14 @@ import { IMAGE_PLACEHOLDER_HASH } from "../../../constants";
 import { usePlacesWidget } from "react-google-autocomplete";
 import useRole from "../../../hooks/useRole";
 import utils from "../../../utils/env";
+import relativeTime from 'dayjs/plugin/relativeTime';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import advanced from 'dayjs/plugin/advancedFormat';
+
+
 
 const {TextArea} = Input
-
-var relativeTime = require('dayjs/plugin/relativeTime')
-var utc = require("dayjs/plugin/utc")
-var timezone = require("dayjs/plugin/timezone")
-var advanced = require("dayjs/plugin/advancedFormat")
 
 dayjs.extend(relativeTime)
 dayjs.extend(timezone)

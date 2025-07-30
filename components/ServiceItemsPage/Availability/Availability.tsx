@@ -9,7 +9,8 @@ import { Availability, CustomDate, ServiceItem } from "../../../types/Services"
 import dayjs from 'dayjs'
 import useUrlPrefix from "../../../hooks/useUrlPrefix"
 import utils from "../../../utils/env"
-var utc = require('dayjs/plugin/utc')
+import utc from 'dayjs/plugin/utc'
+
 dayjs.extend(utc)
 
 interface Props{ 

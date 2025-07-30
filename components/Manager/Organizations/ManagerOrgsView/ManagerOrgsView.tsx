@@ -22,9 +22,9 @@ import { EditableText } from "../../../shared/Editables";
 import useUrlPrefix from "../../../../hooks/useUrlPrefix";
 import useRole from "../../../../hooks/useRole";
 import utils from "../../../../utils/env";
+import relativeTime from 'dayjs/plugin/relativeTime';
 
 
-var relativeTime = require('dayjs/plugin/relativeTime')
 dayjs.extend(relativeTime) 
 
 const IMAGE_PLACEHOLDER_HASH='bafkreiexo2kwvwmgfhutm7k4y6oaqo7vawlwlg6je55pqho6ch3ooxjiqa'

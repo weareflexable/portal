@@ -2,12 +2,12 @@ import React, {useEffect, useState} from 'react'
 import {Form,Input,Col, Image, Row, Select, Upload, Button, Layout, Typography, Spin, Space, Radio, Skeleton, Tag} from 'antd'
 import {ArrowLeftOutlined} from '@ant-design/icons'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import countryList from 'country-list';
 
 const {Option} = Select
 const {Title,Text, Paragraph} = Typography;
 const {Content} = Layout
 
-const countryList = require('country-list') 
 import { useRouter } from 'next/router';
 import { useAuthContext } from '../context/AuthContext';
 import axios from 'axios';

@@ -24,10 +24,10 @@ import { uploadToPinata } from "../../../utils/nftStorage";
 import { IMAGE_PLACEHOLDER_HASH } from "../../../constants";
 import useRole from "../../../hooks/useRole";
 import utils from "../../../utils/env";
+import relativeTime from 'dayjs/plugin/relativeTime';
 
 const {TextArea} = Input
 
-var relativeTime = require('dayjs/plugin/relativeTime')
 dayjs.extend(relativeTime)
 
 
