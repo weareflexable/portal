@@ -1,108 +1,60 @@
-name: "[${GITHUB_REF#refs/heads/}] Build and Push to GHCR"
+name: Build and Deploy Portal
 
 on:
   push:
-    branches: [staging, main, prod]
+    branches:
+      - main
+      - staging
+      - prod
 
 jobs:
-  next-build:
-    name: Build Image
+  build-and-deploy:
     runs-on: ubuntu-latest
+
+    env:
+      DEV_ENV_FILE: ${{ secrets.DEV_ENV_FILE }}
+      STAGING_ENV_FILE: ${{ secrets.STAGING_ENV_FILE }}
+      PROD_ENV_FILE: ${{ secrets.PROD_ENV_FILE }}
+
     steps:
-      - name: Code Checkout
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
-          node-version: "19"
+          node-version: 18
 
-      - name: Cache Node Modules and .next Cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ${{ github.workspace }}/node_modules
-            ${{ github.workspace }}/.next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js') }}
-          restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
 
-      - name: NextJS Build
+      - name: Inject .env file
         run: |
-          npm install --legacy-peer-deps
-          if [ "$GITHUB_REF_NAME" = "main" ]; then
-            echo "$DEV_ENV_FILE" | base64 --decode > .env
-          elif [ "$GITHUB_REF_NAME" = "staging" ]; then
-            echo "$STAGING_ENV_FILE" | base64 --decode > .env
-          elif [ "$GITHUB_REF_NAME" = "prod" ]; then
-            echo "$PROD_ENV_FILE" | base64 --decode > .env
-          else
-            echo "Invalid branch: $GITHUB_REF_NAME"
-            exit 1
-          fi
+          if [ "$GITHUB_REF_NAME" = "main" ]; then echo $DEV_ENV_FILE | base64 --decode > .env; fi
+          if [ "$GITHUB_REF_NAME" = "staging" ]; then echo $STAGING_ENV_FILE | base64 --decode > .env; fi
+          if [ "$GITHUB_REF_NAME" = "prod" ]; then echo $PROD_ENV_FILE | base64 --decode > .env; fi
 
-          echo "Environment file content:"
-          cat .env
-        env:
-          DEV_ENV_FILE: ${{ secrets.DEV_ENV_FILE }}
-          STAGING_ENV_FILE: ${{ secrets.STAGING_ENV_FILE }}
-          PROD_ENV_FILE: ${{ secrets.PROD_ENV_FILE }}
+      - name: Build project
+        run: npm run build
 
-      - name: Upload Next build
-        uses: actions/upload-artifact@v4
-        with:
-          name: build
-          path: |
-            .next
-            public
-            .env
-          retention-days: 1
-
-  ghcr-push:
-    name: Push Image to GHCR
-    needs: next-build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout source
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Setup environment file based on branch
-        run: |
-          echo "Branch detected: $GITHUB_REF_NAME"
-          if [ "$GITHUB_REF_NAME" = "main" ]; then
-            echo "$DEV_ENV_FILE" | base64 -d > .env
-          elif [ "$GITHUB_REF_NAME" = "staging" ]; then
-            echo "$STAGING_ENV_FILE" | base64 -d > .env
-          elif [ "$GITHUB_REF_NAME" = "prod" ]; then
-            echo "$PROD_ENV_FILE" | base64 -d > .env
-          fi
-          echo "Generated .env file:"
-          cat .env
-        env:
-          DEV_ENV_FILE: ${{ secrets.DEV_ENV_FILE }}
-          STAGING_ENV_FILE: ${{ secrets.STAGING_ENV_FILE }}
-          PROD_ENV_FILE: ${{ secrets.PROD_ENV_FILE }}
-
-      - name: Login to GitHub Container Registry
+      - name: Log in to GitHub Container Registry
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ secrets.GHCR_USERNAME }}
           password: ${{ secrets.GHCR_TOKEN }}
 
-      - name: Build and Push Docker Image
+      - name: Build and push Docker image
         run: |
-          BRANCH=${GITHUB_REF#refs/heads/}
-          IMAGE_SHA=ghcr.io/${GITHUB_REPOSITORY}:${GITHUB_SHA}
-          IMAGE_BRANCH=ghcr.io/${GITHUB_REPOSITORY}:${BRANCH}
-          docker build -t $IMAGE_SHA -t $IMAGE_BRANCH .
-          echo "Pushing Image to GitHub Container Registry"
-          docker push $IMAGE_SHA
-          docker push $IMAGE_BRANCH
+          BRANCH=${GITHUB_REF##*/}
+          IMAGE_NAME=ghcr.io/${{ github.repository }}:$BRANCH
+          IMAGE_COMMIT=ghcr.io/${{ github.repository }}:${{ github.sha }}
 
-      - name: Deploy on Dev server
+          docker build -t $IMAGE_NAME -t $IMAGE_COMMIT .
+          docker push $IMAGE_NAME
+          docker push $IMAGE_COMMIT
+
+      - name: Deploy to Dev
         if: github.ref == 'refs/heads/main'
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -111,14 +63,13 @@ jobs:
           key: ${{ secrets.DEV_REMOTE_SERVER_KEY }}
           port: ${{ secrets.DEV_SSH_PORT }}
           script: |
-            cd ~
             echo ${{ secrets.GHCR_TOKEN }} | podman login ghcr.io -u ${{ secrets.GHCR_USERNAME }} --password-stdin
-            sudo podman pull ghcr.io/weareflexable/portal:main
+            sudo podman pull ghcr.io/${{ github.repository }}:main
             sudo podman stop portal || true
             sudo podman rm portal || true
-            sudo podman run --name="portal" -p 9082:3000 -d ghcr.io/weareflexable/portal:main
+            sudo podman run --name="portal" -p 9082:3000 -d ghcr.io/${{ github.repository }}:main
 
-      - name: Deploy on Staging server
+      - name: Deploy to Staging
         if: github.ref == 'refs/heads/staging'
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -127,14 +78,13 @@ jobs:
           key: ${{ secrets.STAGING_REMOTE_SERVER_KEY }}
           port: ${{ secrets.STAGING_SSH_PORT }}
           script: |
-            cd ~
             echo ${{ secrets.GHCR_TOKEN }} | podman login ghcr.io -u ${{ secrets.GHCR_USERNAME }} --password-stdin
-            sudo podman pull ghcr.io/weareflexable/portal:staging
+            sudo podman pull ghcr.io/${{ github.repository }}:staging
             sudo podman stop portal || true
             sudo podman rm portal || true
-            sudo podman run --name="portal" -p 9082:3000 -d ghcr.io/weareflexable/portal:staging
+            sudo podman run --name="portal" -p 9083:3000 -d ghcr.io/${{ github.repository }}:staging
 
-      - name: Deploy on Prod server
+      - name: Deploy to Production
         if: github.ref == 'refs/heads/prod'
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -143,9 +93,8 @@ jobs:
           key: ${{ secrets.PROD_REMOTE_SERVER_KEY }}
           port: ${{ secrets.PROD_SSH_PORT }}
           script: |
-            cd ~
             echo ${{ secrets.GHCR_TOKEN }} | podman login ghcr.io -u ${{ secrets.GHCR_USERNAME }} --password-stdin
-            sudo podman pull ghcr.io/weareflexable/portal:prod
+            sudo podman pull ghcr.io/${{ github.repository }}:prod
             sudo podman stop portal || true
             sudo podman rm portal || true
-            sudo podman run --name="portal" -p 9083:3000 -d ghcr.io/weareflexable/portal:prod
+            sudo podman run --name="portal" -p 9084:3000 -d ghcr.io/${{ github.repository }}:prod
