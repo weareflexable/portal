@@ -1,9 +1,8 @@
 import { Content } from 'antd/lib/layout/layout'
 import React from 'react'
 import AppLayout from '../../../components/Layout/layout'
-import { useAuthContext } from '../../../context/AuthContext'
-import { Col, Row,Card,Statistic,Typography } from 'antd';
-import Earnings from '../../../components/DashboardPage/Earnings/Earnings';
+import { Col, Row,Typography } from 'antd';
+// import Earnings from '../../../components/DashboardPage/Earnings/Earnings';
 import StaffStats from '../../../components/DashboardPage/StaffStats/StaffStats';
 import ServiceStats from '../../../components/DashboardPage/ServiceStats/ServiceStats';
 const {Title} = Typography
@@ -27,9 +26,9 @@ export default function Dashboard(){
                       }}
                     >
                       <Row gutter={[16, 16]}> 
-                        <Col span={12}>
+                        {/* <Col span={12}>
                             <Earnings/> 
-                        </Col>
+                        </Col> */}
 
                           <Col  span={12}>
 

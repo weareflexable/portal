@@ -1,18 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useOrgs from "../../hooks/useOrgs";
 const {Text,Title} = Typography
-import React, { ReactNode, useRef, useState } from 'react'
-import {Typography,Button,Avatar, Upload, Tag, Alert, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Skeleton, InputNumber, notification, Modal, Popover} from 'antd'
+import React, { useState } from 'react'
+import {Typography,Button, Tag,  Image, Table, Input, Space, Radio, Dropdown, MenuProps, Drawer, Form, Badge, Skeleton, InputNumber, notification, Modal, Popover} from 'antd'
 import { useRouter } from 'next/router'
 import axios from 'axios';
-import {MoreOutlined,ReloadOutlined,MinusCircleOutlined,CopyOutlined,PlusOutlined} from '@ant-design/icons'
-
+import {MoreOutlined,ReloadOutlined,CopyOutlined,PlusOutlined} from '@ant-design/icons'
 import { useAuthContext } from '../../context/AuthContext';
 import { useServicesContext } from '../../context/ServicesContext';
 import dayjs from 'dayjs'
-import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
-import { Availability, AvailabilityPayload, CustomDate, ServiceItem } from "../../types/Services";
-import { EditableCharge, EditableCoverImage, EditableDescription, EditableName,  EditablePrice, EditableTicketsPerDay } from "./EditServiceItemForm/EditServiceItemForm";
+import  { ColumnsType, TableProps } from 'antd/lib/table';
+
+import { Availability, ServiceItem } from "../../types/Services";
+import { EditableCharge, EditableCoverImage, EditableDescription,  EditablePrice, EditableTicketsPerDay } from "./EditServiceItemForm/EditServiceItemForm";
 import AvailabilitySection from "./Availability/Availability";
 import useUrlPrefix from "../../hooks/useUrlPrefix";
 import useRole from "../../hooks/useRole";

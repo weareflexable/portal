@@ -1,15 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 const {Text} = Typography
-import { SearchOutlined } from '@ant-design/icons';
 import React, { useRef, useState } from 'react'
-import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form} from 'antd'
+import {Typography,Button, Image, Table, Input, Space, Radio, Dropdown, Drawer, Row, Col, Divider, Form} from 'antd'
 import axios from 'axios';
 import {MoreOutlined,ReloadOutlined} from '@ant-design/icons'
-import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
-
 import { useAuthContext } from '../../../context/AuthContext';
 import dayjs from 'dayjs'
-import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
+import  { ColumnsType, TableProps } from 'antd/lib/table';
 import { Bank } from "./Banks.types";
 import { usePlacesWidget } from "react-google-autocomplete";
 import useUrlPrefix from "../../../hooks/useUrlPrefix";

@@ -12,7 +12,7 @@ interface Props{
 }
 export default function ManagerBookingsLayout({children}:Props){
 
-    const {asPath,push,query,isReady} = useRouter()  
+    const {asPath,isReady} = useRouter()  
   
     const [selectedPage, setSelectedPage] = useState('service-types')
 

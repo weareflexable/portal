@@ -1,11 +1,15 @@
 /** @type {import('next').NextConfig} */
-// const withBundleAnalyzer = require('@next/bundle-analyzer')
-// const bundleAnalyzer = withBundleAnalyzer({enabled: utils.ANALYZE === 'true'})
 const nextConfig = {
+   webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.externals.push({
+        'd3-interpolate': 'commonjs d3-interpolate'
+      });
+    }
+    return config;
+  },
   reactStrictMode: true,
   eslint: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
   // swcMinify: true,

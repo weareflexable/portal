@@ -1,11 +1,7 @@
 import {
-
-    UserOutlined,
-    VideoCameraOutlined,
     LeftOutlined
   } from '@ant-design/icons';
-  import {  Menu, Breadcrumb, Typography ,Button, Layout, MenuProps, Spin, Col, Row} from 'antd';
-import Link from 'next/link';
+  import {  Menu, Typography ,Button, Layout, MenuProps, Spin, Col, Row} from 'antd';
 import { useRouter } from 'next/router';
 import React, { ReactNode, useState, useEffect } from 'react';
 import { useAuthContext } from '../../context/AuthContext';
@@ -14,7 +10,6 @@ import ErrorBoundary from '../shared/ErrorBoundary/ErrorBoundary';
 import OrgSwitcherModal from '../shared/OrgSwitcherModal/OrgSwitcherModal';
 import ServicesSwitcherModal from '../shared/ServicesSwitcherModal/ServicesSwitcherModal';
 import UnAuthenticatedView from '../shared/UnAuthenticated/UnAuthenticatedView';
-import useCommunity from '../../hooks/useCommunity';
 import useServices from '../../hooks/useServices';
 import utils from '../../utils/env';
 

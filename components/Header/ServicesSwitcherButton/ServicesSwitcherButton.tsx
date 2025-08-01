@@ -1,9 +1,8 @@
-import React,{useState} from 'react';
+import React from 'react';
 import {Typography,Avatar,Button} from 'antd'
 import { useServicesContext } from '../../../context/ServicesContext';
-import { useAuthContext } from '../../../context/AuthContext';
 import useRole from '../../../hooks/useRole';
-const {Text,Title,Paragraph} = Typography;
+const {Text} = Typography;
 
 interface ServiceSwitcherProps{
   onOpenSwitcher: ()=> void

@@ -5,7 +5,7 @@ import axios from "axios"
 import { useState } from "react"
 import { useAuthContext } from "../../../context/AuthContext"
 import {PlusCircleOutlined, DeleteOutlined,EditOutlined} from "@ant-design/icons"
-import { Availability, CustomDate, ServiceItem } from "../../../types/Services"
+import {  CustomDate, ServiceItem } from "../../../types/Services"
 import dayjs from 'dayjs'
 import useUrlPrefix from "../../../hooks/useUrlPrefix"
 import utils from "../../../utils/env"

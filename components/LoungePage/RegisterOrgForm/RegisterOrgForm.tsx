@@ -1,4 +1,4 @@
-import { Form, Input, Upload, Button, Divider } from "antd";
+import { Form, Input, Upload, Button } from "antd";
 import {UploadOutlined} from '@ant-design/icons'
 import {OrgFormData} from '../../../types/OrganisationTypes'
 import { usePlacesWidget } from "react-google-autocomplete";

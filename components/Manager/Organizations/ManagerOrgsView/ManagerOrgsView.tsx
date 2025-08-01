@@ -5,7 +5,7 @@ const {Text,Title} = Typography
 import { SearchOutlined, PlusOutlined, LikeOutlined, DashOutlined, DislikeOutlined } from '@ant-design/icons';
 import type { FilterConfirmProps } from 'antd/es/table/interface';
 import React, { useRef, useState } from 'react'
-import {Typography,Button, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Modal, notification} from 'antd'
+import {Typography,Button, Image, Table, InputRef, Input, Space, Radio, Dropdown, Drawer, Form, Modal, notification} from 'antd'
 import { useRouter } from 'next/router'
 import Highlighter from 'react-highlight-words'
 import axios from 'axios';
@@ -16,7 +16,7 @@ import { useAuthContext } from '../../../../context/AuthContext';
 import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { useOrgContext } from "../../../../context/OrgContext";
-import { EditableAddress, EditablePhone, EditableZipCode, EditableLogoImage, EditableCoverImage } from "../EditOrg";
+import { EditableAddress, EditableLogoImage } from "../EditOrg";
 import { convertToAmericanFormat } from "../../../../utils/phoneNumberFormatter";
 import { EditableText } from "../../../shared/Editables";
 import useUrlPrefix from "../../../../hooks/useUrlPrefix";

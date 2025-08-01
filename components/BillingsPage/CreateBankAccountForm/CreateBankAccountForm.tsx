@@ -1,20 +1,20 @@
-import React,{useState} from 'react'
-import {Card,Form,Input, InputNumber,Button, Radio, notification} from 'antd'
+import React from 'react'
+import { Form, Input, Button, Radio } from 'antd'
 import { BankAccount } from '../../../types/BankAccount'
 import { useOrgContext } from '../../../context/OrgContext'
 
 
 
-interface CreateBankAccountFormProps{
-    onCreateBankAccount: (formData:BankAccount)=>void
+interface CreateBankAccountFormProps {
+    onCreateBankAccount: (formData: BankAccount) => void
     isCreatingData: boolean
 }
 
-export default function CreateBankAccountForm({ isCreatingData, onCreateBankAccount}:CreateBankAccountFormProps){
+export default function CreateBankAccountForm({ isCreatingData, onCreateBankAccount }: CreateBankAccountFormProps) {
 
-    const {currentOrg} = useOrgContext()
+    const { currentOrg } = useOrgContext()
 
-    const onFinish = (formData:BankAccount)=>{
+    const onFinish = (formData: BankAccount) => {
         // call function to create store
         const formObject = {
             ...formData,
@@ -26,13 +26,13 @@ export default function CreateBankAccountForm({ isCreatingData, onCreateBankAcco
         // onCloseForm()
     }
 
-    return(
-             <Form
+    return (
+        <Form
             name="billingsForm"
             initialValues={{ remember: true }}
             layout='vertical'
             onFinish={onFinish}
-            >
+        >
 
             <Form.Item
                 name="beneficiaryName"
@@ -54,15 +54,15 @@ export default function CreateBankAccountForm({ isCreatingData, onCreateBankAcco
                 name="currency"
                 label="Currency"
                 rules={[{ required: true, message: 'Please select your currency' }]}
-             >
+            >
                 <Input placeholder="USD" />
             </Form.Item>
 
-            <Form.Item 
-                label="Account type" 
+            <Form.Item
+                label="Account type"
                 name="accountType"
                 rules={[{ required: true, message: 'Please select an accountType' }]}
-                >
+            >
                 <Radio.Group>
                     <Radio.Button value="savings">Savings</Radio.Button>
                     <Radio.Button value="current">Current</Radio.Button>
@@ -112,10 +112,10 @@ export default function CreateBankAccountForm({ isCreatingData, onCreateBankAcco
 
             <Form.Item>
                 <Button type="primary" loading={isCreatingData} htmlType="submit">
-                { isCreatingData? 'Creating...' :'Add bank details'}
+                    {isCreatingData ? 'Creating...' : 'Add bank details'}
                 </Button>
             </Form.Item>
 
-                </Form> 
+        </Form>
     )
 }

@@ -1,14 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 const {Text,Title} = Typography
-import React, { useEffect, useRef, useState } from 'react'
-import {Typography,Button,Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Modal, Alert, notification} from 'antd'
+import React, { useEffect, useState } from 'react'
+import {Typography,Button, Table, Input, Space, Radio, Drawer, Row, Col, Form, Badge, Modal, Alert, notification} from 'antd'
 import axios from 'axios';
-import {MoreOutlined,ReloadOutlined} from '@ant-design/icons'
-
+import {ReloadOutlined} from '@ant-design/icons'
 import { useAuthContext } from '../../../context/AuthContext';
 import { useServicesContext } from '../../../context/ServicesContext';
 import dayjs from 'dayjs'
-import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
+import  { ColumnsType} from 'antd/lib/table';
 import useUrlPrefix from "../../../hooks/useUrlPrefix";
 import utils from "../../../utils/env";
 const {TextArea} = Input 
