@@ -29,11 +29,20 @@ jobs:
 
       - name: NextJS Build
         run: |
-          npm install --legacy-peer-deps
-          if [ "$GITHUB_REF_NAME" = main ]; then echo $DEV_ENV_FILE | base64 --decode > .env; fi
-          if [ "$GITHUB_REF_NAME" = staging ]; then echo $STAGING_ENV_FILE | base64 --decode > .env; fi
-          if [ "$GITHUB_REF_NAME" = prod ]; then echo $PROD_ENV_FILE | base64 --decode > .env; fi
-          npm run build
+         npm install --legacy-peer-deps
+          if [ "$GITHUB_REF_NAME" = "main" ]; then
+            echo "$DEV_ENV_FILE" | base64 --decode > .env
+          elif [ "$GITHUB_REF_NAME" = "staging" ]; then
+            echo "$STAGING_ENV_FILE" | base64 --decode > .env
+          elif [ "$GITHUB_REF_NAME" = "prod" ]; then
+            echo "$PROD_ENV_FILE" | base64 --decode > .env
+          else
+            echo "Invalid branch: $GITHUB_REF_NAME"
+            exit 1
+          fi
+
+          echo "Environment file content:"
+          cat .env
         env:
           DEV_ENV_FILE: ${{secrets.DEV_ENV_FILE}}
           STAGING_ENV_FILE: ${{secrets.STAGING_ENV_FILE}}
