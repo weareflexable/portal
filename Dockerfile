@@ -24,6 +24,8 @@ RUN npm install && npm run postinstall
 # Copy rest of the application code
 COPY . .
 
+# Before build
+COPY .env .env
 # Ensure TypeScript builds correctly
 RUN npm run build
 
