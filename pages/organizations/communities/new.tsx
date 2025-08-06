@@ -345,8 +345,10 @@ function VenuesForm({communityId}:VenueFormProp){
 
     function transformContactNumbersInVenues(venues:CommunityVenueFormType[]){
 
-        const venuesCopy = [...venues];
-        const transformedVenues  = venuesCopy.map((venue:CommunityVenueFormType)=>{ 
+        // const venuesCopy = [...venues];
+         if (!Array.isArray(venues)) return [];
+
+        const transformedVenues  = venues.map((venue:CommunityVenueFormType)=>{ 
            return{
                name: venue.name,
                email: venue.email,

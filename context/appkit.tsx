@@ -17,7 +17,7 @@ const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
 if (!projectId) throw new Error('Project ID is not defined.');
 
 const metadata = {
-  name: 'Marketplace',
+  name: 'portal',
   description: 'Powering the future of AI interaction through multi-agent collaboration.',
   url: 'https://platform.dev.flexabledats.com/',
   icons: ['https://cyreneai.com/Cyrene_mobile_logo.webp']

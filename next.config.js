@@ -1,4 +1,7 @@
+
 /** @type {import('next').NextConfig} */
+const dotenv = require('dotenv');
+dotenv.config();
 const nextConfig = {
   reactStrictMode: true,
   eslint: {
@@ -14,7 +17,10 @@ const nextConfig = {
         pathname: '/ipfs/**',
       },
     ],
-  }
+  },
+   env: {
+    NEXT_PUBLIC_PROJECT_ID: process.env.NEXT_PUBLIC_PROJECT_ID,
+  },
 };
 
 module.exports =  nextConfig;
