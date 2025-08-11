@@ -9,6 +9,9 @@ import ErrorBoundary from '../components/shared/ErrorBoundary/ErrorBoundary';
 import {ConfigProvider} from 'antd'
 import Head from 'next/head'
 import { ComponentType, ReactNode } from 'react';
+import AppWalletProvider from '../components/AppWalletProvider';
+import { AppKit } from '../context/appkit';
+import { ChakraProvider } from '@chakra-ui/react'; 
 
 type ComponentWithPageLayout = AppProps & {
   Component: AppProps['Component'] & {
@@ -40,6 +43,8 @@ function MyApp({ Component, pageProps }: ComponentWithPageLayout) {
         <meta name="theme-color" content="#ffffff"/>
     </Head>
     <QueryClientProvider client={queryClient}>
+       <AppWalletProvider>
+         <AppKit>
       <AuthContextProvider>
         <OrgContextProvider>
             <ServicesContextProvider>
@@ -57,7 +62,10 @@ function MyApp({ Component, pageProps }: ComponentWithPageLayout) {
                   <Component.PageLayout>
                     <Component {...pageProps} />
                   </Component.PageLayout>
-                : <Component {...pageProps} />
+                :
+                  <ChakraProvider>
+                 <Component {...pageProps} />
+                 </ChakraProvider>
                    
               }
                 {/* </ConfigProvider> */}
@@ -66,6 +74,8 @@ function MyApp({ Component, pageProps }: ComponentWithPageLayout) {
             </ServicesContextProvider>
         </OrgContextProvider>
       </AuthContextProvider>
+      </AppKit>
+      </AppWalletProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
     </>

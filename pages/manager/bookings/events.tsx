@@ -9,7 +9,7 @@ import useUrlPrefix from "../../../hooks/useUrlPrefix";
 import { EventOrder } from "../../../types/Booking";
 import { numberFormatter } from "../../../utils/numberFormatter";
 // import converter from 'json-2-csv'
-import * as converter from 'json-2-csv';
+import * as converter from 'json-2-csv'; 
 // import { json2csv } from 'json-2-csv'
 
 const {Title,Text} = Typography

@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useState } from "react"
-import {Typography, Row, Col, Button, Skeleton, Layout, Segmented, Menu, MenuProps} from 'antd'
+import {Typography, Row, Col, Button, Skeleton, Layout, Menu, MenuProps} from 'antd'
 import CurrentUser from "../Header/CurrentUser/CurrentUser"
 import { useOrgContext } from "../../context/OrgContext"
 import { useRouter } from "next/router"

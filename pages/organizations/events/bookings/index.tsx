@@ -12,7 +12,7 @@ import { numberFormatter } from "../../../../utils/numberFormatter";
 import * as converter from 'json-2-csv';
 // import { json2csv } from 'json-2-csv'
 
-const {Title,Text} = Typography
+const {Title,Text} = Typography 
 
 
 import {ReloadOutlined, DownloadOutlined, MoreOutlined, CheckOutlined,StopOutlined} from '@ant-design/icons'

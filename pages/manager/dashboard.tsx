@@ -8,7 +8,7 @@ import AdminLayout from '../../components/Manager/Layout/Layout';
 // import AwaitingOrgsStats from '../components/AdminDashboard/AwaitingOrgsStats/AwaitingOrgs';
 // import ApprovedOrgsStats from '../components/AdminDashboard/ApprovedOrgsStats/ApprovedOrgsStats';
 const {Title} = Typography
-export default function Dashboard(){
+export default function Dashboard(){ 
 
 
     return(

@@ -1,15 +1,12 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import useOrgs from "../../../hooks/useOrgs";
+import { useQuery } from "@tanstack/react-query";
 const {Text,Title} = Typography
-import React, { useRef, useState } from 'react'
-import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Alert, notification} from 'antd'
-import { useRouter } from 'next/router'
+import React, { useState } from 'react'
+import {Typography,Button, Tag, Image,Table} from 'antd'
 import axios from 'axios';
-import {MoreOutlined,ReloadOutlined, CheckOutlined,StopOutlined} from '@ant-design/icons'
+import {ReloadOutlined, CheckOutlined,StopOutlined} from '@ant-design/icons'
 
 import { useAuthContext } from '../../../context/AuthContext';
-import {PlusOutlined} from '@ant-design/icons'
-import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
+import  { ColumnsType, TableProps } from 'antd/lib/table';
 import { ServiceItem } from "../../../types/Services";
 import { ManagerOrder } from "./Bookings.types";
 import useUrlPrefix from "../../../hooks/useUrlPrefix";
@@ -21,7 +18,6 @@ import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import advanced from "dayjs/plugin/advancedFormat"
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { EventOrder } from "../../../types/Booking";
 import utils from "../../../utils/env";
 
 dayjs.extend(relativeTime)

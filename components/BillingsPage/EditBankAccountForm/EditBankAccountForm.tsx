@@ -1,21 +1,21 @@
-import React,{useState} from 'react'
-import {Card,Form,Input, InputNumber,Button, Radio} from 'antd'
+import React from 'react'
+import { Form, Input, Button, Radio } from 'antd'
 import { BankAccount } from '../../../types/BankAccount'
 
 
-interface EditBankAccountFormProps{
+interface EditBankAccountFormProps {
     initValues: BankAccount | undefined
-    onEditBankAccount: (store:BankAccount)=>void
-    onCloseEditForm: ()=>void,
+    onEditBankAccount: (store: BankAccount) => void
+    onCloseEditForm: () => void,
     isPatchingData: boolean
 }
 
-export default function EditBankAccountForm({initValues,onEditBankAccount, isPatchingData, onCloseEditForm}:EditBankAccountFormProps){
+export default function EditBankAccountForm({ initValues, onEditBankAccount, isPatchingData }: EditBankAccountFormProps) {
 
 
     const prevValues = initValues;
 
-    const onFinish = (formData:BankAccount)=>{
+    const onFinish = (formData: BankAccount) => {
         // call function to create store
         const formObject = {
             ...prevValues,
@@ -26,20 +26,20 @@ export default function EditBankAccountForm({initValues,onEditBankAccount, isPat
 
     }
 
-    
 
-    return(
-             <Form
+
+    return (
+        <Form
             name="editBankAccountForm"
             initialValues={initValues}
             layout='vertical'
             onFinish={onFinish}
-            >
+        >
             <Form.Item
                 name="currency"
                 label="Beneficiary account currency"
                 rules={[{ required: true, message: 'Please select your currency' }]}
-             >
+            >
                 <Input placeholder="USD" />
             </Form.Item>
 
@@ -68,11 +68,11 @@ export default function EditBankAccountForm({initValues,onEditBankAccount, isPat
                 <Input type='number' placeholder="0127467382" />
             </Form.Item>
 
-            <Form.Item 
-                label="Account type" 
+            <Form.Item
+                label="Account type"
                 name="accountType"
                 rules={[{ required: true, message: 'Please select an accountType' }]}
-                >
+            >
                 <Radio.Group defaultValue='savings'>
                     <Radio.Button value="savings">Savings</Radio.Button>
                     <Radio.Button value="current">Current</Radio.Button>
@@ -107,10 +107,10 @@ export default function EditBankAccountForm({initValues,onEditBankAccount, isPat
 
             <Form.Item>
                 <Button type="primary" loading={isPatchingData} htmlType="submit">
-                 {isPatchingData? `Updating...`:`Apply changes`}
+                    {isPatchingData ? `Updating...` : `Apply changes`}
                 </Button>
             </Form.Item>
 
-                </Form> 
+        </Form>
     )
 }

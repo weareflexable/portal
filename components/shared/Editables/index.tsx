@@ -9,9 +9,9 @@ import { usePlacesWidget } from "react-google-autocomplete"
 import { useAuthContext } from "../../../context/AuthContext"
 import useUrlPrefix from "../../../hooks/useUrlPrefix"
 import utils from "../../../utils/env"
-const countryList = require('country-list')
+import countryList from 'country-list';
 
-
+ 
 
 interface EditableProps{
     id: string,
@@ -101,7 +101,7 @@ interface EditableProps{
           <Col span={4}>
             <Form.Item style={{ width:'100%'}}>
                 <Space >
-                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                         Cancel
                     </Button>
                     <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
@@ -211,7 +211,7 @@ interface EditableProps{
           <Col span={4}>
             <Form.Item style={{ width:'100%'}}>
                 <Space >
-                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                         Cancel
                     </Button>
                     <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
@@ -309,7 +309,7 @@ interface EditableProps{
           <Col span={4}>
             <Form.Item style={{ width:'100%'}}>
                 <Space >
-                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                         Cancel
                     </Button>
                     <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >

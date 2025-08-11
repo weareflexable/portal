@@ -29,11 +29,20 @@ jobs:
 
       - name: NextJS Build
         run: |
-          npm ci
-          if [ "$GITHUB_REF_NAME" = main ]; then echo $DEV_ENV_FILE | base64 --decode > .env; fi
-          if [ "$GITHUB_REF_NAME" = staging ]; then echo $STAGING_ENV_FILE | base64 --decode > .env; fi
-          if [ "$GITHUB_REF_NAME" = prod ]; then echo $PROD_ENV_FILE | base64 --decode > .env; fi
-          npm run build
+         npm install --legacy-peer-deps
+          if [ "$GITHUB_REF_NAME" = "main" ]; then
+            echo "$DEV_ENV_FILE" | base64 --decode > .env
+          elif [ "$GITHUB_REF_NAME" = "staging" ]; then
+            echo "$STAGING_ENV_FILE" | base64 --decode > .env
+          elif [ "$GITHUB_REF_NAME" = "prod" ]; then
+            echo "$PROD_ENV_FILE" | base64 --decode > .env
+          else
+            echo "Invalid branch: $GITHUB_REF_NAME"
+            exit 1
+          fi
+
+          echo "Environment file content:"
+          cat .env
         env:
           DEV_ENV_FILE: ${{secrets.DEV_ENV_FILE}}
           STAGING_ENV_FILE: ${{secrets.STAGING_ENV_FILE}}
@@ -47,19 +56,35 @@ jobs:
             .next
             public
             .env
-          retention-days: 0 # artifact retention duration, can be upto 30 days
+          retention-days: 1 # artifact retention duration, can be upto 30 days
   ghcr-push:
-    name:
+    name: Push Image to GHCR
     needs: next-build # Job depends on next-build(above) job
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout source
+        uses: actions/checkout@v3
 
-      - name: Download next build # Download the above uploaded artifact
-        uses: actions/download-artifact@v4
         with:
-          name: build
+          fetch-depth: 0
+
+      - name: Setup environment file based on branch
+        run: |
+          echo "Branch detected: $GITHUB_REF_NAME"
+          if [ "$GITHUB_REF_NAME" = "main" ]; then
+            echo "$DEV_ENV_FILE" | base64 -d > .env
+          elif [ "$GITHUB_REF_NAME" = "staging" ]; then
+            echo "$STAGING_ENV_FILE" | base64 -d > .env
+          elif [ "$GITHUB_REF_NAME" = "prod" ]; then
+            echo "$PROD_ENV_FILE" | base64 -d > .env
+          fi
+          echo "Generated .env file:"
+          cat .env
+        env:
+          DEV_ENV_FILE: ${{ secrets.DEV_ENV_FILE }}
+          STAGING_ENV_FILE: ${{ secrets.STAGING_ENV_FILE }}
+          PROD_ENV_FILE: ${{ secrets.PROD_ENV_FILE }}
+
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2

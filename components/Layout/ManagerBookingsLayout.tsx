@@ -8,11 +8,11 @@ const {Content} = Layout
 const {Title} =  Typography
 
 interface Props{
-    children: ReactNode
+    children: ReactNode 
 }
 export default function ManagerBookingsLayout({children}:Props){
 
-    const {asPath,push,query,isReady} = useRouter()  
+    const {asPath,isReady} = useRouter()  
   
     const [selectedPage, setSelectedPage] = useState('service-types')
 

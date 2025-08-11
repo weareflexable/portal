@@ -1,19 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 const {Text,Title} = Typography
-import React, { useEffect, useRef, useState } from 'react'
-import {Typography,Button,Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Modal, Alert, notification} from 'antd'
+import React, { useEffect, useState } from 'react'
+import {Typography,Button, Table, Input, Space, Radio, Drawer, Row, Col, Form, Badge, Modal, Alert, notification} from 'antd'
 import axios from 'axios';
-import {MoreOutlined,ReloadOutlined} from '@ant-design/icons'
-
+import {ReloadOutlined} from '@ant-design/icons'
 import { useAuthContext } from '../../../context/AuthContext';
 import { useServicesContext } from '../../../context/ServicesContext';
 import dayjs from 'dayjs'
-import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
+import  { ColumnsType} from 'antd/lib/table';
 import useUrlPrefix from "../../../hooks/useUrlPrefix";
 import utils from "../../../utils/env";
 const {TextArea} = Input 
 
-
+ 
 
 
 
@@ -324,7 +323,7 @@ function handleSubmit(formData:any){
         </Form.Item>
         <Form.Item style={{marginTop:'4rem',marginBottom:'0'}}>
             <Space>
-                <Button shape="round" onClick={()=>onCancel()} type='ghost'>
+                <Button shape="round" onClick={()=>onCancel()} type="default" ghost>
                     Cancel
                 </Button>
 
@@ -514,7 +513,7 @@ function EditableRole({selectedServiceItemType}:EditableProp){
         </Col>
           <Form.Item style={{ width:'100%'}}>
               <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                       Cancel
                   </Button>
                   <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >

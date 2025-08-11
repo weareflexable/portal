@@ -23,13 +23,14 @@ import { IMAGE_PLACEHOLDER_HASH } from "../../../constants";
 import { usePlacesWidget } from "react-google-autocomplete";
 import useRole from "../../../hooks/useRole";
 import utils from "../../../utils/env";
+import relativeTime from 'dayjs/plugin/relativeTime';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import advanced from 'dayjs/plugin/advancedFormat';
+
+
 
 const {TextArea} = Input
-
-var relativeTime = require('dayjs/plugin/relativeTime')
-var utc = require("dayjs/plugin/utc")
-var timezone = require("dayjs/plugin/timezone")
-var advanced = require("dayjs/plugin/advancedFormat")
 
 dayjs.extend(relativeTime)
 dayjs.extend(timezone)
@@ -672,7 +673,7 @@ export function EditableDescription({selectedRecord}:EditableProp){
         <Col span={4}>
           <Form.Item style={{ width:'100%'}}>
               <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                       Cancel
                   </Button>
                   <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
@@ -773,7 +774,7 @@ export function EditablePrice({selectedRecord}:EditableProp){
         <Col span={4}>
           <Form.Item style={{ width:'100%'}}>
               <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                       Cancel
                   </Button>
                   <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
@@ -868,7 +869,7 @@ export function EditableCharge({selectedRecord}:EditableProp){
         <Col span={4}>
           <Form.Item style={{ width:'100%'}}>
               <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                       Cancel
                   </Button>
                   <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
@@ -978,7 +979,7 @@ export function EditableName({selectedRecord}:EditableProp){
         <Col span={4}>
           <Form.Item style={{ width:'100%'}}>
               <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                       Cancel
                   </Button>
                   <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
@@ -1083,7 +1084,7 @@ export function EditableVenue({selectedRecord}:EditableProp){
         <Col span={4}>
           <Form.Item style={{ width:'100%'}}>
               <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                       Cancel
                   </Button>
                   <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
@@ -1204,7 +1205,7 @@ export function EditableLogoImage({selectedRecord}:EditableProp){
         <Col span={4}>
           <Form.Item style={{ width:'100%'}}>
               <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                       Cancel
                   </Button>
                   <Button shape="round" loading={isEditing||isHashingImage} type="link" size="small"  htmlType="submit" >
@@ -1318,7 +1319,7 @@ export function EditableDate({selectedRecord}:EditableProp){
           <Col span={4}>
             <Form.Item style={{ width:'100%'}}>
                 <Space >
-                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                         Cancel
                     </Button>
                     <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
@@ -1439,7 +1440,7 @@ export function EditableTimeZone({selectedRecord}:EditableProp){
           <Col span={4}>
             <Form.Item style={{ width:'100%'}}>
                 <Space >
-                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                         Cancel
                     </Button>
                     <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
@@ -1540,7 +1541,7 @@ export function EditableTickets({selectedRecord}:EditableProp){
           <Col span={4}>
             <Form.Item style={{ width:'100%'}}>
                 <Space >
-                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                         Cancel
                     </Button>
                     <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
@@ -1647,7 +1648,7 @@ export function EditableDuration({selectedRecord}:EditableProp){
           <Col span={4}>
             <Form.Item style={{ width:'100%'}}>
                 <Space >
-                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                         Cancel
                     </Button>
                     <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
@@ -1744,7 +1745,7 @@ export function EditablePrivacy({selectedRecord}:EditableProp){
           <Col span={4}>
             <Form.Item style={{ width:'100%'}}>
                 <Space >
-                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                         Cancel
                     </Button>
                     <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
@@ -1954,7 +1955,7 @@ export function EditablePrivacy({selectedRecord}:EditableProp){
           <Col span={4}>
             <Form.Item style={{ width:'100%'}}>
                 <Space >
-                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                         Cancel
                     </Button>
                     <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >

@@ -368,7 +368,7 @@ function handleSubmit(formData:any){
         </Form.Item>
         <Form.Item style={{marginTop:'4rem',marginBottom:'0'}}>
             <Space>
-                <Button shape="round" onClick={()=>onCancel()} type='ghost'>
+                <Button shape="round" onClick={()=>onCancel()} type="default" ghost>
                     Cancel
                 </Button>
 
@@ -571,7 +571,7 @@ export function EditableRadio({id, options, selectedItem, fieldName, currentFiel
         <Col span={4}>
           <Form.Item style={{ width:'100%'}}>
               <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                       Cancel
                   </Button>
                   <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >

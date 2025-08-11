@@ -1,4 +1,4 @@
-import {Typography,Button} from 'antd'
+import { Typography,Button } from 'antd'
 import { useRouter } from 'next/router'
 
 export default function Custom404() {
@@ -8,5 +8,5 @@ export default function Custom404() {
         <Typography.Title level={2}>404 - Page Not Found</Typography.Title>
         <Button style={{marginTop:'1rem'}} onClick={()=>router.replace('/')}>Go to Dashboard</Button>
     </div> 
-    )
+    ) 
   }

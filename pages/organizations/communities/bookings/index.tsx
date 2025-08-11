@@ -11,7 +11,7 @@ import { CommunityOrder, Order } from "../../../../types/Booking";
 import { ServiceItem } from "../../../../types/Services";
 import { numberFormatter } from "../../../../utils/numberFormatter";
 
-const {Title} = Typography
+const {Title} = Typography 
 
 import {ReloadOutlined, CheckOutlined,StopOutlined,MoreOutlined} from '@ant-design/icons'
 

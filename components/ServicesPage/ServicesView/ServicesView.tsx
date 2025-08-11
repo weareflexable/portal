@@ -20,9 +20,8 @@ import { convertToAmericanFormat } from "../../../utils/phoneNumberFormatter";
 import { EditableText} from "../../shared/Editables";
 import useUrlPrefix from "../../../hooks/useUrlPrefix";
 import utils from "../../../utils/env";
+import relativeTime from 'dayjs/plugin/relativeTime';
 
-
-var relativeTime = require('dayjs/plugin/relativeTime')
 dayjs.extend(relativeTime)
 
 type ServiceMenu={

@@ -1,56 +1,51 @@
-# Install dependencies only when needed
-FROM node:18-alpine AS deps
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat
-WORKDIR /app
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+# --- Step 1: Build Stage ---
+FROM node:16-bullseye AS builder
 
-# If using npm with a `package-lock.json` comment out above and use below instead
-# COPY package.json package-lock.json ./ 
-# RUN npm ci
+# Install system dependencies for native modules
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    build-essential
 
-# Rebuild the source code only when needed
-FROM node:16-alpine AS builder
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+
+
+# Copy package files first for better caching
+COPY package*.json ./
+
+# Force install legacy peer deps (important for AntD 5 + Chakra + Next.js)
+RUN npm config set legacy-peer-deps true
+RUN npm ci
+
+
+# After npm install
+RUN npm install && npm run postinstall
+# Copy rest of the application code
 COPY . .
 
-# Next.js collects completely anonymous telemetry data about general usage.
-# Learn more here: https://nextjs.org/telemetry
-# Uncomment the following line in case you want to disable telemetry during the build.
-# ENV NEXT_TELEMETRY_DISABLED 1
+# Before build
+COPY .env .env
+# Ensure TypeScript builds correctly
+RUN npm run build
 
-RUN yarn build
+# --- Step 2: Production Runner Stage ---
+FROM node:18-alpine AS runner
 
-# If using npm comment out above and use below instead
-# RUN npm run build
 
-# Production image, copy all the files and run next
-FROM node:16-alpine AS runner
 WORKDIR /app
 
-ENV NODE_ENV production
-# Uncomment the following line in case you want to disable telemetry during runtime.
-# ENV NEXT_TELEMETRY_DISABLED 1
+# Only copy what’s needed to run
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-
-# You only need to copy next.config.js if you are NOT using the default configuration
-# COPY --from=builder /app/next.config.js ./
+COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/next.config.js ./next.config.js
 
-# Automatically leverage output traces to reduce image size 
-# https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-
-USER nextjs
+ENV NODE_ENV=production
 
 EXPOSE 3000
 
-ENV PORT 3000
-
-CMD ["node", "server.js"]
+# Use node instead of npm (better control)
+CMD ["node", "node_modules/next/dist/bin/next", "start"]

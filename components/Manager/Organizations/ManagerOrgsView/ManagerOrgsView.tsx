@@ -1,30 +1,30 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { NewOrg } from "../../../../types/OrganisationTypes";
-import useOrgs from "../../../../hooks/useOrgs";
+
 const {Text,Title} = Typography
 import { SearchOutlined, PlusOutlined, LikeOutlined, DashOutlined, DislikeOutlined } from '@ant-design/icons';
 import type { FilterConfirmProps } from 'antd/es/table/interface';
 import React, { useRef, useState } from 'react'
-import {Typography,Button,Avatar, Alert, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Modal, notification} from 'antd'
+import {Typography,Button, Image, Table, InputRef, Input, Space, Radio, Dropdown, Drawer, Form, Modal, notification} from 'antd'
 import { useRouter } from 'next/router'
 import Highlighter from 'react-highlight-words'
 import axios from 'axios';
 import {MoreOutlined,ReloadOutlined} from '@ant-design/icons'
-import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
-import Head from 'next/head'
+import { FilterValue } from 'antd/lib/table/interface';
+import Head from 'next/head' 
 import { useAuthContext } from '../../../../context/AuthContext';
 import dayjs from 'dayjs'
 import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { useOrgContext } from "../../../../context/OrgContext";
-import { EditableName, EditableAddress, EditablePhone, EditableZipCode, EditableLogoImage, EditableCoverImage } from "../EditOrg";
+import { EditableAddress, EditableLogoImage } from "../EditOrg";
 import { convertToAmericanFormat } from "../../../../utils/phoneNumberFormatter";
 import { EditableText } from "../../../shared/Editables";
 import useUrlPrefix from "../../../../hooks/useUrlPrefix";
 import useRole from "../../../../hooks/useRole";
 import utils from "../../../../utils/env";
+import relativeTime from 'dayjs/plugin/relativeTime';
 
 
-var relativeTime = require('dayjs/plugin/relativeTime')
 dayjs.extend(relativeTime) 
 
 const IMAGE_PLACEHOLDER_HASH='bafkreiexo2kwvwmgfhutm7k4y6oaqo7vawlwlg6je55pqho6ch3ooxjiqa'
@@ -326,13 +326,13 @@ export default function ManagerOrgsView(){
     const getTicketDateColumnSearchProps = (dataIndex: DataIndex): ColumnType<NewOrg> =>({
       filterDropdown:({ setSelectedKeys, selectedKeys, confirm, clearFilters})=>(
         <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
-          <DatePicker 
+          {/* <DatePicker 
             value={dayjs(selectedKeys[0])}
             onChange={e => setSelectedKeys([dayjs(e).format('MMM DD, YYYY')] )}  
             style={{ marginBottom: 8, display: 'block' }} 
             ref={ticketSearchRef}
             />
-  
+   */}
           <Space>
             <Button
               type="primary"

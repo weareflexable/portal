@@ -1,20 +1,17 @@
-import {useEffect, useState} from 'react'
-import {Form,Input,Col, Image, Row, Select, Upload, Button, Layout, Typography, Avatar, Spin, Space, Radio, Skeleton, Tag} from 'antd'
-import {UploadOutlined, ArrowLeftOutlined} from '@ant-design/icons'
-import {QueryClient, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import React, {useEffect, useState} from 'react'
+import {Form,Input,Col, Image, Row, Select, Upload, Button, Layout, Typography, Spin, Space, Radio, Skeleton, Tag} from 'antd'
+import {ArrowLeftOutlined} from '@ant-design/icons'
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import countryList from 'country-list';
 
 const {Option} = Select
 const {Title,Text, Paragraph} = Typography;
 const {Content} = Layout
 
-const countryList = require('country-list')
-import codes from 'country-calling-code';
 import { useRouter } from 'next/router';
 import { useAuthContext } from '../context/AuthContext';
-import CurrentUser from '../components/Header/CurrentUser/CurrentUser';
 import axios from 'axios';
 import { uploadToPinata } from '../utils/nftStorage';
-import React from 'react';
 import utils from '../utils/env';
 
 
@@ -146,21 +143,6 @@ export default function Profile(){
     )
 }
 
-
-function getPrefixSelector(userCountry:any){
-    let currenUserCountry = codes.forEach((item,index) =>{
-        item.country === userCountry ? item.countryCodes[0]:'1'
-    })
-    return(
-        <Form.Item name="prefix" noStyle>
-        <Select defaultValue={'1'} style={{ width: 120 }}>
-          {codes.map(code=>
-              <Option key={code.country} value={code.countryCodes[0]}>+{code.countryCodes[0]}</Option>
-          )}
-        </Select>
-      </Form.Item> 
-    )
-}
 // const prefixSelector = (
    
 //   );
@@ -217,7 +199,7 @@ function EditableEmail({selectedRecord, isReadOnly}:EditableProp){
   
     const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{selectedRecord.email}</Text>
+        <Text>{selectedRecord?.email}</Text>
         {isReadOnly?null:<Button type="link" onClick={toggleEdit}>Edit</Button>}
       </div>
   )
@@ -241,7 +223,7 @@ function EditableEmail({selectedRecord, isReadOnly}:EditableProp){
           <Col span={4}>
             <Form.Item style={{ width:'100%'}}>
                 <Space >
-                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                         Cancel
                     </Button>
                     <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
@@ -311,7 +293,7 @@ function EditableFirstName({selectedRecord}:EditableProp){
   
     const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{selectedRecord.firstName}</Text>
+        <Text>{selectedRecord?.firstName}</Text>
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
   )
@@ -335,7 +317,7 @@ function EditableFirstName({selectedRecord}:EditableProp){
           <Col span={4}>
             <Form.Item style={{ width:'100%'}}>
                 <Space >
-                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                         Cancel
                     </Button>
                     <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
@@ -409,7 +391,7 @@ function EditableLastName({selectedRecord}:EditableProp){
   
     const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{selectedRecord.lastName}</Text>
+        <Text>{selectedRecord?.lastName}</Text>
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
   )
@@ -433,7 +415,7 @@ function EditableLastName({selectedRecord}:EditableProp){
           <Col span={4}>
             <Form.Item style={{ width:'100%'}}>
                 <Space >
-                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                         Cancel
                     </Button>
                     <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
@@ -505,7 +487,7 @@ function EditablePhone({selectedRecord}:EditableProp){
   
     const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{selectedRecord.contactNumber}</Text>
+        <Text>{selectedRecord?.contactNumber}</Text>
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
   )
@@ -529,7 +511,7 @@ function EditablePhone({selectedRecord}:EditableProp){
           <Col span={4}>
             <Form.Item style={{ width:'100%'}}>
                 <Space >
-                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                         Cancel
                     </Button>
                     <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
@@ -604,7 +586,7 @@ function EditableGender({selectedRecord}:EditableProp){
   
     const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{selectedRecord.gender}</Text>
+        <Text>{selectedRecord?.gender}</Text>
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
   )
@@ -632,7 +614,7 @@ function EditableGender({selectedRecord}:EditableProp){
           <Col span={4}>
             <Form.Item style={{ width:'100%'}}>
                 <Space >
-                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                         Cancel
                     </Button>
                     <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
@@ -711,7 +693,7 @@ function EditableCountry({selectedRecord}:EditableProp){
   
     const readOnly = (
       <div style={{width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <Text>{selectedRecord.country}</Text>
+        <Text>{selectedRecord?.country}</Text>
         <Button type="link" onClick={toggleEdit}>Edit</Button>
       </div>
   )
@@ -743,7 +725,7 @@ function EditableCountry({selectedRecord}:EditableProp){
           <Col span={4}>
             <Form.Item style={{ width:'100%'}}>
                 <Space >
-                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                    <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                         Cancel
                     </Button>
                     <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >
@@ -862,7 +844,7 @@ const readOnly = (
         <Col span={4}>
           <Form.Item style={{ width:'100%'}}>
               <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                       Cancel
                   </Button>
                   <Button shape="round" loading={isEditing||isHashingImage} type="link" size="small"  htmlType="submit" >

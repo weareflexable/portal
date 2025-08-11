@@ -10,7 +10,7 @@ const {Text,Title} = Typography;
 import {QuestionCircleOutlined,SelectOutlined,ArrowLeftOutlined, UploadOutlined, MinusOutlined,MinusCircleOutlined,InfoCircleOutlined,PlusCircleOutlined} from '@ant-design/icons'
 
 
-import router, { useRouter } from 'next/router';
+import router, { useRouter } from 'next/router'; 
 import axios from 'axios';
 import { useAuthContext } from '../../../context/AuthContext';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -308,7 +308,7 @@ function BasicForm({nextStep, isBankConnected}:BasicInfoProps){
 
         <Form.Item style={{marginTop:'4rem'}}>
             <Space>
-                <Button onClick={()=>router.back()}  type='ghost'>
+                <Button onClick={()=>router.back()}  type="default" ghost>
                     Cancel
                 </Button>
 
@@ -345,8 +345,10 @@ function VenuesForm({communityId}:VenueFormProp){
 
     function transformContactNumbersInVenues(venues:CommunityVenueFormType[]){
 
-        const venuesCopy = [...venues];
-        const transformedVenues  = venuesCopy.map((venue:CommunityVenueFormType)=>{ 
+        // const venuesCopy = [...venues];
+         if (!Array.isArray(venues)) return [];
+
+        const transformedVenues  = venues.map((venue:CommunityVenueFormType)=>{ 
            return{
                name: venue.name,
                email: venue.email,
@@ -454,7 +456,7 @@ function VenuesForm({communityId}:VenueFormProp){
 
             <Form.Item style={{marginTop:'4rem'}}>
                 <Space>
-                    <Button shape='round' onClick={()=>router.back()} type='ghost'>
+                    <Button shape='round' onClick={()=>router.back()} type="default" ghost>
                         Skip for now
                     </Button>
 
@@ -859,7 +861,6 @@ function CommunityVenueForm({remove, name, formInstance, restField}:CommunityVen
                                     <Space >
                                     <Popconfirm
                                         title="Remove venue"
-                                        description="Are you sure to remove this custom date?"
                                         onConfirm={() => remove(name)}
                                         // onCancel={cancel}
                                         okText="Yes, Remove"

@@ -1,18 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useOrgs from "../../../hooks/useOrgs";
 const {Text,Title,Paragraph} = Typography
-import React, { useRef, useState } from 'react'
-import {Typography,Button,Avatar, Upload, Tag, Image, Descriptions, Table, InputRef, Input, Space, DatePicker, Radio, Dropdown, MenuProps, Drawer, Row, Col, Divider, Form, Badge, Modal, Alert, notification} from 'antd'
+import React, { useState } from 'react'
+import {Typography,Button, Tag, Image, Table, Input, Space, Radio, Drawer, Row, Col, Form,Modal, Alert, notification} from 'antd'
 import { useRouter } from 'next/router'
 import axios from 'axios';
 import {MoreOutlined,ReloadOutlined,DashOutlined,MobileOutlined,LaptopOutlined} from '@ant-design/icons'
-import { FilterDropdownProps, FilterValue, SorterResult } from 'antd/lib/table/interface';
-
 import { useAuthContext } from '../../../context/AuthContext';
-import { useServicesContext } from '../../../context/ServicesContext';
-import {PlusOutlined} from '@ant-design/icons'
-import dayjs from 'dayjs'
-import  { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
+import dayjs from 'dayjs' 
+import  { ColumnsType, TableProps } from 'antd/lib/table';
 import { ServiceItem } from "../../../types/Services";
 import { User } from "./Users.types";
 import { IMAGE_PLACEHOLDER_HASH } from "../../../constants";
@@ -476,7 +472,7 @@ function EditableRole({selectedUser}:EditableProp){
         </Col>
           <Form.Item style={{ width:'100%'}}>
               <Space >
-                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                  <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                       Cancel
                   </Button>
                   <Button shape="round" loading={isEditing} type="link" size="small"  htmlType="submit" >

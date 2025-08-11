@@ -61,7 +61,7 @@ export default function StaffEditForm({initValues, onChangeStaffRole, onCloseFor
 
             <Form.Item>
                 <Space>
-                    <Button onClick={onCloseForm} type='ghost'>
+                    <Button onClick={onCloseForm} type="default" ghost>
                         Cancel
                     </Button>
 

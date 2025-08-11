@@ -9,11 +9,11 @@ const {Title} = Typography
 
 
 interface PlatformLayoutProps{
-    children: ReactNode
+    children: ReactNode 
   }
   
   export default function PlatformLayout({children}:PlatformLayoutProps){
-    const {asPath,push,query,isReady} = useRouter()  
+    const {asPath,isReady} = useRouter()  
   
       const [selectedPage, setSelectedPage] = useState('venues')
   

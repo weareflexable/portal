@@ -1,8 +1,12 @@
+
 /** @type {import('next').NextConfig} */
-// const withBundleAnalyzer = require('@next/bundle-analyzer')
-// const bundleAnalyzer = withBundleAnalyzer({enabled: utils.ANALYZE === 'true'})
+const dotenv = require('dotenv');
+dotenv.config();
 const nextConfig = {
   reactStrictMode: true,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   // swcMinify: true,
   output: "standalone",
   images: {
@@ -10,11 +14,13 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'nftstorage.link',
-        port: '',
         pathname: '/ipfs/**',
       },
     ],
-  }
+  },
+   env: {
+    NEXT_PUBLIC_PROJECT_ID: process.env.NEXT_PUBLIC_PROJECT_ID,
+  },
 };
 
 module.exports =  nextConfig;

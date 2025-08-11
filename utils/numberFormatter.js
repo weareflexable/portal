@@ -1,5 +1,5 @@
-const { FormatMoney } = require('format-money-js');
 
+import { FormatMoney } from 'format-money-js';
 export const numberFormatter = new FormatMoney({
     decimals: 0
   });

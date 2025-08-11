@@ -9,7 +9,7 @@ const { Panel } = Collapse;
 const {Text,Title} = Typography;
 import {QuestionCircleOutlined,SelectOutlined,ArrowLeftOutlined,MinusCircleOutlined,InfoCircleOutlined,PlusCircleOutlined,UploadOutlined} from '@ant-design/icons'
 
-
+ 
 import { useRouter } from 'next/router';
 import { Availability, AvailabilityPayload, ServiceItem, ServiceItemReqPaylod } from '../../../../types/Services';
 import dayjs from 'dayjs'
@@ -296,7 +296,7 @@ function BasicForm({nextStep, isBankConnected}:BasicInfoProps){
 
         <Form.Item style={{marginTop:'4rem'}}>
             <Space>
-                <Button onClick={()=>router.back()}  type='ghost'>
+                <Button onClick={()=>router.back()}  type="default" ghost>
                     Cancel
                 </Button>
                 <SubmitButton
@@ -482,7 +482,6 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
                                     <Space >
                                     <Popconfirm
                                         title="Remove custom date"
-                                        description="Are you sure to remove this custom date?"
                                         onConfirm={() => remove(name)}
                                         // onCancel={cancel}
                                         okText="Yes, Remove"
@@ -508,7 +507,7 @@ function AvailabilityForm({serviceItemId}:AvailabilityProp){
 
             <Form.Item style={{marginTop:'4rem'}}>
                 <Space>
-                    <Button shape='round' onClick={()=>router.back()} type='ghost'>
+                    <Button shape='round' onClick={()=>router.back()} type="default" ghost>
                         Skip for now
                     </Button>
 

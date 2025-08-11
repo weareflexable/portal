@@ -5,14 +5,15 @@ import axios from "axios"
 import { useState } from "react"
 import { useAuthContext } from "../../../context/AuthContext"
 import {PlusCircleOutlined, DeleteOutlined,EditOutlined} from "@ant-design/icons"
-import { Availability, CustomDate, ServiceItem } from "../../../types/Services"
+import {  CustomDate, ServiceItem } from "../../../types/Services"
 import dayjs from 'dayjs'
 import useUrlPrefix from "../../../hooks/useUrlPrefix"
 import utils from "../../../utils/env"
-var utc = require('dayjs/plugin/utc')
+import utc from 'dayjs/plugin/utc'
+
 dayjs.extend(utc)
 
-interface Props{
+interface Props{ 
     selectedServiceItem: ServiceItem
 }
 export default function AvailabilitySection({selectedServiceItem}:Props){
@@ -172,7 +173,6 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
                     <Button  onClick={toggleEdit} icon={<EditOutlined rev={undefined} />}/>
                     <Popconfirm
                         title="Delete custom date"
-                        description="Are you sure to delete this custom date?"
                         onConfirm={()=>deleteAvailability(availability)}
                         // onCancel={cancel}
                         okText="Yes, Delete"
@@ -253,7 +253,7 @@ export function EditableAvailability({availability, selectedServiceItem}:EditAva
               <Col span={4}>
                   <Form.Item style={{ marginBottom:'0', width:'100%'}}>
                       <Space >
-                          <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                          <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                               Cancel
                           </Button>
                           <Button shape="round" loading={isEditing} type="primary"  htmlType="submit" >
@@ -412,7 +412,7 @@ export function NewAvailability({selectedServiceItem}:NewAvailabilityProps){
                 <Col span={4}>
                     <Form.Item style={{ marginBottom:'0', width:'100%'}}>
                         <Space >
-                            <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type='ghost'>
+                            <Button shape="round" size='small' disabled={isEditing} onClick={toggleEdit} type="default" ghost>
                                 Cancel
                             </Button>
                             <Button shape="round" loading={isEditing} type="primary"  htmlType="submit" >
