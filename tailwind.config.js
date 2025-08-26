@@ -4,6 +4,8 @@ module.exports = {
     content: [
       "./pages/**/*.{js,ts,jsx,tsx}",
       "./src/components/**/*.{js,ts,jsx,tsx}",
+       "./components/**/*.{js,ts,jsx,tsx}",
+      "*.{js,ts,jsx,tsx,mdx}",
     ],
     theme: {
       extend: {
@@ -12,6 +14,7 @@ module.exports = {
         },
       },
     },
-    plugins: [],
+     important: true,
+    plugins: [require("tailwindcss-animate")],
   };
   
