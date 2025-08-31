@@ -403,11 +403,45 @@ export const UserVerificationDialog: React.FC<UserVerificationDialogProps> = ({
   };
 
   const handleClose = () => {
-    if (!isSubmitting) {
+  if (isSubmitting) return;
+
+  // If user didn't fill any details, log them in directly
+  const noDetailsProvided =
+    !formData.username.trim() &&
+    !formData.email.trim() &&
+    !avatarHash &&
+    !formData.x_account.trim();
+
+  if (noDetailsProvided) {
+    const solanaToken = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("erebrus_token_solana="))
+      ?.split("=")[1];
+
+    const evmToken = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("erebrus_token_evm="))
+      ?.split("=")[1];
+
+    const pasetoToken = solanaToken || evmToken;
+
+    if (pasetoToken) {
+      localStorage.setItem("PLATFORM_PASETO", pasetoToken);
+      localStorage.setItem("walletAddress", formData.wallet_address || "");
+
+      toast.success("Logged in successfully");
       onClose();
-      resetForm();
+      router.push("/").then(() => window.location.reload());
+      return;
+    } else {
+      toast.error("Please reconnect your wallet to continue.");
     }
-  };
+  }
+
+  // Default: just close + reset form
+  onClose();
+  resetForm();
+};
 
   if (!isOpen) return null;
 

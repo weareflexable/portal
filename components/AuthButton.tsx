@@ -44,8 +44,8 @@ export function AuthButton() {
         className={cn(
           "ml-2 transition-all duration-200 font-medium",
           isAuthenticated
-            ? "bg-green-600 hover:bg-green-700 text-white shadow-md"
-            : "border-orange-200 hover:border-orange-300 hover:bg-orange-50",
+            ? "bg-green-600 shadow-md"
+            : "border-orange-200 bg-green-700 text-white",
           isAuthenticating && "cursor-not-allowed opacity-70"
         )}
         variant={isAuthenticated ? "default" : "outline"}
