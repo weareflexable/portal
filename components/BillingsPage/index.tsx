@@ -124,7 +124,8 @@ export default function BillingsView() {
         ? <Spin />
         : bankAccountQuery.data.fingerprint === ''
           ? <EmptyState>
-            <Button disabled={accountLinkMutation.isLoading} onClick={connectToStripeOnboarding} type='primary'>Create Account</Button>
+            <Button className="bg-[#ab4df7] text-white"
+              disabled={accountLinkMutation.isLoading} onClick={connectToStripeOnboarding} type='primary'>Create Account</Button>
           </EmptyState>
           :
           <>

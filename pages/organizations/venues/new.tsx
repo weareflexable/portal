@@ -1,13 +1,13 @@
 import React, { useRef, useState, useEffect } from "react";
-import {Form, Row, Col, Image, Tooltip, Input, Upload, Button, notification, Typography, Space, Select, Radio, Divider, TimePicker, InputRef, FormInstance} from 'antd';
-import {UploadOutlined,MinusOutlined, QuestionCircleOutlined, ArrowLeftOutlined, InfoCircleOutlined,  InboxOutlined} from '@ant-design/icons'
+import { Form, Row, Col, Image, Tooltip, Input, Upload, Button, notification, Typography, Space, Select, Radio, Divider, TimePicker, InputRef, FormInstance } from 'antd';
+import { UploadOutlined, MinusOutlined, QuestionCircleOutlined, ArrowLeftOutlined, InfoCircleOutlined, InboxOutlined } from '@ant-design/icons'
 import utc from 'dayjs/plugin/utc';
 
-const {Title,Text} = Typography
-const {TextArea} = Input
+const { Title, Text } = Typography
+const { TextArea } = Input
 
 import { useRouter } from 'next/router';
-import {usePlacesWidget} from 'react-google-autocomplete'
+import { usePlacesWidget } from 'react-google-autocomplete'
 import { Service, ServicePayload } from "../../../types/Services";
 import { useOrgContext } from "../../../context/OrgContext";
 import useServiceTypes from "../../../hooks/useServiceTypes";
@@ -19,107 +19,107 @@ import useUrlPrefix from "../../../hooks/useUrlPrefix";
 import { uploadToPinata } from "../../../utils/nftStorage";
 import utils from "../../../utils/env";
 
-const getBase64 = (file: any): Promise<string> => 
-new Promise((resolve, reject) => {
-const reader = new FileReader();
-reader.readAsDataURL(file);
-reader.onload = () => resolve(reader.result as string);
-reader.onerror = (error) => reject(error);
-});
+const getBase64 = (file: any): Promise<string> =>
+    new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = (error) => reject(error);
+    });
 
 const PLACEHOLDER_IMAGE = '/placeholder.png'
 
-export default function NewService(){
+export default function NewService() {
 
     const queryClient = useQueryClient()
 
-    const {paseto} = useAuthContext()
-    const {currentOrg} = useOrgContext()
+    const { paseto } = useAuthContext()
+    const { currentOrg } = useOrgContext()
 
-    const [form]=Form.useForm()
+    const [form] = Form.useForm()
     const [fullAddress, setFullAddress] = useState({
-        latitude:0,
-        longitude:0,
+        latitude: 0,
+        longitude: 0,
         state: '',
-        country:'',
-        city:''
+        country: '',
+        city: ''
     })
 
     const [isHashingAssets, setIsHashingAssets] = useState(false)
     const [logoImage, setLogoImage] = useState(PLACEHOLDER_IMAGE)
 
-    const router = useRouter() 
+    const router = useRouter()
 
     const antInputRef = useRef();
     const areaCodeRef = useRef<InputRef>(null)
     const centralOfficeCodeRef = useRef<InputRef>(null)
     const tailNoRef = useRef<InputRef>(null)
 
-    function handleAreaCodeRef(e:any){
-        if(e.target.value.length >= 3){ 
+    function handleAreaCodeRef(e: any) {
+        if (e.target.value.length >= 3) {
             centralOfficeCodeRef.current!.focus()
         }
     }
-    function handleCentralOfficeCode(e:any){
-        if(e.target.value.length >= 3){ 
+    function handleCentralOfficeCode(e: any) {
+        if (e.target.value.length >= 3) {
             tailNoRef.current!.focus()
         }
     }
 
-    const extractFullAddress = (place:any)=>{
-        const addressComponents = place.address_components 
-            let addressObj = {
-                state:'',
-                country:'',
-                city:'',
-                latitude:place.geometry.location.lat(),
-                longitude:place.geometry.location.lng()
-            };
-            addressComponents.forEach((address:any)=>{
-                const type = address.types[0]
-                if(type==='country') addressObj.country = address.long_name
-                if(type === 'locality') addressObj.state = address.short_name
-                if(type === 'administrative_area_level_1') addressObj.city = address.short_name
-            })
+    const extractFullAddress = (place: any) => {
+        const addressComponents = place.address_components
+        let addressObj = {
+            state: '',
+            country: '',
+            city: '',
+            latitude: place.geometry.location.lat(),
+            longitude: place.geometry.location.lng()
+        };
+        addressComponents.forEach((address: any) => {
+            const type = address.types[0]
+            if (type === 'country') addressObj.country = address.long_name
+            if (type === 'locality') addressObj.state = address.short_name
+            if (type === 'administrative_area_level_1') addressObj.city = address.short_name
+        })
 
-            return addressObj
+        return addressObj
     }
 
-      const { ref: antRef } = usePlacesWidget({
+    const { ref: antRef } = usePlacesWidget({
         apiKey: `${utils.NEXT_PUBLIC_MAPS_AUTOCOMPLETE_API}`, // move this key to env
-        options:{
-            componentRestrictions:{country:'us'},
+        options: {
+            componentRestrictions: { country: 'us' },
             types: ['address'],
-            fields: ['address_components','geometry','formatted_address']
+            fields: ['address_components', 'geometry', 'formatted_address']
         },
         onPlaceSelected: (place) => {
             // console.log(antInputRef.current.input)
             console.log(place)
-            form.setFieldValue('address',place?.formatted_address)
-            
+            form.setFieldValue('address', place?.formatted_address)
+
             const fullAddress = extractFullAddress(place)
             // add street address
-            const addressWithStreet={
+            const addressWithStreet = {
                 ...fullAddress,
                 street: place?.formatted_address
             }
             setFullAddress(addressWithStreet)
 
             //@ts-ignore
-          antInputRef.current.input.value = place?.formatted_address
+            antInputRef.current.input.value = place?.formatted_address
 
         },
-      });
-    
+    });
 
-    const onFinish = async(formData:any)=>{
+
+    const onFinish = async (formData: any) => {
 
         const logoRes = await formData.logoImageHash
         setIsHashingAssets(true)
         //@ts-ignore
         const imageHash = await uploadToPinata(logoRes[0].originFileObj)
 
-        console.log('from pinata',imageHash)
+        console.log('from pinata', imageHash)
         //@ts-ignore
         // const coverImageHash = await asyncStore(formData.coverImageHash[0].originFileObj)
         setIsHashingAssets(false)
@@ -135,13 +135,13 @@ export default function NewService(){
             ...fullAddress,
             logoImageHash: imageHash,
             coverImageHash: imageHash,
-            latitude:String(fullAddress.latitude),
-            longitude:String(fullAddress.longitude),
+            latitude: String(fullAddress.latitude),
+            longitude: String(fullAddress.longitude),
             contactNumber: formatedContact,
             serviceTypeId: router.query.key,
             currency: 'USD',
             //@ts-ignore
-            orgId:currentOrg.orgId,
+            orgId: currentOrg.orgId,
             timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // get user timezone
             //@ts-ignore
             startTime: "2023-03-24T13:47:59.064351Z",
@@ -160,166 +160,166 @@ export default function NewService(){
 
     const urlPrefix = useUrlPrefix()
 
-    const extractLogoImage = async(e: any) => {
+    const extractLogoImage = async (e: any) => {
         // e.preventDefault()
         if (Array.isArray(e)) {
-        return e;
+            return e;
         }
 
         console.log(e)
         const imageBlob = e.fileList[0].originFileObj
-        console.log("blob",imageBlob)
+        console.log("blob", imageBlob)
         const src = await getBase64(imageBlob)
         setLogoImage(src)
-   
 
-    return e?.fileList;
-  };
 
-      const createDataHandler = async(newItem:any)=>{
-        const {data} = await axios.post(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`, newItem,{
-            headers:{
+        return e?.fileList;
+    };
+
+    const createDataHandler = async (newItem: any) => {
+        const { data } = await axios.post(`${utils.NEXT_PUBLIC_NEW_API_URL}/${urlPrefix}/services`, newItem, {
+            headers: {
                 "Authorization": paseto
             },
         })
         return data
     }
 
-    const createData = useMutation(createDataHandler,{
-       onSuccess:()=>{
-        notification['success']({
-            message: 'Success creating record',
-          });
-          router.back()
-       },
-        onError:()=>{
+    const createData = useMutation(createDataHandler, {
+        onSuccess: () => {
+            notification['success']({
+                message: 'Success creating record',
+            });
+            router.back()
+        },
+        onError: () => {
             notification['error']({
                 message: 'Encountered an error while creating record',
-              });
+            });
             // leave modal open
         },
-        onSettled:()=>{
+        onSettled: () => {
             queryClient.invalidateQueries(['all-services'])
-       },
+        },
     })
 
-    const {isError, isLoading:isCreatingData, isSuccess:isDataCreated, data:createdData} = createData
-    
+    const { isError, isLoading: isCreatingData, isSuccess: isDataCreated, data: createdData } = createData
+
 
     return (
-        <div style={{background:'#ffffff', minHeight:'100vh'}}>
-            <div style={{marginBottom:'3rem', padding: '1rem', borderBottom:'1px solid #e5e5e5',}}>
+        <div style={{ background: '#ffffff', minHeight: '100vh' }}>
+            <div style={{ marginBottom: '3rem', padding: '1rem', borderBottom: '1px solid #e5e5e5', }}>
                 <Row>
-                    <Col offset={1}> 
-                         <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
+                    <Col offset={1}>
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                             {/* @ts-ignore */}
-                            <Button shape='round' style={{marginRight:'.3rem'}} type='link' onClick={()=>router.back()} icon={<ArrowLeftOutlined />} />
-                            <Title style={{margin:'0'}} level={3}>{`New ${router.isReady?router.query.label:'...'}`}</Title>
+                            <Button shape='round' style={{ marginRight: '.3rem' }} type='link' onClick={() => router.back()} icon={<ArrowLeftOutlined />} />
+                            <Title style={{ margin: '0' }} level={3}>{`New ${router.isReady ? router.query.label : '...'}`}</Title>
                         </div>
                     </Col>
                 </Row>
             </div>
             <Row >
                 <Col offset={3} span={13}>
-                    
+
                     <Form
-                    name="serviceForm"
-                    // initialValues={{ remember: true }}
-                    layout='vertical'
-                    onFinish={onFinish}
-                    form={form}
+                        name="serviceForm"
+                        // initialValues={{ remember: true }}
+                        layout='vertical'
+                        onFinish={onFinish}
+                        form={form}
                     >
 
-           
-
-                 {/* Service info */}
-                <div style={{marginBottom:'2rem'}}>
-                   { router.isReady?<Title level={3}>{`${router.query.label} info`}</Title>: <Text>Loading...</Text>}
-                    <Text>All changes here will be reflected in the marketplace</Text>
-                </div>
-                <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}> 
-          
-                    <Form.Item
-                        name="name"
-                        label="Name" 
-                        
-                        hasFeedback
-                        // extra="The name you provide here will be used as display on marketplace listing"
-                        rules={[
-                            { required: true, message: 'This field is required' },
-                            // { pattern:/^[A-Za-z ]+$/, message: 'Please provide only string values' },
-                            { max: 100, message: 'Sorry, your service name cant be more than 100 characters' },
-                    
-                            ]}
-                    >
-                        <Input 
-                        type="string"
-                        allowClear size="large" placeholder="Eg. Bill Cage coffee" />
-                    </Form.Item>
 
 
-                    <Form.Item  
-                        name="address"
-                        label='Address'
-                        hasFeedback
-                        // @ts-ignore
-                        extra={<Text type="secondary"><InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} /> Please refresh the page if the address you selected is not being displayed in the field </Text> }
-                        rules={[{ required: true, message: 'Please input a valid address!' }]}
-                    >
-                        <Input 
-                            // suffix={
-                            //     <Tooltip title="Please refresh the page if the date you selected is not being displayed in the field">
-                            //       <InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
-                            //     </Tooltip>
-                            //   }
-                            size="large" 
-                            allowClear
-                            ref={(c) => {
-                            // @ts-ignore
-                            antInputRef.current = c;
-                            // @ts-ignore
-                            if (c) antRef.current = c.input;
-                            }} 
-                            placeholder="Syracuse, United states" 
-                            />
-                    </Form.Item>
+                        {/* Service info */}
+                        <div style={{ marginBottom: '2rem' }}>
+                            {router.isReady ? <Title level={3}>{`${router.query.label} info`}</Title> : <Text>Loading...</Text>}
+                            <Text>All changes here will be reflected in the marketplace</Text>
+                        </div>
+                        <div style={{ border: '1px solid #e2e2e2', borderRadius: '4px', padding: '1rem' }}>
 
-                    <Form.Item
-                        // name="contactNumber"
-                        label="Contact Number"
-                        required
-                        style={{marginBottom:'0'}}
-                        rules={[
-                            { required: true, message: 'Please provide values in all field' },
-                            // { pattern: /^\d+$/, message: 'All values must be a number' },
-                        ]}
-                    >
-                        <Space.Compact block>
+                            <Form.Item
+                                name="name"
+                                label="Name"
 
-                            <Form.Item  initialValue={'+1'} name={['contact','countryCode']} noStyle>
-                                <Input allowClear style={{width:'10%'}} disabled size="large"/>
+                                hasFeedback
+                                // extra="The name you provide here will be used as display on marketplace listing"
+                                rules={[
+                                    { required: true, message: 'This field is required' },
+                                    // { pattern:/^[A-Za-z ]+$/, message: 'Please provide only string values' },
+                                    { max: 100, message: 'Sorry, your service name cant be more than 100 characters' },
+
+                                ]}
+                            >
+                                <Input
+                                    type="string"
+                                    allowClear size="large" placeholder="Eg. Bill Cage coffee" />
                             </Form.Item>
 
-                            <Form.Item  rules={[ { pattern: /^\d+$/, message: 'Area code must be a number' },]} name={['contact','areaCode']} noStyle>
-                                <Input allowClear ref={areaCodeRef} maxLength={3} onChange={handleAreaCodeRef} style={{width:'20%'}} size="large" placeholder="235" />
+
+                            <Form.Item
+                                name="address"
+                                label='Address'
+                                hasFeedback
+                                // @ts-ignore
+                                extra={<Text type="secondary"><InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} /> Please refresh the page if the address you selected is not being displayed in the field </Text>}
+                                rules={[{ required: true, message: 'Please input a valid address!' }]}
+                            >
+                                <Input
+                                    // suffix={
+                                    //     <Tooltip title="Please refresh the page if the date you selected is not being displayed in the field">
+                                    //       <InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
+                                    //     </Tooltip>
+                                    //   }
+                                    size="large"
+                                    allowClear
+                                    ref={(c) => {
+                                        // @ts-ignore
+                                        antInputRef.current = c;
+                                        // @ts-ignore
+                                        if (c) antRef.current = c.input;
+                                    }}
+                                    placeholder="Syracuse, United states"
+                                />
                             </Form.Item>
 
-                            <Form.Item rules={[ { pattern: /^\d+$/, message: 'Central Office Code must be a number' },]} name={['contact','centralOfficeCode']} noStyle>
-                                <Input  allowClear ref={centralOfficeCodeRef} onChange={handleCentralOfficeCode} maxLength={3} style={{width:'20%'}} size="large" placeholder="380" />
+                            <Form.Item
+                                // name="contactNumber"
+                                label="Contact Number"
+                                required
+                                style={{ marginBottom: '0' }}
+                                rules={[
+                                    { required: true, message: 'Please provide values in all field' },
+                                    // { pattern: /^\d+$/, message: 'All values must be a number' },
+                                ]}
+                            >
+                                <Space.Compact block>
+
+                                    <Form.Item initialValue={'+1'} name={['contact', 'countryCode']} noStyle>
+                                        <Input allowClear style={{ width: '10%' }} disabled size="large" />
+                                    </Form.Item>
+
+                                    <Form.Item rules={[{ pattern: /^\d+$/, message: 'Area code must be a number' },]} name={['contact', 'areaCode']} noStyle>
+                                        <Input allowClear ref={areaCodeRef} maxLength={3} onChange={handleAreaCodeRef} style={{ width: '20%' }} size="large" placeholder="235" />
+                                    </Form.Item>
+
+                                    <Form.Item rules={[{ pattern: /^\d+$/, message: 'Central Office Code must be a number' },]} name={['contact', 'centralOfficeCode']} noStyle>
+                                        <Input allowClear ref={centralOfficeCodeRef} onChange={handleCentralOfficeCode} maxLength={3} style={{ width: '20%' }} size="large" placeholder="380" />
+                                    </Form.Item>
+
+                                    <div style={{ height: '40px', margin: '0 .3rem 0 .3rem', display: 'inline-flex', alignItems: 'center', verticalAlign: 'center' }}>
+                                        {/* <MinusOutlined style={{ color: "#e7e7e7" }} /> */}
+                                    </div>
+
+                                    <Form.Item rules={[{ pattern: /^\d+$/, message: 'Tail Number must be a number' },]} name={['contact', 'tailNumber']} noStyle>
+                                        <Input ref={tailNoRef} maxLength={4} style={{ width: '20%' }} size="large" placeholder="3480" />
+                                    </Form.Item>
+
+                                </Space.Compact>
                             </Form.Item>
 
-                            <div style={{height:'40px',margin:'0 .3rem 0 .3rem', display:'inline-flex', alignItems:'center',  verticalAlign:'center'}}>
-                            {/* <MinusOutlined style={{ color: "#e7e7e7" }} /> */}
-                            </div>
-
-                            <Form.Item  rules={[ { pattern: /^\d+$/, message: 'Tail Number must be a number' },]} name={['contact','tailNumber']} noStyle>
-                                <Input ref={tailNoRef} maxLength={4} style={{width:'20%'}} size="large" placeholder="3480" />
-                            </Form.Item>
-
-                        </Space.Compact>
-                    </Form.Item>
-
-{/* 
+                            {/* 
                     <Form.Item
                         label="Validity Period"
                         hasFeedback
@@ -339,25 +339,25 @@ export default function NewService(){
                         </Input.Group>
                         {/* <Text style={{marginLeft:'1rem'}}>9 hrs interval for all tickets</Text>   */}
 
-                    {/* </Form.Item>   */}
+                            {/* </Form.Item>   */}
 
-                    
-                </div>
 
-                
+                        </div>
 
-                    <div style={{marginBottom:'2rem', marginTop:'3rem'}}>
-                        <Title level={3}>Image Upload</Title>
-                        <Text >Your logo and artwork will be visible on marketplace</Text>
-                        <Tooltip trigger={['click']}  overlayInnerStyle={{width:'500px'}}  placement='right' title={<LogoTip/>}>
-                        {/* @ts-ignore */}
-                            <Button type="link">Show me <QuestionCircleOutlined /></Button>
-                        </Tooltip>
-                    </div>
 
-                    {/* <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}>  */}
 
-                        <Image alt='Organization logo' src={logoImage} style={{width:'150px',height:'150px', borderRadius:'50%', border:'1px solid #e5e5e5'}}/>
+                        <div style={{ marginBottom: '2rem', marginTop: '3rem' }}>
+                            <Title level={3}>Image Upload</Title>
+                            <Text >Your logo and artwork will be visible on marketplace</Text>
+                            <Tooltip trigger={['click']} overlayInnerStyle={{ width: '500px' }} placement='right' title={<LogoTip />}>
+                                {/* @ts-ignore */}
+                                <Button type="link">Show me <QuestionCircleOutlined /></Button>
+                            </Tooltip>
+                        </div>
+
+                        {/* <div style={{border:'1px solid #e2e2e2', borderRadius:'4px', padding:'1rem'}}>  */}
+
+                        <Image alt='Organization logo' src={logoImage} style={{ width: '150px', height: '150px', borderRadius: '50%', border: '1px solid #e5e5e5' }} />
                         <Form.Item
                             name="logoImageHash"
                             valuePropName="logoImageHash"
@@ -365,80 +365,80 @@ export default function NewService(){
                             extra={'Please upload a PNG or JPEG that is 2400px x 1200px'}
                             rules={[{ required: true, message: 'Please upload an image' }]}
                         >
-                            
+
                             <Upload name="logoImageHash" multiple={false} fileList={[]}  >
-                                    <Button size='small' type='link'>Upload logo image</Button>
+                                <Button size='small' type='link'>Upload logo image</Button>
                             </Upload>
                         </Form.Item>
 
-                      
-                    {/* </div> */}
 
-                    {/* onCancelFormCreation */}
-                    <Form.Item style={{marginTop:'4rem'}}>
-                        <Space>
+                        {/* </div> */}
 
-                            <Button shape="round" onClick={()=>router.back()} type="default" ghost>
-                                Cancel
-                            </Button>
+                        {/* onCancelFormCreation */}
+                        <Form.Item style={{ marginTop: '4rem' }}>
+                            <Space>
 
-                           <SubmitButton
-                            form={form}
-                            isHashingAssets={isHashingAssets}
-                            isCreatingData = {isCreatingData}
-                           />
-                        </Space>     
-                    </Form.Item>
+                                <Button shape="round" className="border-[#c778ff] text-[#c778ff] bg-white" onClick={() => router.back()} type="default" ghost>
+                                    Cancel
+                                </Button>
+
+                                <SubmitButton
+                                    form={form}
+                                    isHashingAssets={isHashingAssets}
+                                    isCreatingData={isCreatingData}
+                                />
+                            </Space>
+                        </Form.Item>
 
                     </Form>
                 </Col>
             </Row>
-       </div>    
+        </div>
     )
 }
 
 
 
-function LogoTip(){
-    return(
+function LogoTip() {
+    return (
         <div>
-            <Image style={{objectFit:'cover', marginBottom:'1rem'}} src={'/explainers/service-explainer.png'} alt='Service explainer as displayed on marketplace'/>
-            <Text style={{color:'white'}}>It is very important that you provide the requested the image size else, it will look distorted on marketplace.</Text>
+            <Image style={{ objectFit: 'cover', marginBottom: '1rem' }} src={'/explainers/service-explainer.png'} alt='Service explainer as displayed on marketplace' />
+            <Text style={{ color: 'white' }}>It is very important that you provide the requested the image size else, it will look distorted on marketplace.</Text>
         </div>
-    ) 
+    )
 }
 
-interface SubmitButtonProps{
+interface SubmitButtonProps {
     isHashingAssets: boolean,
     isCreatingData: boolean,
     form: FormInstance
 }
 
-const SubmitButton = ({ form, isCreatingData, isHashingAssets }:SubmitButtonProps) => {
+const SubmitButton = ({ form, isCreatingData, isHashingAssets }: SubmitButtonProps) => {
     const [submittable, setSubmittable] = useState(false);
-  
+
     // Watch all values
     const values = Form.useWatch([], form);
 
-    const router = useRouter() 
-  
+    const router = useRouter()
+
     useEffect(() => {
-        
-      form.validateFields({validateOnly:true}).then(
-        (res) => {
-          setSubmittable(true);
-        },
-        () => {
-            console.log('isNot')
-          setSubmittable(false);
-        },
-      );
+
+        form.validateFields({ validateOnly: true }).then(
+            (res) => {
+                setSubmittable(true);
+            },
+            () => {
+                console.log('isNot')
+                setSubmittable(false);
+            },
+        );
     }, [values]);
-  
+
     return (
-        <Button shape="round" type="primary" disabled={!submittable} size="large" loading={isHashingAssets || isCreatingData}  htmlType="submit" >
-        {router.isReady? `Launch ${router.query.label}`: '...'}
-     </Button>
+        <Button className="bg-[#ab4df7] text-white"
+            shape="round" type="primary" disabled={!submittable} size="large" loading={isHashingAssets || isCreatingData} htmlType="submit" >
+            {router.isReady ? `Launch ${router.query.label}` : '...'}
+        </Button>
     );
-  };
-  
+};

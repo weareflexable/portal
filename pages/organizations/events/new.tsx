@@ -585,7 +585,7 @@ export default function NewEvent() {
                         {/* onCancelFormCreation */}
                         <Form.Item style={{ marginTop: '4rem' }}>
                             <Space>
-                                <Button shape="round" onClick={() => router.back()} type="default" ghost>
+                                <Button shape="round" className="border-[#c778ff] text-[#c778ff] bg-white" onClick={() => router.back()} type="default" ghost>
                                     Cancel
                                 </Button>
 
@@ -644,9 +644,10 @@ const SubmitButton = ({ form, isCreatingData, isEventFree, isBankConnected, isHa
     }, [values]);
 
     return (
-        <Button shape="round" type="primary" disabled={!submittable} size="large" loading={isHashingAssets || isCreatingData} htmlType="submit" >
+        <Button shape="round" className="bg-[#ab4df7] text-white"
+            type="primary" disabled={!submittable} size="large" loading={isHashingAssets || isCreatingData} htmlType="submit" >
             {/* {isBankConnected || isEventFree ? 'Launch Event' : 'Save as draft'} */}
-            {isEventFree ? 'Launch Event': 'Launch Event'}
+            {isEventFree ? 'Launch Event' : 'Launch Event'}
         </Button>
     );
 };

@@ -20,14 +20,17 @@ import { IMAGE_PLACEHOLDER_HASH } from "../../../constants";
 import useRole from "../../../hooks/useRole";
 import utils from "../../../utils/env";
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { ethers} from "ethers";
 import contractABI from '../../../analyze/FlexableVendor.json';
-import { ethers ,Eip1193Provider} from "ethers";
 const CONTRACT_ADDRESS = '0xbCAF57c030cFb333fd37dc3662a81DaA76AAF1f5'; // Replace with your contract address
+import { useAppKitAccount } from "@reown/appkit/react";
+
+
+
 
 const { TextArea } = Input
 
 dayjs.extend(relativeTime)
-
 
 
 function Communities() {
@@ -40,103 +43,74 @@ function Communities() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [pageNumber, setPageNumber] = useState<number | undefined>(1)
   const [pageSize, setPageSize] = useState<number | undefined>(10)
-  const [vendorName, setVendorName] = useState('');
-  const [vendorURI, setVendorURI] = useState('');
   const [isVendorCreated, setIsVendorCreated] = useState(false); // track vendor status
-  const [creating, setCreating] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<any | Community>({})
   const [currentFilter, setCurrentFilter] = useState({ id: '1', name: 'Active' })
   const [loadingVendorStatus, setLoadingVendorStatus] = useState(true);
+  const [showVendorTable, setShowVendorTable] = useState(false);
+    const [showCommunityTable, setShowCommunityTable] = useState(false);
 
   const urlPrefix = useUrlPrefix()
-
+  const [vendors, setVendors] = useState<any[]>([]);
+    const [form] = Form.useForm();
+  // form field
   const getContract = async () => {
-    if (!window.ethereum ) throw new Error('MetaMask is not installed');
+    if (!window.ethereum) throw new Error('MetaMask is not installed');
     const provider = new ethers.BrowserProvider(window.ethereum as unknown as ethers.Eip1193Provider);
     const signer = await provider.getSigner();
     return new ethers.Contract(CONTRACT_ADDRESS, contractABI.abi, signer);
   };
 
-  const handleCreateVendor = async () => {
-    try {
-      setCreating(true);
-      const contract = await getContract();
-      const provider = new ethers.BrowserProvider(window.ethereum as unknown as ethers.Eip1193Provider);
-      const signer = await provider.getSigner();
-      const userAddress = await signer.getAddress();
 
-      const vendor = await contract.createVendor(userAddress, vendorName, vendorURI);
-      if (vendor.vendorName && vendor.vendorName !== '') {
-        message.info('Vendor already exists.');
-        setIsVendorCreated(true);
-        return;
-      }
+ const useOwnershipGuard = () => {
+  const { address } = useAppKitAccount();
 
-      const tx = await contract.createVendor(userAddress, vendorName, vendorURI);
-      await tx.wait();
+  const requireOwner = async (tokenId: number) => {
+    const contract = await getContract();
+    const owner = await contract.ownerOf(tokenId);
 
-      message.success('Vendor created!');
-      setIsVendorCreated(true); // ✅ hide form after creation
-      localStorage.setItem('vendorCreated', 'true');
-    } catch (error: any) {
-      console.error('Error creating vendor:', error);
-
-      const alreadyExists = error?.reason?.toLowerCase().includes('already') ||
-        error?.message?.toLowerCase().includes('already');
-
-      if (alreadyExists) {
-        message.info('Vendor already exists.');
-        setIsVendorCreated(true); // ✅ allow UI update
-      } else {
-        message.error(error?.reason || error?.message || 'Transaction failed');
-      }
-    } finally {
-      setCreating(false);
+    if (owner.toLowerCase() !== address?.toLowerCase()) {
+      throw new Error("You are not the owner of this token.");
     }
+
+    return contract;
   };
 
-  const checkVendorStatus = async () => {
-    try {
-      const contract = await getContract();
-      const provider = new ethers.BrowserProvider(window.ethereum as unknown as ethers.Eip1193Provider);
-      const signer = await provider.getSigner();
-      const userAddress = await signer.getAddress();
+  return { requireOwner };
+};
 
-      console.log('Checking vendor for address:', userAddress);
+  const handleDeleteVendor = async (tokenId: string) => {
+  try {
+    const contract = await getContract();
 
-      const vendor = await contract.vendors(userAddress);
-      console.log('Vendor from contract:', vendor);
+    // 🔥 call burnVendor(tokenId) on blockchain
+    const tx = await contract.burnVendor(tokenId);
+    await tx.wait();
 
-      if (vendor?.vendorName && vendor.vendorName !== '') {
-        setIsVendorCreated(true);
-      } else {
-        setIsVendorCreated(false);
-      }
-    } catch (err) {
-      console.error('Vendor check failed:', err);
-      setIsVendorCreated(false);
-    } finally {
-      setLoadingVendorStatus(false);
-    }
-  };
-
-
-  useEffect(() => {
-    checkVendorStatus();
-  }, []);
-
-
-useEffect(() => {
-  const isAlreadyCreated = localStorage.getItem('vendorCreated') === 'true';
-  if (isAlreadyCreated) {
-    setIsVendorCreated(true);
-    setLoadingVendorStatus(false);
-  } else {
-    checkVendorStatus();
+    // ✅ update frontend state after tx confirmed
+    setVendors(prev => prev.filter(v => v.id !== tokenId));
+    message.success(`Vendor ${tokenId} deleted from blockchain!`);
+  } catch (error: any) {
+    console.error("Error deleting vendor:", error);
+    message.error(error.message || "Failed to delete vendor");
   }
-}, []);
+};
 
 
+
+  
+
+
+
+ 
+
+
+  
+
+
+  
+
+   
   async function fetchCommunities() {
     const res = await axios({
       method: 'get',
@@ -216,6 +190,12 @@ useEffect(() => {
     viewCommunityDetails(record)
     console.log('click', record);
   };
+
+  
+
+ 
+const { requireOwner } = useOwnershipGuard();
+
 
 
 
@@ -307,10 +287,6 @@ useEffect(() => {
       }
     }
   ];
-
-
-
-
   return (
     <div style={{ background: '#f7f7f7', minHeight: '100vh' }}>
       <div style={{ display: 'flex', marginTop: '1rem', marginBottom: '1rem', width: '100%', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -319,80 +295,57 @@ useEffect(() => {
       <div style={{ marginBottom: '1.5em', display: 'flex', width: '100%', flexDirection: 'column' }}>
         <div style={{ width: '100%', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           {/* filters */}
-          <Radio.Group defaultValue={currentFilter.id} buttonStyle="solid">
+          <Radio.Group
+            value={currentFilter.id} 
+            buttonStyle="solid"
+            onChange={(e) => {
+              const selected = filters.find(f => f.id === e.target.value);
+              if (selected) setCurrentFilter(selected);
+            }}
+          >
             {filters.map((filter: any) => (
-              <Radio.Button key={filter.id} onClick={() => setCurrentFilter(filter)} value={filter.id}>{filter.name}</Radio.Button>
-            )
-            )}
+              <Radio.Button key={filter.id} value={filter.id}>
+                {filter.name}
+              </Radio.Button>
+            ))}
           </Radio.Group>
           <div className="flex justify-center items-center gap-10">
 
             <Button shape='round' style={{ marginRight: '1rem' }} loading={communityQuery.isRefetching} onClick={() => communityQuery.refetch()} icon={<ReloadOutlined rev={undefined} />}>Refresh</Button>
 
-            {loadingVendorStatus ? (
-              <Spin />
-            ) : isVendorCreated ? (
-              <>
-                <Text strong>Vendor created ✅</Text>
+           
                 <Button
-                  type="primary"
+                 
                   icon={<PlusOutlined />}
                   onClick={() => router.push('/organizations/communities/new')}
+                  className="bg-[#ab4df7] text-white"
+                  shape='round'
                 >
                   Launch Community
                 </Button>
-              </>
-            ) : (
-              <>
-                <Input
-                  placeholder="Vendor Name"
-                  value={vendorName}
-                  onChange={(e) => setVendorName(e.target.value)}
-                  style={{ width: 180 }}
-                />
-                <Input
-                  placeholder="Vendor URI"
-                  value={vendorURI}
-                  onChange={(e) => setVendorURI(e.target.value)}
-                  style={{ width: 200 }}
-                />
-                <Button
-                  type="primary"
-                  onClick={handleCreateVendor}
-                  disabled={!vendorName || !vendorURI}
-                  loading={creating}
-                  style={{ background: '#a855f7', borderColor: '#a855f7' }}
-                >
-                  Create Vendor
-                </Button>
-              </>
-            )}
-
-
+                
           </div>
         </div>
 
       </div>
       {/* } */}
 
+    <Table
+    style={{ width: "100%" }}
+    scroll={{ x: "calc(500px + 50%)" }}
+    size="large"
+    rowKey={(record) => record.id}
+    onChange={handleChange}
+    loading={communityQuery.isLoading || communityQuery.isRefetching}
+    columns={columns}
+    dataSource={data}
+    pagination={{
+      total: totalLength,
+      showTotal: (total) => `Total: ${total} items`,
+    }}
+  />
 
-      <Table
-        style={{ width: '100%' }}
-        scroll={{ x: 'calc(500px + 50%)' }}
-        size='large'
-        rowKey={(record) => record.id}
-        // @ts-ignore 
-        onChange={handleChange}
-        loading={communityQuery.isLoading || communityQuery.isRefetching}
-        // @ts-ignore 
-        columns={columns}
-        dataSource={data}
-        pagination={{
-          total: totalLength,
-          showTotal: (total) => `Total: ${total} items`,
-        }}
-      />
-      {/* } */}
+     
 
       {
         isDrawerOpen
@@ -424,10 +377,11 @@ function DetailDrawer({ selectedRecord, isDrawerOpen, closeDrawer }: DrawerProps
   const router = useRouter()
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const { currentOrg } = useOrgContext()
+  const { isConnected, address } = useAppKitAccount();
 
   const isBankConnected = currentOrg?.isBankConnected
 
-  const { isManager, isSuperAdmin } = useRole()
+  const { isManager, isSuperAdmin,isAdmin } = useRole()
 
   const { switchCommunity } = useCommunity()
   const { paseto } = useAuthContext()
@@ -509,13 +463,13 @@ function DetailDrawer({ selectedRecord, isDrawerOpen, closeDrawer }: DrawerProps
     return res;
   }
 
-function copyLink(selectedRecord:any){
-  navigator.clipboard.writeText('')
-  const eventId = selectedRecord.id
-  const marketplaceLink = `https://marketplace.dev.flexabledats.com/communities/${eventId}`
-   // Copy the text inside the text field
-   navigator.clipboard.writeText(marketplaceLink);
-}
+  function copyLink(selectedRecord: any) {
+    navigator.clipboard.writeText('')
+    const eventId = selectedRecord.id
+    const marketplaceLink = `https://marketplace.dev.flexabledats.com/communities/${eventId}`
+    // Copy the text inside the text field
+    navigator.clipboard.writeText(marketplaceLink);
+  }
 
 
   const publishCommunity = useMutation(publishCommunityHandler, {
@@ -530,14 +484,34 @@ function copyLink(selectedRecord:any){
       width={640} placement="right"
       extra={
         <Space>
-          <Popover placement="bottom" content={'Copied!'} trigger="click">
-            <Button size='large' disabled={!isBankConnected} icon={<CopyOutlined rev={undefined} />} onClick={() => copyLink(selectedRecord)}>Copy Link</Button>
-          </Popover>
-          {!isBankConnected && selectedRecord?.status == 4
-            ? <Button size='large' disabled={!isBankConnected} type="primary" loading={publishCommunity.isLoading} onClick={() => publishCommunity.mutate(selectedRecord)}>Publish Community</Button>
-            : <Button size='large' onClick={() => gotoCommunity(selectedRecord)}>Visit Community</Button>
-          }
-        </Space>}
+  <Popover placement="bottom" content={'Copied!'} trigger="click">
+    <Button
+      size="large"
+      disabled={!address}
+      icon={<CopyOutlined />}
+      onClick={() => copyLink(selectedRecord)}
+    >
+      Copy Link
+    </Button>
+  </Popover>
+  {address && (isSuperAdmin || isManager || isAdmin) && Number(selectedRecord?.status) === 4 ? (
+  <Button
+    size="large"
+    type="primary"
+    className="bg-[#ab4df7] text-white"
+    loading={publishCommunity.isLoading}
+    onClick={() => publishCommunity.mutate(selectedRecord)}
+  >
+    Publish Community
+  </Button>
+) : (
+  <Button size="large" onClick={() => gotoCommunity(selectedRecord)}>
+    Visit Community
+  </Button>
+)}
+</Space>
+
+        }
       closable={true}
       onClose={closeDrawerHandler}
       open={isDrawerOpen}
@@ -1165,8 +1139,11 @@ function DeleteRecordModal({ selectedRecord, isOpen, isDeletingItem, onDeleteRec
       </Form>
 
     </Modal>
+
+
   )
 }
+
 
 
 
